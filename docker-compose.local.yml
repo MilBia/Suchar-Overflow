@@ -1,7 +1,7 @@
 volumes:
   suchar_overflow_local_postgres_data: {}
   suchar_overflow_local_postgres_data_backups: {}
-  
+
 
 services:
   django:
