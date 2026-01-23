@@ -89,8 +89,7 @@
                 <div class="mb-3">
                   {% for tag in suchar.tags.all %}
                     <a href="?tag={{ tag.slug }}"
-                       class="badge bg-light text-secondary border me-1 text-decoration-none">#{{
-                    tag.name }}</a>
+                       class="badge bg-light text-secondary border me-1 text-decoration-none">#{{ tag.name }}</a>
                   {% endfor %}
                 </div>
               {% endif %}
