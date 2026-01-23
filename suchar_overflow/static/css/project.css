@@ -99,20 +99,38 @@ a {
 }
 
 /* Components */
-.btn-primary {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  font-weight: 600;
+.btn-primary,
+.btn-outline-primary {
   padding: 0.6rem 1.2rem;
   border-radius: 0.5rem;
   box-shadow: var(--shadow-sm);
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover,
+.btn-outline-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-primary:hover {
   background-color: var(--primary-hover);
   border-color: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  color: white;
 }
 
 .card {
@@ -252,6 +270,11 @@ a {
 }
 
 /* Vote Icons Dark Mode Visibility */
+[data-theme="dark"] .btn-vote {
+  color: #94a3b8;
+  /* Slate 400 - distinct but not pure white */
+}
+
 [data-theme="dark"] .btn-vote svg {
   fill: currentColor;
 }
@@ -274,4 +297,20 @@ a {
 
 [data-theme="dark"] .badge:hover {
   background-color: #374151 !important;
+}
+
+/* Modal Dark Mode */
+[data-theme="dark"] .modal-content {
+  background-color: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
