@@ -10,8 +10,12 @@
         <h1 class="display-5 fw-bold text-primary">Suchary</h1>
         <p class="text-muted lead">Najsuchsze żarty w internecie.</p>
       </div>
-      <div class="col-md-4">
-        <form method="get" class="d-flex">
+      <div class="col-md-5">
+        <form method="get" class="d-flex gap-2">
+          {% for key, value in request.GET.items %}
+            {% if key != 'q' and key != 'sort' %}<input type="hidden" name="{{ key }}" value="{{ value }}" />{% endif %}
+          {% endfor %}
+
           <div class="input-group">
             <span class="input-group-text bg-white border-end-0">
               <svg xmlns="http://www.w3.org/2000/svg"
@@ -28,8 +32,19 @@
                    class="form-control border-start-0 ps-0"
                    placeholder="Szukaj suchara..."
                    value="{{ request.GET.q|default:'' }}" />
-            <button class="btn btn-outline-primary" type="submit">Szukaj</button>
           </div>
+
+          <select name="sort" class="form-select w-auto" onchange="this.form.submit()">
+            <option value="newest"
+                    {% if not request.GET.sort or request.GET.sort == 'newest' %}selected{% endif %}>
+              Najnowsze
+            </option>
+            <option value="top" {% if request.GET.sort == 'top' %}selected{% endif %}>Najlepsze</option>
+          </select>
+
+          <noscript>
+            <button class="btn btn-outline-primary" type="submit">Szukaj</button>
+          </noscript>
         </form>
       </div>
       <div class="col-auto">
@@ -75,7 +90,8 @@
                 <div class="mb-3">
                   {% for tag in suchar.tags.all %}
                     <a href="?tag={{ tag.slug }}"
-                       class="badge bg-light text-secondary border me-1 text-decoration-none">#{{ tag.name }}</a>
+                       class="badge bg-light text-secondary border me-1 text-decoration-none">#{{
+                    tag.name }}</a>
                   {% endfor %}
                 </div>
               {% endif %}

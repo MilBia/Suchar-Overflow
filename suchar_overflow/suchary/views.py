@@ -25,9 +25,13 @@ class SucharListView(ListView):
     def get_queryset(self):
         queryset = Suchar.objects.annotate(
             score=Coalesce(Sum("votes__value"), 0),
-        ).order_by(
-            "-created_at",
         )
+
+        sort = self.request.GET.get("sort")
+        if sort == "top":
+            queryset = queryset.order_by("-score", "-created_at")
+        else:
+            queryset = queryset.order_by("-created_at")
 
         q = self.request.GET.get("q")
         if q:

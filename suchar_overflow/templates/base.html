@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE }}">
+
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
@@ -13,8 +14,17 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-          content="Agregator żartów o krytycznie niskim poziomie wilgotności." />
+          content="{% block description %}Agregator żartów o krytycznie niskim poziomie wilgotności.{% endblock description %}" />
     <meta name="author" content="Miłosz Białczak" />
+
+    <!-- Open Graph -->
+    <meta property="og:title"
+          content="{% block og_title %}Suchar Overflow{% endblock og_title %}" />
+    <meta property="og:description"
+          content="{% block og_description %}Agregator żartów o krytycznie niskim poziomie wilgotności.{% endblock og_description %}" />
+    <meta property="og:image"
+          content="{% block og_image %}{% static 'images/favicons/favicon.ico' %}{% endblock og_image %}" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}" />
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -47,6 +57,7 @@
       })();
     </script>
   </head>
+
   <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg sticky-top">
@@ -154,4 +165,5 @@
     {% block inline_javascript %}
     {% endblock inline_javascript %}
   </body>
+
 </html>
