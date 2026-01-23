@@ -38,6 +38,14 @@
               referrerpolicy="no-referrer"></script>
       <script defer src="{% static 'js/project.js' %}"></script>
     {% endblock javascript %}
+    <script>
+      // Immediately invoke to prevent flash of wrong theme
+      (function() {
+        const localTheme = localStorage.getItem('theme');
+        const theme = localTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
   </head>
   <body>
     <!-- Navbar -->

@@ -3,13 +3,12 @@
 const themeToggleBtn = document.getElementById('theme-toggle');
 const htmlElement = document.documentElement;
 
-// Function to set theme
+// Functions for theme handling
 function setTheme(theme) {
     htmlElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
 }
 
-// Function to get current theme
 function getCurrentTheme() {
     const localTheme = localStorage.getItem('theme');
     if (localTheme) {
@@ -18,7 +17,7 @@ function getCurrentTheme() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-// Initialize theme
+// Initialize theme on load (handled in head script now, but good to ensure match)
 const currentTheme = getCurrentTheme();
 setTheme(currentTheme);
 
