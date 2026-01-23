@@ -13,9 +13,14 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-          content="Agregator żartów o krytycznie niskim poziomie wilgotności. Wchodzisz na własną odpowiedzialność (i z butelką wody)." />
+          content="Agregator żartów o krytycznie niskim poziomie wilgotności." />
     <meta name="author" content="Miłosz Białczak" />
     <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet" />
     {% block css %}
       <!-- Latest compiled and minified Bootstrap CSS -->
       <link rel="stylesheet"
@@ -23,81 +28,87 @@
             integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
             crossorigin="anonymous"
             referrerpolicy="no-referrer" />
-      <!-- Your stuff: Third-party CSS libraries go here -->
-      <!-- This file stores project-specific CSS -->
       <link href="{% static 'css/project.css' %}" rel="stylesheet" />
     {% endblock css %}
-    <!-- Le javascript
-    ================================================== -->
-    {# Placed at the top of the document so pages load faster with defer #}
     {% block javascript %}
-      <!-- Bootstrap JS -->
       <script defer
               src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"
               integrity="sha512-1/RvZTcCDEUjY/CypiMz+iqqtaoQfAITmNSJY17Myp4Ms5mdxPS5UV7iOfdZoxcGhzFbOm6sntTKJppjvuhg4g=="
               crossorigin="anonymous"
               referrerpolicy="no-referrer"></script>
-      <!-- Your stuff: Third-party javascript libraries go here -->
-      <!-- place project specific Javascript in this file -->
       <script defer src="{% static 'js/project.js' %}"></script>
     {% endblock javascript %}
   </head>
-  <body class="{% block bodyclass %}{% endblock bodyclass %}">
-    {% block body %}
-      <div class="mb-1">
-        <nav class="navbar navbar-expand-md navbar-light bg-light">
-          <div class="container-fluid">
-            <button class="navbar-toggler navbar-toggler-right"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand" href="{% url 'home' %}">Suchar Overflow</a>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'about' %}">About</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'suchary:list' %}">Suchary</a>
-                </li>
-                {% if request.user.is_authenticated %}
-                  <li class="nav-item">
-                    <a class="nav-link"
-                       href="{% url 'users:detail' request.user.username %}">{% translate "My Profile" %}</a>
-                  </li>
-                  <li class="nav-item">
-                    {# URL provided by django-allauth/account/urls.py #}
-                    <a class="nav-link" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
-                  </li>
-                {% else %}
-                  {% if ACCOUNT_ALLOW_REGISTRATION %}
-                    <li class="nav-item">
-                      {# URL provided by django-allauth/account/urls.py #}
-                      <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
-                    </li>
-                  {% endif %}
-                  <li class="nav-item">
-                    {# URL provided by django-allauth/account/urls.py #}
-                    <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
-                  </li>
-                {% endif %}
-              </ul>
-            </div>
-          </div>
-        </nav>
-      </div>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
       <div class="container">
+        <a class="navbar-brand d-flex align-items-center"
+           href="{% url 'home' %}">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="24"
+               height="24"
+               fill="currentColor"
+               class="bi bi-cloud-haze2 me-2"
+               viewBox="0 0 16 16">
+            <path d="M8.5 2a5.001 5.001 0 0 1 4.905 4.027A3 3 0 0 1 13 12H3.5A3.5 3.5 0 0 1 .035 9H5.5a.5.5 0 0 0 0-1H.035a3.5 3.5 0 0 1 3.871-2.977A5.001 5.001 0 0 1 8.5 2m-6 8a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zM0 13.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5" />
+          </svg>
+          Suchar Overflow
+        </a>
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'suchary:list' %}">Suchary</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'about' %}">O projekcie</a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center gap-2">
+            {% if request.user.is_authenticated %}
+              <a class="nav-link"
+                 href="{% url 'users:detail' request.user.username %}">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="20"
+                     height="20"
+                     fill="currentColor"
+                     class="bi bi-person-circle me-1"
+                     viewBox="0 0 16 16">
+                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                  <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+                </svg>
+                {{ request.user.username }}
+              </a>
+              <a class="btn btn-outline-secondary btn-sm"
+                 href="{% url 'account_logout' %}">Wyloguj</a>
+              <a href="{% url 'suchary:add' %}" class="btn btn-primary btn-sm">Dodaj</a>
+            {% else %}
+              <a class="btn btn-outline-primary" href="{% url 'account_login' %}">Zaloguj</a>
+              <a class="btn btn-primary" href="{% url 'account_signup' %}">Rejestracja</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <div class="container mt-4">
         {% if messages %}
           {% for message in messages %}
-            <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %}"
+                 role="alert">
               {{ message }}
               <button type="button"
                       class="btn-close"
@@ -106,26 +117,23 @@
             </div>
           {% endfor %}
         {% endif %}
-        {% block main %}
-          {% block content %}
-            <p>Use this document as a way to quick start any new project.</p>
-          {% endblock content %}
-        {% endblock main %}
+        {% block content %}
+          <p>Domyślna treść.</p>
+        {% endblock content %}
       </div>
-    {% endblock body %}
-    <!-- /container -->
+    </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container text-center">
+        <p class="text-muted mb-0">
+          © {% now "Y" %} Suchar Overflow.
+          <span class="d-block d-sm-inline mt-1 mt-sm-0">Wszelkie prawa zastrzeżone (ale żarty ukradzione).</span>
+        </p>
+      </div>
+    </footer>
     {% block modal %}
     {% endblock modal %}
     {% block inline_javascript %}
-      {% comment %}
-  Script tags with only code, no src (defer by default). To run
-  with a "defer" so that you run inline code:
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      /* Run whatever you want */
-    });
-  </script>
-      {% endcomment %}
     {% endblock inline_javascript %}
   </body>
 </html>
