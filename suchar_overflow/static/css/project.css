@@ -1,5 +1,23 @@
 /* These styles are generated from project.scss. */
 
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #ec4899;
+  --background-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-radius: 1rem;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
 .alert-debug {
   color: black;
   background-color: white;
@@ -10,4 +28,66 @@
   color: #b94a48;
   background-color: #f2dede;
   border-color: #eed3d7;
+}
+
+/* Custom Card Styles */
+.suchar-card {
+  background-color: var(--card-bg);
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 1.5rem;
+}
+
+.suchar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.suchar-card .card-body {
+  padding: 1.5rem;
+}
+
+.suchar-text {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.suchar-meta {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Voting Buttons */
+.btn-vote {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.btn-vote:hover {
+  background-color: #f1f5f9;
+  color: var(--primary-color);
+}
+
+.btn-vote.active {
+    font-weight: bold;
+}
+
+.vote-score {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  margin: 0 0.5rem;
+}
+
+/* Navbar polish */
+.navbar {
+  box-shadow: var(--shadow-sm);
+  background-color: var(--card-bg) !important;
 }
