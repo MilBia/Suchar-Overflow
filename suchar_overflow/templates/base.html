@@ -120,12 +120,13 @@
                 </svg>
                 {{ request.user.username }}
               </a>
-              <a class="btn btn-outline-secondary btn-sm"
-                 href="{% url 'account_logout' %}">Wyloguj</a>
-              <a href="{% url 'suchary:add' %}" class="btn btn-primary btn-sm">Dodaj</a>
+              <button class="btn btn-outline-secondary btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#logoutModal">Wyloguj</button>
             {% else %}
-              <a class="btn btn-outline-primary" href="{% url 'account_login' %}">Zaloguj</a>
-              <a class="btn btn-primary" href="{% url 'account_signup' %}">Rejestracja</a>
+              <a class="btn btn-outline-primary btn-sm"
+                 href="{% url 'account_login' %}">Zaloguj</a>
+              <a class="btn btn-primary btn-sm" href="{% url 'account_signup' %}">Rejestracja</a>
             {% endif %}
           </div>
         </div>
@@ -160,6 +161,33 @@
         </p>
       </div>
     </footer>
+
+    <!-- Logout Modal -->
+    <div class="modal fade"
+         id="logoutModal"
+         tabindex="-1"
+         aria-labelledby="logoutModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">Potwierdzenie wylogowania</h5>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+          </div>
+          <div class="modal-body">Czy na pewno chcesz się wylogować?</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+            <form method="post" action="{% url 'account_logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Wyloguj się</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
     {% block modal %}
     {% endblock modal %}
     {% block inline_javascript %}

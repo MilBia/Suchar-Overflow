@@ -250,3 +250,28 @@ a {
   top: 100px;
   z-index: 10;
 }
+
+/* Vote Icons Dark Mode Visibility */
+[data-theme="dark"] .btn-vote svg {
+  fill: currentColor;
+}
+
+[data-theme="dark"] .btn-vote:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--bs-primary);
+}
+
+/* Tag Hover Effects */
+.badge {
+  transition: all 0.2s ease;
+}
+
+.badge:hover {
+  background-color: #e9ecef !important;
+  transform: translateY(-1px);
+  cursor: pointer;
+}
+
+[data-theme="dark"] .badge:hover {
+  background-color: #374151 !important;
+}
