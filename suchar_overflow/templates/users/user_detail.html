@@ -42,6 +42,23 @@
             <span class="font-monospace text-muted">{{ object.pk }}</span>
           </div>
         </div>
+        <div class="col-md-6">
+          <h4 class="h6 text-uppercase text-muted fw-bold mb-3">Ostatnie Suchary</h4>
+          {% if latest_suchary %}
+            <div class="list-group list-group-flush mb-3">
+              {% for suchar in latest_suchary %}
+                <div class="list-group-item px-0 bg-transparent">
+                  <p class="mb-1 text-truncate">{{ suchar.text }}</p>
+                  <small class="text-muted">{{ suchar.created_at|date:"d M Y" }}</small>
+                </div>
+              {% endfor %}
+            </div>
+            <a href="{% url 'suchary:list' %}?author={{ object.username }}"
+               class="btn btn-outline-primary btn-sm">Zobacz wszystkie</a>
+          {% else %}
+            <p class="text-muted small">Użytkownik nie dodał jeszcze żadnych sucharów.</p>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>

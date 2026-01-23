@@ -10,6 +10,28 @@
         <h1 class="display-5 fw-bold text-primary">Suchary</h1>
         <p class="text-muted lead">Najsuchsze żarty w internecie.</p>
       </div>
+      <div class="col-md-4">
+        <form method="get" class="d-flex">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   width="16"
+                   height="16"
+                   fill="currentColor"
+                   class="bi bi-search text-muted"
+                   viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+              </svg>
+            </span>
+            <input type="text"
+                   name="q"
+                   class="form-control border-start-0 ps-0"
+                   placeholder="Szukaj suchara..."
+                   value="{{ request.GET.q|default:'' }}" />
+            <button class="btn btn-outline-primary" type="submit">Szukaj</button>
+          </div>
+        </form>
+      </div>
       <div class="col-auto">
         <a href="{% url 'suchary:add' %}"
            class="btn btn-primary btn-lg shadow-sm">
@@ -49,6 +71,14 @@
                 </div>
               </div>
               <p class="suchar-text mb-4">{{ suchar.text|linebreaksbr }}</p>
+              {% if suchar.tags.all %}
+                <div class="mb-3">
+                  {% for tag in suchar.tags.all %}
+                    <a href="?tag={{ tag.slug }}"
+                       class="badge bg-light text-secondary border me-1 text-decoration-none">#{{ tag.name }}</a>
+                  {% endfor %}
+                </div>
+              {% endif %}
               <div class="d-flex align-items-center justify-content-between border-top pt-3">
                 <div class="d-flex align-items-center">
                   <span class="vote-score me-3">
@@ -122,4 +152,48 @@
       </div>
     </div>
   </div>
+  {% if is_paginated %}
+    <div class="row mt-4">
+      <div class="col-12">
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}">Poprzednia</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">Poprzednia</span>
+              </li>
+            {% endif %}
+            {% for i in paginator.page_range %}
+              {% if page_obj.number == i %}
+                <li class="page-item active">
+                  <span class="page-link">{{ i }}</span>
+                </li>
+              {% else %}
+                <li class="page-item">
+                  <a class="page-link"
+                     href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}">
+                    {{ i }}
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link"
+                   href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}">Następna</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">Następna</span>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+  {% endif %}
 {% endblock content %}

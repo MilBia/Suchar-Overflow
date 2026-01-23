@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
@@ -9,6 +11,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
 from django.views.generic import ListView
 
+from .forms import SucharForm
 from .models import Suchar
 from .models import Vote
 
@@ -17,17 +20,35 @@ class SucharListView(ListView):
     model = Suchar
     template_name = "suchary/suchar_list.html"
     context_object_name = "suchary"
-    ordering = ["-created_at"]
+    paginate_by = 10
 
     def get_queryset(self):
-        return Suchar.objects.annotate(score=Sum("votes__value")).order_by(
+        queryset = Suchar.objects.annotate(
+            score=Coalesce(Sum("votes__value"), 0),
+        ).order_by(
             "-created_at",
         )
+
+        q = self.request.GET.get("q")
+        if q:
+            queryset = queryset.filter(
+                Q(text__icontains=q) | Q(tags__name__icontains=q),
+            ).distinct()
+
+        tag = self.request.GET.get("tag")
+        if tag:
+            queryset = queryset.filter(tags__slug=tag)
+
+        author = self.request.GET.get("author")
+        if author:
+            queryset = queryset.filter(author__username=author)
+
+        return queryset
 
 
 class SucharCreateView(LoginRequiredMixin, CreateView):
     model = Suchar
-    fields = ["text"]
+    form_class = SucharForm
     template_name = "suchary/suchar_form.html"
     success_url = reverse_lazy("suchary:list")
 

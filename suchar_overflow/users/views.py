@@ -15,6 +15,13 @@ class UserDetailView(LoginRequiredMixin, DetailView):
     slug_field = "username"
     slug_url_kwarg = "username"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["latest_suchary"] = self.object.suchary.all().order_by("-created_at")[
+            :5
+        ]
+        return context
+
 
 user_detail_view = UserDetailView.as_view()
 

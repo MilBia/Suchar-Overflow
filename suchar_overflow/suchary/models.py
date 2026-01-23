@@ -3,6 +3,14 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Suchar(models.Model):
     text = models.TextField(_("Suchar text"))
     author = models.ForeignKey(
@@ -11,6 +19,7 @@ class Suchar(models.Model):
         related_name="suchary",
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    tags = models.ManyToManyField(Tag, related_name="suchary", blank=True)
 
     def __str__(self):
         return f"Suchar by {self.author} at {self.created_at}"
