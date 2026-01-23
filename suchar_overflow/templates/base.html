@@ -135,18 +135,7 @@
     <!-- Main Content -->
     <div class="main-wrapper">
       <div class="container mt-4">
-        {% if messages %}
-          {% for message in messages %}
-            <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %}"
-                 role="alert">
-              {{ message }}
-              <button type="button"
-                      class="btn-close"
-                      data-bs-dismiss="alert"
-                      aria-label="Close"></button>
-            </div>
-          {% endfor %}
-        {% endif %}
+
         {% block content %}
           <p>Domyślna treść.</p>
         {% endblock content %}
@@ -188,10 +177,38 @@
         </div>
       </div>
     </div>
-    {% block modal %}
-    {% endblock modal %}
-    {% block inline_javascript %}
-    {% endblock inline_javascript %}
-  </body>
+  </div>
+
+  <!-- Toasts Container -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header {% if 'error' in message.tags %}bg-danger{% elif 'success' in message.tags %}bg-success{% elif 'warning' in message.tags %}bg-warning{% else %}bg-primary{% endif %} text-white">
+            <strong class="me-auto">
+              {% if 'error' in message.tags %}
+                Błąd
+              {% elif 'success' in message.tags %}
+                Sukces
+              {% else %}
+                Powiadomienie
+              {% endif %}
+            </strong>
+            <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+          </div>
+          <div class="toast-body bg-white text-dark border-bottom rounded-bottom">{{ message }}</div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  {% block modal %}
+  {% endblock modal %}
+  {% block inline_javascript %}
+  {% endblock inline_javascript %}
+</body>
 
 </html>

@@ -247,26 +247,44 @@ a {
 }
 
 /* Dashboard Sidebar Styling */
+/* Dashboard Sidebar Styling */
+.list-group-item {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  margin-bottom: -1px;
+}
+
 .list-group-item.active {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
   color: white;
   font-weight: 500;
+  z-index: 2;
 }
 
 .list-group-item:first-child {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
 }
 
 .list-group-item:last-child {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
 }
 
 .sticky-sidebar {
   top: 100px;
   z-index: 10;
+}
+
+/* Sidebar Dark Mode Fixes */
+[data-theme="dark"] .sticky-sidebar .list-group {
+  box-shadow: none;
+  /* Remove outer shadow if any */
+}
+
+[data-theme="dark"] .list-group-item {
+  box-shadow: none;
+  /* Prevent shadow bleeding */
 }
 
 /* Vote Icons Dark Mode Visibility */
@@ -313,4 +331,23 @@ a {
 
 [data-theme="dark"] .modal-header .btn-close {
   filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Toasts */
+.toast-container {
+  z-index: 1055 !important;
+}
+
+[data-theme="dark"] .toast {
+  background-color: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .toast-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .toast-body {
+  color: var(--text-primary) !important;
+  background-color: var(--card-bg) !important;
 }
