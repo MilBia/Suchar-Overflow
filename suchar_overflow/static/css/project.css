@@ -150,3 +150,60 @@ a {
   border-radius: 0.75rem;
   font-weight: 500;
 }
+
+/* Dark Mode */
+[data-theme="dark"] {
+  /* Brand Colors */
+  --primary-color: #818cf8;
+  /* Lighter indigo for better contrast on dark */
+  --primary-hover: #6366f1;
+  --secondary-color: #f472b6;
+  /* Lighter pink */
+  --secondary-hover: #ec4899;
+
+  /* Backgrounds */
+  --background-color: #0f172a;
+  /* Slate 900 */
+  --card-bg: #1e293b;
+  /* Slate 800 */
+  --navbar-bg: rgba(15, 23, 42, 0.9);
+
+  /* Text */
+  --text-primary: #f8fafc;
+  /* Slate 50 */
+  --text-secondary: #cbd5e1;
+  /* Slate 300 */
+  --text-light: #94a3b8;
+  /* Slate 400 */
+
+  /* Borders & Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -2px rgb(0 0 0 / 0.3);
+}
+
+/* Dark Mode Specific Component Overrides */
+[data-theme="dark"] .navbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .card {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+  color: var(--text-secondary);
+  border-color: var(--text-secondary);
+}
+
+[data-theme="dark"] .text-muted {
+  color: var(--text-light) !important;
+}
+
+[data-theme="dark"] .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
