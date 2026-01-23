@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+  Dodaj Suchara
+{% endblock title %}
+{% block content %}
+  <div class="container">
+    <h1>Dodaj Suchara</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <button type="submit" class="btn btn-primary">Zapisz</button>
+      <a href="{% url 'suchary:list' %}" class="btn btn-secondary">Anuluj</a>
+    </form>
+  </div>
+{% endblock content %}

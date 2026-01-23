@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Suchary
+{% endblock title %}
+{% block content %}
+  <div class="container">
+    <div class="row mb-3">
+      <div class="col">
+        <h1>Suchary</h1>
+      </div>
+      <div class="col text-end">
+        <a href="{% url 'suchary:add' %}" class="btn btn-primary">Dodaj Suchara</a>
+      </div>
+    </div>
+    <div class="list-group">
+      {% for suchar in suchary %}
+        <div class="list-group-item">
+          <div class="d-flex w-100 justify-content-between">
+            <small>Autor: {{ suchar.author.username }}</small>
+            <small>{{ suchar.created_at|date:"Y-m-d H:i" }}</small>
+          </div>
+          <p class="mb-1 mt-2">{{ suchar.text|linebreaks }}</p>
+          <div class="mt-2">
+            <strong>Ocena: {{ suchar.score|default_if_none:0 }}</strong>
+            {% if user.is_authenticated %}
+              <form method="post"
+                    action="{% url 'suchary:vote' suchar.pk %}"
+                    class="d-inline">
+                {% csrf_token %}
+                <button type="submit" name="value" value="1" class="btn btn-sm btn-success">+</button>
+                <button type="submit" name="value" value="-1" class="btn btn-sm btn-danger">-</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <div class="alert alert-info">Brak sucharów. Bądź pierwszy i dodaj coś suchego!</div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock content %}
