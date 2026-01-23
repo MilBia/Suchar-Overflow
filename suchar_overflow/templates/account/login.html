@@ -2,16 +2,15 @@
 
 {% load i18n %}
 {% load account socialaccount %}
-{% load crispy_forms_tags %}
 
 {% block head_title %}
   {% trans "Sign In" %}
 {% endblock head_title %}
 {% block content %}
-  <div class="auth-card card shadow-lg border-0">
-    <div class="text-center mb-4">
+  <div class="auth-card shadow-lg">
+    <div class="mb-4">
       <h1 class="h3 mb-3 fw-bold">{% trans "Sign In" %}</h1>
-      <p class="text-muted">{% trans "Welcome back! Please sign in to continue." %}</p>
+      <p class="text-muted text-center">{% trans "Welcome back! Please sign in to continue." %}</p>
     </div>
     {% get_providers as socialaccount_providers %}
     {% if socialaccount_providers %}
@@ -35,18 +34,22 @@
     {% endif %}
     <form class="login" method="post" action="{% url 'account_login' %}">
       {% csrf_token %}
-      {{ form|crispy }}
+      {% include "includes/form.html" %}
       {% if redirect_field_value %}
         <input type="hidden"
                name="{{ redirect_field_name }}"
                value="{{ redirect_field_value }}" />
       {% endif %}
-      <div class="d-grid mt-4">
-        <button class="primaryAction btn btn-primary btn-lg" type="submit">{% trans "Sign In" %}</button>
+      <div class="remember-me-container mt-3">
+        <label class="form-check text-muted small">
+          <input type="checkbox" name="remember" class="form-check-input" />
+          {% trans "Remember Me" %}
+        </label>
+        <a class="text-decoration-none small"
+           href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
       </div>
-      <div class="text-center mt-3">
-        <a class="button secondaryAction small text-muted"
-           href="{% url 'account_reset_password' %}">{% blocktrans %}Forgot Password?{% endblocktrans %}</a>
+      <div class="d-grid mt-4">
+        <button class="btn btn-primary w-100 btn-lg" type="submit">{% trans "Sign In" %}</button>
       </div>
     </form>
   </div>

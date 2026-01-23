@@ -8,19 +8,19 @@
 {% block dashboard_content %}
   <div class="card shadow-sm border-0 h-100">
     <div class="card-body p-4 p-lg-5">
-      <div class="d-flex align-items-center mb-4">
-        <div class="flex-shrink-0">
+      <div class="profile-header mb-4">
+        <div class="avatar-lg bg-light flex-shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg"
                width="64"
                height="64"
                fill="currentColor"
-               class="bi bi-person-circle text-primary"
+               class="text-primary"
                viewBox="0 0 16 16">
             <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
             <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
           </svg>
         </div>
-        <div class="flex-grow-1 ms-3">
+        <div>
           <h2 class="h3 fw-bold mb-0">{{ object.username }}</h2>
           {% if object.name %}
             <p class="text-muted mb-0">{{ object.name }}</p>
@@ -29,7 +29,7 @@
           {% endif %}
         </div>
       </div>
-      <hr class="my-4" />
+      <div class="mb-4 text-muted"></div>
       <div class="row">
         <div class="col-md-6">
           <h4 class="h6 text-uppercase text-muted fw-bold mb-3">Informacje</h4>
@@ -45,16 +45,16 @@
         <div class="col-md-6">
           <h4 class="h6 text-uppercase text-muted fw-bold mb-3">Ostatnie Suchary</h4>
           {% if latest_suchary %}
-            <div class="list-group list-group-flush mb-3">
+            <div class="list-group mb-3">
               {% for suchar in latest_suchary %}
-                <div class="list-group-item px-0 bg-transparent">
+                <div class="list-group-item px-0">
                   <p class="mb-1 text-truncate">{{ suchar.text }}</p>
                   <small class="text-muted">{{ suchar.created_at|date:"d M Y" }}</small>
                 </div>
               {% endfor %}
             </div>
             <a href="{% url 'suchary:list' %}?author={{ object.username }}"
-               class="btn btn-outline-primary btn-sm">Zobacz wszystkie</a>
+               class="btn btn-outline btn-sm">Zobacz wszystkie</a>
           {% else %}
             <p class="text-muted small">Użytkownik nie dodał jeszcze żadnych sucharów.</p>
           {% endif %}

@@ -32,59 +32,71 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
           rel="stylesheet" />
     {% block css %}
-      <!-- Latest compiled and minified Bootstrap CSS -->
-      <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
-            integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer" />
+      <link href="{% static 'css/base.css' %}" rel="stylesheet" />
       <link href="{% static 'css/project.css' %}" rel="stylesheet" />
     {% endblock css %}
     {% block javascript %}
-      <script defer
-              src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"
-              integrity="sha512-1/RvZTcCDEUjY/CypiMz+iqqtaoQfAITmNSJY17Myp4Ms5mdxPS5UV7iOfdZoxcGhzFbOm6sntTKJppjvuhg4g=="
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"></script>
       <script defer src="{% static 'js/project.js' %}"></script>
     {% endblock javascript %}
     <script>
-      // Immediately invoke to prevent flash of wrong theme
+      // Immediately invoke to prevent flash of wrong theme and icon
       (function() {
         const localTheme = localStorage.getItem('theme');
         const theme = localTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
+
+        // Pre-render the correct icon to avoid flicker
+        // We will make the icon visible via CSS or JS once loaded, or set innerHTML here if we blocking render
+        // Better strategy: Set a class on body or html that style the button icon?
+        // Actually, we can just save the theme in a global variable and let the button use it immediately when parsing
+        window.__initialTheme = theme;
       })();
     </script>
+    <style>
+      /* Hide the theme toggle button content until JS determines correct icon,
+         OR use CSS based on data-theme to toggle visibility of two icons if present.
+         Let's try the CSS approach for instant switch. */
+      .theme-icon-sun,
+      .theme-icon-moon {
+        display: none;
+      }
+
+      [data-theme="dark"] .theme-icon-sun {
+        display: inline-block;
+      }
+
+      [data-theme="light"] .theme-icon-moon {
+        display: inline-block;
+      }
+    </style>
   </head>
 
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg sticky-top">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center"
-           href="{% url 'home' %}">
+    <nav class="navbar">
+      <div class="container navbar-container">
+        <a class="navbar-brand" href="{% url 'home' %}">
           <svg xmlns="http://www.w3.org/2000/svg"
                width="24"
                height="24"
                fill="currentColor"
-               class="bi bi-cloud-haze2 me-2"
+               class="logo-icon"
                viewBox="0 0 16 16">
             <path d="M8.5 2a5.001 5.001 0 0 1 4.905 4.027A3 3 0 0 1 13 12H3.5A3.5 3.5 0 0 1 .035 9H5.5a.5.5 0 0 0 0-1H.035a3.5 3.5 0 0 1 3.871-2.977A5.001 5.001 0 0 1 8.5 2m-6 8a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zM0 13.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5" />
           </svg>
           Suchar Overflow
         </a>
+
         <button class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent"
-                aria-expanded="false"
+                id="navbar-toggler"
                 aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+          <span class="toggler-icon"></span>
+          <span class="toggler-icon"></span>
+          <span class="toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <div class="navbar-menu" id="navbar-menu">
+          <ul class="navbar-nav">
             <li class="nav-item">
               <a class="nav-link" href="{% url 'home' %}">Home</a>
             </li>
@@ -95,19 +107,27 @@
               <a class="nav-link" href="{% url 'about' %}">O projekcie</a>
             </li>
           </ul>
-          <div class="d-flex align-items-center gap-2">
-            <button id="theme-toggle" class="btn btn-link nav-link">
+          <div class="navbar-actions">
+            <button id="theme-toggle" class="btn btn-icon" aria-label="Toggle theme">
               <svg xmlns="http://www.w3.org/2000/svg"
                    width="20"
                    height="20"
                    fill="currentColor"
-                   class="bi bi-moon-stars-fill"
+                   class="bi bi-moon-stars-fill theme-icon-moon"
                    viewBox="0 0 16 16">
                 <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278" />
               </svg>
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   width="20"
+                   height="20"
+                   fill="currentColor"
+                   class="bi bi-sun-fill theme-icon-sun"
+                   viewBox="0 0 16 16">
+                <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z" />
+              </svg>
             </button>
             {% if request.user.is_authenticated %}
-              <a class="nav-link"
+              <a class="nav-link user-link d-flex align-items-center gap-2"
                  href="{% url 'users:detail' request.user.username %}">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      width="20"
@@ -120,12 +140,9 @@
                 </svg>
                 {{ request.user.username }}
               </a>
-              <button class="btn btn-outline-secondary btn-sm"
-                      data-bs-toggle="modal"
-                      data-bs-target="#logoutModal">Wyloguj</button>
+              <button class="btn btn-secondary btn-sm" id="logout-button">Wyloguj</button>
             {% else %}
-              <a class="btn btn-outline-primary btn-sm"
-                 href="{% url 'account_login' %}">Zaloguj</a>
+              <a class="btn btn-outline btn-sm" href="{% url 'account_login' %}">Zaloguj</a>
               <a class="btn btn-primary btn-sm" href="{% url 'account_signup' %}">Rejestracja</a>
             {% endif %}
           </div>
@@ -133,14 +150,13 @@
       </div>
     </nav>
     <!-- Main Content -->
-    <div class="main-wrapper">
-      <div class="container mt-4">
-
+    <main class="main-wrapper">
+      <div class="container mt-content">
         {% block content %}
           <p>Domyślna treść.</p>
         {% endblock content %}
       </div>
-    </div>
+    </main>
     <!-- Footer -->
     <footer class="footer">
       <div class="container text-center">
@@ -151,64 +167,51 @@
       </div>
     </footer>
 
+    <!-- Toasts Container -->
+    <div class="toast-container" id="toast-container">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="toast toast-{{ message.tags }}" role="alert">
+            <div class="toast-header">
+              <strong class="me-auto">
+                {% if 'error' in message.tags %}
+                  Błąd
+                {% elif 'success' in message.tags %}
+                  Sukces
+                {% else %}
+                  Powiadomienie
+                {% endif %}
+              </strong>
+              <button type="button" class="btn-close" aria-label="Close">×</button>
+            </div>
+            <div class="toast-body">{{ message }}</div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
     <!-- Logout Modal -->
-    <div class="modal fade"
-         id="logoutModal"
-         tabindex="-1"
-         aria-labelledby="logoutModalLabel"
-         aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="logoutModalLabel">Potwierdzenie wylogowania</h5>
-            <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-          </div>
-          <div class="modal-body">Czy na pewno chcesz się wylogować?</div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-            <form method="post" action="{% url 'account_logout' %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Wyloguj się</button>
-            </form>
-          </div>
+    <div class="modal-overlay" id="logoutModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h5 class="modal-title">Potwierdzenie wylogowania</h5>
+          <button type="button" class="btn-close modal-close" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body">Czy na pewno chcesz się wylogować?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close">Anuluj</button>
+          <form method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Wyloguj się</button>
+          </form>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Toasts Container -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    {% if messages %}
-      {% for message in messages %}
-        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-header {% if 'error' in message.tags %}bg-danger{% elif 'success' in message.tags %}bg-success{% elif 'warning' in message.tags %}bg-warning{% else %}bg-primary{% endif %} text-white">
-            <strong class="me-auto">
-              {% if 'error' in message.tags %}
-                Błąd
-              {% elif 'success' in message.tags %}
-                Sukces
-              {% else %}
-                Powiadomienie
-              {% endif %}
-            </strong>
-            <button type="button"
-                    class="btn-close btn-close-white"
-                    data-bs-dismiss="toast"
-                    aria-label="Close"></button>
-          </div>
-          <div class="toast-body bg-white text-dark border-bottom rounded-bottom">{{ message }}</div>
-        </div>
-      {% endfor %}
-    {% endif %}
-  </div>
-
-  {% block modal %}
-  {% endblock modal %}
-  {% block inline_javascript %}
-  {% endblock inline_javascript %}
-</body>
+    {% block modal %}
+    {% endblock modal %}
+    {% block inline_javascript %}
+    {% endblock inline_javascript %}
+  </body>
 
 </html>

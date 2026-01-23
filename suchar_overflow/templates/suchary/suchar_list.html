@@ -5,36 +5,43 @@
 {% endblock title %}
 {% block content %}
   <div class="container py-4">
-    <div class="row mb-4 align-items-center">
-      <div class="col">
-        <h1 class="display-5 fw-bold text-primary">Suchary</h1>
-        <p class="text-muted lead">Najsuchsze żarty w internecie.</p>
+    <div class="row align-items-center mb-5 gy-4">
+      <div class="col-lg-4">
+        <h1 class="fw-bold text-primary mb-0">Suchary</h1>
+        <p class="text-muted mb-0">Najsuchsze żarty w internecie.</p>
       </div>
-      <div class="col-md-5">
-        <form method="get" class="d-flex gap-2">
+      <div class="col-lg-8">
+        <form method="get"
+              class="d-flex align-items-center gap-2 justify-content-lg-end search-toolbar">
           {% for key, value in request.GET.items %}
             {% if key != 'q' and key != 'sort' %}<input type="hidden" name="{{ key }}" value="{{ value }}" />{% endif %}
           {% endfor %}
 
-          <div class="input-group">
-            <span class="input-group-text bg-white border-end-0">
+          <!-- Search Input Group with attached button -->
+          <div class="input-group flex-nowrap align-items-stretch search-input-group">
+            <input type="text"
+                   name="q"
+                   class="form-control mb-0 rounded-end-0"
+                   style="border-right: 0"
+                   placeholder="Szukaj..."
+                   aria-label="Search"
+                   value="{{ request.GET.q|default:'' }}" />
+            <button class="btn btn-secondary border-start-0 ps-2 rounded-start-0 d-flex align-items-center"
+                    type="submit">
               <svg xmlns="http://www.w3.org/2000/svg"
                    width="16"
                    height="16"
                    fill="currentColor"
-                   class="bi bi-search text-muted"
                    viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
               </svg>
-            </span>
-            <input type="text"
-                   name="q"
-                   class="form-control border-start-0 ps-0"
-                   placeholder="Szukaj suchara..."
-                   value="{{ request.GET.q|default:'' }}" />
+            </button>
           </div>
 
-          <select name="sort" class="form-select w-auto" onchange="this.form.submit()">
+          <!-- Sort Select -->
+          <select name="sort"
+                  class="form-select mb-0 search-sort-select"
+                  onchange="this.form.submit()">
             <option value="newest"
                     {% if not request.GET.sort or request.GET.sort == 'newest' %}selected{% endif %}>
               Najnowsze
@@ -42,23 +49,20 @@
             <option value="top" {% if request.GET.sort == 'top' %}selected{% endif %}>Najlepsze</option>
           </select>
 
-          <noscript>
-            <button class="btn btn-outline-primary" type="submit">Szukaj</button>
-          </noscript>
+          <!-- Add Button -->
+          <a href="{% url 'suchary:add' %}"
+             class="btn btn-primary d-flex align-items-center text-nowrap">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="20"
+                 height="20"
+                 fill="currentColor"
+                 class="me-2"
+                 viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+            </svg>
+            Dodaj
+          </a>
         </form>
-      </div>
-      <div class="col-auto">
-        <a href="{% url 'suchary:add' %}" class="btn btn-primary shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg"
-               width="20"
-               height="20"
-               fill="currentColor"
-               class="bi bi-plus-lg me-1"
-               viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
-          </svg>
-          Dodaj Suchara
-        </a>
       </div>
     </div>
     <div class="row justify-content-center">
@@ -68,12 +72,11 @@
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="d-flex align-items-center">
-                  <div class="avatar bg-light rounded-circle p-2 me-2 text-secondary">
+                  <div class="avatar-sm flex-shrink-0 me-3">
                     <svg xmlns="http://www.w3.org/2000/svg"
                          width="24"
                          height="24"
                          fill="currentColor"
-                         class="bi bi-person-fill"
                          viewBox="0 0 16 16">
                       <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
                     </svg>
@@ -84,23 +87,23 @@
                   </div>
                 </div>
               </div>
-              <p class="suchar-text mb-4">{{ suchar.text|linebreaksbr }}</p>
+              <p class="mb-4">{{ suchar.text|linebreaksbr }}</p>
               {% if suchar.tags.all %}
                 <div class="mb-3">
                   {% for tag in suchar.tags.all %}
                     <a href="?tag={{ tag.slug }}"
-                       class="badge bg-light text-secondary border me-1 text-decoration-none">#{{ tag.name }}</a>
+                       class="badge text-secondary border me-1 text-decoration-none bg-light">#{{ tag.name }}</a>
                   {% endfor %}
                 </div>
               {% endif %}
               <div class="d-flex align-items-center justify-content-between border-top pt-3">
                 <div class="d-flex align-items-center">
-                  <span class="vote-score me-3">
+                  <span class="vote-score me-3 d-flex align-items-center gap-2 text-primary">
                     <svg xmlns="http://www.w3.org/2000/svg"
                          width="20"
                          height="20"
                          fill="currentColor"
-                         class="bi bi-star-fill text-warning mb-1"
+                         class="text-warning"
                          viewBox="0 0 16 16">
                       <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
                     </svg>
@@ -115,7 +118,7 @@
                     <button type="submit"
                             name="value"
                             value="1"
-                            class="btn btn-vote me-2"
+                            class="btn btn-icon"
                             title="Śmieszne (Głosuj w górę)">
                       <svg xmlns="http://www.w3.org/2000/svg"
                            width="20"
@@ -130,7 +133,7 @@
                     <button type="submit"
                             name="value"
                             value="-1"
-                            class="btn btn-vote"
+                            class="btn btn-icon"
                             title="Suchar (Głosuj w dół)">
                       <svg xmlns="http://www.w3.org/2000/svg"
                            width="20"
