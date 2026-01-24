@@ -11,8 +11,8 @@ body {
   display: flex;
   flex-direction: column;
   transition: background-color 0.3s ease, color 0.3s ease;
-  overflow-x: hidden;
-  /* Prevent horizontal scroll from effects */
+  /* overflow-x: hidden; */
+  /* Prevent horizontal scroll from effects - Removed as it breaks sticky positioning */
 }
 
 /* Aurora Background */
@@ -194,6 +194,11 @@ a:hover {
   color: var(--text-muted);
   font-weight: 500;
   transition: all 0.2s ease;
+
+  /* Layout Fix */
+  display: flex;
+  align-items: center;
+  flex-direction: row;
 }
 
 .dashboard-card .list-group-item:hover {
@@ -206,6 +211,16 @@ a:hover {
   color: var(--color-primary);
   border-color: transparent;
   font-weight: 600;
+}
+
+/* Sticky Sidebar Offset */
+/* Sticky Sidebar Offset */
+.sticky-sidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 90px !important;
+  /* Clears navbar height */
+  z-index: 10;
 }
 
 .dashboard-card .icon-wrapper {
