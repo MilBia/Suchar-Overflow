@@ -378,3 +378,9 @@ a {
   color: var(--text-primary) !important;
   background-color: var(--card-bg) !important;
 }
+
+/* Home Page Hero Icon */
+.hero-icon-wrapper {
+  transform: scale(1.5);
+  display: inline-block;
+}
