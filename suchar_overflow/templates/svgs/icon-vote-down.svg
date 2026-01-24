@@ -1,4 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" class="bi">
-  <path fill="currentColor"
-        d="M12,22c4.92-5.3,8-9.37,8-13.79a8,8,0,0,0-16,0C4,12.63,7.08,16.7,12,22Zm0-19a6,6,0,0,1,6,5.79c0,3.34-2.31,6.72-6,11C8.31,15.51,6,12.13,6,8.79A6,6,0,0,1,12,3Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 16 V 5 C 9 3.5 10 2 12 2 C 14 2 15 3.5 15 5 V 16"/>
+
+    <path d="M9 16 L 10 18 H 14 L 15 16"/>
+    <rect x="10" y="18" width="4" height="2" fill="currentColor" stroke="none"/>
+
+    <!-- <line x1="9" y1="8" x2="15" y2="8"/> -->
+    <!-- <line x1="9" y1="12" x2="15" y2="12"/> -->
+
+    <path d="M12 21 C 12 21 13 22 13 23 C 13 23.55 12.55 24 12 24 C 11.45 24 11 23.55 11 23 C 11 22 12 21 12 21 Z" fill="currentColor" stroke="none"/>
+  </g>
 </svg>

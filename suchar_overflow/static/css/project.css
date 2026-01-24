@@ -114,14 +114,16 @@ a:hover {
 }
 
 /* Upvote (Baguette) */
-.btn-vote[value="1"]:hover {
+.btn-vote[value="1"]:hover,
+.btn-vote[value="1"].active {
   color: #E58E26 !important;
   /* Cracker/Baguette color preserved */
   background-color: rgba(229, 142, 38, 0.15);
 }
 
 /* Downvote (Water) */
-.btn-vote[value="-1"]:hover {
+.btn-vote[value="-1"]:hover,
+.btn-vote[value="-1"].active {
   color: #0ea5e9 !important;
   /* Sky Blue */
   background-color: rgba(14, 165, 233, 0.15);

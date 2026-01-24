@@ -95,12 +95,12 @@
                     <button type="submit"
                             name="value"
                             value="1"
-                            class="btn btn-icon btn-vote"
+                            class="btn btn-icon btn-vote {% if suchar.user_vote == 1 %}active{% endif %}"
                             title="Śmieszne (Głosuj w górę)">{% include "svgs/icon-vote-up.svg" %}</button>
                     <button type="submit"
                             name="value"
                             value="-1"
-                            class="btn btn-icon btn-vote"
+                            class="btn btn-icon btn-vote {% if suchar.user_vote == -1 %}active{% endif %}"
                             title="Suchar (Głosuj w dół)">{% include "svgs/icon-vote-down.svg" %}</button>
                   </form>
                 {% endif %}

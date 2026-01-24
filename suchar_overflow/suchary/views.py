@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import OuterRef
 from django.db.models import Q
+from django.db.models import Subquery
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse
@@ -26,6 +28,16 @@ class SucharListView(ListView):
         queryset = Suchar.objects.annotate(
             score=Coalesce(Sum("votes__value"), 0),
         )
+
+        if self.request.user.is_authenticated:
+            queryset = queryset.annotate(
+                user_vote=Subquery(
+                    Vote.objects.filter(
+                        suchar=OuterRef("pk"),
+                        user=self.request.user,
+                    ).values("value")[:1],
+                ),
+            )
 
         sort = self.request.GET.get("sort")
         if sort == "top":
