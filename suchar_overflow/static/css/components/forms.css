@@ -173,3 +173,16 @@ label {
     margin-top: 0 !important;
     margin-bottom: 0 !important;
 }
+
+/* Fix help text lists */
+.form-text ul,
+.helptext ul {
+    margin-top: 0.25rem;
+    padding-left: 1.25rem;
+    margin-bottom: 0;
+}
+
+.form-text li,
+.helptext li {
+    margin-bottom: 0.125rem;
+}

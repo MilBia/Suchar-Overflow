@@ -40,14 +40,7 @@
                name="{{ redirect_field_name }}"
                value="{{ redirect_field_value }}" />
       {% endif %}
-      <div class="remember-me-container mt-3">
-        <label class="form-check text-muted small">
-          <input type="checkbox" name="remember" class="form-check-input" />
-          {% trans "Remember Me" %}
-        </label>
-        <a class="text-decoration-none small"
-           href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-      </div>
+
       <div class="d-grid mt-4">
         <button class="btn btn-primary w-100 btn-lg" type="submit">{% trans "Sign In" %}</button>
       </div>
