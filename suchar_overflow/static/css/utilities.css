@@ -51,6 +51,10 @@
     gap: var(--space-sm);
 }
 
+.gap-3 {
+    gap: var(--space-md);
+}
+
 .me-auto {
     margin-right: auto;
 }
@@ -85,6 +89,14 @@
 
 .align-items-stretch {
     align-items: stretch !important;
+}
+
+.flex-column {
+    flex-direction: column !important;
+}
+
+.flex-row {
+    flex-direction: row !important;
 }
 
 /* Spacing Utilities */
