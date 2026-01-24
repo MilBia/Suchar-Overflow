@@ -89,4 +89,55 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
+
+    // Custom Dropdown Handling
+    const dropdowns = document.querySelectorAll('.custom-dropdown');
+
+    dropdowns.forEach(dropdown => {
+        const trigger = dropdown.querySelector('.dropdown-trigger');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        const input = dropdown.querySelector('input[type="hidden"]');
+        const options = dropdown.querySelectorAll('.dropdown-item');
+
+        if (trigger && menu) {
+            // Toggle
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Close others
+                document.querySelectorAll('.custom-dropdown').forEach(d => {
+                    if (d !== dropdown) d.classList.remove('show');
+                });
+                dropdown.classList.toggle('show');
+            });
+
+            // Select
+            options.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = option.dataset.value;
+
+                    // Update input
+                    if (input) {
+                        input.value = value;
+                        // Determine parent form and submit
+                        const form = dropdown.closest('form');
+                        if (form) {
+                            form.submit();
+                        }
+                    }
+
+                    dropdown.classList.remove('show');
+                });
+            });
+        }
+    });
+
+    // Outside Click
+    document.addEventListener('click', (e) => {
+        dropdowns.forEach(dropdown => {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    });
 });

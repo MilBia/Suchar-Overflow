@@ -30,16 +30,34 @@
                     type="submit">{% include "svgs/icon-search.svg" %}</button>
           </div>
 
-          <!-- Sort Select -->
-          <select name="sort"
-                  class="form-select mb-0 search-sort-select"
-                  onchange="this.form.submit()">
-            <option value="newest"
-                    {% if not request.GET.sort or request.GET.sort == 'newest' %}selected{% endif %}>
-              Najnowsze
-            </option>
-            <option value="top" {% if request.GET.sort == 'top' %}selected{% endif %}>Najlepsze</option>
-          </select>
+          <!-- Custom Sort Dropdown -->
+          <div class="custom-dropdown" id="sortDropdown">
+            <input type="hidden"
+                   name="sort"
+                   value="{{ request.GET.sort|default:'newest' }}" />
+            <button type="button" class="dropdown-trigger">
+              <span class="selected-label">
+                {% if request.GET.sort == 'top' %}
+                  Najlepsze
+                {% else %}
+                  Najnowsze
+                {% endif %}
+              </span>
+              <span class="chevron-icon">{% include "svgs/icon-chevron-down.svg" %}</span>
+            </button>
+            <div class="dropdown-menu">
+              <div class="dropdown-item {% if not request.GET.sort or request.GET.sort == 'newest' %}selected{% endif %}"
+                   data-value="newest">
+                <span>Najnowsze</span>
+                <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
+              </div>
+              <div class="dropdown-item {% if request.GET.sort == 'top' %}selected{% endif %}"
+                   data-value="top">
+                <span>Najlepsze</span>
+                <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
+              </div>
+            </div>
+          </div>
 
           <!-- Add Button -->
           <a href="{% url 'suchary:add' %}"
