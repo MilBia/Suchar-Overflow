@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block title %}
   Suchary
 {% endblock title %}
@@ -106,21 +108,20 @@
                   </span>
                 </div>
                 {% if user.is_authenticated %}
-                  <form method="post"
-                        action="{% url 'suchary:vote' suchar.pk %}"
-                        class="d-flex align-items-center">
+                  <div class="d-flex align-items-center gap-1">
+                    <!-- Hidden CSRF Token for JS to grab -->
                     {% csrf_token %}
-                    <button type="submit"
-                            name="value"
-                            value="1"
+                    <button type="button"
+                            data-suchar-id="{{ suchar.pk }}"
+                            data-value="1"
                             class="btn btn-icon btn-vote {% if suchar.user_vote == 1 %}active{% endif %}"
                             title="Śmieszne (Głosuj w górę)">{% include "svgs/icon-vote-up.svg" %}</button>
-                    <button type="submit"
-                            name="value"
-                            value="-1"
+                    <button type="button"
+                            data-suchar-id="{{ suchar.pk }}"
+                            data-value="-1"
                             class="btn btn-icon btn-vote {% if suchar.user_vote == -1 %}active{% endif %}"
                             title="Suchar (Głosuj w dół)">{% include "svgs/icon-vote-down.svg" %}</button>
-                  </form>
+                  </div>
                 {% endif %}
               </div>
             </div>
@@ -180,3 +181,8 @@
     </div>
   {% endif %}
 {% endblock content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script defer src="{% static 'js/features/voting.js' %}"></script>
+{% endblock javascript %}
