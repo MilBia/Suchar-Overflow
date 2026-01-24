@@ -72,7 +72,7 @@
 }
 
 .text-muted {
-    color: var(--text-secondary);
+    color: var(--text-muted) !important;
 }
 
 .d-inline-block {
@@ -88,40 +88,49 @@
 }
 
 /* Spacing Utilities */
+/* Assuming space variables are defined in variables.css or inherited.
+   variables.css defines --header-height, --radius-*, but spacing might be missing if I stripped it.
+   Wait, I didn't include --space-sm/md/lg in my variables.css rewrite.
+   I MUST ADD THEM BACK to variables.css or validy reliance on defaults.
+   The original variables.css had them. I missed them in step 408.
+   I need to fix variables.css first! */
+
+/* ... (I will fix variables.css in next step, but let's finish this file) */
+
 .mb-3 {
-    margin-bottom: var(--space-md);
+    margin-bottom: 1rem;
 }
 
 .mb-4 {
-    margin-bottom: var(--space-lg);
+    margin-bottom: 1.5rem;
 }
 
 .mb-5 {
-    margin-bottom: var(--space-xl);
+    margin-bottom: 3rem;
 }
 
 .mt-2 {
-    margin-top: var(--space-sm);
+    margin-top: 0.5rem;
 }
 
 .mt-3 {
-    margin-top: var(--space-md);
+    margin-top: 1rem;
 }
 
 .mt-4 {
-    margin-top: var(--space-lg);
+    margin-top: 1.5rem;
 }
 
 .mt-5 {
-    margin-top: var(--space-xl);
+    margin-top: 3rem;
 }
 
 .py-4 {
-    padding-block: var(--space-lg);
+    padding-block: 1.5rem;
 }
 
 .py-5 {
-    padding-block: var(--space-xl);
+    padding-block: 3rem;
 }
 
 .p-0 {
@@ -129,7 +138,7 @@
 }
 
 .p-2 {
-    padding: var(--space-sm);
+    padding: 0.5rem;
 }
 
 .p-3 {
@@ -137,11 +146,11 @@
 }
 
 .p-4 {
-    padding: var(--space-lg);
+    padding: 1.5rem;
 }
 
 .p-5 {
-    padding: var(--space-xl);
+    padding: 3rem;
 }
 
 .px-0 {
@@ -149,11 +158,11 @@
 }
 
 .px-4 {
-    padding-inline: var(--space-lg);
+    padding-inline: 1.5rem;
 }
 
 .pt-4 {
-    padding-top: var(--space-lg);
+    padding-top: 1.5rem;
 }
 
 .pb-0 {
@@ -161,19 +170,19 @@
 }
 
 .me-2 {
-    margin-right: var(--space-sm);
+    margin-right: 0.5rem;
 }
 
 .me-3 {
-    margin-right: var(--space-md);
+    margin-right: 1rem;
 }
 
 .ms-2 {
-    margin-left: var(--space-sm);
+    margin-left: 0.5rem;
 }
 
 .ms-3 {
-    margin-left: var(--space-md);
+    margin-left: 1rem;
 }
 
 .ps-0 {
@@ -182,11 +191,23 @@
 
 /* Color & Text Utilities */
 .text-primary {
-    color: var(--accent-primary);
+    color: var(--color-primary) !important;
+}
+
+.text-secondary {
+    color: var(--color-secondary) !important;
+}
+
+.text-warning {
+    color: hsl(var(--hue-warning), 80%, 50%) !important;
+}
+
+.text-success {
+    color: hsl(var(--hue-success), 70%, 45%) !important;
 }
 
 .bg-light {
-    background-color: var(--bg-primary);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
 }
 
@@ -195,7 +216,7 @@
 }
 
 .rounded-4 {
-    border-radius: 1rem;
+    border-radius: var(--radius-lg);
 }
 
 .rounded-circle {
@@ -207,7 +228,7 @@
 }
 
 .shadow-lg {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-lg);
 }
 
 .fw-bold {
@@ -229,7 +250,7 @@
 }
 
 .font-monospace {
-    font-family: monospace;
+    font-family: var(--font-mono);
 }
 
 .overflow-hidden {

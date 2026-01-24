@@ -1,38 +1,128 @@
-/* Variables & Theme */
-:root {
-    /* HSL Color Palette - Light Mode */
-    --hue: 250;
-    --bg-primary: hsl(var(--hue), 20%, 98%);
-    --bg-secondary: hsl(var(--hue), 20%, 100%);
-    --text-primary: hsl(var(--hue), 30%, 10%);
-    --text-secondary: hsl(var(--hue), 10%, 40%);
-    --accent-primary: hsl(var(--hue), 80%, 60%);
-    --accent-secondary: hsl(var(--hue), 80%, 50%);
-    --border-color: hsl(var(--hue), 10%, 90%);
-    --success: hsl(140, 60%, 50%);
-    --warning: hsl(40, 80%, 50%);
-    --danger: hsl(350, 60%, 50%);
+/* =========================================
+   Design System & Variables
+   ========================================= */
 
-    /* Spacing & Layout */
-    --container-width: 1200px;
-    --header-height: 70px;
+:root {
+    /* -----------------------------------------
+     Primitive Colors (HSL)
+     ----------------------------------------- */
+    /* Primary: Indigo/Violet - Premium, Trustworthy */
+    --hue-primary: 250;
+    --sat-primary: 84%;
+    --lig-primary: 60%;
+
+    /* Secondary: Pink/Rose - Vibrant, Playful */
+    --hue-secondary: 330;
+    --sat-secondary: 80%;
+    --lig-secondary: 60%;
+
+    /* Neutral: Slate/Blue-Grey */
+    --hue-neutral: 220;
+
+    /* Semantic Hues */
+    --hue-success: 150;
+    --hue-warning: 40;
+    --hue-danger: 350;
+
+    /* -----------------------------------------
+     Light Mode Theme (Default)
+     ----------------------------------------- */
+    /* Backgrounds */
+    --bg-app: hsl(var(--hue-neutral), 30%, 98%);
+    /* Very light cool gray */
+    --bg-surface: hsl(255, 100%, 100%);
+    /* Pure White */
+    --bg-surface-glass: rgba(255, 255, 255, 0.7);
+    /* Glassmorphism base */
+
+    /* Text */
+    --text-main: hsl(var(--hue-neutral), 60%, 15%);
+    /* Almost Black */
+    --text-muted: hsl(var(--hue-neutral), 20%, 45%);
+    /* Medium Gray */
+    --text-light: hsl(var(--hue-neutral), 20%, 65%);
+    /* Light Gray */
+
+    /* Bran dColors */
+    --color-primary: hsl(var(--hue-primary), var(--sat-primary), var(--lig-primary));
+    --color-secondary: hsl(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary));
+
+    /* Accents (Gradients) */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--hue-primary), 90%, 65%), hsl(var(--hue-primary), 80%, 55%));
+    --gradient-brand: linear-gradient(135deg, hsl(var(--hue-primary), 90%, 60%), hsl(var(--hue-secondary), 80%, 60%));
+
+    /* Borders & Shadows */
+    --border-color: hsl(var(--hue-neutral), 20%, 90%);
+    --shadow-color: 220, 40%, 2%;
+    /* HSL components for rgba calc */
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px hsla(var(--shadow-color), 0.05);
+    --shadow-sm: 0 4px 6px hsla(var(--shadow-color), 0.05), 0 1px 3px hsla(var(--shadow-color), 0.1);
+    --shadow-md: 0 10px 15px -3px hsla(var(--shadow-color), 0.08), 0 4px 6px -2px hsla(var(--shadow-color), 0.04);
+    --shadow-lg: 0 20px 25px -5px hsla(var(--shadow-color), 0.1), 0 10px 10px -5px hsla(var(--shadow-color), 0.04);
+
+    /* Glassmorphism */
+    --glass-blur: 16px;
+    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+
+    /* -----------------------------------------
+     Typography & Layout
+     ----------------------------------------- */
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Fira Code', monospace;
+
+    --radius-sm: 0.5rem;
+    /* 8px */
+    --radius-md: 0.75rem;
+    /* 12px */
+    --radius-lg: 1rem;
+    /* 16px */
+    --radius-xl: 1.5rem;
+    /* 24px */
+
+    --header-height: 80px;
+    /* Taller, airier navbar */
+
+    /* Spacing */
+    --space-xs: 0.25rem;
     --space-sm: 0.5rem;
     --space-md: 1rem;
     --space-lg: 2rem;
     --space-xl: 4rem;
-
-    /* Typography */
-    --font-sans: 'Inter', system-ui, sans-serif;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* -----------------------------------------
+   Dark Mode Theme
+   ----------------------------------------- */
 [data-theme='dark'] {
-    --bg-primary: hsl(var(--hue), 15%, 10%);
-    --bg-secondary: hsl(var(--hue), 15%, 15%);
-    --text-primary: hsl(var(--hue), 10%, 90%);
-    --text-secondary: hsl(var(--hue), 10%, 70%);
-    --border-color: hsl(var(--hue), 15%, 25%);
+    /* Backgrounds */
+    --bg-app: hsl(var(--hue-neutral), 30%, 8%);
+    /* Deep Slate/Navy */
+    --bg-surface: hsl(var(--hue-neutral), 25%, 12%);
+    /* Lighter Navy */
+    --bg-surface-glass: rgba(15, 23, 42, 0.7);
+    /* Dark Glass */
+
+    /* Text */
+    --text-main: hsl(var(--hue-neutral), 10%, 95%);
+    --text-muted: hsl(var(--hue-neutral), 10%, 65%);
+    --text-light: hsl(var(--hue-neutral), 10%, 45%);
+
+    /* Brand Colors (Adjusted for contrast) */
+    --lig-primary: 65%;
+    /* Slightly ligher */
+    --lig-secondary: 65%;
+    --color-primary: hsl(var(--hue-primary), var(--sat-primary), var(--lig-primary));
+    --color-secondary: hsl(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary));
+
+    /* Borders */
+    --border-color: hsl(var(--hue-neutral), 20%, 20%);
+    --shadow-color: 0, 0%, 0%;
+    /* Pure black shadows */
+
+    /* Glassmorphism */
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }

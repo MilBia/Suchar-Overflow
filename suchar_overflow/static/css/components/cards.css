@@ -1,10 +1,19 @@
 /* Cards */
 .card {
-    background: var(--bg-secondary);
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     margin-bottom: var(--space-md);
     overflow: hidden;
+    position: relative;
+    /* Smooth transition for hover effects */
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Card Modern Hover Effect */
+.card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: hsla(var(--hue-primary), 80%, 60%, 0.3);
 }
 
 .card-body {
@@ -14,18 +23,22 @@
 .card-header {
     border-bottom: 1px solid var(--border-color);
     background: transparent;
+    font-weight: 600;
+    color: var(--text-main);
 }
 
-/* Auth Card */
+/* Auth Card - Inherits glass properties via project.css override,
+   but we can define base structural properties here */
 .auth-card {
-    max-width: 420px;
-    margin: var(--space-xl) auto;
-    padding: var(--space-lg);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
+    /* Styles handled in project.css for glassmorphism override */
 }
 
 .auth-card .h3 {
     text-align: center;
+    margin-bottom: var(--space-lg);
+    font-weight: 800;
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }

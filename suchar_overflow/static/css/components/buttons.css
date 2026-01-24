@@ -3,77 +3,104 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.25rem;
     border-radius: var(--radius-md);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Primary Button - Gradient & Glow */
 .btn-primary {
-    background-color: var(--accent-primary);
+    background: var(--gradient-primary);
     color: white;
+    background-size: 110% 110%;
+    box-shadow: 0 4px 12px hsla(var(--hue-primary), 80%, 50%, 0.25);
 }
 
 .btn-primary:hover {
-    background-color: var(--accent-secondary);
+    background-size: 130% 130%;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px hsla(var(--hue-primary), 80%, 50%, 0.35);
     color: white;
 }
 
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Secondary Button */
 .btn-secondary {
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
+    background-color: var(--bg-surface);
+    color: var(--text-main);
     border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-    border-color: var(--text-secondary);
+    background-color: var(--bg-app);
+    border-color: var(--text-muted);
+    color: var(--text-main);
 }
 
+/* Outline Button */
 .btn-outline {
     background: transparent;
-    border: 1px solid var(--accent-primary);
-    color: var(--accent-primary);
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    padding: 0.5rem 1.1rem;
+    /* Adjust for border */
 }
 
 .btn-outline:hover {
-    background-color: var(--accent-primary);
+    background: var(--color-primary);
     color: white;
+    box-shadow: 0 4px 12px hsla(var(--hue-primary), 80%, 50%, 0.2);
 }
 
 .btn-sm {
-    padding: 0.25rem 0.75rem;
+    padding: 0.35rem 0.85rem;
     font-size: 0.85rem;
+    border-radius: var(--radius-sm);
 }
 
 .btn-lg {
-    padding: 0.75rem 1.5rem;
+    padding: 0.85rem 1.75rem;
     font-size: 1.1rem;
+    border-radius: var(--radius-md);
 }
 
 .btn-icon {
-    background: none;
-    padding: var(--space-sm);
-    color: var(--text-secondary);
+    background: transparent;
+    padding: 0.5rem;
+    color: var(--text-muted);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
 }
 
 .btn-icon:hover {
-    color: var(--accent-primary);
+    color: var(--color-primary);
+    background-color: hsla(var(--hue-primary), 80%, 50%, 0.1);
 }
 
 /* Close Button */
 .btn-close {
-    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+    /* Using a simplified SVG for close icon */
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2364748b'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
     border: 0;
-    border-radius: 0.25rem;
-    opacity: 0.5;
-    padding: 0.25em 0.25em;
+    border-radius: 4px;
+    opacity: 0.7;
     width: 1em;
     height: 1em;
-    margin-left: auto;
+    padding: 0.5em;
+    /* Touch target */
     cursor: pointer;
+    box-sizing: content-box;
+    transition: opacity 0.2s;
 }
 
 [data-theme='dark'] .btn-close {
