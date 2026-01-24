@@ -65,7 +65,10 @@ class SucharCreateView(LoginRequiredMixin, CreateView):
 @require_POST
 def vote_suchar(request, pk):
     suchar = get_object_or_404(Suchar, pk=pk)
-    value = int(request.POST.get("value", 0))
+    try:
+        value = int(request.POST.get("value", 0))
+    except (ValueError, TypeError):
+        return JsonResponse({"error": "Invalid vote value"}, status=400)
 
     if value not in [1, -1]:
         return JsonResponse({"error": "Invalid vote value"}, status=400)
