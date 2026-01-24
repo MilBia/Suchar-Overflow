@@ -237,3 +237,11 @@ a:hover {
   top: 100px;
   z-index: 1;
 }
+
+/* Adaptive Logo */
+.brand-logo {
+  height: 40px;
+  width: auto;
+  /* Ensure fill="currentColor" works */
+  color: var(--text-main);
+}
