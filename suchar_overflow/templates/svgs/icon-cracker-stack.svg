@@ -1,0 +1,26 @@
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <g id="cracker-stack">
+      <rect width="70" height="22" rx="4" fill="#E58E26"/>
+      <circle cx="15" cy="11" r="2.5" fill="#F3E5AB"/>
+      <circle cx="35" cy="11" r="2.5" fill="#F3E5AB"/>
+      <circle cx="55" cy="11" r="2.5" fill="#F3E5AB"/>
+    </g>
+  </defs>
+
+  <g transform="translate(50, 40)">
+    <!-- Base -->
+    <use href="#cracker-stack" x="10" y="55" />
+    <!-- Middle -->
+    <use href="#cracker-stack" x="10" y="30" />
+    <!-- Top (Rotated) -->
+    <g transform="translate(35, 0) rotate(15)">
+        <use href="#cracker-stack" />
+    </g>
+    <!-- Crumbs -->
+    <circle cx="95" cy="35" r="3" fill="#E58E26"/>
+    <circle cx="110" cy="45" r="2" fill="#E58E26"/>
+    <circle cx="102" cy="25" r="2.5" fill="#E58E26"/>
+    <circle cx="118" cy="30" r="1.5" fill="#E58E26"/>
+  </g>
+</svg>

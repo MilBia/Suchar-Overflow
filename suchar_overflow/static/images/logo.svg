@@ -1,0 +1,38 @@
+<svg width="400" height="100" viewBox="0 0 550 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <g id="cracker">
+      <rect width="70" height="22" rx="4" fill="#E58E26"/>
+      <circle cx="15" cy="11" r="2.5" fill="#F3E5AB"/>
+      <circle cx="35" cy="11" r="2.5" fill="#F3E5AB"/>
+      <circle cx="55" cy="11" r="2.5" fill="#F3E5AB"/>
+    </g>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&amp;display=swap');
+      .logo-text {
+        font-family: 'Fira Code', 'Roboto Mono', monospace;
+        font-size: 42px;
+      }
+    </style>
+  </defs>
+
+  <g transform="translate(10, 10)">
+    <use href="#cracker" x="10" y="55" />
+
+    <use href="#cracker" x="10" y="30" />
+
+    <g transform="translate(35, 0) rotate(15)">
+        <use href="#cracker" />
+    </g>
+
+    <circle cx="95" cy="35" r="3" fill="#E58E26"/>
+    <circle cx="110" cy="45" r="2" fill="#E58E26"/>
+    <circle cx="102" cy="25" r="2.5" fill="#E58E26"/>
+    <circle cx="118" cy="30" r="1.5" fill="#E58E26"/>
+  </g>
+
+  <text x="145" y="68" class="logo-text">
+    <tspan fill="#E58E26">Suchar</tspan>
+    <tspan fill="#1e293b" font-weight="bold">Overflow</tspan>
+  </text>
+</svg>

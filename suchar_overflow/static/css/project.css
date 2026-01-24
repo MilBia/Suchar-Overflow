@@ -288,6 +288,7 @@ a {
 }
 
 /* Vote Icons Dark Mode Visibility */
+/* Vote Icons Dark Mode Visibility */
 [data-theme="dark"] .btn-vote {
   color: #94a3b8;
   /* Slate 400 - distinct but not pure white */
@@ -297,9 +298,35 @@ a {
   fill: currentColor;
 }
 
+.btn-vote:hover {
+  background-color: rgba(99, 102, 241, 0.05);
+  /* Light Indigo tint */
+}
+
+/* Upvote (Baguette) */
+.btn-vote[value="1"] {
+  /* Inherit or secondary color */
+}
+
+.btn-vote[value="1"]:hover {
+  color: #E58E26 !important;
+  /* Cracker/Baguette color */
+  background-color: rgba(229, 142, 38, 0.1);
+}
+
+/* Downvote (Water) */
+.btn-vote[value="-1"] {
+  /* Inherit or secondary color */
+}
+
+.btn-vote[value="-1"]:hover {
+  color: #0ea5e9 !important;
+  /* Sky Blue */
+  background-color: rgba(14, 165, 233, 0.1);
+}
+
 [data-theme="dark"] .btn-vote:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  color: var(--bs-primary);
 }
 
 /* Tag Hover Effects */

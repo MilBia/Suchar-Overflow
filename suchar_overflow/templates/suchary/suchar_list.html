@@ -27,15 +27,7 @@
                    aria-label="Search"
                    value="{{ request.GET.q|default:'' }}" />
             <button class="btn btn-secondary border-start-0 ps-2 rounded-start-0 d-flex align-items-center"
-                    type="submit">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   width="16"
-                   height="16"
-                   fill="currentColor"
-                   viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-              </svg>
-            </button>
+                    type="submit">{% include "svgs/icon-search.svg" %}</button>
           </div>
 
           <!-- Sort Select -->
@@ -52,14 +44,7 @@
           <!-- Add Button -->
           <a href="{% url 'suchary:add' %}"
              class="btn btn-primary d-flex align-items-center text-nowrap">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 width="20"
-                 height="20"
-                 fill="currentColor"
-                 class="me-2"
-                 viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
-            </svg>
+            {% include "svgs/icon-plus.svg" %}
             Dodaj
           </a>
         </form>
@@ -72,15 +57,7 @@
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="d-flex align-items-center">
-                  <div class="avatar-sm flex-shrink-0 me-3">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         width="24"
-                         height="24"
-                         fill="currentColor"
-                         viewBox="0 0 16 16">
-                      <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                    </svg>
-                  </div>
+                  <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
                   <div>
                     <h6 class="mb-0 fw-bold">{{ suchar.author.username }}</h6>
                     <small class="suchar-meta">{{ suchar.created_at|date:"d M Y, H:i" }}</small>
@@ -118,33 +95,13 @@
                     <button type="submit"
                             name="value"
                             value="1"
-                            class="btn btn-icon"
-                            title="Śmieszne (Głosuj w górę)">
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                           width="20"
-                           height="20"
-                           fill="currentColor"
-                           class="bi bi-emoji-laughing"
-                           viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                        <path d="M12.331 9.5a1 1 0 0 1 0 1A4.998 4.998 0 0 1 8 13a4.998 4.998 0 0 1-4.33-2.5A1 1 0 0 1 4.535 9h6.93a1 1 0 0 1 .866.5M7 6.5c0 .828-.448 0-1 0s-1 .828-1 0S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 0-1 0s-1 .828-1 0S9.448 5 10 5s1 .672 1 1.5" />
-                      </svg>
-                    </button>
+                            class="btn btn-icon btn-vote"
+                            title="Śmieszne (Głosuj w górę)">{% include "svgs/icon-vote-up.svg" %}</button>
                     <button type="submit"
                             name="value"
                             value="-1"
-                            class="btn btn-icon"
-                            title="Suchar (Głosuj w dół)">
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                           width="20"
-                           height="20"
-                           fill="currentColor"
-                           class="bi bi-emoji-neutral"
-                           viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                        <path d="M4 10.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5m3-4C7 5.672 6.552 5 6 5s-1 .672-1 1.5S5.448 8 6 8s1-.672 1-1.5m4 0c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5S9.448 8 10 8s1-.672 1-1.5" />
-                      </svg>
-                    </button>
+                            class="btn btn-icon btn-vote"
+                            title="Suchar (Głosuj w dół)">{% include "svgs/icon-vote-down.svg" %}</button>
                   </form>
                 {% endif %}
               </div>
@@ -152,16 +109,7 @@
           </div>
         {% empty %}
           <div class="text-center py-5">
-            <div class="mb-3 text-muted">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   width="48"
-                   height="48"
-                   fill="currentColor"
-                   class="bi bi-wind"
-                   viewBox="0 0 16 16">
-                <path d="M12.5 2A2.5 2.5 0 0 0 10 4.5a.5.5 0 0 1-1 0A3.5 3.5 0 1 1 12.5 8H.5a.5.5 0 0 1 0-1h12a2.5 2.5 0 0 0 0-5m-7 1a1 1 0 0 0-1 1 .5.5 0 0 1-1 0 2 2 0 1 1 2 2h-5a.5.5 0 0 1 0-1h5a1 1 0 0 0 0-2" />
-              </svg>
-            </div>
+            <div class="mb-3 text-muted">{% include "svgs/icon-cracker-stack.svg" %}</div>
             <h3>Ale tu sucho...</h3>
             <p class="text-muted">Bądź bohaterem, którego potrzebujemy i dodaj pierwszego suchara.</p>
           </div>
