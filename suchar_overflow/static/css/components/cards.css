@@ -1,0 +1,31 @@
+/* Cards */
+.card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+    overflow: hidden;
+}
+
+.card-body {
+    padding: var(--space-lg);
+}
+
+.card-header {
+    border-bottom: 1px solid var(--border-color);
+    background: transparent;
+}
+
+/* Auth Card */
+.auth-card {
+    max-width: 420px;
+    margin: var(--space-xl) auto;
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.auth-card .h3 {
+    text-align: center;
+}

@@ -1,0 +1,38 @@
+/* Variables & Theme */
+:root {
+    /* HSL Color Palette - Light Mode */
+    --hue: 250;
+    --bg-primary: hsl(var(--hue), 20%, 98%);
+    --bg-secondary: hsl(var(--hue), 20%, 100%);
+    --text-primary: hsl(var(--hue), 30%, 10%);
+    --text-secondary: hsl(var(--hue), 10%, 40%);
+    --accent-primary: hsl(var(--hue), 80%, 60%);
+    --accent-secondary: hsl(var(--hue), 80%, 50%);
+    --border-color: hsl(var(--hue), 10%, 90%);
+    --success: hsl(140, 60%, 50%);
+    --warning: hsl(40, 80%, 50%);
+    --danger: hsl(350, 60%, 50%);
+
+    /* Spacing & Layout */
+    --container-width: 1200px;
+    --header-height: 70px;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 2rem;
+    --space-xl: 4rem;
+
+    /* Typography */
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='dark'] {
+    --bg-primary: hsl(var(--hue), 15%, 10%);
+    --bg-secondary: hsl(var(--hue), 15%, 15%);
+    --text-primary: hsl(var(--hue), 10%, 90%);
+    --text-secondary: hsl(var(--hue), 10%, 70%);
+    --border-color: hsl(var(--hue), 15%, 25%);
+}

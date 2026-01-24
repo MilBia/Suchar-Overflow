@@ -1,0 +1,61 @@
+/* List Group (Custom Implementation) */
+.list-group {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+    border-radius: var(--radius-md);
+}
+
+.list-group-flush {
+    border-radius: 0;
+}
+
+.list-group-flush>.list-group-item {
+    border-width: 0 0 1px;
+}
+
+.list-group-flush>.list-group-item:last-child {
+    border-bottom-width: 0;
+}
+
+.list-group-item {
+    position: relative;
+    display: block;
+    padding: 0.75rem 1.25rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.list-group-item:first-child {
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}
+
+.list-group-item:last-child {
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+}
+
+.list-group-item-action {
+    width: 100%;
+    color: var(--text-primary);
+    text-align: inherit;
+}
+
+.list-group-item-action:hover,
+.list-group-item-action:focus {
+    z-index: 1;
+    color: var(--text-primary);
+    text-decoration: none;
+    background-color: var(--bg-primary);
+}
+
+.list-group-item.active {
+    z-index: 2;
+    color: #fff;
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
