@@ -230,3 +230,10 @@ a:hover {
   background-color: var(--bg-surface) !important;
   /* lighten on hover if it was bg-light in Light mode */
 }
+
+/* Sticky Preview for Add Suchar */
+.sticky-preview {
+  position: sticky;
+  top: 100px;
+  z-index: 1;
+}

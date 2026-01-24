@@ -4,34 +4,148 @@
   Dodaj Suchara
 {% endblock title %}
 {% block content %}
-  <div class="row justify-content-center py-5">
-    <div class="col-md-8 col-lg-6">
-      <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body p-5">
-          <div class="text-center mb-4">
-            <div class="avatar bg-light rounded-circle p-3 d-inline-block mb-3 text-primary">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   width="32"
-                   height="32"
-                   fill="currentColor"
-                   class="bi bi-pencil-fill"
-                   viewBox="0 0 16 16">
-                <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
-              </svg>
+  <div class="row py-5 gx-5">
+    <!-- Left Column: Form -->
+    <div class="col-lg-6 mb-5 mb-lg-0">
+      <div class="card shadow-lg border-0 rounded-4 glass-card h-100">
+        <div class="card-body p-4 p-md-5">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="avatar bg-gradient-primary rounded-circle p-3 d-inline-flex text-white shadow-sm">
+              {% include "svgs/icon-edit.svg" %}
             </div>
-            <h2 class="fw-bold">Dodaj Suchara</h2>
-            <p class="text-muted">Podziel się swoją mądrością (lub jej brakiem).</p>
+            <div>
+              <h2 class="fw-bold mb-0 h3">Dodaj Suchara</h2>
+              <p class="text-muted mb-0 small">Zabłyśnij humorem.</p>
+            </div>
           </div>
+
           <form method="post">
             {% csrf_token %}
-            {% include "includes/form.html" %}
-            <div class="d-grid gap-2 mt-4">
-              <button type="submit" class="btn btn-primary btn-lg">Opublikuj Suchara</button>
-              <a href="{% url 'suchary:list' %}" class="btn btn-light btn-lg">Anuluj</a>
+
+            <!-- Manual Field Rendering for Control -->
+            <div class="mb-4">
+              <label for="id_text" class="form-label fw-bold">Treść Suchara</label>
+              <textarea name="text"
+                        cols="40"
+                        rows="10"
+                        class="form-control form-control-lg"
+                        placeholder="Dlaczego kurczak przeszedł przez ulicę?"
+                        required
+                        id="id_text"></textarea>
+              <div class="form-text">Pamiętaj, im bardziej sucho, tym lepiej.</div>
+            </div>
+
+            <div class="mb-4">
+              <label for="id_tags_input" class="form-label fw-bold">Tagi</label>
+              <input type="text"
+                     name="tags_input"
+                     class="form-control"
+                     placeholder="np. it, programowanie, szkoła"
+                     id="id_tags_input" />
+              <div class="form-text">Oddzielaj przecinkami.</div>
+            </div>
+
+            <div class="d-grid gap-3 mt-5">
+              <button type="submit" class="btn btn-primary btn-lg shadow-sm">Opublikuj</button>
+              <a href="{% url 'suchary:list' %}" class="btn btn-outline text-muted">Anuluj</a>
             </div>
           </form>
         </div>
       </div>
     </div>
+
+    <!-- Right Column: Live Preview -->
+    <div class="col-lg-6">
+      <div class="sticky-preview">
+        <h6 class="text-uppercase text-muted fw-bold mb-3 small tracking-wide">Podgląd na żywo</h6>
+
+        <!-- Preview Card (Matches suchar_list.html structure) -->
+        <div class="card suchar-card shadow-sm border-0">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="d-flex align-items-center">
+                <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
+                <div>
+                  <h6 class="mb-0 fw-bold">{{ user.username }}</h6>
+                  <small class="suchar-meta">Teraz</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview Content -->
+            <p class="mb-4 preview-text text-muted fst-italic" id="previewText">Tutaj pojawi się treść Twojego suchara...</p>
+
+            <!-- Preview Tags -->
+            <div class="mb-3" id="previewTags">
+              <!-- Badges will require JS -->
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between border-top pt-3 opacity-50">
+              <div class="d-flex align-items-center">
+                <span class="vote-score me-3 d-flex align-items-center gap-2 text-muted">
+                  <!-- Static Icon for preview -->
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       width="20"
+                       height="20"
+                       fill="currentColor"
+                       class="text-secondary"
+                       viewBox="0 0 16 16">
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                  </svg>
+                  0
+                </span>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-icon btn-vote" disabled>{% include "svgs/icon-vote-up.svg" %}</button>
+                <button class="btn btn-icon btn-vote" disabled>{% include "svgs/icon-vote-down.svg" %}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt-4 bg-transparent border-0">
+          <div class="card-body p-0 text-center text-muted small">
+            <p>Tak będzie wyglądał Twój wpis na liście głównej.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const textInput = document.getElementById('id_text');
+      const tagsInput = document.getElementById('id_tags_input');
+      const previewText = document.getElementById('previewText');
+      const previewTags = document.getElementById('previewTags');
+
+      // Text Preview
+      textInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (val.trim()) {
+          previewText.textContent = val;
+          previewText.classList.remove('text-muted', 'fst-italic');
+        } else {
+          previewText.textContent = 'Tutaj pojawi się treść Twojego suchara...';
+          previewText.classList.add('text-muted', 'fst-italic');
+        }
+      });
+
+      // Tags Preview
+      tagsInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        previewTags.innerHTML = ''; // Clear
+
+        if (val.trim()) {
+          const tags = val.split(/[ ,]+/).filter(tag => tag.trim() !== '');
+          tags.forEach(tag => {
+            const badge = document.createElement('span');
+            badge.className = 'badge text-secondary border me-1 bg-light';
+            badge.textContent = '#' + tag.trim();
+            previewTags.appendChild(badge);
+          });
+        }
+      });
+    });
+  </script>
 {% endblock content %}
