@@ -245,3 +245,54 @@ a:hover {
   /* Ensure fill="currentColor" works */
   color: var(--text-main);
 }
+
+/* =========================================
+   Modals & Toasts (Glassmorphism)
+   ========================================= */
+
+/* Modal Overlay (Backdrop) */
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Modal Content */
+.modal {
+  /* Override Bootstrap/Default if needed */
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: var(--glass-border);
+  box-shadow: var(--shadow-2xl);
+  border-radius: var(--radius-lg);
+  color: var(--text-main);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--border-color);
+}
+
+/* Toasts */
+.toast {
+  background-color: var(--bg-surface-glass) !important;
+  /* Force override BS */
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: var(--glass-border);
+  box-shadow: var(--shadow-lg);
+  color: var(--text-main);
+  border-radius: var(--radius-md);
+}
+
+.toast-header {
+  background-color: rgba(255, 255, 255, 0.05);
+  /* Slight tint header */
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.btn-close {
+  filter: var(--icon-filter);
+}
