@@ -34,6 +34,7 @@
           rel="stylesheet" />
     {% block css %}
       <link href="{% static 'css/base.css' %}" rel="stylesheet" />
+      <link href="{% static 'css/components/forms.css' %}" rel="stylesheet" />
       <link href="{% static 'css/project.css' %}" rel="stylesheet" />
     {% endblock css %}
     {% block javascript %}
@@ -112,8 +113,8 @@
               </a>
               <button class="btn btn-secondary btn-sm" id="logout-button">Wyloguj</button>
             {% else %}
-              <a class="btn btn-outline btn-sm" href="{% url 'account_login' %}">Zaloguj</a>
-              <a class="btn btn-primary btn-sm" href="{% url 'account_signup' %}">Rejestracja</a>
+              <a class="btn btn-outline btn-sm" href="{% url 'login' %}">Zaloguj</a>
+              <a class="btn btn-primary btn-sm" href="{% url 'users:signup' %}">Rejestracja</a>
             {% endif %}
           </div>
         </div>
@@ -170,7 +171,7 @@
         <div class="modal-body">Czy na pewno chcesz się wylogować?</div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary modal-close">Anuluj</button>
-          <form method="post" action="{% url 'account_logout' %}">
+          <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Wyloguj się</button>
           </form>

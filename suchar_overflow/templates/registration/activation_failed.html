@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% translate "Activation Failed" %}
+{% endblock title %}
+
+{% block content %}
+  <div class="row min-vh-75 align-items-center justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0 text-center p-4">
+        <div class="card-body">
+          <div class="mb-4 text-danger d-flex justify-content-center">
+            <!-- Using vote-down as "thumbs down" / failure indication -->
+            <style>
+              .icon-wrapper svg {
+                width: 4rem;
+                height: 4rem;
+              }
+            </style>
+            <div class="icon-wrapper">{% include "svgs/icon-vote-down.svg" %}</div>
+          </div>
+          <h1 class="h3 fw-bold mb-3">{% translate "Activation Failed" %}</h1>
+          <p class="text-muted mb-4">
+            {% translate "The activation link is invalid or has expired. Please try registering again or contact support." %}
+          </p>
+          <div class="d-grid gap-2">
+            <a href="{% url 'users:signup' %}" class="btn btn-primary">{% translate "Sign Up Again" %}</a>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">{% translate "Back to Home" %}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

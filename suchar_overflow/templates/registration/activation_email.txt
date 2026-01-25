@@ -1,0 +1,14 @@
+{% load i18n %}
+{% autoescape off %}
+Cześć {{ user.username }}!
+
+Witamy w Suchar Overflow - miejscu, gdzie wilgotność powietrza spada poniżej zera.
+Abyśmy mieli pewność, że nie jesteś botem (ani osobą bez poczucia humoru), musisz aktywować swoje konto.
+
+Kliknij w ten link, zanim wyschnie:
+{{ protocol }}://{{ domain }}{% url 'users:activate' uidb64=uid token=token %}
+
+Pamiętaj: Pij dużo wody.
+
+Zespół Suchar Overflow
+{% endautoescape %}

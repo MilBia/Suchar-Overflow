@@ -47,6 +47,11 @@
     --color-primary: hsl(var(--hue-primary), var(--sat-primary), var(--lig-primary));
     --color-secondary: hsl(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary));
 
+    /* Semantic Colors */
+    --bs-danger: hsl(var(--hue-danger), 80%, 60%);
+    --bs-warning: hsl(var(--hue-warning), 80%, 60%);
+    --bs-success: hsl(var(--hue-success), 80%, 45%);
+
     /* Accents (Gradients) */
     --gradient-primary: linear-gradient(135deg, hsl(var(--hue-primary), 90%, 65%), hsl(var(--hue-primary), 80%, 55%));
     --gradient-brand: linear-gradient(135deg, hsl(var(--hue-primary), 90%, 60%), hsl(var(--hue-secondary), 80%, 60%));
@@ -116,6 +121,11 @@
     --lig-secondary: 65%;
     --color-primary: hsl(var(--hue-primary), var(--sat-primary), var(--lig-primary));
     --color-secondary: hsl(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary));
+
+    /* Semantic Colors (Dark Mode) */
+    --bs-danger: hsl(var(--hue-danger), 70%, 50%);
+    --bs-warning: hsl(var(--hue-warning), 70%, 50%);
+    --bs-success: hsl(var(--hue-success), 70%, 45%);
 
     /* Borders */
     --border-color: hsl(var(--hue-neutral), 20%, 20%);

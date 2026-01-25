@@ -19,7 +19,7 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
     path("users/", include("suchar_overflow.users.urls", namespace="users")),
-    path("accounts/", include("allauth.urls")),
+    path("", include("django.contrib.auth.urls")),
     # Your stuff: custom urls includes go here
     path("suchary/", include("suchar_overflow.suchary.urls", namespace="suchary")),
     # API

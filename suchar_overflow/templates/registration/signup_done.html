@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% translate "Confirmation Sent" %}
+{% endblock title %}
+
+{% block content %}
+  <div class="row min-vh-75 align-items-center justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0 text-center p-4">
+        <div class="card-body">
+          <div class="mb-4 text-primary d-flex justify-content-center">
+            <style>
+              .icon-wrapper svg {
+                width: 4rem;
+                height: 4rem;
+              }
+            </style>
+            <div class="icon-wrapper">{% include "svgs/icon-mail.svg" %}</div>
+          </div>
+          <h1 class="h3 fw-bold mb-3">{% translate "Check your inbox" %}</h1>
+          <p class="text-muted mb-4">
+            {% translate "We have sent you an email to confirm your registration. Please check your inbox and click the link to activate your account." %}
+          </p>
+          <div class="d-grid">
+            <a href="{% url 'home' %}" class="btn btn-outline-primary">{% translate "Back to Home" %}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

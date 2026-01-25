@@ -1,0 +1,13 @@
+{% load i18n %}
+
+<div class="mb-3">
+  <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+  {{ field }}
+  {% if field.help_text %}<div class="form-text text-muted small">{{ field.help_text|safe }}</div>{% endif %}
+  {% if field.errors %}
+    <div class="error-bubble-container">
+      {% for error in field.errors %}<div class="error-bubble">{{ error }}</div>{% endfor %}
+    </div>
+    {% comment %} Keeping invalid-feedback class on input for bootstrap validation if needed, but styling is custom now {% endcomment %}
+  {% endif %}
+</div>
