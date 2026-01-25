@@ -150,3 +150,26 @@
         width: 100%;
     }
 }
+
+/* Navbar Dropdown Overrides */
+.navbar .custom-dropdown .dropdown-trigger {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--text-muted);
+    min-width: unset;
+    /* Allow it to be smaller */
+    padding: 0.5rem 1rem;
+}
+
+.navbar .custom-dropdown .dropdown-trigger:hover {
+    background-color: hsla(var(--hue-primary), 50%, 50%, 0.08);
+    color: var(--color-primary);
+}
+
+.navbar .custom-dropdown .dropdown-menu {
+    /* Ensure it doesn't get cut off or positioned weirdly */
+    right: 0;
+    margin-top: 0.5rem;
+    min-width: 100px;
+    /* Override default 200px */
+}

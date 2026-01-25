@@ -113,19 +113,28 @@
                   class="d-inline-flex me-2">
               {% csrf_token %}
               <input name="next" type="hidden" value="{{ redirect_to }}" />
-              <select name="language"
-                      class="form-select form-select-sm lang-select"
-                      onchange="this.form.submit()">
-                {% get_current_language as LANGUAGE_CODE %}
-                {% get_available_languages as LANGUAGES %}
-                {% get_language_info_list for LANGUAGES as languages %}
-                {% for language in languages %}
-                  <option value="{{ language.code }}"
-                          {% if language.code == LANGUAGE_CODE %}selected{% endif %}>
-                    {{ language.code|upper }}
-                  </option>
-                {% endfor %}
-              </select>
+
+              <div class="custom-dropdown" id="languageDropdown">
+                <input type="hidden" name="language" value="{{ LANGUAGE_CODE }}" />
+
+                <button type="button" class="dropdown-trigger">
+                  <span class="selected-label">{{ LANGUAGE_CODE|upper }}</span>
+                  <span class="chevron-icon">{% include "svgs/icon-chevron-down.svg" %}</span>
+                </button>
+
+                <div class="dropdown-menu">
+                  {% get_current_language as LANGUAGE_CODE %}
+                  {% get_available_languages as LANGUAGES %}
+                  {% get_language_info_list for LANGUAGES as languages %}
+                  {% for language in languages %}
+                    <div class="dropdown-item {% if language.code == LANGUAGE_CODE %}selected{% endif %}"
+                         data-value="{{ language.code }}">
+                      <span>{{ language.code|upper }}</span>
+                      <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
             </form>
 
             <button id="theme-toggle" class="btn btn-icon" aria-label="Toggle theme">
