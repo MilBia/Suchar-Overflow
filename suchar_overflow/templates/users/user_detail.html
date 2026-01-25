@@ -35,7 +35,7 @@
                   <div class="position-absolute top-0 end-0 p-2 opacity-25 trophy-icon">🏆</div>
                   <h6 class="text-uppercase text-warning-emphasis small fw-bold mb-2">{% trans "The Best Of" %}</h6>
                   <div class="mb-0 small fst-italic text-dark">{{ best_joke.text|linebreaksbr }}</div>
-                  <div class="mt-2 small fw-bold text-warning-emphasis">{{ best_joke.score }} pkt</div>
+                  <div class="mt-2 small fw-bold text-warning-emphasis">{{ best_joke.score|default:0 }} pkt</div>
                 </div>
               </div>
             {% endif %}
