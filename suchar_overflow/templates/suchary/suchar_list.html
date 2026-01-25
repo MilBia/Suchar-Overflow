@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static %}
+{% load static i18n %}
 
 {% block title %}
   Suchary
@@ -9,8 +9,8 @@
   <div class="container py-4">
     <div class="row align-items-center mb-5 gy-4">
       <div class="col-lg-4">
-        <h1 class="fw-bold text-primary mb-0">Suchary</h1>
-        <p class="text-muted mb-0">Najsuchsze żarty w internecie.</p>
+        <h1 class="fw-bold text-primary mb-0">{% trans "Jokes" %}</h1>
+        <p class="text-muted mb-0">{% trans "The dryest jokes on the internet." %}</p>
       </div>
       <div class="col-lg-8">
         <form method="get"
@@ -25,7 +25,7 @@
                    name="q"
                    class="form-control mb-0 rounded-end-0"
                    style="border-right: 0"
-                   placeholder="Szukaj..."
+                   placeholder="{% trans 'Search...' %}"
                    aria-label="Search"
                    value="{{ request.GET.q|default:'' }}" />
             <button class="btn btn-secondary border-start-0 ps-2 rounded-start-0 d-flex align-items-center"
@@ -40,9 +40,9 @@
             <button type="button" class="dropdown-trigger">
               <span class="selected-label">
                 {% if request.GET.sort == 'top' %}
-                  Najlepsze
+                  {% trans "Top" %}
                 {% else %}
-                  Najnowsze
+                  {% trans "Newest" %}
                 {% endif %}
               </span>
               <span class="chevron-icon">{% include "svgs/icon-chevron-down.svg" %}</span>
@@ -50,12 +50,12 @@
             <div class="dropdown-menu">
               <div class="dropdown-item {% if not request.GET.sort or request.GET.sort == 'newest' %}selected{% endif %}"
                    data-value="newest">
-                <span>Najnowsze</span>
+                <span>{% trans "Newest" %}</span>
                 <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
               </div>
               <div class="dropdown-item {% if request.GET.sort == 'top' %}selected{% endif %}"
                    data-value="top">
-                <span>Najlepsze</span>
+                <span>{% trans "Top" %}</span>
                 <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
               </div>
             </div>
@@ -65,7 +65,7 @@
           <a href="{% url 'suchary:add' %}"
              class="btn btn-primary d-flex align-items-center text-nowrap">
             {% include "svgs/icon-plus.svg" %}
-            Dodaj
+            {% trans "Add" %}
           </a>
         </form>
       </div>
@@ -115,12 +115,12 @@
                             data-suchar-id="{{ suchar.pk }}"
                             data-value="1"
                             class="btn btn-icon btn-vote {% if suchar.user_vote == 1 %}active{% endif %}"
-                            title="Śmieszne (Głosuj w górę)">{% include "svgs/icon-vote-up.svg" %}</button>
+                            title="{% trans 'Funny (Upvote)' %}">{% include "svgs/icon-vote-up.svg" %}</button>
                     <button type="button"
                             data-suchar-id="{{ suchar.pk }}"
                             data-value="-1"
                             class="btn btn-icon btn-vote {% if suchar.user_vote == -1 %}active{% endif %}"
-                            title="Suchar (Głosuj w dół)">{% include "svgs/icon-vote-down.svg" %}</button>
+                            title="{% trans 'Dry (Downvote)' %}">{% include "svgs/icon-vote-down.svg" %}</button>
                   </div>
                 {% endif %}
               </div>
@@ -129,8 +129,8 @@
         {% empty %}
           <div class="text-center py-5">
             <div class="mb-3 text-muted">{% include "svgs/icon-cracker-stack.svg" %}</div>
-            <h3>Ale tu sucho...</h3>
-            <p class="text-muted">Bądź bohaterem, którego potrzebujemy i dodaj pierwszego suchara.</p>
+            <h3>{% trans "So dry here..." %}</h3>
+            <p class="text-muted">{% trans "Be the hero we need and add the first joke." %}</p>
           </div>
         {% endfor %}
       </div>
@@ -144,11 +144,11 @@
             {% if page_obj.has_previous %}
               <li class="page-item">
                 <a class="page-link"
-                   href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}">Poprzednia</a>
+                   href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}">{% trans "Previous" %}</a>
               </li>
             {% else %}
               <li class="page-item disabled">
-                <span class="page-link">Poprzednia</span>
+                <span class="page-link">{% trans "Previous" %}</span>
               </li>
             {% endif %}
             {% for i in paginator.page_range %}
@@ -168,11 +168,11 @@
             {% if page_obj.has_next %}
               <li class="page-item">
                 <a class="page-link"
-                   href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}">Następna</a>
+                   href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}">{% trans "Next" %}</a>
               </li>
             {% else %}
               <li class="page-item disabled">
-                <span class="page-link">Następna</span>
+                <span class="page-link">{% trans "Next" %}</span>
               </li>
             {% endif %}
           </ul>

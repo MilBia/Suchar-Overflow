@@ -1,18 +1,20 @@
 {% extends "base.html" %}
 
+{% load i18n %}
+
 {% block content %}
   <div class="row min-vh-75 align-items-center py-5">
     <div class="col-lg-6 mb-5 mb-lg-0 text-center text-lg-start">
-      <h1 class="display-3 fw-bold mb-4 text-primary">Suchy Chleb dla Konia</h1>
+      <h1 class="display-3 fw-bold mb-4 text-primary">{% trans "Dry Bread for the Horse" %}</h1>
       <p class="lead text-muted mb-5">
-        Witaj w <strong>Suchar Overflow</strong>. Miejscu, gdzie humor jest tak suchy, że potrzebujesz popić.
-        Głosuj na najlepsze suchary, dodawaj własne i stań się legenda osiedla.
+        {% trans "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, you need a drink." %}
+        {% trans "Vote for the best jokes, add your own, and become a neighborhood legend." %}
       </p>
       <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-lg-start">
         <a href="{% url 'suchary:list' %}"
-           class="btn btn-primary btn-lg px-4 gap-3">Przeglądaj Suchary</a>
+           class="btn btn-primary btn-lg px-4 gap-3">{% trans "Browse Jokes" %}</a>
         {% if not request.user.is_authenticated %}
-          <a href="{% url 'users:signup' %}" class="btn btn-outline btn-lg px-4">Dołącz do nas</a>
+          <a href="{% url 'users:signup' %}" class="btn btn-outline btn-lg px-4">{% trans "Join Us" %}</a>
         {% endif %}
       </div>
     </div>
@@ -26,24 +28,24 @@
     <div class="col-md-4 mb-3">
       <div class="card h-100 py-4 border-0 shadow-sm">
         <div class="card-body">
-          <h3 class="h4">Głosuj</h3>
-          <p class="text-muted">Oceniaj suchary innych. Decyduj co jest zabawne (a co żałosne).</p>
+          <h3 class="h4">{% trans "Vote" %}</h3>
+          <p class="text-muted">{% trans "Rate other people's jokes. Decide what is funny (and what is pathetic)." %}</p>
         </div>
       </div>
     </div>
     <div class="col-md-4 mb-3">
       <div class="card h-100 py-4 border-0 shadow-sm">
         <div class="card-body">
-          <h3 class="h4">Dodawaj</h3>
-          <p class="text-muted">Podziel się światem swoimi przemyśleniami. Nie wstydź się.</p>
+          <h3 class="h4">{% trans "Add" %}</h3>
+          <p class="text-muted">{% trans "Share your thoughts with the world. Don't be shy." %}</p>
         </div>
       </div>
     </div>
     <div class="col-md-4 mb-3">
       <div class="card h-100 py-4 border-0 shadow-sm">
         <div class="card-body">
-          <h3 class="h4">Śmiej się (opcjonalnie)</h3>
-          <p class="text-muted">Gwarantujemy uśmiech politowania lub zwrot pieniędzy (strona jest darmowa).</p>
+          <h3 class="h4">{% trans "Laugh (optional)" %}</h3>
+          <p class="text-muted">{% trans "We guarantee a pity smile or your money back (the site is free)." %}</p>
         </div>
       </div>
     </div>

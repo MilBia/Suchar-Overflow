@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load i18n %}
+
 {% load static %}
 
 {% block content %}
@@ -12,17 +14,17 @@
             <div class="card-body p-0">
               <div class="list-group list-group-flush rounded-4 overflow-hidden">
                 <div class="px-4 py-3 border-bottom text-muted">
-                  <span class="text-uppercase small fw-bold tracking-wide">Twoje Konto</span>
+                  <span class="text-uppercase small fw-bold tracking-wide">{% trans "Your Account" %}</span>
                 </div>
                 <a href="{% url 'users:detail' request.user.username %}"
                    class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'users:detail' %}active{% endif %}">
                   <span class="icon-wrapper">{% include "svgs/icon-user.svg" %}</span>
-                  Profil
+                  {% trans "Profile" %}
                 </a>
                 <a href="{% url 'users:update' %}"
                    class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'users:update' %}active{% endif %}">
                   <span class="icon-wrapper">{% include "svgs/icon-edit.svg" %}</span>
-                  Edytuj Profil
+                  {% trans "Edit Profile" %}
                 </a>
                 {% comment %}
               <a href="{% url 'account_email' %}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'account_email' %}active{% endif %}">
@@ -31,12 +33,12 @@
               </a>
                 {% endcomment %}
                 <div class="px-4 py-3 border-bottom border-top text-muted mt-2">
-                  <span class="text-uppercase small fw-bold tracking-wide">Bezpieczeństwo</span>
+                  <span class="text-uppercase small fw-bold tracking-wide">{% trans "Security" %}</span>
                 </div>
                 <a href="{% url 'password_change' %}"
                    class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'password_change' %}active{% endif %}">
                   <span class="icon-wrapper">{% include "svgs/icon-key.svg" %}</span>
-                  Zmień Hasło
+                  {% trans "Change Password" %}
                 </a>
                 {% comment %}
               <a href="{% url 'mfa_index' %}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'mfa_index' %}active{% endif %}">

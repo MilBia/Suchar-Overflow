@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
+{% load i18n %}
+
 {% load static %}
 
 {% block title %}
-  Dodaj Suchara
+  {% trans "Add Joke" %}
 {% endblock title %}
 {% block content %}
   <div class="row py-5 gx-5">
@@ -16,8 +18,8 @@
               {% include "svgs/icon-edit.svg" %}
             </div>
             <div>
-              <h2 class="fw-bold mb-0 h3">Dodaj Suchara</h2>
-              <p class="text-muted mb-0 small">Zabłyśnij humorem.</p>
+              <h2 class="fw-bold mb-0 h3">{% trans "Add Joke" %}</h2>
+              <p class="text-muted mb-0 small">{% trans "Shine with humor." %}</p>
             </div>
           </div>
 
@@ -26,30 +28,30 @@
 
             <!-- Manual Field Rendering for Control -->
             <div class="mb-4">
-              <label for="id_text" class="form-label fw-bold">Treść Suchara</label>
+              <label for="id_text" class="form-label fw-bold">{% trans "Joke Content" %}</label>
               <textarea name="text"
                         cols="40"
                         rows="10"
                         class="form-control form-control-lg"
-                        placeholder="Dlaczego kurczak przeszedł przez ulicę?"
+                        placeholder="{% trans 'Why did the chicken cross the road?' %}"
                         required
                         id="id_text"></textarea>
-              <div class="form-text">Pamiętaj, im bardziej sucho, tym lepiej.</div>
+              <div class="form-text">{% trans "Remember, the drier the better." %}</div>
             </div>
 
             <div class="mb-4">
-              <label for="id_tags_input" class="form-label fw-bold">Tagi</label>
+              <label for="id_tags_input" class="form-label fw-bold">{% trans "Tags" %}</label>
               <input type="text"
                      name="tags_input"
                      class="form-control"
-                     placeholder="np. it, programowanie, szkoła"
+                     placeholder="{% trans 'e.g. it, programming, school' %}"
                      id="id_tags_input" />
-              <div class="form-text">Oddzielaj przecinkami.</div>
+              <div class="form-text">{% trans "Separate with commas." %}</div>
             </div>
 
             <div class="d-grid gap-3 mt-5">
-              <button type="submit" class="btn btn-primary btn-lg shadow-sm">Opublikuj</button>
-              <a href="{% url 'suchary:list' %}" class="btn btn-outline text-muted">Anuluj</a>
+              <button type="submit" class="btn btn-primary btn-lg shadow-sm">{% trans "Publish" %}</button>
+              <a href="{% url 'suchary:list' %}" class="btn btn-outline text-muted">{% trans "Cancel" %}</a>
             </div>
           </form>
         </div>
@@ -59,7 +61,7 @@
     <!-- Right Column: Live Preview -->
     <div class="col-lg-6">
       <div class="sticky-preview">
-        <h6 class="text-uppercase text-muted fw-bold mb-3 small tracking-wide">Podgląd na żywo</h6>
+        <h6 class="text-uppercase text-muted fw-bold mb-3 small tracking-wide">{% trans "Live Preview" %}</h6>
 
         <!-- Preview Card (Matches suchar_list.html structure) -->
         <div class="card suchar-card shadow-sm border-0">
@@ -69,13 +71,15 @@
                 <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
                 <div>
                   <h6 class="mb-0 fw-bold">{{ user.display_name }}</h6>
-                  <small class="suchar-meta">Teraz</small>
+                  <small class="suchar-meta">{% trans "Now" %}</small>
                 </div>
               </div>
             </div>
 
             <!-- Preview Content -->
-            <p class="mb-4 preview-text text-muted fst-italic" id="previewText">Tutaj pojawi się treść Twojego suchara...</p>
+            <p class="mb-4 preview-text text-muted fst-italic" id="previewText">
+              {% trans "Your joke content will appear here..." %}
+            </p>
 
             <!-- Preview Tags -->
             <div class="mb-3" id="previewTags">
@@ -107,7 +111,7 @@
 
         <div class="card mt-4 bg-transparent border-0">
           <div class="card-body p-0 text-center text-muted small">
-            <p>Tak będzie wyglądał Twój wpis na liście głównej.</p>
+            <p>{% trans "This is how your joke will look on the main list." %}</p>
           </div>
         </div>
       </div>

@@ -463,3 +463,7 @@ a:hover {
 .rank-col {
   width: 40px;
 }
+
+.lang-select {
+  width: auto;
+}

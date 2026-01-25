@@ -1,9 +1,9 @@
 {% extends "users/base_dashboard.html" %}
 
-{% load static %}
+{% load static i18n %}
 
 {% block title %}
-  User: {{ object.username }}
+  {% trans "User" %}: {{ object.username }}
 {% endblock title %}
 {% block dashboard_content %}
   <div class="card shadow-lg border-0 h-100 overflow-hidden">
@@ -20,7 +20,7 @@
             {% if object.name %}
               <p class="text-muted mb-0">@{{ object.username }}</p>
             {% else %}
-              <p class="text-muted mb-0">Użytkownik Suchar Overflow</p>
+              <p class="text-muted mb-0">{% trans "Suchar Overflow User" %}</p>
             {% endif %}
           </div>
         </div>
@@ -30,17 +30,17 @@
           <div class="col-md-4 col-xl-3">
             <div class="card border bg-light h-100 mb-4">
               <div class="card-body">
-                <h6 class="text-uppercase text-muted small fw-bold mb-3">Statystyki</h6>
+                <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Statistics" %}</h6>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span>Suchary</span>
+                  <span>{% trans "Jokes" %}</span>
                   <span class="fw-bold">{{ suchar_count|default:"0" }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span>Polubienia</span>
+                  <span>{% trans "Score" %}</span>
                   <span class="fw-bold text-success">{{ object.total_score|default:"-" }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                  <span>Dołączył</span>
+                  <span>{% trans "Joined" %}</span>
                   <span>{{ object.date_joined|date:"M Y" }}</span>
                 </div>
               </div>
@@ -49,7 +49,7 @@
             <!-- Charts Section -->
             <div class="card border bg-light mb-4">
               <div class="card-body">
-                <h6 class="text-uppercase text-muted small fw-bold mb-3">Poziom Suchości</h6>
+                <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Dryness Level" %}</h6>
                 <div class="chart-container-sm">
                   <canvas id="userActivityChart"></canvas>
                 </div>
@@ -58,7 +58,7 @@
 
             <div class="card border bg-light">
               <div class="card-body">
-                <h6 class="text-uppercase text-muted small fw-bold mb-3">Odbiór</h6>
+                <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Reception" %}</h6>
                 <div class="chart-container-sm">
                   <canvas id="userReceptionChart"></canvas>
                 </div>
@@ -73,15 +73,15 @@
             <div class="card border-0 shadow-sm mb-4">
               <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h5 class="fw-bold mb-0">Mapa Suszy</h5>
+                  <h5 class="fw-bold mb-0">{% trans "Drought Map" %}</h5>
                   <div class="heatmap-legend">
-                    <span>Mniej</span>
+                    <span>{% trans "Less" %}</span>
                     <div class="legend-item heatmap-bg-0" title="0"></div>
                     <div class="legend-item heatmap-bg-1" title="1"></div>
                     <div class="legend-item heatmap-bg-2" title="2"></div>
                     <div class="legend-item heatmap-bg-3" title="3-4"></div>
                     <div class="legend-item heatmap-bg-4" title="5+"></div>
-                    <span>Więcej</span>
+                    <span>{% trans "More" %}</span>
                   </div>
                 </div>
 
@@ -94,9 +94,9 @@
 
                       <!-- Day labels aligned with grid -->
                       <div class="d-flex flex-column justify-content-between heatmap-days-labels">
-                        <span>Pn</span>
-                        <span>Śr</span>
-                        <span>Pt</span>
+                        <span>{% trans "Mon" %}</span>
+                        <span>{% trans "Wed" %}</span>
+                        <span>{% trans "Fri" %}</span>
                       </div>
                     </div>
 
@@ -115,7 +115,7 @@
                                  data-bs-toggle="tooltip"
                                  data-bs-custom-class="custom-tooltip"
                                  data-bs-placement="top"
-                                 title="{{ day.count }} sucharów w dniu {{ day.date }}"></div>
+                                 title="{{ day.count }} {% trans 'jokes on' %} {{ day.date }}"></div>
                           {% endfor %}
                         </div>
                       {% endfor %}
@@ -127,7 +127,7 @@
 
             <h4 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
               <span class="text-primary">{% include "svgs/icon-edit.svg" %}</span>
-              Ostatnie Suchary
+              {% trans "Latest Jokes" %}
             </h4>
 
             {% if latest_suchary %}
@@ -144,11 +144,11 @@
               </div>
               <div class="mt-3">
                 <a href="{% url 'suchary:list' %}?author={{ object.username }}"
-                   class="btn btn-outline btn-sm">Zobacz wszystkie wpisy</a>
+                   class="btn btn-outline btn-sm">{% trans "See all entries" %}</a>
               </div>
             {% else %}
               <div class="text-center py-5 bg-light rounded-4">
-                <p class="text-muted mb-0">Użytkownik nie dodał jeszcze żadnych sucharów.</p>
+                <p class="text-muted mb-0">{% trans "User hasn't added any jokes yet." %}</p>
               </div>
             {% endif %}
           </div>

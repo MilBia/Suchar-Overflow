@@ -22,6 +22,7 @@ urlpatterns = [
     path("stats/", include("suchar_overflow.stats.urls", namespace="stats")),
     path("accounts/", include("django.contrib.auth.urls")),
     # Your stuff: custom urls includes go here
+    path("i18n/", include("django.conf.urls.i18n")),
     path("suchary/", include("suchar_overflow.suchary.urls", namespace="suchary")),
     # API
     path("api/", api.urls),

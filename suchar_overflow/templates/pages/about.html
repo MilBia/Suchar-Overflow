@@ -1,28 +1,27 @@
 {% extends "base.html" %}
 
+{% load i18n %}
+
 {% block title %}
-  O Projekcie - Suchar Overflow
+  {% trans "About Project - Suchar Overflow" %}
 {% endblock title %}
 {% block content %}
   <div class="container py-5">
     <div class="row justify-content-center">
       <div class="col-lg-8">
         <div class="text-center mb-5">
-          <h1 class="display-4 fw-bold text-primary mb-3">O Projekcie</h1>
-          <p class="lead text-muted">Dlaczego to robimy? Bo ktoś musiał.</p>
+          <h1 class="display-4 fw-bold text-primary mb-3">{% trans "About Project" %}</h1>
+          <p class="lead text-muted">{% trans "Why do we do this? Because someone had to." %}</p>
         </div>
         <div class="card border-0 shadow-sm mb-4">
           <div class="card-body p-5">
-            <h2 class="h3 mb-4">Misja</h2>
+            <h2 class="h3 mb-4">{% trans "Mission" %}</h2>
             <p>
-              Celem Suchar Overflow jest zgromadzenie największej w Polsce kolekcji żartów, które powodują
-              fizyczny ból u odbiorcy. Wierzymy, że dobry suchar to taki, po którym zapada niezręczna cisza, a
-              w tle słychać świerszcze.
+              {% trans "The goal of Suchar Overflow is to gather the largest collection of jokes that cause physical pain to the recipient. We believe a good dry joke is one followed by awkward silence and crickets chirping in the background." %}
             </p>
-            <h2 class="h3 mb-4 mt-5">Technologia</h2>
+            <h2 class="h3 mb-4 mt-5">{% trans "Technology" %}</h2>
             <p>
-              Strona zbudowana jest w oparciu o najnowsze technologie (Django + Custom CSS), aby zapewnić
-              szybkie i niezawodne dostarczanie żenującego contentu prosto na Twój ekran.
+              {% trans "The site is built on the latest technologies (Django + Custom CSS) to ensure fast and reliable delivery of cringe content straight to your screen." %}
             </p>
           </div>
         </div>

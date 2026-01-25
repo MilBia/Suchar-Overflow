@@ -14,14 +14,14 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-          content="{% block description %}Agregator żartów o krytycznie niskim poziomie wilgotności.{% endblock description %}" />
+          content="{% block description %}{% trans 'Joke aggregator with critically low humidity levels.' %}{% endblock description %}" />
     <meta name="author" content="Miłosz Białczak" />
 
     <!-- Open Graph -->
     <meta property="og:title"
           content="{% block og_title %}Suchar Overflow{% endblock og_title %}" />
     <meta property="og:description"
-          content="{% block og_description %}Agregator żartów o krytycznie niskim poziomie wilgotności.{% endblock og_description %}" />
+          content="{% block og_description %}{% trans 'Joke aggregator with critically low humidity levels.' %}{% endblock og_description %}" />
     <meta property="og:image"
           content="{% block og_image %}{% static 'images/favicons/favicon.ico' %}{% endblock og_image %}" />
     <!-- "{% static 'images/logo.svg' %}" -->
@@ -94,19 +94,40 @@
         <div class="navbar-menu" id="navbar-menu">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'home' %}">Home</a>
+              <a class="nav-link" href="{% url 'home' %}">{% trans "Home" %}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'suchary:list' %}">Suchary</a>
+              <a class="nav-link" href="{% url 'suchary:list' %}">{% trans "Jokes" %}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'stats:leaderboard' %}">Ranking</a>
+              <a class="nav-link" href="{% url 'stats:leaderboard' %}">{% trans "Leaderboard" %}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'about' %}">O projekcie</a>
+              <a class="nav-link" href="{% url 'about' %}">{% trans "About" %}</a>
             </li>
           </ul>
           <div class="navbar-actions">
+            <!-- Language Switcher -->
+            <form action="{% url 'set_language' %}"
+                  method="post"
+                  class="d-inline-flex me-2">
+              {% csrf_token %}
+              <input name="next" type="hidden" value="{{ redirect_to }}" />
+              <select name="language"
+                      class="form-select form-select-sm lang-select"
+                      onchange="this.form.submit()">
+                {% get_current_language as LANGUAGE_CODE %}
+                {% get_available_languages as LANGUAGES %}
+                {% get_language_info_list for LANGUAGES as languages %}
+                {% for language in languages %}
+                  <option value="{{ language.code }}"
+                          {% if language.code == LANGUAGE_CODE %}selected{% endif %}>
+                    {{ language.code|upper }}
+                  </option>
+                {% endfor %}
+              </select>
+            </form>
+
             <button id="theme-toggle" class="btn btn-icon" aria-label="Toggle theme">
               {% include "svgs/icon-moon.svg" %}
               {% include "svgs/icon-sun.svg" %}
@@ -117,10 +138,10 @@
                 {% include "svgs/icon-user.svg" %}
                 {{ request.user.display_name }}
               </a>
-              <button class="btn btn-secondary btn-sm" id="logout-button">Wyloguj</button>
+              <button class="btn btn-secondary btn-sm" id="logout-button">{% trans "Log Out" %}</button>
             {% else %}
-              <a class="btn btn-outline btn-sm" href="{% url 'login' %}">Zaloguj</a>
-              <a class="btn btn-primary btn-sm" href="{% url 'users:signup' %}">Rejestracja</a>
+              <a class="btn btn-outline btn-sm" href="{% url 'login' %}">{% trans "Log In" %}</a>
+              <a class="btn btn-primary btn-sm" href="{% url 'users:signup' %}">{% trans "Sign Up" %}</a>
             {% endif %}
           </div>
         </div>
@@ -139,7 +160,7 @@
       <div class="container text-center">
         <p class="text-muted mb-0">
           © {% now "Y" %} Suchar Overflow.
-          <span class="d-block d-sm-inline mt-1 mt-sm-0">Wszelkie prawa zastrzeżone (ale żarty ukradzione).</span>
+          <span class="d-block d-sm-inline mt-1 mt-sm-0">{% trans "All rights reserved (but jokes stolen)." %}</span>
         </p>
       </div>
     </footer>
@@ -152,11 +173,11 @@
             <div class="toast-header">
               <strong class="me-auto">
                 {% if 'error' in message.tags %}
-                  Błąd
+                  {% trans "Error" %}
                 {% elif 'success' in message.tags %}
-                  Sukces
+                  {% trans "Success" %}
                 {% else %}
-                  Powiadomienie
+                  {% trans "Notification" %}
                 {% endif %}
               </strong>
               <button type="button" class="btn-close" aria-label="Close"></button>
@@ -171,15 +192,15 @@
     <div class="modal-overlay" id="logoutModal" hidden>
       <div class="modal" role="dialog" aria-modal="true">
         <div class="modal-header">
-          <h5 class="modal-title">Potwierdzenie wylogowania</h5>
+          <h5 class="modal-title">{% trans "Confirm Logout" %}</h5>
           <button type="button" class="btn-close modal-close" aria-label="Close"></button>
         </div>
-        <div class="modal-body">Czy na pewno chcesz się wylogować?</div>
+        <div class="modal-body">{% trans "Are you sure you want to log out?" %}</div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary modal-close">Anuluj</button>
+          <button type="button" class="btn btn-secondary modal-close">{% trans "Cancel" %}</button>
           <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Wyloguj się</button>
+            <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
           </form>
         </div>
       </div>

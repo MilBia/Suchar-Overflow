@@ -1,17 +1,19 @@
 {% extends "users/base_dashboard.html" %}
 
+{% load i18n %}
+
 {% block title %}
-  Edytuj Profil: {{ user.display_name }}
+  {% trans "Edit Profile" %}: {{ user.display_name }}
 {% endblock title %}
 {% block dashboard_content %}
   <div class="card shadow-sm">
     <div class="card-header pt-4 px-4 pb-0">
-      <h1 class="h3 fw-bold mb-0">Edytuj Profil</h1>
-      <p class="text-muted small">Tutaj możesz zaktualizować swoje dane.</p>
+      <h1 class="h3 fw-bold mb-0">{% trans "Edit Profile" %}</h1>
+      <p class="text-muted small">{% trans "Here you can update your data." %}</p>
     </div>
     <div class="card-body p-4">
       <div class="mb-4">
-        <label class="form-label text-muted">Adres e-mail</label>
+        <label class="form-label text-muted">{% trans "E-mail Address" %}</label>
         <div class="input-group">
           <input type="text"
                  class="form-control"
@@ -19,9 +21,9 @@
                  disabled
                  readonly />
           <a href="{% url 'users:email_change_initiate' %}"
-             class="btn btn-outline-primary">Zmień e-mail</a>
+             class="btn btn-outline-primary">{% trans "Change E-mail" %}</a>
         </div>
-        <div class="form-text">Zmiana adresu wymaga potwierdzenia.</div>
+        <div class="form-text">{% trans "Address change requires confirmation." %}</div>
       </div>
       <form class="form-horizontal"
             method="post"
@@ -30,8 +32,8 @@
         {% include "includes/form.html" %}
         <div class="mt-4 d-flex justify-content-end gap-2">
           <a href="{% url 'users:detail' request.user.username %}"
-             class="btn btn-secondary">Anuluj</a>
-          <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+             class="btn btn-secondary">{% trans "Cancel" %}</a>
+          <button type="submit" class="btn btn-primary">{% trans "Save Changes" %}</button>
         </div>
       </form>
     </div>
