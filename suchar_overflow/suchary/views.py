@@ -25,8 +25,12 @@ class SucharListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = Suchar.objects.annotate(
-            score=Coalesce(Sum("votes__value"), 0),
+        queryset = (
+            Suchar.objects.select_related("author")
+            .prefetch_related("tags")
+            .annotate(
+                score=Coalesce(Sum("votes__value"), 0),
+            )
         )
 
         if self.request.user.is_authenticated:

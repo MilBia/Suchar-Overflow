@@ -468,6 +468,20 @@ a:hover {
   width: 40px;
 }
 
+
+/* =========================================
+   Suchar Card Styles
+   ========================================= */
+.suchar-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+.suchar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
 .lang-select {
   width: auto;
 }
