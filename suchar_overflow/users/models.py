@@ -21,6 +21,11 @@ class User(AbstractUser):
     last_name = None  # type: ignore[assignment]
     email = models.EmailField(_("email address"), unique=True)
 
+    @property
+    def display_name(self) -> str:
+        """Return name if set, otherwise username."""
+        return self.name if self.name else self.username
+
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
 

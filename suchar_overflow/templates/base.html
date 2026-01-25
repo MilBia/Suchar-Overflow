@@ -109,7 +109,7 @@
               <a class="nav-link user-link d-flex align-items-center gap-2"
                  href="{% url 'users:detail' request.user.username %}">
                 {% include "svgs/icon-user.svg" %}
-                {{ request.user.username }}
+                {{ request.user.display_name }}
               </a>
               <button class="btn btn-secondary btn-sm" id="logout-button">Wyloguj</button>
             {% else %}

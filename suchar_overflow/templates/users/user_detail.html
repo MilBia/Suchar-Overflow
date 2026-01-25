@@ -16,9 +16,9 @@
         <div class="d-flex align-items-end mb-4 profile-header-wrapper">
           <div class="avatar-profile flex-shrink-0 me-4">{% include "svgs/icon-user.svg" %}</div>
           <div class="mb-2">
-            <h2 class="h2 fw-bold mb-0">{{ object.username }}</h2>
+            <h2 class="h2 fw-bold mb-0">{{ object.display_name }}</h2>
             {% if object.name %}
-              <p class="text-muted mb-0">{{ object.name }}</p>
+              <p class="text-muted mb-0">@{{ object.username }}</p>
             {% else %}
               <p class="text-muted mb-0">Użytkownik Suchar Overflow</p>
             {% endif %}
