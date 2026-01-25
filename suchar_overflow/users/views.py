@@ -44,7 +44,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.get_object()
+        user = self.object
 
         # 1. Latest Suchary
         context["latest_suchary"] = user.suchary.all().order_by("-created_at")[:5]
@@ -52,7 +52,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         # 2. Total Score & Count
         stats = user.suchary.aggregate(
             total_score=Sum("votes__value"),
-            total_count=Count("id"),
+            total_count=Count("id", distinct=True),
         )
         user.total_score = stats["total_score"] or 0
         context["suchar_count"] = stats["total_count"] or 0

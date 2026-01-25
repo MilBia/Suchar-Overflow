@@ -12,6 +12,8 @@ from django.test import RequestFactory
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from suchar_overflow.suchary.models import Suchar
+from suchar_overflow.suchary.models import Vote
 from suchar_overflow.users.forms import UserAdminChangeForm
 from suchar_overflow.users.models import User
 from suchar_overflow.users.tests.factories import UserFactory
@@ -99,3 +101,30 @@ class TestUserDetailView:
         assert isinstance(response, HttpResponseRedirect)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == f"{login_url}?next=/fake-url/"
+
+    def test_stats_calculation(self, user: User, rf: RequestFactory, client):
+        """Verify that total_score and suchar_count are correctly calculated."""
+        # Create one joke with 1 upvote
+        s1 = Suchar.objects.create(text="Joke 1", author=user)
+        Vote.objects.create(suchar=s1, user=user, value=Vote.UP)
+
+        # Create duplicated vote on another joke to verify distinct counting?
+        # Vote unique_together constraint prevents multiple votes by same user.
+        # So to test distinct=True we need multiple votes on user's jokes.
+        # Create 2nd joke with 1 downvote from another user
+        other_user = UserFactory()
+        s2 = Suchar.objects.create(text="Joke 2", author=user)
+        Vote.objects.create(suchar=s2, user=other_user, value=Vote.DOWN)  # -1
+
+        # Total score: 1 - 1 = 0
+        # Total count: 2
+
+        client.force_login(user)
+        response = client.get(f"/users/{user.username}/")
+
+        assert response.status_code == HTTPStatus.OK
+        # Verify total_score = 0
+        assert response.context["object"].total_score == 0
+        # Verify suchar_count = 2 (not 3 due to joins)
+        expected_count = 2
+        assert response.context["suchar_count"] == expected_count
