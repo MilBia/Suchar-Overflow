@@ -153,8 +153,8 @@ msgstr "Witaj w <strong>Suchar Overflow</strong>. Miejscu, gdzie humor jest tak 
 
 #: suchar_overflow/templates/pages/home.html:10
 msgid ""
-"Vote for the best jokes, add your own, and become a neighborhood legend."
-msgstr "Głosuj na najlepsze suchary, dodawaj własne i stań się legendą osiedla."
+"Vote for the best jokes, add your own, and become an office legend."
+msgstr "Głosuj na najlepsze suchary, dodawaj własne i stań się legendą biura."
 
 #: suchar_overflow/templates/pages/home.html:14
 msgid "Browse Jokes"
@@ -361,7 +361,7 @@ msgstr "Brak danych."
 
 #: suchar_overflow/templates/stats/leaderboard.html:69
 msgid "Hall of Fame"
-msgstr "Hall of Fame"
+msgstr "Galeria Sław"
 
 #: suchar_overflow/templates/stats/leaderboard.html:90
 msgid "votes"
