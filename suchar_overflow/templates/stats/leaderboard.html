@@ -27,18 +27,18 @@
       <!-- Top Authors -->
       <div class="col-lg-6">
         <div class="card shadow-lg border-0 h-100">
-          <div class="card-header bg-primary text-white py-3 border-0">
+          <div class="card-header card-header-gold py-3 border-0">
             <div class="d-flex align-items-center gap-2">
-              {% include "svgs/icon-user.svg" %}
+              <div class="header-icon-wrapper header-icon-user">{% include "svgs/icon-user.svg" %}</div>
               <h4 class="mb-0 fw-bold">{% trans "Dryest Authors" %}</h4>
             </div>
           </div>
           <div class="list-group list-group-flush">
             {% for author in top_authors %}
               <div class="list-group-item d-flex align-items-center p-3 border-0 border-bottom">
-                <div class="h2 fw-bold text-muted me-3 mb-0 rank-col">#{{ forloop.counter }}</div>
+                <div class="h2 fw-bold text-muted me-3 mb-0 rank-col rank-{{ forloop.counter }}">#{{ forloop.counter }}</div>
                 <div class="avatar-sm me-3">
-                  <div class="avatar-circle">{{ author.username|make_list|first|upper }}</div>
+                  <div class="avatar-circle avatar-rank-{{ forloop.counter }}">{{ author.username|make_list|first|upper }}</div>
                 </div>
                 <div class="flex-grow-1">
                   <h6 class="mb-0 fw-bold">
@@ -48,7 +48,7 @@
                   <small class="text-muted">{{ author.suchar_count }} {% trans "jokes" %}</small>
                 </div>
                 <div class="text-end">
-                  <span class="d-inline-block py-1 px-2 rounded-2 bg-light text-primary border fw-bold small">
+                  <span class="d-inline-block py-1 px-2 rounded-2 bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fw-bold small">
                     {{ author.total_score|default:0 }} pkt
                   </span>
                 </div>
@@ -63,9 +63,9 @@
       <!-- Top Suchars -->
       <div class="col-lg-6">
         <div class="card shadow-lg border-0 h-100">
-          <div class="card-header bg-warning text-dark py-3 border-0">
+          <div class="card-header card-header-royal py-3 border-0">
             <div class="d-flex align-items-center gap-2">
-              {% include "svgs/icon-cracker-stack.svg" %}
+              <div class="header-icon-wrapper header-icon-cracker">{% include "svgs/icon-cracker-stack.svg" %}</div>
               <h4 class="mb-0 fw-bold">{% trans "Hall of Fame" %}</h4>
             </div>
           </div>
@@ -74,7 +74,7 @@
               <div class="list-group-item p-3 border-0 border-bottom">
                 <div class="d-flex w-100 justify-content-between mb-2">
                   <h6 class="mb-0 text-muted small">
-                    <span class="fw-bold text-warning">#{{ forloop.counter }}</span>
+                    <span class="fw-bold text-warning rank-{{ forloop.counter }}">#{{ forloop.counter }}</span>
                     by {{ suchar.author.display_name }}
                   </h6>
                   <small class="text-muted">{{ suchar.created_at|date:"d M Y" }}</small>

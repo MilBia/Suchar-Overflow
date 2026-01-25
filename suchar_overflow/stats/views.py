@@ -31,7 +31,9 @@ class LeaderboardView(TemplateView):
 
         # Top Suchars
         top_suchars = (
-            Suchar.objects.annotate(
+            Suchar.objects.select_related("author")
+            .prefetch_related("tags")
+            .annotate(
                 score=Sum("votes__value"),
             )
             .exclude(score=None)

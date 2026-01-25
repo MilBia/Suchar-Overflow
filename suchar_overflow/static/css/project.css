@@ -2,6 +2,8 @@
    Project Specific Overrides
    ========================================= */
 
+@import "components/leaderboard.css";
+
 /* Global Typography & Layout */
 body {
   background-color: var(--bg-app);
