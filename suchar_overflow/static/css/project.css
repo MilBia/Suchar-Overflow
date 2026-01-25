@@ -482,6 +482,12 @@ a:hover {
   box-shadow: var(--shadow-md);
 }
 
+
+.trophy-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
 .lang-select {
   width: auto;
 }

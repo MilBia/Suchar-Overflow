@@ -57,6 +57,22 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         user.total_score = stats["total_score"] or 0
         context["suchar_count"] = stats["total_count"] or 0
 
+        # Global Rank
+        # Count users with strictly higher total score
+        higher_ranking_users = (
+            User.objects.annotate(score=Sum("suchary__votes__value"))
+            .filter(score__gt=user.total_score)
+            .count()
+        )
+        context["global_rank"] = higher_ranking_users + 1
+
+        # Best Joke (highest score)
+        context["best_joke"] = (
+            user.suchary.annotate(score=Sum("votes__value"))
+            .order_by("-score", "-created_at")
+            .first()
+        )
+
         # 3. Dryness Chart (Activity over last 30 days)
         last_30_days = timezone.now() - datetime.timedelta(days=30)
         activity_data = (
