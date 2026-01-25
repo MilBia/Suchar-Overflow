@@ -3,6 +3,8 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.db.models import Count
+from django.db.models import OuterRef
+from django.db.models import Subquery
 from django.db.models import Sum
 from django.db.models.functions import TruncDay
 from django.utils import timezone
@@ -20,10 +22,20 @@ class LeaderboardView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         # Top Authors
+        # Subquery to get the text of the highest scored suchar for the author
+
+        best_suchar_subquery = (
+            Suchar.objects.filter(author=OuterRef("pk"))
+            .annotate(score=Sum("votes__value"))
+            .order_by("-score")
+            .values("text")[:1]
+        )
+
         top_authors = (
             User.objects.annotate(
                 total_score=Sum("suchary__votes__value"),
                 suchar_count=Count("suchary"),
+                best_joke=Subquery(best_suchar_subquery),
             )
             .exclude(total_score=None)
             .order_by("-total_score")[:10]

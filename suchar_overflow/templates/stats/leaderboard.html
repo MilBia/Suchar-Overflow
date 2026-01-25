@@ -35,23 +35,28 @@
           </div>
           <div class="list-group list-group-flush">
             {% for author in top_authors %}
-              <div class="list-group-item d-flex align-items-center p-3 border-0 border-bottom">
-                <div class="h2 fw-bold text-muted me-3 mb-0 rank-col rank-{{ forloop.counter }}">#{{ forloop.counter }}</div>
-                <div class="avatar-sm me-3">
-                  <div class="avatar-circle avatar-rank-{{ forloop.counter }}">{{ author.username|make_list|first|upper }}</div>
+              <div class="list-group-item p-3 border-0 border-bottom">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="h2 fw-bold text-muted me-3 mb-0 rank-col rank-{{ forloop.counter }}">#{{ forloop.counter }}</div>
+                  <div class="flex-grow-1">
+                    <h5 class="mb-0 fw-bold">
+                      <a href="{% url 'users:detail' author.username %}"
+                         class="text-decoration-none text-dark">{{ author.display_name }}</a>
+                    </h5>
+                    <small class="text-muted">{{ author.suchar_count }} {% trans "jokes" %}</small>
+                  </div>
+                  <div class="text-end">
+                    <span class="d-inline-block py-1 px-2 rounded-2 bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fw-bold small">
+                      {{ author.total_score|default:0 }} pkt
+                    </span>
+                  </div>
                 </div>
-                <div class="flex-grow-1">
-                  <h6 class="mb-0 fw-bold">
-                    <a href="{% url 'users:detail' author.username %}"
-                       class="text-decoration-none text-dark">{{ author.display_name }}</a>
-                  </h6>
-                  <small class="text-muted">{{ author.suchar_count }} {% trans "jokes" %}</small>
-                </div>
-                <div class="text-end">
-                  <span class="d-inline-block py-1 px-2 rounded-2 bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fw-bold small">
-                    {{ author.total_score|default:0 }} pkt
-                  </span>
-                </div>
+                {% if author.best_joke %}
+                  <div class="bg-light p-3 rounded small fst-italic text-muted border-start border-4 border-primary mt-2">
+                    <i class="me-1 opacity-50">🏆</i>
+                    <span class="d-inline-block">{{ author.best_joke|linebreaksbr }}</span>
+                  </div>
+                {% endif %}
               </div>
             {% empty %}
               <div class="text-center p-5 text-muted">{% trans "No data available." %}</div>
