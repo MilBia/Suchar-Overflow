@@ -371,6 +371,10 @@ msgstr "głosów"
 msgid "No jokes found."
 msgstr "Brak sucharów."
 
+#: suchar_overflow/templates/stats/leaderboard.html:101
+msgid "Only jokes with at least one vote are included."
+msgstr "Ranking uwzględnia tylko suchary z przynajmniej jednym głosem."
+
 #: suchar_overflow/templates/stats/leaderboard.html:118
 msgid "New Jokes"
 msgstr "Nowe Suchary"
