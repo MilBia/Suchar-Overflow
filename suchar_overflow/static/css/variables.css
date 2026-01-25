@@ -96,6 +96,13 @@
     --space-md: 1rem;
     --space-lg: 2rem;
     --space-xl: 4rem;
+
+    /* Heatmap (Light Mode) - Based on Dry/Warning Hue */
+    --heatmap-level-0: var(--border-color);
+    --heatmap-level-1: hsl(var(--hue-warning), 90%, 90%);
+    --heatmap-level-2: hsl(var(--hue-warning), 85%, 75%);
+    --heatmap-level-3: hsl(var(--hue-warning), 80%, 60%);
+    --heatmap-level-4: hsl(var(--hue-warning), 80%, 45%);
 }
 
 /* -----------------------------------------
@@ -135,4 +142,12 @@
     /* Glassmorphism */
     --glass-border: 1px solid rgba(255, 255, 255, 0.08);
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+
+    /* Heatmap (Dark Mode) */
+    --heatmap-level-0: rgba(255, 255, 255, 0.05);
+    /* Subtle inactive */
+    --heatmap-level-1: hsla(var(--hue-warning), 70%, 50%, 0.2);
+    --heatmap-level-2: hsla(var(--hue-warning), 70%, 50%, 0.4);
+    --heatmap-level-3: hsla(var(--hue-warning), 70%, 50%, 0.7);
+    --heatmap-level-4: hsla(var(--hue-warning), 70%, 50%, 1.0);
 }

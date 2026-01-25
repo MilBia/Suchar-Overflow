@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -6,7 +7,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import send_mail
+from django.db.models import Count
 from django.db.models import QuerySet
+from django.db.models import Sum
+from django.db.models.functions import TruncDay
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -25,6 +29,7 @@ from django.views.generic import RedirectView
 from django.views.generic import UpdateView
 from django.views.generic.edit import CreateView
 
+from suchar_overflow.suchary.models import Vote
 from suchar_overflow.users.models import User
 
 from .forms import EmailChangeForm
@@ -39,10 +44,126 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["latest_suchary"] = self.object.suchary.all().order_by("-created_at")[
-            :5
-        ]
+        user = self.get_object()
+
+        # 1. Latest Suchary
+        context["latest_suchary"] = user.suchary.all().order_by("-created_at")[:5]
+
+        # 2. Total Score & Count
+        stats = user.suchary.aggregate(
+            total_score=Sum("votes__value"),
+            total_count=Count("id"),
+        )
+        user.total_score = stats["total_score"] or 0
+        context["suchar_count"] = stats["total_count"] or 0
+
+        # 3. Dryness Chart (Activity over last 30 days)
+        last_30_days = timezone.now() - datetime.timedelta(days=30)
+        activity_data = (
+            user.suchary.filter(created_at__gte=last_30_days)
+            .annotate(date=TruncDay("created_at"))
+            .values("date")
+            .annotate(count=Count("id"))
+            .order_by("date")
+        )
+
+        chart_labels = [entry["date"].strftime("%Y-%m-%d") for entry in activity_data]
+        chart_values = [entry["count"] for entry in activity_data]
+        context["activity_labels"] = json.dumps(chart_labels)
+        context["activity_values"] = json.dumps(chart_values)
+
+        # 4. Reception Chart (Upvotes vs Downvotes received)
+        # We need to count votes ON user's suchars
+        # Votes where suchar__author = user
+        upvotes = Vote.objects.filter(suchar__author=user, value=Vote.UP).count()
+        downvotes = Vote.objects.filter(suchar__author=user, value=Vote.DOWN).count()
+
+        context["reception_data"] = json.dumps([upvotes, downvotes])
+
+        # 5. Contribution Heatmap (Last ~1 year, aligned to weeks)
+        context["heatmap_weeks"] = self._get_heatmap_weeks(user)
+
         return context
+
+    def _get_heatmap_weeks(self, user):
+        today = timezone.now().date()
+        # Go back approx 1 year
+        start_date = today - datetime.timedelta(days=365)
+        # Align start_date to the previous Monday to ensure the grid starts correctly
+        # (Mon-Sun columns) weekday(): Mon=0 ... Sun=6
+        days_to_subtract = start_date.weekday()
+        start_date -= datetime.timedelta(days=days_to_subtract)
+
+        # Get counts per day
+        daily_counts = (
+            user.suchary.filter(created_at__date__gte=start_date)
+            .annotate(date=TruncDay("created_at"))
+            .values("date")
+            .annotate(count=Count("id"))
+            .order_by("date")
+        )
+
+        # Convert to dictionary for easy lookup
+        counts_dict = {entry["date"].date(): entry["count"] for entry in daily_counts}
+
+        heatmap_weeks = []
+        current_week_days = []
+        current_week_label = None
+
+        current_date = start_date
+
+        # Iterate day by day
+        while current_date <= today:
+            count = counts_dict.get(current_date, 0)
+
+            # Month Label logic: Check if this week contains the 1st of a month
+            # We assign the label to the current week
+            if current_date.day == 1:
+                # Use short month name.
+                current_week_label = current_date.strftime("%b")
+
+            # Determine level 0-4
+            if count == 0:
+                level = 0
+            elif count == 1:
+                level = 1
+            elif count == 2:  # noqa: PLR2004
+                level = 2
+            elif count <= 4:  # noqa: PLR2004
+                level = 3
+            else:
+                level = 4
+
+            current_week_days.append(
+                {
+                    "date": current_date.strftime("%Y-%m-%d"),
+                    "count": count,
+                    "level": level,
+                },
+            )
+
+            # If Sunday (weekday 6), close the week
+            if current_date.weekday() == 6:  # noqa: PLR2004
+                heatmap_weeks.append(
+                    {
+                        "days": current_week_days,
+                        "month_label": current_week_label,
+                    },
+                )
+                current_week_days = []
+                current_week_label = None
+
+            current_date += datetime.timedelta(days=1)
+
+        # Add partially filled last week if necessary
+        if current_week_days:
+            heatmap_weeks.append(
+                {
+                    "days": current_week_days,
+                    "month_label": current_week_label,
+                },
+            )
+        return heatmap_weeks
 
 
 user_detail_view = UserDetailView.as_view()

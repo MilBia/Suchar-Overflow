@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+  Ranking Sucharów
+{% endblock title %}
+
+{% block content %}
+  <div class="container py-5">
+    <div class="text-center mb-5">
+      <h1 class="display-4 fw-bold text-primary">Ranking Sucharów</h1>
+      <p class="lead text-muted">Gdzie suchość osiąga poziom krytyczny.</p>
+    </div>
+
+    <!-- Global Activity Chart -->
+    <div class="card shadow-sm border-0 mb-5">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-4">Aktywność Sucharów (Ostatnie 30 dni)</h5>
+        <div class="chart-container-lg">
+          <canvas id="activityChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-5">
+      <!-- Top Authors -->
+      <div class="col-lg-6">
+        <div class="card shadow-lg border-0 h-100">
+          <div class="card-header bg-primary text-white py-3 border-0">
+            <div class="d-flex align-items-center gap-2">
+              {% include "svgs/icon-user.svg" %}
+              <h4 class="mb-0 fw-bold">Najsuchsi Autorzy</h4>
+            </div>
+          </div>
+          <div class="list-group list-group-flush">
+            {% for author in top_authors %}
+              <div class="list-group-item d-flex align-items-center p-3 border-0 border-bottom">
+                <div class="h2 fw-bold text-muted me-3 mb-0 rank-col">#{{ forloop.counter }}</div>
+                <div class="avatar-sm me-3">
+                  <div class="avatar-circle">{{ author.username|make_list|first|upper }}</div>
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="mb-0 fw-bold">
+                    <a href="{% url 'users:detail' author.username %}"
+                       class="text-decoration-none text-dark">{{ author.display_name }}</a>
+                  </h6>
+                  <small class="text-muted">{{ author.suchar_count }} sucharów</small>
+                </div>
+                <div class="text-end">
+                  <span class="d-inline-block py-1 px-2 rounded-2 bg-light text-primary border fw-bold small">
+                    {{ author.total_score|default:0 }} pkt
+                  </span>
+                </div>
+              </div>
+            {% empty %}
+              <div class="text-center p-5 text-muted">Brak danych.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Suchars -->
+      <div class="col-lg-6">
+        <div class="card shadow-lg border-0 h-100">
+          <div class="card-header bg-warning text-dark py-3 border-0">
+            <div class="d-flex align-items-center gap-2">
+              {% include "svgs/icon-cracker-stack.svg" %}
+              <h4 class="mb-0 fw-bold">Hall of Fame</h4>
+            </div>
+          </div>
+          <div class="list-group list-group-flush">
+            {% for suchar in top_suchars %}
+              <div class="list-group-item p-3 border-0 border-bottom">
+                <div class="d-flex w-100 justify-content-between mb-2">
+                  <h6 class="mb-0 text-muted small">
+                    <span class="fw-bold text-warning">#{{ forloop.counter }}</span>
+                    by {{ suchar.author.display_name }}
+                  </h6>
+                  <small class="text-muted">{{ suchar.created_at|date:"d M Y" }}</small>
+                </div>
+                <p class="mb-2 fst-italic">"{{ suchar.text|truncatechars:100 }}"</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <small class="text-muted">
+                    {% for tag in suchar.tags.all|slice:":3" %}
+                      <span class="d-inline-block py-0 px-2 rounded-1 bg-light text-secondary border small">#{{ tag.name }}</span>
+                    {% endfor %}
+                  </small>
+                  <span class="d-inline-block py-1 px-2 rounded-2 bg-success bg-opacity-10 text-success border border-success small fw-bold">
+                    +{{ suchar.score }} głosów
+                  </span>
+                </div>
+              </div>
+            {% empty %}
+              <div class="text-center p-5 text-muted">Brak sucharów.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const ctx = document.getElementById('activityChart').getContext('2d');
+      const labels = JSON.parse('{{ chart_labels|safe }}');
+      const data = JSON.parse('{{ chart_values|safe }}');
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Nowe Suchary',
+            data: data,
+            borderColor: '#3b82f6', // Primary Blue
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true,
+            borderWidth: 2,
+            pointRadius: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              },
+              grid: {
+                borderDash: [2, 4]
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+{% endblock javascript %}

@@ -4,51 +4,54 @@
 
 {% block content %}
   <div class="container py-4">
-    <div class="row g-4">
-      <!-- Sidebar -->
-      <div class="col-lg-3">
-        <div class="card shadow-md border-0 sticky-top sticky-sidebar dashboard-card">
-          <div class="card-body p-0">
-            <div class="list-group list-group-flush rounded-4 overflow-hidden">
-              <div class="px-4 py-3 border-bottom text-muted">
-                <span class="text-uppercase small fw-bold tracking-wide">Twoje Konto</span>
-              </div>
-              <a href="{% url 'users:detail' request.user.username %}"
-                 class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'users:detail' %}active{% endif %}">
-                <span class="icon-wrapper">{% include "svgs/icon-user.svg" %}</span>
-                Profil
-              </a>
-              <a href="{% url 'users:update' %}"
-                 class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'users:update' %}active{% endif %}">
-                <span class="icon-wrapper">{% include "svgs/icon-edit.svg" %}</span>
-                Edytuj Profil
-              </a>
-              {% comment %}
+    <div class="row g-4 justify-content-center">
+      {% if not request.resolver_match.view_name == 'users:detail' or request.user == user %}
+        <!-- Sidebar (Only for own profile/settings) -->
+        <div class="col-lg-3">
+          <div class="card shadow-md border-0 sticky-top sticky-sidebar dashboard-card">
+            <div class="card-body p-0">
+              <div class="list-group list-group-flush rounded-4 overflow-hidden">
+                <div class="px-4 py-3 border-bottom text-muted">
+                  <span class="text-uppercase small fw-bold tracking-wide">Twoje Konto</span>
+                </div>
+                <a href="{% url 'users:detail' request.user.username %}"
+                   class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'users:detail' %}active{% endif %}">
+                  <span class="icon-wrapper">{% include "svgs/icon-user.svg" %}</span>
+                  Profil
+                </a>
+                <a href="{% url 'users:update' %}"
+                   class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'users:update' %}active{% endif %}">
+                  <span class="icon-wrapper">{% include "svgs/icon-edit.svg" %}</span>
+                  Edytuj Profil
+                </a>
+                {% comment %}
               <a href="{% url 'account_email' %}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'account_email' %}active{% endif %}">
                 <span class="icon-wrapper">{% include "svgs/icon-mail.svg" %}</span>
                 Adres E-mail
               </a>
-              {% endcomment %}
-              <div class="px-4 py-3 border-bottom border-top text-muted mt-2">
-                <span class="text-uppercase small fw-bold tracking-wide">Bezpieczeństwo</span>
-              </div>
-              <a href="{% url 'password_change' %}"
-                 class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'password_change' %}active{% endif %}">
-                <span class="icon-wrapper">{% include "svgs/icon-key.svg" %}</span>
-                Zmień Hasło
-              </a>
-              {% comment %}
+                {% endcomment %}
+                <div class="px-4 py-3 border-bottom border-top text-muted mt-2">
+                  <span class="text-uppercase small fw-bold tracking-wide">Bezpieczeństwo</span>
+                </div>
+                <a href="{% url 'password_change' %}"
+                   class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'password_change' %}active{% endif %}">
+                  <span class="icon-wrapper">{% include "svgs/icon-key.svg" %}</span>
+                  Zmień Hasło
+                </a>
+                {% comment %}
               <a href="{% url 'mfa_index' %}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 px-4 py-3 {% if request.resolver_match.view_name == 'mfa_index' %}active{% endif %}">
                 <span class="icon-wrapper">{% include "svgs/icon-shield.svg" %}</span>
                 Uwierzytelnianie (MFA)
               </a>
-              {% endcomment %}
+                {% endcomment %}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      {% endif %}
+
       <!-- Main Content Area -->
-      <div class="col-lg-9">
+      <div class="{% if request.resolver_match.view_name == 'users:detail' and request.user != user %}col-12 col-lg-10 mx-auto{% else %}col-lg-9{% endif %}">
         {% block dashboard_content %}
         {% endblock dashboard_content %}
       </div>
