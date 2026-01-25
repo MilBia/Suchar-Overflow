@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
@@ -25,3 +26,13 @@ class UserAdminChangeForm(UserChangeForm):
 
 class UserAdminCreationForm(UserCreationForm):
     """Alias to UserCreationForm for compatibility."""
+
+
+class EmailChangeForm(forms.Form):
+    email = forms.EmailField(label=_("New Email Address"), required=True)
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError(_("This email is already currently used."))
+        return email

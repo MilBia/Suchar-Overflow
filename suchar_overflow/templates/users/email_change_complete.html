@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% translate "Email Changed" %}
+{% endblock title %}
+
+{% block content %}
+  <div class="row justify-content-center text-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 p-5">
+        <div class="mb-4 text-success d-flex justify-content-center">
+          <style>
+            .icon-wrapper svg {
+              width: 5rem;
+              height: 5rem;
+            }
+          </style>
+          <div class="icon-wrapper">{% include "svgs/icon-check.svg" %}</div>
+        </div>
+
+        <h1 class="h2 mb-3">Udało się!</h1>
+        <p class="text-muted mb-4">Twój adres e-mail został zmieniony. Teraz możesz spać spokojnie (albo i nie).</p>
+
+        <a href="{% url 'users:update' %}" class="btn btn-primary mt-3">Wróć do ustawień</a>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

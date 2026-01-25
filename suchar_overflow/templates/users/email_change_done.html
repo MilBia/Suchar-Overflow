@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% translate "Email Sent" %}
+{% endblock title %}
+
+{% block content %}
+  <div class="row justify-content-center text-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 p-5">
+        <div class="mb-4 text-primary d-flex justify-content-center">
+          <style>
+            .icon-wrapper svg {
+              width: 5rem;
+              height: 5rem;
+            }
+          </style>
+          <div class="icon-wrapper">{% include "svgs/icon-mail.svg" %}</div>
+        </div>
+
+        <h1 class="h2 mb-3">Sprawdź obie skrzynki!</h1>
+        <p class="text-muted mb-4">
+          Wysłaliśmy wiadomość na <strong>NOWY</strong> adres z linkiem aktywacyjnym.
+          <br />
+          Ale wysłaliśmy też ostrzeżenie na <strong>STARY</strong> adres, żebyś wiedział, że to na pewno Ty.
+        </p>
+        <p class="small text-muted">
+          Jeśli nie klikniesz w link, nic się nie zmieni. Twoje konto pozostanie tak suche jak nasze żarty.
+        </p>
+
+        <a href="{% url 'users:detail' request.user.username %}"
+           class="btn btn-primary mt-3">Wróć do profilu</a>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

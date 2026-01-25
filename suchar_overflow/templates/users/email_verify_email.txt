@@ -1,0 +1,14 @@
+{% autoescape off %}
+Cześć {{ user.username }}!
+
+Otrzymaliśmy prośbę o zmianę adresu e-mail na ten właśnie, na który to czytasz ({{ new_email }}).
+
+Jeśli to Ty, kliknij w poniższy link, aby potwierdzić zmianę:
+{{ verify_link }}
+
+Link jest ważny przez 24 godziny (lub do momentu aż wyparuje).
+
+Jeśli to nie Ty, zignoruj tę wiadomość, a na stary adres wysłaliśmy instrukcję jak zablokować intruza.
+
+Suchar Overflow
+{% endautoescape %}

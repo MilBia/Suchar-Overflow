@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% translate "Revoked" %}
+{% endblock title %}
+
+{% block content %}
+  <div class="row justify-content-center text-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 p-5">
+        {% if reverted %}
+          <div class="mb-4 text-warning d-flex justify-content-center">
+            {% include "svgs/icon-refresh-cw.svg" %}
+            <!-- We might need an icon here -->
+          </div>
+          <h1 class="h2 mb-3">Cofnęliśmy zmiany!</h1>
+          <p class="text-muted mb-4">
+            Uff, było blisko. Twój adres e-mail został przywrócony do poprzedniego stanu.
+            <br />
+            Możesz odetchnąć z ulgą. Zalecamy zmianę hasła.
+          </p>
+        {% else %}
+          <div class="mb-4 text-warning d-flex justify-content-center">
+            <style>
+              .icon-wrapper svg {
+                width: 5rem;
+                height: 5rem;
+              }
+            </style>
+            <div class="icon-wrapper">{% include "svgs/icon-shield.svg" %}</div>
+          </div>
+
+          <h1 class="h2 mb-3">Zmiana anulowana</h1>
+          <p class="text-muted mb-4">
+            Wszystkie aktywne linki do zmiany maila zostały unieważnione.
+            <br />
+            Jeśli to nie Ty próbowałeś zmienić maila, zalecamy zmianę hasła.
+          </p>
+        {% endif %}
+
+        <div class="d-grid gap-2 col-8 mx-auto">
+          <a href="{% url 'password_change' %}" class="btn btn-danger">Zmień hasło (dla pewności)</a>
+          <a href="{% url 'users:detail' request.user.username %}"
+             class="btn btn-outline-secondary">Wróć do profilu</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

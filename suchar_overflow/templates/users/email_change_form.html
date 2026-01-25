@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}
+  {% translate "Update Email" %}
+{% endblock title %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h1 class="mb-4">Zmiana adresu e-mail</h1>
+      <p class="lead text-muted">Znudził Ci się stary adres? A może to ucieczka przed urzędem skarbowym? Nie oceniamy.</p>
+
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+              {% include "snippets/form_field.html" with field=field %}
+            {% endfor %}
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary">Wyślij gołębia z linkiem</button>
+              <a href="{% url 'users:update' %}" class="btn btn-outline-secondary">Rozmyśliłem się (wróć)</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

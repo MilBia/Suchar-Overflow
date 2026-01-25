@@ -35,9 +35,14 @@ def test_create_suchar(client, django_user_model):
 @pytest.mark.django_db
 def test_vote_suchar(client, django_user_model):
     password = "password"  # noqa: S105
-    user = django_user_model.objects.create_user(username="voter", password=password)
+    user = django_user_model.objects.create_user(
+        username="voter",
+        email="voter@example.com",
+        password=password,
+    )
     author = django_user_model.objects.create_user(
         username="author",
+        email="author@example.com",
         password=password,
     )
     suchar = Suchar.objects.create(text="Joke", author=author)
@@ -61,7 +66,11 @@ def test_vote_suchar(client, django_user_model):
 
 @pytest.mark.django_db
 def test_suchar_list_sorting(client, django_user_model):
-    user = django_user_model.objects.create_user(username="author", password="password")  # noqa: S106
+    user = django_user_model.objects.create_user(
+        username="author",
+        email="author@example.com",
+        password="password",  # noqa: S106
+    )
     s1 = Suchar.objects.create(text="Older joke", author=user)
     time.sleep(0.01)  # Ensure different created_at
     s2 = Suchar.objects.create(text="Newer joke", author=user)
@@ -84,7 +93,11 @@ def test_suchar_list_sorting(client, django_user_model):
 
 @pytest.mark.django_db
 def test_suchar_list_search(client, django_user_model):
-    user = django_user_model.objects.create_user(username="author", password="password")  # noqa: S106
+    user = django_user_model.objects.create_user(
+        username="author",
+        email="author@example.com",
+        password="password",  # noqa: S106
+    )
     tag_it = Tag.objects.create(name="IT", slug="it")
     s1 = Suchar.objects.create(text="Python joke", author=user)
     s1.tags.add(tag_it)
@@ -112,6 +125,7 @@ def test_suchar_list_search(client, django_user_model):
 def test_create_suchar_with_tags(client, django_user_model):
     user = django_user_model.objects.create_user(
         username="testuser",
+        email="testuser@example.com",
         password="password",  # noqa: S106
     )
     client.force_login(user)
@@ -132,9 +146,14 @@ def test_create_suchar_with_tags(client, django_user_model):
 
 @pytest.mark.django_db
 def test_vote_suchar_edge_cases(client, django_user_model):
-    user = django_user_model.objects.create_user(username="voter", password="password")  # noqa: S106
+    user = django_user_model.objects.create_user(
+        username="voter",
+        email="voter@example.com",
+        password="password",  # noqa: S106
+    )
     author = django_user_model.objects.create_user(
         username="author",
+        email="author@example.com",
         password="password",  # noqa: S106
     )
     suchar = Suchar.objects.create(text="Joke", author=author)
@@ -158,7 +177,11 @@ def test_vote_suchar_edge_cases(client, django_user_model):
 
 @pytest.mark.django_db
 def test_pagination_preserves_params(client, django_user_model):
-    user = django_user_model.objects.create_user(username="author", password="password")  # noqa: S106
+    user = django_user_model.objects.create_user(
+        username="author",
+        email="author@example.com",
+        password="password",  # noqa: S106
+    )
     tag_it = Tag.objects.create(name="IT", slug="it")
     # Create 15 suchary to trigger pagination (paginate_by = 10)
     for i in range(15):

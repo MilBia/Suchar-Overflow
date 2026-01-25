@@ -1,0 +1,17 @@
+{% autoescape off %}
+Cześć {{ user.username }}!
+
+Właśnie otrzymaliśmy prośbę o zmianę Twojego adresu e-mail na: {{ new_email }}.
+
+Jeśli to Ty - super, nic nie musisz tu robić (poza sprawdzeniem tamtej skrzynki).
+
+ALE JEŚLI TO NIE TY:
+Ktoś może próbować przejąć Twoje konto (albo po prostu masz rozdwojenie jaźni).
+Kliknij w ten link, aby NATYCHMIAST ANULOWAĆ tę prośbę i unieważnić link wysłany na nowy adres:
+
+{{ revoke_link }}
+
+Zalecamy również zmianę hasła, jeśli podejrzewasz włamanie.
+
+Suchar Overflow
+{% endautoescape %}
