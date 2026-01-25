@@ -10,6 +10,7 @@ from django.core.mail import send_mail
 from django.db.models import Count
 from django.db.models import QuerySet
 from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from django.db.models.functions import TruncDay
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -47,7 +48,9 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         user = self.object
 
         # 1. Latest Suchary
-        context["latest_suchary"] = user.suchary.all().order_by("-created_at")[:5]
+        context["latest_suchary"] = user.suchary.annotate(
+            score=Coalesce(Sum("votes__value"), 0),
+        ).order_by("-created_at")[:5]
 
         # 2. Total Score & Count
         stats = user.suchary.aggregate(
