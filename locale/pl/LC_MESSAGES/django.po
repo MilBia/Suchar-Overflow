@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-27 06:38+0000\n"
+"POT-Creation-Date: 2026-01-27 21:18+0000\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -21,6 +21,14 @@ msgstr "Polski"
 #: config/settings/base.py:35
 msgid "English"
 msgstr "Angielski"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "Treść"
+
+#: suchar_overflow/suchary/admin.py:45
+msgid "Votes"
+msgstr "Głosy"
 
 #: suchar_overflow/suchary/apps.py:7
 msgid "Suchary"
@@ -50,6 +58,7 @@ msgstr "Strona główna"
 #: suchar_overflow/templates/base.html:100
 #: suchar_overflow/templates/suchary/suchar_list.html:12
 #: suchar_overflow/templates/users/user_detail.html:52
+#: suchar_overflow/users/admin.py:68
 msgid "Jokes"
 msgstr "Suchary"
 
@@ -214,7 +223,7 @@ msgid ""
 msgstr "Twoje konto zostało pomyślnie aktywowane. Możesz się teraz zalogować."
 
 #: suchar_overflow/templates/registration/activation_complete.html:28
-#: suchar_overflow/templates/registration/password_reset_complete.html:12
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
 msgid "Log in"
 msgstr "Zaloguj"
 
@@ -272,64 +281,99 @@ msgid "Change Password"
 msgstr "Zmień hasło"
 
 #: suchar_overflow/templates/registration/password_reset_complete.html:6
-#: suchar_overflow/templates/registration/password_reset_complete.html:10
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
 msgid "Password reset successful"
 msgstr "Reset hasła udany"
 
-#: suchar_overflow/templates/registration/password_reset_complete.html:11
-msgid "Your password has been set.  You may go ahead and log in now."
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+#, fuzzy
+#| msgid "Your password has been set.  You may go ahead and log in now."
+msgid "Your password has been set. You may go ahead and log in now."
 msgstr "Twoje hasło zostało ustawione. Możesz się teraz zalogować."
 
 #: suchar_overflow/templates/registration/password_reset_confirm.html:6
-#: suchar_overflow/templates/registration/password_reset_confirm.html:10
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
 msgid "Set a new password"
 msgstr "Ustaw nowe hasło"
 
-#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr "Wpisz nowe hasło dwukrotnie, aby upewnić się, że jest poprawne."
 
-#: suchar_overflow/templates/registration/password_reset_confirm.html:16
-msgid "Change authentication"
-msgstr "Zmień uwierzytelnianie"
-
 #: suchar_overflow/templates/registration/password_reset_confirm.html:20
+#, fuzzy
+#| msgid "Change Password"
+msgid "Change password"
+msgstr "Zmień hasło"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
 msgstr "Link resetowania hasła był nieprawidłowy lub został już wykorzystany."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:6
-#: suchar_overflow/templates/registration/password_reset_done.html:10
+#: suchar_overflow/templates/registration/password_reset_done.html:12
 msgid "Password Reset Sent"
 msgstr "Wysłano reset hasła"
 
-#: suchar_overflow/templates/registration/password_reset_done.html:12
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "Sprawdź skrzynkę"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
 msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
 msgstr "Wysłaliśmy instrukcję resetowania hasła na podany email."
 
-#: suchar_overflow/templates/registration/password_reset_done.html:15
+#: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
 msgstr "Jeśli nie otrzymałeś maila, sprawdź folder spam."
 
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr "Otrzymujesz tę wiadomość, ponieważ poprosiłeś o zresetowanie hasła dla swojego konta w serwisie"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "Przejdź na poniższą stronę, aby ustawić nowe hasło:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "Twoja nazwa użytkownika (na wypadek, gdybyś zapomniał):"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "Dziękujemy za korzystanie z naszej strony!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr "Zespół"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr ""
+
 #: suchar_overflow/templates/registration/password_reset_form.html:6
-#: suchar_overflow/templates/registration/password_reset_form.html:10
+#: suchar_overflow/templates/registration/password_reset_form.html:12
 msgid "Password Reset"
 msgstr "Reset hasła"
 
-#: suchar_overflow/templates/registration/password_reset_form.html:12
+#: suchar_overflow/templates/registration/password_reset_form.html:14
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
 msgstr "Zapomniałeś hasła? Podaj email, wyślemy instrukcję."
 
-#: suchar_overflow/templates/registration/password_reset_form.html:18
+#: suchar_overflow/templates/registration/password_reset_form.html:22
 msgid "Reset my password"
 msgstr "Zresetuj hasło"
 
@@ -340,10 +384,6 @@ msgstr "Masz już konto?"
 #: suchar_overflow/templates/registration/signup_done.html:6
 msgid "Confirmation Sent"
 msgstr "Wysłano potwierdzenie"
-
-#: suchar_overflow/templates/registration/signup_done.html:23
-msgid "Check your inbox"
-msgstr "Sprawdź skrzynkę"
 
 #: suchar_overflow/templates/registration/signup_done.html:25
 msgid ""
@@ -533,7 +573,7 @@ msgstr "Użytkownik Suchar Overflow"
 
 #: suchar_overflow/templates/users/user_detail.html:36
 msgid "The Best Of"
-msgstr ""
+msgstr "Najlepsze"
 
 #: suchar_overflow/templates/users/user_detail.html:46
 msgid "Statistics"
@@ -541,7 +581,7 @@ msgstr "Statystyki"
 
 #: suchar_overflow/templates/users/user_detail.html:48
 msgid "Global Rank"
-msgstr ""
+msgstr "Ranking Globalny"
 
 #: suchar_overflow/templates/users/user_detail.html:56
 msgid "Score"
@@ -619,15 +659,15 @@ msgstr "Zmiana adresu wymaga potwierdzenia."
 msgid "Save Changes"
 msgstr "Zapisz zmiany"
 
-#: suchar_overflow/users/admin.py:16
+#: suchar_overflow/users/admin.py:36
 msgid "Personal info"
 msgstr "Dane osobowe"
 
-#: suchar_overflow/users/admin.py:18
+#: suchar_overflow/users/admin.py:38
 msgid "Permissions"
 msgstr "Uprawnienia"
 
-#: suchar_overflow/users/admin.py:29
+#: suchar_overflow/users/admin.py:49
 msgid "Important dates"
 msgstr "Ważne daty"
 
@@ -676,3 +716,6 @@ msgstr "Prośby o zmianę emaila"
 #: suchar_overflow/users/views.py:194
 msgid "Information successfully updated"
 msgstr "Informacje zostały zaktualizowane"
+
+#~ msgid "Change authentication"
+#~ msgstr "Zmień uwierzytelnianie"
