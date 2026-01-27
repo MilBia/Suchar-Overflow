@@ -1,4 +1,4 @@
-# ruff: noqa: ERA001, E501
+# ruff: noqa: E501
 """Base settings to build other settings files upon."""
 
 from pathlib import Path
@@ -71,12 +71,7 @@ DJANGO_APPS = [
     "django.contrib.admin",
     "django.forms",
 ]
-THIRD_PARTY_APPS = [
-    # "allauth",
-    # "allauth.account",
-    # "allauth.mfa",
-    # "allauth.socialaccount",
-]
+THIRD_PARTY_APPS = []
 
 LOCAL_APPS = [
     "suchar_overflow.users",
@@ -141,7 +136,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "allauth.account.middleware.AccountMiddleware",
 ]
 
 # STATIC
@@ -187,7 +181,6 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                # "suchar_overflow.users.context_processors.allauth_settings",
             ],
         },
     },
@@ -255,25 +248,6 @@ LOGGING = {
 
 REDIS_URL = env("REDIS_URL", default="redis://redis:6379/0")
 REDIS_SSL = REDIS_URL.startswith("rediss://")
-
-
-# django-allauth
-# ------------------------------------------------------------------------------
-# ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
-# https://docs.allauth.org/en/latest/account/configuration.html
-# ACCOUNT_LOGIN_METHODS = {"username"}
-# https://docs.allauth.org/en/latest/account/configuration.html
-# ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
-# https://docs.allauth.org/en/latest/account/configuration.html
-# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-# https://docs.allauth.org/en/latest/account/configuration.html
-# ACCOUNT_ADAPTER = "suchar_overflow.users.adapters.AccountAdapter"
-# https://docs.allauth.org/en/latest/account/forms.html
-# ACCOUNT_FORMS = {"signup": "suchar_overflow.users.forms.UserSignupForm"}
-# https://docs.allauth.org/en/latest/socialaccount/configuration.html
-# SOCIALACCOUNT_ADAPTER = "suchar_overflow.users.adapters.SocialAccountAdapter"
-# https://docs.allauth.org/en/latest/socialaccount/configuration.html
-# SOCIALACCOUNT_FORMS = {"signup": "suchar_overflow.users.forms.UserSocialSignupForm"}
 
 
 # Your stuff...
