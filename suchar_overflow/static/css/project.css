@@ -17,6 +17,15 @@ body {
   /* Prevent horizontal scroll from effects - Removed as it breaks sticky positioning */
 }
 
+/* Theme Toggle Transition Class */
+.theme-transition,
+.theme-transition *,
+.theme-transition *:before,
+.theme-transition *:after {
+  transition: all 0.5s ease !important;
+  transition-delay: 0s !important;
+}
+
 /* Aurora Background */
 body::before {
   content: '';

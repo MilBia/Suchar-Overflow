@@ -4,7 +4,13 @@ const themeToggleBtn = document.getElementById('theme-toggle');
 const htmlElement = document.documentElement;
 
 // Functions for theme handling
-function setTheme(theme) {
+function setTheme(theme, withTransition = false) {
+    if (withTransition) {
+        htmlElement.classList.add('theme-transition');
+        setTimeout(() => {
+            htmlElement.classList.remove('theme-transition');
+        }, 500);
+    }
     htmlElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
 }
@@ -29,7 +35,7 @@ if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', () => {
         const theme = htmlElement.getAttribute('data-theme');
         const newTheme = theme === 'dark' ? 'light' : 'dark';
-        setTheme(newTheme);
+        setTheme(newTheme, true);
     });
 }
 
