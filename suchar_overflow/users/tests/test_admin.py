@@ -28,6 +28,10 @@ class TestUserAdmin:
                 "email": "test@example.com",
                 "password1": "My_R@ndom-P@ssw0rd",
                 "password2": "My_R@ndom-P@ssw0rd",
+                "email_change_requests-TOTAL_FORMS": "0",
+                "email_change_requests-INITIAL_FORMS": "0",
+                "email_change_requests-MIN_NUM_FORMS": "0",
+                "email_change_requests-MAX_NUM_FORMS": "1000",
             },
         )
         assert response.status_code == HTTPStatus.FOUND
