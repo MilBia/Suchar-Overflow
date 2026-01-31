@@ -20,10 +20,10 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_str
+from django.utils.formats import date_format
 from django.utils.http import urlsafe_base64_decode
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
-from django.utils.formats import date_format
 from django.views import View
 from django.views.generic import DetailView
 from django.views.generic import FormView
