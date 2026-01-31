@@ -171,6 +171,11 @@ a:hover {
   background: var(--gradient-brand);
   position: relative;
   width: 100%;
+  /* Texture/Gradient Overlay */
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+    var(--gradient-brand);
 }
 
 .profile-header-wrapper {
@@ -189,7 +194,8 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* Softer shadow */
   overflow: hidden;
   color: var(--color-primary);
 }
@@ -356,6 +362,13 @@ a:hover {
   background-color: var(--heatmap-level-0);
   border-radius: 2px;
   transition: transform 0.1s ease, background-color 0.2s ease;
+  /* Improve Light Mode Contrast */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  /* Subtle border for empty cells in light mode */
+}
+
+[data-theme='dark'] .heatmap-day {
+  border: none;
 }
 
 .heatmap-day:hover {
@@ -499,4 +512,9 @@ a:hover {
 
 .lang-select {
   width: auto;
+}
+
+/* Form Width Limiter */
+.form-max-width {
+  max-width: 600px;
 }

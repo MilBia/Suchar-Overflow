@@ -23,6 +23,7 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
+from django.utils.formats import date_format
 from django.views import View
 from django.views.generic import DetailView
 from django.views.generic import FormView
@@ -139,7 +140,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
             # We assign the label to the current week
             if current_date.day == 1:
                 # Use short month name.
-                current_week_label = current_date.strftime("%b")
+                current_week_label = date_format(current_date, "b")
 
             # Determine level 0-4
             if count == 0:

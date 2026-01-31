@@ -3,261 +3,265 @@
 {% load static i18n %}
 
 {% block title %}
-  {% trans "User" %}: {{ object.username }}
+{% trans "User" %}: {{ object.username }}
 {% endblock title %}
 {% block dashboard_content %}
-  <div class="card shadow-lg border-0 h-100 overflow-hidden">
-    <!-- Hero Cover -->
-    <div class="profile-cover"></div>
+<div class="card shadow-lg border-0 h-100 overflow-hidden">
+  <!-- Hero Cover -->
+  <div class="profile-cover"></div>
 
-    <div class="card-body p-0">
-      <div class="px-4 px-lg-5 pb-5">
-        <!-- Avatar & Header -->
-        <div class="d-flex align-items-end mb-4 profile-header-wrapper">
-          <div class="avatar-profile flex-shrink-0 me-4">{% include "svgs/icon-user.svg" %}</div>
-          <div class="mb-2">
-            <h2 class="h2 fw-bold mb-0">{{ object.display_name }}</h2>
-            {% if object.name %}
-              <p class="text-muted mb-0">@{{ object.username }}</p>
-            {% else %}
-              <p class="text-muted mb-0">{% trans "Suchar Overflow User" %}</p>
-            {% endif %}
+  <div class="card-body p-0">
+    <div class="px-4 px-lg-5 pb-5">
+      <!-- Avatar & Header -->
+      <div class="d-flex align-items-end mb-4 profile-header-wrapper">
+        <div class="avatar-profile flex-shrink-0 me-4">{% include "svgs/icon-user.svg" %}</div>
+        <div class="mb-2">
+          <h2 class="h2 fw-bold mb-0">{{ object.display_name }}</h2>
+          {% if object.name %}
+          <p class="text-muted mb-0">@{{ object.username }}</p>
+          {% else %}
+          <p class="text-muted mb-0">{% trans "Suchar Overflow User" %}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Stats Column -->
+        <div class="col-md-4 col-xl-3">
+          <!-- Best Joke (Top Priority) -->
+          {% if best_joke %}
+          <div class="card border border-warning bg-warning bg-opacity-10 mb-4">
+            <div class="card-body position-relative">
+              <div class="position-absolute top-0 end-0 p-2 opacity-25 trophy-icon">🏆</div>
+              <h6 class="text-uppercase text-warning-emphasis small fw-bold mb-2">{% trans "The Best Of" %}</h6>
+              <div class="mb-0 small fst-italic text-dark">{{ best_joke.text|linebreaksbr }}</div>
+              <div class="mt-2 small fw-bold text-warning-emphasis">{{ best_joke.score|default:0 }} pkt</div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Combined Stats Card -->
+          <div class="card border bg-light mb-4">
+            <div class="card-body">
+              <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Statistics" %}</h6>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span>{% trans "Global Rank" %}</span>
+                <span class="fw-bold text-dark">#{{ global_rank }}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span>{% trans "Jokes" %}</span>
+                <span class="fw-bold">{{ suchar_count|default:"0" }}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span>{% trans "Score" %}</span>
+                <span class="fw-bold text-success">{{ object.total_score|default:"0" }}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <span>{% trans "Joined" %}</span>
+                <span>{{ object.date_joined|date:"M Y" }}</span>
+              </div>
+
+              {% if suchar_count and suchar_count > 0 %}
+              <hr class="text-muted opacity-25 my-4" />
+
+              <!-- Dryness Chart -->
+              <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Dryness Level" %}</h6>
+              <div class="chart-container-sm mb-4">
+                <canvas id="userActivityChart"></canvas>
+              </div>
+
+              <hr class="text-muted opacity-25 my-4" />
+
+              <!-- Reception Chart -->
+              <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Reception" %}</h6>
+              <div class="chart-container-sm">
+                <canvas id="userReceptionChart"></canvas>
+              </div>
+              {% endif %}
+            </div>
           </div>
         </div>
 
-        <div class="row g-4">
-          <!-- Stats Column -->
-          <div class="col-md-4 col-xl-3">
-            <!-- Best Joke (Top Priority) -->
-            {% if best_joke %}
-              <div class="card border border-warning bg-warning bg-opacity-10 mb-4">
-                <div class="card-body position-relative">
-                  <div class="position-absolute top-0 end-0 p-2 opacity-25 trophy-icon">🏆</div>
-                  <h6 class="text-uppercase text-warning-emphasis small fw-bold mb-2">{% trans "The Best Of" %}</h6>
-                  <div class="mb-0 small fst-italic text-dark">{{ best_joke.text|linebreaksbr }}</div>
-                  <div class="mt-2 small fw-bold text-warning-emphasis">{{ best_joke.score|default:0 }} pkt</div>
+        <!-- Feed Column -->
+        <div class="col-md-8 col-xl-9">
+
+          <!-- Contribution Heatmap -->
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">{% trans "Drought Map" %}</h5>
+                <div class="heatmap-legend">
+                  <span>{% trans "Less" %}</span>
+                  <div class="legend-item heatmap-bg-0" title="0"></div>
+                  <div class="legend-item heatmap-bg-1" title="1"></div>
+                  <div class="legend-item heatmap-bg-2" title="2"></div>
+                  <div class="legend-item heatmap-bg-3" title="3-4"></div>
+                  <div class="legend-item heatmap-bg-4" title="5+"></div>
+                  <span>{% trans "More" %}</span>
                 </div>
               </div>
-            {% endif %}
 
-            <!-- Combined Stats Card -->
-            <div class="card border bg-light mb-4">
-              <div class="card-body">
-                <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Statistics" %}</h6>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span>{% trans "Global Rank" %}</span>
-                  <span class="fw-bold text-dark">#{{ global_rank }}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span>{% trans "Jokes" %}</span>
-                  <span class="fw-bold">{{ suchar_count|default:"0" }}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span>{% trans "Score" %}</span>
-                  <span class="fw-bold text-success">{{ object.total_score|default:"-" }}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <span>{% trans "Joined" %}</span>
-                  <span>{{ object.date_joined|date:"M Y" }}</span>
-                </div>
+              <div class="heatmap-wrapper overflow-auto pb-3">
+                <div class="d-flex">
+                  <!-- Days Axis -->
+                  <div
+                    class="heatmap-days d-flex flex-column justify-content-between me-1 text-muted small heatmap-days-col">
+                    <!-- Spacer for month label row -->
+                    <div class="heatmap-days-spacer"></div>
 
-                <hr class="text-muted opacity-25 my-4" />
-
-                <!-- Dryness Chart -->
-                <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Dryness Level" %}</h6>
-                <div class="chart-container-sm mb-4">
-                  <canvas id="userActivityChart"></canvas>
-                </div>
-
-                <hr class="text-muted opacity-25 my-4" />
-
-                <!-- Reception Chart -->
-                <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Reception" %}</h6>
-                <div class="chart-container-sm">
-                  <canvas id="userReceptionChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Feed Column -->
-          <div class="col-md-8 col-xl-9">
-
-            <!-- Contribution Heatmap -->
-            <div class="card border-0 shadow-sm mb-4">
-              <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h5 class="fw-bold mb-0">{% trans "Drought Map" %}</h5>
-                  <div class="heatmap-legend">
-                    <span>{% trans "Less" %}</span>
-                    <div class="legend-item heatmap-bg-0" title="0"></div>
-                    <div class="legend-item heatmap-bg-1" title="1"></div>
-                    <div class="legend-item heatmap-bg-2" title="2"></div>
-                    <div class="legend-item heatmap-bg-3" title="3-4"></div>
-                    <div class="legend-item heatmap-bg-4" title="5+"></div>
-                    <span>{% trans "More" %}</span>
-                  </div>
-                </div>
-
-                <div class="heatmap-wrapper overflow-auto pb-3">
-                  <div class="d-flex">
-                    <!-- Days Axis -->
-                    <div class="heatmap-days d-flex flex-column justify-content-between me-1 text-muted small heatmap-days-col">
-                      <!-- Spacer for month label row -->
-                      <div class="heatmap-days-spacer"></div>
-
-                      <!-- Day labels aligned with grid -->
-                      <div class="d-flex flex-column justify-content-between heatmap-days-labels">
-                        <span>{% trans "Mon" %}</span>
-                        <span>{% trans "Wed" %}</span>
-                        <span>{% trans "Fri" %}</span>
-                      </div>
+                    <!-- Day labels aligned with grid -->
+                    <div class="d-flex flex-column justify-content-between heatmap-days-labels">
+                      <span>{% trans "Mon" %}</span>
+                      <span>{% trans "Wed" %}</span>
+                      <span>{% trans "Fri" %}</span>
                     </div>
+                  </div>
 
-                    <!-- Grid -->
-                    <div class="heatmap-grid d-flex gap-1">
-                      {% for week in heatmap_weeks %}
-                        <div class="heatmap-week d-flex flex-column gap-1">
-                          <!-- Month Label (inside column for perfect alignment) -->
-                          <div class="heatmap-month-label-wrapper">
-                            {% if week.month_label %}<span class="text-muted small heatmap-month-label">{{ week.month_label }}</span>{% endif %}
-                          </div>
+                  <!-- Grid -->
+                  <div class="heatmap-grid d-flex gap-1">
+                    {% for week in heatmap_weeks %}
+                    <div class="heatmap-week d-flex flex-column gap-1">
+                      <!-- Month Label (inside column for perfect alignment) -->
+                      <div class="heatmap-month-label-wrapper">
+                        {% if week.month_label %}
+                        <span class="text-muted small heatmap-month-label">{{ week.month_label }}</span>
+                        {% endif %}
+                      </div>
 
-                          {% for day in week.days %}
-                            <div class="heatmap-day"
-                                 data-level="{{ day.level }}"
-                                 data-bs-toggle="tooltip"
-                                 data-bs-custom-class="custom-tooltip"
-                                 data-bs-placement="top"
-                                 title="{{ day.count }} {% trans 'jokes on' %} {{ day.date }}"></div>
-                          {% endfor %}
-                        </div>
+                      {% for day in week.days %}
+                      <div class="heatmap-day" data-level="{{ day.level }}" data-bs-toggle="tooltip"
+                        data-bs-custom-class="custom-tooltip" data-bs-placement="top"
+                        title="{{ day.count }} {% trans 'jokes on' %} {{ day.date }}"></div>
                       {% endfor %}
                     </div>
+                    {% endfor %}
                   </div>
                 </div>
               </div>
             </div>
-
-            <h4 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
-              <span class="text-primary">{% include "svgs/icon-edit.svg" %}</span>
-              {% trans "Latest Jokes" %}
-            </h4>
-
-            {% if latest_suchary %}
-              <div class="d-flex flex-column gap-3">
-                {% for suchar in latest_suchary %}
-                  <!-- Ensure vertical stacking with w-100 -->
-                  <div class="card suchar-card bg-white w-100 d-block">
-                    <div class="card-body p-3">
-                      <div class="mb-2">{{ suchar.text|linebreaksbr }}</div>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">{{ suchar.created_at|date:"d M Y, H:i" }}</small>
-                        <small class="fw-bold {% if suchar.score < 0 %}text-danger{% elif suchar.score > 0 %}text-success{% else %}text-muted{% endif %}">
-                          {{ suchar.score|default:0 }} pkt
-                        </small>
-                      </div>
-                    </div>
-                  </div>
-                {% endfor %}
-              </div>
-              <div class="mt-3">
-                <a href="{% url 'suchary:list' %}?author={{ object.username }}"
-                   class="btn btn-outline btn-sm">{% trans "See all entries" %}</a>
-              </div>
-            {% else %}
-              <div class="text-center py-5 bg-light rounded-4">
-                <p class="text-muted mb-0">{% trans "User hasn't added any jokes yet." %}</p>
-              </div>
-            {% endif %}
           </div>
+
+          <h4 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+            <span class="text-primary">{% include "svgs/icon-edit.svg" %}</span>
+            {% trans "Latest Jokes" %}
+          </h4>
+
+          {% if latest_suchary %}
+          <div class="d-flex flex-column gap-3">
+            {% for suchar in latest_suchary %}
+            <!-- Ensure vertical stacking with w-100 -->
+            <div class="card suchar-card bg-white w-100 d-block">
+              <div class="card-body p-3">
+                <div class="mb-2">{{ suchar.text|linebreaksbr }}</div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <small class="text-muted">{{ suchar.created_at|date:"d M Y, H:i" }}</small>
+                  <small
+                    class="fw-bold {% if suchar.score < 0 %}text-danger{% elif suchar.score > 0 %}text-success{% else %}text-muted{% endif %}">
+                    {{ suchar.score|default:0 }} pkt
+                  </small>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <div class="mt-3">
+            <a href="{% url 'suchary:list' %}?author={{ object.username }}" class="btn btn-outline btn-sm">
+              {% trans "See all entries" %}
+            </a>
+          </div>
+          {% else %}
+          <div class="text-center py-5 bg-light rounded-4">
+            <p class="text-muted mb-0">{% trans "User hasn't added any jokes yet." %}</p>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
+  </div>
   {% endblock dashboard_content %}
 
   {% block javascript %}
-    {{ block.super }}
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-          return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
+  {{ block.super }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize Tooltips
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+      })
 
-        // Activity Chart
-        const ctxActivity = document.getElementById('userActivityChart');
-        if (ctxActivity) {
-          const labels = JSON.parse('{{ activity_labels|safe }}');
-          const data = JSON.parse('{{ activity_values|safe }}');
+      // Activity Chart
+      const ctxActivity = document.getElementById('userActivityChart');
+      if (ctxActivity) {
+        const labels = JSON.parse('{{ activity_labels|safe }}');
+        const data = JSON.parse('{{ activity_values|safe }}');
 
-          new Chart(ctxActivity.getContext('2d'), {
-            type: 'bar',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Suchary',
-                data: data,
-                backgroundColor: '#3b82f6',
-                borderRadius: 2
-              }]
+        new Chart(ctxActivity.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Suchary',
+              data: data,
+              backgroundColor: '#3b82f6',
+              borderRadius: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              }
             },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  display: false
+                },
+                grid: {
                   display: false
                 }
               },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    display: false
-                  },
-                  grid: {
-                    display: false
-                  }
-                },
-                x: {
-                  display: false
+              x: {
+                display: false
+              }
+            }
+          }
+        });
+      }
+
+      // Reception Chart
+      const ctxReception = document.getElementById('userReceptionChart');
+      if (ctxReception) {
+        const data = JSON.parse('{{ reception_data|safe }}'); // [up, down]
+
+        new Chart(ctxReception.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+            labels: ['Ubaw', 'Żenada'],
+            datasets: [{
+              data: data,
+              backgroundColor: ['#22c55e', '#ef4444'], // green, red
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'right',
+                labels: {
+                  boxWidth: 10
                 }
               }
             }
-          });
-        }
-
-        // Reception Chart
-        const ctxReception = document.getElementById('userReceptionChart');
-        if (ctxReception) {
-          const data = JSON.parse('{{ reception_data|safe }}'); // [up, down]
-
-          new Chart(ctxReception.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-              labels: ['Ubaw', 'Żenada'],
-              datasets: [{
-                data: data,
-                backgroundColor: ['#22c55e', '#ef4444'], // green, red
-                borderWidth: 0
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: 'right',
-                  labels: {
-                    boxWidth: 10
-                  }
-                }
-              }
-            }
-          });
-        }
-      });
-    </script>
+          }
+        });
+      }
+    });
+  </script>
   {% endblock javascript %}
