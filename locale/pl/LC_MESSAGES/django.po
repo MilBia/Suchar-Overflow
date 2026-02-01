@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-27 21:18+0000\n"
+"POT-Creation-Date: 2026-02-01 13:21+0000\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -27,6 +27,10 @@ msgid "Text"
 msgstr "Treść"
 
 #: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:39
+#: suchar_overflow/templates/users/user_detail.html:166
 msgid "Votes"
 msgstr "Głosy"
 
@@ -57,7 +61,7 @@ msgstr "Strona główna"
 
 #: suchar_overflow/templates/base.html:100
 #: suchar_overflow/templates/suchary/suchar_list.html:12
-#: suchar_overflow/templates/users/user_detail.html:52
+#: suchar_overflow/templates/users/user_detail.html:56
 #: suchar_overflow/users/admin.py:68
 msgid "Jokes"
 msgstr "Suchary"
@@ -340,7 +344,9 @@ msgstr "Jeśli nie otrzymałeś maila, sprawdź folder spam."
 msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
-msgstr "Otrzymujesz tę wiadomość, ponieważ poprosiłeś o zresetowanie hasła dla swojego konta w serwisie"
+msgstr ""
+"Otrzymujesz tę wiadomość, ponieważ poprosiłeś o zresetowanie hasła dla "
+"swojego konta w serwisie"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -392,42 +398,88 @@ msgid ""
 msgstr "Wysłaliśmy email z prośbą o potwierdzenie rejestracji."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-msgid "Where dryness reaches critical levels."
-msgstr "Gdzie suchość osiąga poziom krytyczny."
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr "Świętujemy najlepsze (i najsuchsze) dzieła naszej społeczności."
 
 #: suchar_overflow/templates/stats/leaderboard.html:19
 msgid "Activity (Last 30 Days)"
 msgstr "Aktywność Sucharów (Ostatnie 30 dni)"
 
-#: suchar_overflow/templates/stats/leaderboard.html:33
-msgid "Dryest Authors"
-msgstr "Najsuchsi Autorzy"
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "Ogólne"
 
 #: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:104
+#: suchar_overflow/templates/suchary/suchar_list.html:107
+#: suchar_overflow/templates/users/user_detail.html:251
+msgid "Funny"
+msgstr "Śmieszne"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:251
+msgid "Dry"
+msgstr "Suche"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+#, fuzzy
+#| msgid "Dryest Authors"
+msgid "Most Active Authors"
+msgstr "Najaktywniejsi Autorzy"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
 msgid "jokes"
 msgstr "sucharów"
 
-#: suchar_overflow/templates/stats/leaderboard.html:62
-msgid "No data available."
+#: suchar_overflow/templates/stats/leaderboard.html:99
+#, fuzzy
+#| msgid "No data available."
+msgid "No data."
 msgstr "Brak danych."
 
-#: suchar_overflow/templates/stats/leaderboard.html:74
+#: suchar_overflow/templates/stats/leaderboard.html:110
 msgid "Hall of Fame"
 msgstr "Galeria Sław"
 
-#: suchar_overflow/templates/stats/leaderboard.html:96
-msgid "votes"
-msgstr "głosów"
-
-#: suchar_overflow/templates/stats/leaderboard.html:101
-msgid "No jokes found."
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+#, fuzzy
+#| msgid "No jokes found."
+msgid "No jokes."
 msgstr "Brak sucharów."
 
-#: suchar_overflow/templates/stats/leaderboard.html:106
-msgid "Only jokes with at least one vote are included."
-msgstr "Ranking uwzględnia tylko suchary z przynajmniej jednym głosem."
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr "Królowie Komedii"
 
-#: suchar_overflow/templates/stats/leaderboard.html:127
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "Brak danych (śmieszne)."
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "Najlepsze Śmieszki"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "Władcy Suszy"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "Brak danych (suche)."
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "Największe Suchary"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
 msgid "New Jokes"
 msgstr "Nowe Suchary"
 
@@ -502,29 +554,21 @@ msgstr "Najlepsze"
 msgid "Newest"
 msgstr "Najnowsze"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:118
-msgid "Funny (Upvote)"
-msgstr "Śmieszne (Głosuj w górę)"
-
-#: suchar_overflow/templates/suchary/suchar_list.html:123
-msgid "Dry (Downvote)"
-msgstr "Suchar (Głosuj w dół)"
-
-#: suchar_overflow/templates/suchary/suchar_list.html:132
+#: suchar_overflow/templates/suchary/suchar_list.html:127
 msgid "So dry here..."
 msgstr "Ale tu sucho..."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:133
+#: suchar_overflow/templates/suchary/suchar_list.html:128
 msgid "Be the hero we need and add the first joke."
 msgstr "Bądź bohaterem, którego potrzebujemy i dodaj pierwszego suchara."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:147
-#: suchar_overflow/templates/suchary/suchar_list.html:151
+#: suchar_overflow/templates/suchary/suchar_list.html:142
+#: suchar_overflow/templates/suchary/suchar_list.html:146
 msgid "Previous"
 msgstr "Poprzednia"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:171
-#: suchar_overflow/templates/suchary/suchar_list.html:175
+#: suchar_overflow/templates/suchary/suchar_list.html:166
+#: suchar_overflow/templates/suchary/suchar_list.html:170
 msgid "Next"
 msgstr "Następna"
 
@@ -575,67 +619,69 @@ msgstr "Użytkownik Suchar Overflow"
 msgid "The Best Of"
 msgstr "Najlepsze"
 
-#: suchar_overflow/templates/users/user_detail.html:46
+#: suchar_overflow/templates/users/user_detail.html:50
 msgid "Statistics"
 msgstr "Statystyki"
 
-#: suchar_overflow/templates/users/user_detail.html:48
-msgid "Global Rank"
-msgstr "Ranking Globalny"
-
-#: suchar_overflow/templates/users/user_detail.html:56
-msgid "Score"
-msgstr "Polubienia"
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "Rank"
+msgstr "Ranga"
 
 #: suchar_overflow/templates/users/user_detail.html:60
+#, fuzzy
+#| msgid "Votes"
+msgid "Total Votes"
+msgstr "Głosy"
+
+#: suchar_overflow/templates/users/user_detail.html:67
 msgid "Joined"
 msgstr "Dołączył"
 
-#: suchar_overflow/templates/users/user_detail.html:67
+#: suchar_overflow/templates/users/user_detail.html:75
 msgid "Dryness Level"
 msgstr "Poziom Suchości"
 
-#: suchar_overflow/templates/users/user_detail.html:75
+#: suchar_overflow/templates/users/user_detail.html:83
 msgid "Reception"
 msgstr "Odbiór"
 
-#: suchar_overflow/templates/users/user_detail.html:90
+#: suchar_overflow/templates/users/user_detail.html:99
 msgid "Drought Map"
 msgstr "Mapa Suszy"
 
-#: suchar_overflow/templates/users/user_detail.html:92
+#: suchar_overflow/templates/users/user_detail.html:101
 msgid "Less"
 msgstr "Mniej"
 
-#: suchar_overflow/templates/users/user_detail.html:98
+#: suchar_overflow/templates/users/user_detail.html:107
 msgid "More"
 msgstr "Więcej"
 
-#: suchar_overflow/templates/users/user_detail.html:111
+#: suchar_overflow/templates/users/user_detail.html:120
 msgid "Mon"
 msgstr "Pn"
 
-#: suchar_overflow/templates/users/user_detail.html:112
+#: suchar_overflow/templates/users/user_detail.html:121
 msgid "Wed"
 msgstr "Śr"
 
-#: suchar_overflow/templates/users/user_detail.html:113
+#: suchar_overflow/templates/users/user_detail.html:122
 msgid "Fri"
 msgstr "Pt"
 
-#: suchar_overflow/templates/users/user_detail.html:132
+#: suchar_overflow/templates/users/user_detail.html:141
 msgid "jokes on"
 msgstr "sucharów w dniu"
 
-#: suchar_overflow/templates/users/user_detail.html:144
+#: suchar_overflow/templates/users/user_detail.html:153
 msgid "Latest Jokes"
 msgstr "Ostatnie Suchary"
 
-#: suchar_overflow/templates/users/user_detail.html:166
+#: suchar_overflow/templates/users/user_detail.html:177
 msgid "See all entries"
 msgstr "Zobacz wszystkie wpisy"
 
-#: suchar_overflow/templates/users/user_detail.html:170
+#: suchar_overflow/templates/users/user_detail.html:181
 msgid "User hasn't added any jokes yet."
 msgstr "Użytkownik nie dodał jeszcze żadnych sucharów."
 
@@ -713,9 +759,30 @@ msgid "Email Change Requests"
 msgstr "Prośby o zmianę emaila"
 
 #: suchar_overflow/users/tests/test_views.py:74
-#: suchar_overflow/users/views.py:194
+#: suchar_overflow/users/views.py:228
 msgid "Information successfully updated"
 msgstr "Informacje zostały zaktualizowane"
+
+#~ msgid "Where dryness reaches critical levels."
+#~ msgstr "Gdzie suchość osiąga poziom krytyczny."
+
+#~ msgid "votes"
+#~ msgstr "głosów"
+
+#~ msgid "Only jokes with at least one vote are included."
+#~ msgstr "Ranking uwzględnia tylko suchary z przynajmniej jednym głosem."
+
+#~ msgid "Funny (Upvote)"
+#~ msgstr "Śmieszne (Głosuj w górę)"
+
+#~ msgid "Dry (Downvote)"
+#~ msgstr "Suchar (Głosuj w dół)"
+
+#~ msgid "Global Rank"
+#~ msgstr "Ranking Globalny"
+
+#~ msgid "Score"
+#~ msgstr "Polubienia"
 
 #~ msgid "Change authentication"
 #~ msgstr "Zmień uwierzytelnianie"
