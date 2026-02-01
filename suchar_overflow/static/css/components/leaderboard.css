@@ -30,10 +30,24 @@
     color: white;
 }
 
-/* Gold Header (Amber/Orange Gradient) */
+/* Gold Header (Amber/Orange Gradient) - Overall */
 .card-header-gold {
     background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
     /* Amber-400 to Amber-600 */
+    color: white;
+}
+
+/* Funny Header (Orange/Red Gradient) */
+.card-header-funny {
+    background: linear-gradient(135deg, #E58E26 0%, #c2410c 100%);
+    /* Orange to Red-Orange */
+    color: white;
+}
+
+/* Dry Header (Cyan/Blue Gradient) */
+.card-header-dry {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    /* Sky Blue to Blue */
     color: white;
 }
 
@@ -76,4 +90,13 @@
 /* Compensate for internal margin in cracker icon */
 .header-icon-cracker svg {
     transform: scale(1.6);
+}
+
+/* Utilities */
+.header-icon-emoji {
+    font-size: 1.5rem;
+}
+
+.stats-text-sm {
+    font-size: 0.7em;
 }

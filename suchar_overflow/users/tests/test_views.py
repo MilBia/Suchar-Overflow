@@ -104,27 +104,28 @@ class TestUserDetailView:
 
     def test_stats_calculation(self, user: User, rf: RequestFactory, client):
         """Verify that total_score and suchar_count are correctly calculated."""
-        # Create one joke with 1 upvote
+        # Create one joke with 1 upvote (funny)
         s1 = Suchar.objects.create(text="Joke 1", author=user)
-        Vote.objects.create(suchar=s1, user=user, value=Vote.UP)
+        Vote.objects.create(suchar=s1, user=user, is_funny=True)
 
         # Create duplicated vote on another joke to verify distinct counting?
         # Vote unique_together constraint prevents multiple votes by same user.
         # So to test distinct=True we need multiple votes on user's jokes.
-        # Create 2nd joke with 1 downvote from another user
+        # Create 2nd joke with 1 dry vote from another user
         other_user = UserFactory()
         s2 = Suchar.objects.create(text="Joke 2", author=user)
-        Vote.objects.create(suchar=s2, user=other_user, value=Vote.DOWN)  # -1
+        Vote.objects.create(suchar=s2, user=other_user, is_dry=True)
 
-        # Total score: 1 - 1 = 0
+        # Total score: 1 (Funny) + 1 (Dry) = 2
         # Total count: 2
 
         client.force_login(user)
         response = client.get(f"/users/{user.username}/")
 
         assert response.status_code == HTTPStatus.OK
-        # Verify total_score = 0
-        assert response.context["object"].total_score == 0
+        # Verify total_score = 2
+        expected_score = 2
+        assert response.context["object"].total_score == expected_score
         # Verify suchar_count = 2 (not 3 due to joins)
         expected_count = 2
         assert response.context["suchar_count"] == expected_count

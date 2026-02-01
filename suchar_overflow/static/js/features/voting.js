@@ -9,13 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Get Data
             const sucharId = btn.dataset.sucharId;
-            const value = parseInt(btn.dataset.value);
-            const container = btn.closest('.d-flex.align-items-center.justify-content-between');
-            if (!sucharId || !container) return;
+            const voteType = btn.dataset.voteType;
+            const container = btn.closest('.voting-controls');
 
-            // Optimistic UI Update (Optional, but let's wait for API for accuracy first)
-            // Or better: disable buttons
-            btn.disabled = true;
+            if (!sucharId || !voteType || !container) return;
+
+            // Disable buttons during request
+            const allBtns = container.querySelectorAll('.btn-vote');
+            allBtns.forEach(b => b.disabled = true);
 
             try {
                 // Determine CSRF Token
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': csrftoken
                     },
-                    body: JSON.stringify({ value: value })
+                    body: JSON.stringify({ vote_type: voteType })
                 });
 
                 if (!response.ok) {
@@ -41,36 +42,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const data = await response.json();
 
-                // Update Score
-                const scoreEl = container.querySelector('.vote-score');
-                // Extract just the icon if strictly needed, or just replace text node
-                // Assuming structure: <svg>...</svg> SCORE
-                if (scoreEl) {
-                    // split to keep svg, or assume svg is first child
-                    const svg = scoreEl.querySelector('svg');
-                    scoreEl.innerHTML = '';
-                    if (svg) scoreEl.appendChild(svg);
-                    scoreEl.append(` ${data.new_score}`);
+                // Find buttons
+                const funnyBtn = container.querySelector('.btn-vote[data-vote-type="funny"]');
+                const dryBtn = container.querySelector('.btn-vote[data-vote-type="dry"]');
+
+                // Update Counts
+                if (funnyBtn) {
+                    const countSpan = funnyBtn.querySelector('.vote-count');
+                    if (countSpan) countSpan.textContent = data.funny_count;
+                }
+                if (dryBtn) {
+                    const countSpan = dryBtn.querySelector('.vote-count');
+                    if (countSpan) countSpan.textContent = data.dry_count;
                 }
 
-                // Update Button States
-                const upBtn = container.querySelector('.btn-vote[data-value="1"]');
-                const downBtn = container.querySelector('.btn-vote[data-value="-1"]');
-
-                // Reset both
-                if (upBtn) upBtn.classList.remove('active');
-                if (downBtn) downBtn.classList.remove('active');
-
-                // Set new active
-                if (data.user_vote === 1 && upBtn) upBtn.classList.add('active');
-                if (data.user_vote === -1 && downBtn) downBtn.classList.add('active');
+                // Update States
+                if (funnyBtn) {
+                    if (data.user_is_funny) funnyBtn.classList.add('active');
+                    else funnyBtn.classList.remove('active');
+                }
+                if (dryBtn) {
+                    if (data.user_is_dry) dryBtn.classList.add('active');
+                    else dryBtn.classList.remove('active');
+                }
 
             } catch (error) {
                 console.error("Vote failed:", error);
-                // Create a toast or alert?
                 alert("Nie udało się zagłosować. Spróbuj ponownie.");
             } finally {
-                btn.disabled = false;
+                allBtns.forEach(b => b.disabled = false);
             }
         });
     });

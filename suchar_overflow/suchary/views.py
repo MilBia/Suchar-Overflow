@@ -1,10 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 from django.db.models import OuterRef
 from django.db.models import Q
 from django.db.models import Subquery
-from django.db.models import Sum
-from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
@@ -29,23 +28,31 @@ class SucharListView(ListView):
             Suchar.objects.select_related("author")
             .prefetch_related("tags")
             .annotate(
-                score=Coalesce(Sum("votes__value"), 0),
+                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
+                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
             )
         )
 
         if self.request.user.is_authenticated:
             queryset = queryset.annotate(
-                user_vote=Subquery(
+                user_is_funny=Subquery(
                     Vote.objects.filter(
                         suchar=OuterRef("pk"),
                         user=self.request.user,
-                    ).values("value")[:1],
+                    ).values("is_funny")[:1],
+                ),
+                user_is_dry=Subquery(
+                    Vote.objects.filter(
+                        suchar=OuterRef("pk"),
+                        user=self.request.user,
+                    ).values("is_dry")[:1],
                 ),
             )
 
         sort = self.request.GET.get("sort")
         if sort == "top":
-            queryset = queryset.order_by("-score", "-created_at")
+            # For "Top" sorting, we can prioritize funny jokes
+            queryset = queryset.order_by("-funny_count", "-dry_count", "-created_at")
         else:
             queryset = queryset.order_by("-created_at")
 
@@ -81,25 +88,24 @@ class SucharCreateView(LoginRequiredMixin, CreateView):
 @require_POST
 def vote_suchar(request, pk):
     suchar = get_object_or_404(Suchar, pk=pk)
-    try:
-        value = int(request.POST.get("value", 0))
-    except (ValueError, TypeError):
-        return JsonResponse({"error": "Invalid vote value"}, status=400)
+    vote_type = request.POST.get("vote_type")
 
-    if value not in [1, -1]:
-        return JsonResponse({"error": "Invalid vote value"}, status=400)
+    if vote_type not in ["funny", "dry"]:
+        return JsonResponse({"error": "Invalid vote type"}, status=400)
 
-    vote, created = Vote.objects.get_or_create(
+    vote, _ = Vote.objects.get_or_create(
         user=request.user,
         suchar=suchar,
-        defaults={"value": value},
     )
 
-    if not created:
-        if vote.value == value:
-            vote.delete()  # Toggle off
-        else:
-            vote.value = value
-            vote.save()
+    if vote_type == "funny":
+        vote.is_funny = not vote.is_funny
+    elif vote_type == "dry":
+        vote.is_dry = not vote.is_dry
+
+    if not vote.is_funny and not vote.is_dry:
+        vote.delete()
+    else:
+        vote.save()
 
     return redirect("suchary:list")

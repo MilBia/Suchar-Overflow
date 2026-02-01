@@ -35,7 +35,11 @@
                   <div class="position-absolute top-0 end-0 p-2 opacity-25 trophy-icon">🏆</div>
                   <h6 class="text-uppercase text-warning-emphasis small fw-bold mb-2">{% trans "The Best Of" %}</h6>
                   <div class="mb-0 small fst-italic text-dark">{{ best_joke.text|linebreaksbr }}</div>
-                  <div class="mt-2 small fw-bold text-warning-emphasis">{{ best_joke.score|default:0 }} pkt</div>
+                  <div class="mt-2 small fw-bold text-warning-emphasis d-flex gap-2 align-items-center">
+                    <span>{{ best_joke.score|default:0 }} {% trans "Votes" %}</span>
+                    <span class="badge bg-warning text-dark opacity-75">{{ best_joke.funny_count }} F</span>
+                    <span class="badge bg-info text-white opacity-75">{{ best_joke.dry_count }} D</span>
+                  </div>
                 </div>
               </div>
             {% endif %}
@@ -45,7 +49,7 @@
               <div class="card-body">
                 <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Statistics" %}</h6>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span>{% trans "Global Rank" %}</span>
+                  <span>{% trans "Rank" %}</span>
                   <span class="fw-bold text-dark">#{{ global_rank }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -53,8 +57,11 @@
                   <span class="fw-bold">{{ suchar_count|default:"0" }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span>{% trans "Score" %}</span>
-                  <span class="fw-bold text-success">{{ object.total_score|default:"0" }}</span>
+                  <span>{% trans "Total Votes" %}</span>
+                  <span class="fw-bold text-primary">{{ object.total_score|default:"0" }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
+                  <span>F: {{ total_funny_score }} / D: {{ total_dry_score }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-4">
                   <span>{% trans "Joined" %}</span>
@@ -155,9 +162,11 @@
                       <div class="mb-2">{{ suchar.text|linebreaksbr }}</div>
                       <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">{{ suchar.created_at|date:"d M Y, H:i" }}</small>
-                        <small class="fw-bold {% if suchar.score < 0 %}text-danger{% elif suchar.score > 0 %}text-success{% else %}text-muted{% endif %}">
-                          {{ suchar.score|default:0 }} pkt
-                        </small>
+                        <div class="d-flex gap-2 align-items-center">
+                          <small class="fw-bold text-dark">{{ suchar.score|default:0 }} {% trans "Votes" %}</small>
+                          <span class="badge bg-warning text-dark rounded-pill py-0 px-2 small stats-text-sm">{{ suchar.funny_count }} F</span>
+                          <span class="badge bg-info text-white rounded-pill py-0 px-2 small stats-text-sm">{{ suchar.dry_count }} D</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -234,15 +243,15 @@
         // Reception Chart
         const ctxReception = document.getElementById('userReceptionChart');
         if (ctxReception) {
-          const data = JSON.parse('{{ reception_data|safe }}'); // [up, down]
+          const data = JSON.parse('{{ reception_data|safe }}'); // [funny, dry]
 
           new Chart(ctxReception.getContext('2d'), {
             type: 'doughnut',
             data: {
-              labels: ['Ubaw', 'Żenada'],
+              labels: ['{% trans "Funny" %}', '{% trans "Dry" %}'],
               datasets: [{
                 data: data,
-                backgroundColor: ['#22c55e', '#ef4444'], // green, red
+                backgroundColor: ['#E58E26', '#0ea5e9'], // Orange (Funny), Blue (Dry)
                 borderWidth: 0
               }]
             },

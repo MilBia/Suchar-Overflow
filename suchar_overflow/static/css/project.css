@@ -127,19 +127,32 @@ a:hover {
 }
 
 /* Upvote (Baguette) */
-.btn-vote[data-value="1"]:hover,
-.btn-vote[data-value="1"].active {
-  color: #E58E26 !important;
-  /* Cracker/Baguette color preserved */
-  background-color: rgba(229, 142, 38, 0.15);
+/* Upvote (Baguette) -> Funny */
+.btn-vote[data-vote-type="funny"]:hover,
+.btn-vote[data-vote-type="funny"].active {
+  color: #fff !important;
+  background-color: #E58E26 !important;
+  border-color: #E58E26 !important;
+  box-shadow: 0 2px 4px rgba(229, 142, 38, 0.4);
 }
 
-/* Downvote (Water) */
-.btn-vote[data-value="-1"]:hover,
-.btn-vote[data-value="-1"].active {
-  color: #0ea5e9 !important;
-  /* Sky Blue */
-  background-color: rgba(14, 165, 233, 0.15);
+/* Downvote (Water) -> Dry */
+.btn-vote[data-vote-type="dry"]:hover,
+.btn-vote[data-vote-type="dry"].active {
+  color: #fff !important;
+  background-color: #0ea5e9 !important;
+  border-color: #0ea5e9 !important;
+  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
+}
+
+/* Make inactive buttons slightly more visible in dark mode */
+[data-theme="dark"] .btn-vote:not(.active) {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .btn-vote:not(.active):hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 
@@ -517,4 +530,131 @@ a:hover {
 /* Form Width Limiter */
 .form-max-width {
   max-width: 600px;
+}
+
+/* =========================================
+   Leaderboard Tabs (Segmented Control)
+   ========================================= */
+
+/* =========================================
+   Leaderboard Tabs (Segmented Control)
+   ========================================= */
+
+#leaderboardTabs {
+  background-color: var(--bg-surface-secondary, rgba(0, 0, 0, 0.05));
+  padding: 0.5rem;
+  border-radius: 50px;
+  /* Fully rounded */
+  display: flex;
+  gap: 0.5rem;
+  border: 1px solid var(--border-color);
+  /* Ensure no list styles */
+  list-style: none;
+  margin-bottom: 2rem;
+
+  /* Centering Fix */
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+[data-theme="dark"] #leaderboardTabs {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+#leaderboardTabs .nav-item {
+  flex: 1 1 0px;
+  /* Force equal width */
+  text-align: center;
+  min-width: 0;
+}
+
+#leaderboardTabs .nav-link {
+  color: var(--text-muted);
+  border-radius: 50px;
+  padding: 0.75rem 0;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: none;
+  /* Remove potential borders */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  /* Fill the nav-item */
+  background-color: transparent;
+}
+
+#leaderboardTabs .nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] #leaderboardTabs .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Dark Mode Inactive Text */
+[data-theme="dark"] #leaderboardTabs .nav-link:not(.active) {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Active State Base */
+#leaderboardTabs .nav-link.active {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+  /* slightly bigger pop */
+}
+
+/* Tab Colors - Backgrounds for immediate feedback */
+#overall-tab.active {
+  background-color: #f59e0b !important;
+  /* Amber 500 */
+  color: #fff !important;
+}
+
+#funny-tab.active {
+  background-color: #E58E26 !important;
+  /* Orange */
+  color: #fff !important;
+}
+
+#dry-tab.active {
+  background-color: #0ea5e9 !important;
+  /* Blue */
+  color: #fff !important;
+}
+
+/* Animation for active click */
+#leaderboardTabs .nav-link:active {
+  transform: scale(0.95);
+}
+
+/* Tab Animations & Visibility Fixes */
+.tab-content>.tab-pane {
+  display: none;
+  /* Force hidden by default */
+}
+
+.tab-content>.active {
+  display: block;
+  /* Show active */
+}
+
+/* Only animate the active tab */
+.tab-pane.active {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

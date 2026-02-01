@@ -1,6 +1,7 @@
 from typing import Literal
 
-from django.db.models import Sum
+from django.db.models import Count
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja import Schema
@@ -13,40 +14,49 @@ router = Router()
 
 
 class VoteSchema(Schema):
-    value: Literal[1, -1]
+    vote_type: Literal["funny", "dry"]
 
 
 class VoteResponse(Schema):
-    new_score: int
-    user_vote: int  # 1, -1, or 0 (none)
+    funny_count: int
+    dry_count: int
+    user_is_funny: bool
+    user_is_dry: bool
 
 
 @router.post("/{suchar_id}/vote", auth=django_auth, response=VoteResponse)
 def vote_suchar(request, suchar_id: int, payload: VoteSchema):
     suchar = get_object_or_404(Suchar, pk=suchar_id)
     user = request.user
-    value = payload.value
+    vote_type = payload.vote_type
 
-    vote, created = Vote.objects.get_or_create(
+    vote, _ = Vote.objects.get_or_create(
         user=user,
         suchar=suchar,
-        defaults={"value": value},
     )
 
-    current_vote = value
+    if vote_type == "funny":
+        vote.is_funny = not vote.is_funny
+    elif vote_type == "dry":
+        vote.is_dry = not vote.is_dry
 
-    if not created:
-        if vote.value == value:
-            # Toggle off
-            vote.delete()
-            current_vote = 0
-        else:
-            # Change vote
-            vote.value = value
-            vote.save()
-            current_vote = value
+    if not vote.is_funny and not vote.is_dry:
+        vote.delete()
+    else:
+        vote.save()
 
-    # Calculate score using aggregation
-    new_score = suchar.votes.aggregate(total=Sum("value"))["total"] or 0
+    # Calculate counts using aggregation
+    counts = suchar.votes.aggregate(
+        funny=Count("pk", filter=Q(is_funny=True)),
+        dry=Count("pk", filter=Q(is_dry=True)),
+    )
 
-    return {"new_score": new_score, "user_vote": current_vote}
+    return {
+        "funny_count": counts["funny"] or 0,
+        "dry_count": counts["dry"] or 0,
+        "user_is_funny": vote.is_funny
+        if vote.pk
+        # If deleted, object still has state but pk might be irrelevant
+        else False,
+        "user_is_dry": vote.is_dry if vote.pk else False,
+    }

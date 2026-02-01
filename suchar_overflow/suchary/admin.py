@@ -17,7 +17,7 @@ class TagAdmin(admin.ModelAdmin):
 class VoteInline(admin.TabularInline):
     model = Vote
     extra = 0
-    readonly_fields = ["user", "value"]
+    readonly_fields = ["user", "is_funny", "is_dry"]
     can_delete = True
 
     def has_add_permission(self, request, obj=None):
@@ -49,7 +49,7 @@ class SucharAdmin(admin.ModelAdmin):
 
 @admin.register(Vote)
 class VoteAdmin(admin.ModelAdmin):
-    list_display = ["user", "suchar", "value"]
-    list_filter = ["value"]
+    list_display = ["user", "suchar", "is_funny", "is_dry"]
+    list_filter = ["is_funny", "is_dry"]
     search_fields = ["user__username", "suchar__text"]
     autocomplete_fields = ["user", "suchar"]

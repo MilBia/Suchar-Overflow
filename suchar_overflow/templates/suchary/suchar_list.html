@@ -93,36 +93,31 @@
                   {% endfor %}
                 </div>
               {% endif %}
-              <div class="d-flex align-items-center justify-content-between border-top pt-3">
-                <div class="d-flex align-items-center">
-                  <span class="vote-score me-3 d-flex align-items-center gap-2 text-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         width="20"
-                         height="20"
-                         fill="currentColor"
-                         class="text-warning"
-                         viewBox="0 0 16 16">
-                      <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                    </svg>
-                    {{ suchar.score|default_if_none:0 }}
-                  </span>
-                </div>
-                {% if user.is_authenticated %}
-                  <div class="d-flex align-items-center gap-2">
-                    <!-- Hidden CSRF Token for JS to grab -->
-                    {% csrf_token %}
-                    <button type="button"
-                            data-suchar-id="{{ suchar.pk }}"
-                            data-value="1"
-                            class="btn btn-icon btn-vote {% if suchar.user_vote == 1 %}active{% endif %}"
-                            title="{% trans 'Funny (Upvote)' %}">{% include "svgs/icon-vote-up.svg" %}</button>
-                    <button type="button"
-                            data-suchar-id="{{ suchar.pk }}"
-                            data-value="-1"
-                            class="btn btn-icon btn-vote {% if suchar.user_vote == -1 %}active{% endif %}"
-                            title="{% trans 'Dry (Downvote)' %}">{% include "svgs/icon-vote-down.svg" %}</button>
-                  </div>
-                {% endif %}
+              <div class="voting-controls d-flex align-items-center justify-content-end gap-3 border-top pt-3">
+                {% csrf_token %}
+                <!-- Funny Button -->
+                <button type="button"
+                        data-suchar-id="{{ suchar.pk }}"
+                        data-vote-type="funny"
+                        class="btn btn-vote btn-sm d-flex align-items-center gap-2 {% if suchar.user_is_funny %}active{% endif %}"
+                        {% if not user.is_authenticated %}disabled{% endif %}
+                        title="{% trans 'Funny' %}">
+                  {% include "svgs/icon-vote-up.svg" %}
+                  <span class="vote-count fw-bold">{{ suchar.funny_count }}</span>
+                  <span class="ms-1 d-none d-sm-inline">{% trans "Funny" %}</span>
+                </button>
+
+                <!-- Dry Button -->
+                <button type="button"
+                        data-suchar-id="{{ suchar.pk }}"
+                        data-vote-type="dry"
+                        class="btn btn-vote btn-sm d-flex align-items-center gap-2 {% if suchar.user_is_dry %}active{% endif %}"
+                        {% if not user.is_authenticated %}disabled{% endif %}
+                        title="{% trans 'Dry' %}">
+                  {% include "svgs/icon-vote-down.svg" %}
+                  <span class="vote-count fw-bold">{{ suchar.dry_count }}</span>
+                  <span class="ms-1 d-none d-sm-inline">{% trans "Dry" %}</span>
+                </button>
               </div>
             </div>
           </div>

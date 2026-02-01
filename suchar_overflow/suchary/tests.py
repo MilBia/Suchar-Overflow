@@ -50,17 +50,33 @@ def test_vote_suchar(client, django_user_model):
     client.force_login(user)
     url = reverse("suchary:vote", kwargs={"pk": suchar.pk})
 
-    # Vote UP
-    response = client.post(url, {"value": "1"})
+    # Vote Funny (toggle on)
+    response = client.post(url, {"vote_type": "funny"})
     assert response.status_code == HTTPStatus.FOUND
-    assert Vote.objects.filter(user=user, suchar=suchar, value=1).exists()
+    assert Vote.objects.filter(user=user, suchar=suchar, is_funny=True).exists()
+    assert Vote.objects.filter(user=user, suchar=suchar, is_dry=False).exists()
 
-    # Vote DOWN (change vote)
-    response = client.post(url, {"value": "-1"})
-    assert Vote.objects.filter(user=user, suchar=suchar, value=-1).exists()
+    # Vote Dry (toggle on independent)
+    response = client.post(url, {"vote_type": "dry"})
+    assert Vote.objects.filter(
+        user=user,
+        suchar=suchar,
+        is_funny=True,
+        is_dry=True,
+    ).exists()
 
-    # Vote DOWN again (toggle off)
-    response = client.post(url, {"value": "-1"})
+    # Vote Funny again (toggle off)
+    response = client.post(url, {"vote_type": "funny"})
+    # Now funny=False, dry=True
+    assert Vote.objects.filter(
+        user=user,
+        suchar=suchar,
+        is_funny=False,
+        is_dry=True,
+    ).exists()
+
+    # Vote Dry again (toggle off) -> Should delete vote
+    response = client.post(url, {"vote_type": "dry"})
     assert not Vote.objects.filter(user=user, suchar=suchar).exists()
 
 
@@ -85,8 +101,8 @@ def test_suchar_list_sorting(client, django_user_model):
     response = client.get(url, {"sort": "newest"})
     assert list(response.context["suchary"]) == [s2, s1]
 
-    # Top sort
-    Vote.objects.create(user=user, suchar=s1, value=1)
+    # Top sort (Prioritize funny)
+    Vote.objects.create(user=user, suchar=s1, is_funny=True)
     response = client.get(url, {"sort": "top"})
     assert list(response.context["suchary"]) == [s1, s2]
 
@@ -161,17 +177,17 @@ def test_vote_suchar_edge_cases(client, django_user_model):
     client.force_login(user)
     url = reverse("suchary:vote", kwargs={"pk": suchar.pk})
 
-    # Non-integer value
-    response = client.post(url, {"value": "abc"})
+    # Invalid vote type
+    response = client.post(url, {"vote_type": "invalid"})
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
-    # Invalid integer value
-    response = client.post(url, {"value": "5"})
+    # Missing vote type
+    response = client.post(url, {})
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
     # Non-existent suchar
     url_invalid = reverse("suchary:vote", kwargs={"pk": 9999})
-    response = client.post(url_invalid, {"value": "1"})
+    response = client.post(url_invalid, {"vote_type": "funny"})
     assert response.status_code == HTTPStatus.NOT_FOUND
 
 

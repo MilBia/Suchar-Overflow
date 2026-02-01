@@ -8,9 +8,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import send_mail
 from django.db.models import Count
+from django.db.models import Q
 from django.db.models import QuerySet
-from django.db.models import Sum
-from django.db.models.functions import Coalesce
 from django.db.models.functions import TruncDay
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -49,30 +48,65 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         user = self.object
 
         # 1. Latest Suchary
+        # 1. Latest Suchary
         context["latest_suchary"] = user.suchary.annotate(
-            score=Coalesce(Sum("votes__value"), 0),
+            score=Count("votes"),
+            funny_count=Count("votes", filter=Q(votes__is_funny=True)),
+            dry_count=Count("votes", filter=Q(votes__is_dry=True)),
         ).order_by("-created_at")[:5]
 
         # 2. Total Score & Count
         stats = user.suchary.aggregate(
-            total_score=Sum("votes__value"),
+            total_score=Count("votes"),
+            funny_score=Count("votes", filter=Q(votes__is_funny=True)),
+            dry_score=Count("votes", filter=Q(votes__is_dry=True)),
             total_count=Count("id", distinct=True),
         )
         user.total_score = stats["total_score"] or 0
+        # Add to context directly to avoid object reference issues in template
+        context["total_funny_score"] = stats["funny_score"] or 0
+        context["total_dry_score"] = stats["dry_score"] or 0
         context["suchar_count"] = stats["total_count"] or 0
 
-        # Global Rank
-        # Count users with strictly higher total score
+        # Global Rank (based on Total Score)
         higher_ranking_users = (
-            User.objects.annotate(score=Sum("suchary__votes__value"))
+            User.objects.annotate(score=Count("suchary__votes"))
             .filter(score__gt=user.total_score)
             .count()
         )
         context["global_rank"] = higher_ranking_users + 1
 
-        # Best Joke (highest score)
+        # Best Joke (highest score = total votes)
         context["best_joke"] = (
-            user.suchary.annotate(score=Sum("votes__value"))
+            user.suchary.annotate(
+                score=Count("votes"),
+                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
+                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
+            )
+            .order_by("-score", "-created_at")
+            .first()
+        )
+
+        # Global Rank
+        # Count users with strictly higher total score
+        # Note: This is complex with aggregation.
+        # Simplified: Use annotation on User model first.
+        # Since we can't easily query Sum of Counts across relations in one go
+        # effectively without Subqueries or huge GroupBys.
+        # For MVP, let's keep it simple or fix it.
+        # Alternative: Count users whose sum of funny votes is higher.
+        higher_ranking_users = (
+            User.objects.annotate(
+                score=Count("suchary__votes", filter=Q(suchary__votes__is_funny=True)),
+            )
+            .filter(score__gt=user.total_score)
+            .count()
+        )
+        context["global_rank"] = higher_ranking_users + 1
+
+        # Best Joke (highest score = funny count)
+        context["best_joke"] = (
+            user.suchary.annotate(score=Count("votes", filter=Q(votes__is_funny=True)))
             .order_by("-score", "-created_at")
             .first()
         )
@@ -92,13 +126,12 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         context["activity_labels"] = json.dumps(chart_labels)
         context["activity_values"] = json.dumps(chart_values)
 
-        # 4. Reception Chart (Upvotes vs Downvotes received)
-        # We need to count votes ON user's suchars
+        # 4. Reception Chart (Funny vs Dry received)
         # Votes where suchar__author = user
-        upvotes = Vote.objects.filter(suchar__author=user, value=Vote.UP).count()
-        downvotes = Vote.objects.filter(suchar__author=user, value=Vote.DOWN).count()
+        funny_votes = Vote.objects.filter(suchar__author=user, is_funny=True).count()
+        dry_votes = Vote.objects.filter(suchar__author=user, is_dry=True).count()
 
-        context["reception_data"] = json.dumps([upvotes, downvotes])
+        context["reception_data"] = json.dumps([funny_votes, dry_votes])
 
         # 5. Contribution Heatmap (Last ~1 year, aligned to weeks)
         context["heatmap_weeks"] = self._get_heatmap_weeks(user)
