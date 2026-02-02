@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Count
 from django.db.models import OuterRef
 from django.db.models import Q
@@ -7,10 +8,13 @@ from django.db.models import Subquery
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
 from django.views.generic import ListView
+from django.views.generic import UpdateView
 
 from .forms import SucharForm
 from .models import Suchar
@@ -24,13 +28,14 @@ class SucharListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = (
-            Suchar.objects.select_related("author")
-            .prefetch_related("tags")
-            .annotate(
-                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
-                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
-            )
+        queryset = Suchar.objects.select_related("author").prefetch_related("tags")
+
+        # Show ONLY published posts. User's scheduled posts are now in their profile.
+        queryset = queryset.filter(published_at__lte=timezone.now())
+
+        queryset = queryset.annotate(
+            funny_count=Count("votes", filter=Q(votes__is_funny=True)),
+            dry_count=Count("votes", filter=Q(votes__is_dry=True)),
         )
 
         if self.request.user.is_authenticated:
@@ -82,6 +87,25 @@ class SucharCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
+
+class SucharUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Suchar
+    form_class = SucharForm
+    template_name = "suchary/suchar_form.html"
+    success_url = reverse_lazy("suchary:list")
+
+    def test_func(self):
+        obj = self.get_object()
+        # Allow editing only if it's NOT published yet (or published in the future)
+        return obj.author == self.request.user and not obj.is_published
+
+    def handle_no_permission(self):
+        obj = self.get_object()
+        # If user is author but post is published -> Show "Too Late" page
+        if obj.author == self.request.user and obj.is_published:
+            return render(self.request, "suchary/edit_too_late.html", status=403)
+        return super().handle_no_permission()
 
 
 @login_required

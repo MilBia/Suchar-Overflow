@@ -7,8 +7,14 @@
 {% block title %}
   {% trans "Add Joke" %}
 {% endblock title %}
+
+{% block css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/pages/suchar_form.css' %}" />
+{% endblock css %}
+
 {% block content %}
-  <div class="row py-5 gx-5">
+  <div class="row py-5 gx-5 suchar-form-wrapper">
     <!-- Left Column: Form -->
     <div class="col-lg-6 mb-5 mb-lg-0">
       <div class="card shadow-lg border-0 rounded-4 glass-card h-100">
@@ -26,7 +32,6 @@
           <form method="post">
             {% csrf_token %}
 
-            <!-- Manual Field Rendering for Control -->
             <div class="mb-4">
               <label for="id_text" class="form-label fw-bold">{% trans "Joke Content" %}</label>
               <textarea name="text"
@@ -35,18 +40,46 @@
                         class="form-control form-control-lg"
                         placeholder="{% trans 'Why did the chicken cross the road?' %}"
                         required
-                        id="id_text"></textarea>
+                        id="id_text">{{ form.text.value|default_if_none:'' }}</textarea>
               <div class="form-text">{% trans "Remember, the drier the better." %}</div>
             </div>
 
             <div class="mb-4">
               <label for="id_tags_input" class="form-label fw-bold">{% trans "Tags" %}</label>
-              <input type="text"
-                     name="tags_input"
-                     class="form-control"
-                     placeholder="{% trans 'e.g. it, programming, school' %}"
-                     id="id_tags_input" />
+              <div class="custom-dropdown w-100" id="tags-dropdown">
+                <input type="text"
+                       name="tags_input"
+                       class="form-control"
+                       placeholder="{% trans 'e.g. it, programming, school' %}"
+                       id="id_tags_input"
+                       value="{{ form.tags_input.value|default_if_none:'' }}"
+                       autocomplete="off" />
+                <!-- Suggestions Box managed by JS -->
+                <div id="tags-suggestions" class="dropdown-menu w-100"></div>
+              </div>
               <div class="form-text">{% trans "Separate with commas." %}</div>
+            </div>
+
+            <!-- Scheduling Section (Moved to bottom) -->
+            <div class="mb-4 p-3 bg-light bg-opacity-10 rounded-3 border border-secondary border-opacity-25">
+              <div class="d-flex flex-wrap align-items-center gap-3">
+                <div class="form-check form-switch mb-0">
+                  <input class="form-check-input" type="checkbox" id="scheduleCheck" />
+                  <label class="form-check-label fw-bold" for="scheduleCheck">{% trans "Schedule for later" %}</label>
+                </div>
+
+                <div id="scheduleContainer" class="d-none flex-grow-1">
+                  <div class="d-flex align-items-center gap-2">
+                    <input type="datetime-local"
+                           name="published_at"
+                           class="form-control"
+                           id="id_published_at"
+                           value="{{ form.published_at.value|date:'Y-m-d\TH:i' }}" />
+                    <small class="text-muted text-nowrap">{% trans "Future date" %}</small>
+                  </div>
+                  <div class="invalid-feedback d-none" id="dateError"></div>
+                </div>
+              </div>
             </div>
 
             <div class="d-grid gap-3 mt-5">

@@ -79,10 +79,22 @@
                 <div class="d-flex align-items-center">
                   <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
                   <div>
-                    <h6 class="mb-0 fw-bold">{{ suchar.author.display_name }}</h6>
-                    <small class="suchar-meta">{{ suchar.created_at|date:"d M Y, H:i" }}</small>
+                    <h6 class="mb-0 fw-bold">
+                      {{ suchar.author.display_name }}
+                      {% if not suchar.is_published %}
+                        <span class="badge bg-warning text-dark ms-2">{% trans "Scheduled" %}</span>
+                      {% endif %}
+                    </h6>
+                    <small class="suchar-meta">{{ suchar.published_at|date:"d M Y, H:i" }}</small>
                   </div>
                 </div>
+                {% if request.user == suchar.author and not suchar.is_published %}
+                  <a href="{% url 'suchary:update' suchar.pk %}"
+                     class="btn btn-sm btn-outline-primary">
+                    {% include "svgs/icon-edit.svg" %}
+                    {% trans "Edit" %}
+                  </a>
+                {% endif %}
               </div>
               <p class="mb-4">{{ suchar.text|linebreaksbr }}</p>
               {% if suchar.tags.all %}

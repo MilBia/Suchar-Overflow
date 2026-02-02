@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -19,10 +20,19 @@ class Suchar(models.Model):
         related_name="suchary",
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    published_at = models.DateTimeField(
+        _("Publication Date"),
+        default=timezone.now,
+        db_index=True,
+    )
     tags = models.ManyToManyField(Tag, related_name="suchary", blank=True)
 
     def __str__(self):
-        return f"Suchar by {self.author} at {self.created_at}"
+        return f"Suchar by {self.author} at {self.published_at}"
+
+    @property
+    def is_published(self):
+        return self.published_at <= timezone.now()
 
 
 class Vote(models.Model):

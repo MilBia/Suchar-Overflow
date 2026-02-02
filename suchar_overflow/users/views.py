@@ -49,11 +49,21 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
         # 1. Latest Suchary
         # 1. Latest Suchary
-        context["latest_suchary"] = user.suchary.annotate(
-            score=Count("votes"),
-            funny_count=Count("votes", filter=Q(votes__is_funny=True)),
-            dry_count=Count("votes", filter=Q(votes__is_dry=True)),
-        ).order_by("-created_at")[:5]
+        context["latest_suchary"] = (
+            user.suchary.filter(published_at__lte=timezone.now())
+            .annotate(
+                score=Count("votes"),
+                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
+                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
+            )
+            .order_by("-created_at")[:5]
+        )
+
+        # 1.5 Scheduled Suchary (Owner Only)
+        if self.request.user == user:
+            context["scheduled_suchary"] = user.suchary.filter(
+                published_at__gt=timezone.now(),
+            ).order_by("published_at")
 
         # 2. Total Score & Count
         stats = user.suchary.aggregate(

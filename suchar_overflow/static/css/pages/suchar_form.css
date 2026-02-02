@@ -1,0 +1,7 @@
+/* Suchar Form Page Specific Styles */
+
+/* Fix for Newlines in Preview */
+#previewText {
+    white-space: pre-wrap;
+    word-break: break-word;
+}

@@ -8,6 +8,7 @@ from ninja import Schema
 from ninja.security import django_auth
 
 from .models import Suchar
+from .models import Tag
 from .models import Vote
 
 router = Router()
@@ -22,6 +23,19 @@ class VoteResponse(Schema):
     dry_count: int
     user_is_funny: bool
     user_is_dry: bool
+
+
+class TagSchema(Schema):
+    name: str
+    slug: str
+
+
+@router.get("/tags", response=list[TagSchema])
+def list_tags(request, q: str | None = None):
+    tags = Tag.objects.all()
+    if q:
+        tags = tags.filter(name__icontains=q)
+    return tags[:10]
 
 
 @router.post("/{suchar_id}/vote", auth=django_auth, response=VoteResponse)
