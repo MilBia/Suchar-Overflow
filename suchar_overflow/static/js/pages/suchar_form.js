@@ -54,26 +54,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 scheduleContainer.classList.remove('d-none');
             }
 
-            const updateMinDate = () => {
-                const d = new Date();
-                d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-                publishedAtInput.min = d.toISOString().slice(0, 16);
-            };
-            updateMinDate();
+            // Initialize Flatpickr
+            const fp = flatpickr(publishedAtInput, {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                minDate: "today",
+                time_24hr: true,
+                disableMobile: true, // Force custom UI
+                onChange: function (selectedDates, dateStr, instance) {
+                    // Optional: Validate on change
+                }
+            });
 
+            // Handle Schedule Toggle
             scheduleCheck.addEventListener('change', (e) => {
                 if (e.target.checked) {
                     scheduleContainer.classList.remove('d-none');
-                    publishedAtInput.disabled = false;
-                    updateMinDate();
+                    // Small delay to allow transition, then open calendar if empty
                     if (!publishedAtInput.value) {
-                        const d = new Date();
-                        d.setMinutes(d.getMinutes() - d.getTimezoneOffset() + 60);
-                        publishedAtInput.value = d.toISOString().slice(0, 16);
+                        setTimeout(() => fp.open(), 100);
                     }
+                    // Re-enable input logic (Flatpickr handles the actual input)
+                    publishedAtInput.disabled = false;
                 } else {
                     scheduleContainer.classList.add('d-none');
-                    publishedAtInput.value = '';
+                    fp.clear(); // Clear value via Flatpickr API
                     publishedAtInput.disabled = true;
                 }
             });

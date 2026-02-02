@@ -10,6 +10,8 @@
 
 {% block css %}
   {{ block.super }}
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <link rel="stylesheet" href="{% static 'css/pages/suchar_form.css' %}" />
 {% endblock css %}
 
@@ -68,14 +70,14 @@
                   <label class="form-check-label fw-bold" for="scheduleCheck">{% trans "Schedule for later" %}</label>
                 </div>
 
-                <div id="scheduleContainer" class="d-none flex-grow-1">
+                <div id="scheduleContainer" class="schedule-wrapper d-none flex-grow-1">
                   <div class="d-flex align-items-center gap-2">
-                    <input type="datetime-local"
+                    <input type="text"
                            name="published_at"
-                           class="form-control"
+                           class="form-control flatpickr-input"
                            id="id_published_at"
-                           value="{{ form.published_at.value|date:'Y-m-d\TH:i' }}" />
-                    <small class="text-muted text-nowrap">{% trans "Future date" %}</small>
+                           placeholder="{% trans 'Select date and time...' %}"
+                           value="{{ form.published_at.value|date:'Y-m-d H:i' }}" />
                   </div>
                   <div class="invalid-feedback d-none" id="dateError"></div>
                 </div>
@@ -155,5 +157,6 @@
 
 {% block javascript %}
   {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script defer src="{% static 'js/pages/suchar_form.js' %}"></script>
 {% endblock javascript %}
