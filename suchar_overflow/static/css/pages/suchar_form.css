@@ -191,3 +191,44 @@
 [data-theme="dark"] .flatpickr-time .flatpickr-am-pm:focus {
     background: rgba(255, 255, 255, 0.1);
 }
+
+/* Fix textarea resize */
+textarea#id_text {
+    resize: vertical;
+}
+
+/* Fix Schedule Checkbox Alignment */
+.suchar-form-wrapper .form-check.form-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 46px;
+    /* Match form-control height (approx 45.2px) */
+    margin-bottom: 0;
+    /* Remove bottom margin inside flex container */
+    padding-left: 0;
+    /* Reset padding since we handle spacing with flex/gap */
+}
+
+.suchar-form-wrapper .form-check-input {
+    margin-top: 0;
+    /* Remove bootstrap margin that shifts it down/up */
+    margin-left: 0;
+    /* Reset margin since we are using flex with gap */
+}
+
+/* Fix Label "too high" issue */
+.suchar-form-wrapper .form-check-label {
+    margin-bottom: 0;
+    /* Remove global label margin */
+    line-height: 1;
+    /* Tighten line height for better centering */
+    padding-top: 3px;
+    /* Optical center adjustment */
+}
+
+/* Fix Date Input Layout */
+.suchar-form-wrapper .schedule-wrapper .form-control {
+    margin-bottom: 0;
+    /* Remove spacing that causes height shift */
+}
