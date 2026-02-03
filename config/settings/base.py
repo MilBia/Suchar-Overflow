@@ -76,6 +76,7 @@ LOCAL_APPS = [
     "suchar_overflow.users",
     "suchar_overflow.suchary",
     "suchar_overflow.stats",
+    "suchar_overflow.achievements",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -134,6 +135,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "suchar_overflow.achievements.middleware.AchievementNotificationMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 

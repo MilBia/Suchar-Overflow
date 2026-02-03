@@ -6,7 +6,7 @@
   {% trans "User" %}: {{ object.username }}
 {% endblock title %}
 {% block dashboard_content %}
-  <div class="card shadow-lg border-0 h-100 overflow-hidden">
+  <div class="card shadow-lg border-0 h-100 overflow-visible">
     <!-- Hero Cover -->
     <div class="profile-cover"></div>
 
@@ -28,6 +28,32 @@
         <div class="row g-4">
           <!-- Stats Column -->
           <div class="col-md-4 col-xl-3">
+            <!-- Achievements -->
+            <div class="card border bg-white mb-4 overflow-visible">
+              <div class="card-body">
+                <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Achievements" %}</h6>
+                {% if object.user_achievements.exists %}
+                  <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-xl-start">
+                    {% for user_ach in object.user_achievements.all %}
+                      <div class="achievement-container">
+                        <div class="achievement-icon-wrapper text-warning">{{ user_ach.achievement.icon_content|safe }}</div>
+
+                        <div class="achievement-details-popover">
+                          <div class="achievement-details-icon text-warning">{{ user_ach.achievement.icon_content|safe }}</div>
+                          <div class="achievement-details-content">
+                            <span class="achievement-title text-start">{{ user_ach.achievement.name }}</span>
+                            <span class="achievement-description text-start">{{ user_ach.achievement.description }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <p class="text-muted small mb-0">{% trans "No achievements yet." %}</p>
+                {% endif %}
+              </div>
+            </div>
+
             <!-- Best Joke (Top Priority) -->
             {% if best_joke %}
               <div class="card border border-warning bg-warning bg-opacity-10 mb-4">
