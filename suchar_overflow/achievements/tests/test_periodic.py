@@ -15,20 +15,24 @@ User = get_user_model()
 @pytest.fixture
 def periodic_achievements(db):
     Achievement.objects.get_or_create(
-        name="Comedian of the Month",
         slug="best-suchar-month",
-        category="PERIODIC",
-        metric="SUM_SCORE",
-        threshold=0,
-        icon_content="<svg></svg>",
+        defaults={
+            "name": "Comedian of the Month",
+            "category": "PERIODIC",
+            "metric": "SUM_SCORE",
+            "threshold": 0,
+            "icon_content": "<svg></svg>",
+        },
     )
     Achievement.objects.get_or_create(
-        name="Legend of the Year",
         slug="best-suchar-year",
-        category="PERIODIC",
-        metric="SUM_SCORE",
-        threshold=0,
-        icon_content="<svg></svg>",
+        defaults={
+            "name": "Legend of the Year",
+            "category": "PERIODIC",
+            "metric": "SUM_SCORE",
+            "threshold": 0,
+            "icon_content": "<svg></svg>",
+        },
     )
 
 
