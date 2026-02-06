@@ -1,3 +1,4 @@
+from datetime import datetime
 from datetime import timedelta
 
 from django.core.management.base import BaseCommand
@@ -75,10 +76,21 @@ class Command(BaseCommand):
         # For now let's assume we sort by most 'funny' votes as simple "Best".
         # Or better: Total Votes.
 
+        # Convert date objects to timezone-aware datetimes
+        current_tz = timezone.get_current_timezone()
+        start_dt = timezone.make_aware(
+            datetime.combine(start_date, datetime.min.time()),
+            current_tz,
+        )
+        end_dt = timezone.make_aware(
+            datetime.combine(end_date, datetime.min.time()),
+            current_tz,
+        )
+
         best_suchar = (
             Suchar.objects.filter(
-                created_at__gte=start_date,
-                created_at__lt=end_date,
+                created_at__gte=start_dt,
+                created_at__lt=end_dt,
             )
             .annotate(
                 vote_count=Count("votes"),

@@ -63,7 +63,14 @@ jobs:
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
 
       - name: Run Django Tests
-        run: docker compose -f docker-compose.local.yml run django pytest
+        run: docker compose -f docker-compose.local.yml run django pytest -vv --junitxml=root_junit.xml
+
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        if: always() # always run even if the previous step failed
+        with:
+          name: junit-test-results
+          path: root_junit.xml
 
       - name: Tear down the Stack
         run: docker compose -f docker-compose.local.yml down
