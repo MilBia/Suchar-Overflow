@@ -3,6 +3,7 @@ description: Run tests inside the Docker container to ensure environment consist
 ---
 
 1. Run all tests using pytest inside the django container:
+// turbo
    ```bash
    docker compose -f docker-compose.local.yml run --rm django pytest
    ```
