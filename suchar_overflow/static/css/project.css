@@ -1,8 +1,8 @@
 /* =========================================
    Project Specific Overrides
+   Only truly global styles that don't belong
+   to any specific component or page.
    ========================================= */
-
-@import "components/leaderboard.css";
 
 /* Global Typography & Layout */
 body {
@@ -13,8 +13,6 @@ body {
   display: flex;
   flex-direction: column;
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* overflow-x: hidden; */
-  /* Prevent horizontal scroll from effects - Removed as it breaks sticky positioning */
 }
 
 /* Theme Toggle Transition Class */
@@ -74,14 +72,11 @@ a:hover {
   padding-bottom: 3rem;
 }
 
-/* Components that haven't been migrated to dedicated files yet */
-
 /* Auth Cards Override */
 .auth-card {
   max-width: 450px;
   margin: 3rem auto;
   padding: 2rem;
-  /* Use Glassmorphism for Auth Cards */
   background: var(--bg-surface-glass);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -105,57 +100,6 @@ a:hover {
   box-shadow: var(--shadow-sm);
 }
 
-/* Voting Buttons Specifics */
-.btn-vote {
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Vote Icons Dark Mode Visibility */
-[data-theme="dark"] .btn-vote {
-  color: var(--text-muted);
-}
-
-[data-theme="dark"] .btn-vote svg {
-  fill: currentColor;
-}
-
-.btn-vote:hover {
-  background-color: hsla(var(--hue-primary), 80%, 60%, 0.1);
-  transform: scale(1.05);
-  z-index: 10;
-  position: relative;
-}
-
-/* Upvote (Baguette) */
-/* Upvote (Baguette) -> Funny */
-.btn-vote[data-vote-type="funny"]:hover,
-.btn-vote[data-vote-type="funny"].active {
-  color: #fff !important;
-  background-color: #E58E26 !important;
-  border-color: #E58E26 !important;
-  box-shadow: 0 2px 4px rgba(229, 142, 38, 0.4);
-}
-
-/* Downvote (Water) -> Dry */
-.btn-vote[data-vote-type="dry"]:hover,
-.btn-vote[data-vote-type="dry"].active {
-  color: #fff !important;
-  background-color: #0ea5e9 !important;
-  border-color: #0ea5e9 !important;
-  box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
-}
-
-/* Make inactive buttons slightly more visible in dark mode */
-[data-theme="dark"] .btn-vote:not(.active) {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .btn-vote:not(.active):hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-
 /* Home Page Hero Icon */
 .hero-icon-wrapper {
   transform: scale(1.5);
@@ -163,335 +107,40 @@ a:hover {
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
 }
 
-/* Footer */
-.footer {
-  background-color: var(--bg-surface);
-  border-top: 1px solid var(--border-color);
-  padding: 2rem 0;
-  margin-top: auto;
-  color: var(--text-muted);
-  /* Make footer also glassy? Optional. */
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(10px);
-}
-
-/* =========================================
-   Profile / Dashboard Styles
-   ========================================= */
-
-.profile-cover {
-  height: 160px;
-  background: var(--gradient-brand);
-  position: relative;
-  width: 100%;
-  /* Texture/Gradient Overlay */
-  background-image:
-    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
-    radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
-    var(--gradient-brand);
-  border-top-left-radius: var(--radius-lg, 1rem);
-  /* Match card radius */
-  border-top-right-radius: var(--radius-lg, 1rem);
-}
-
-.profile-header-wrapper {
-  margin-top: -60px;
-  /* Overlap cover */
-  position: relative;
-  z-index: 2;
-}
-
-.avatar-profile {
-  width: 120px;
-  height: 120px;
-  background: var(--bg-surface);
-  border: 4px solid var(--bg-surface);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  /* Softer shadow */
-  overflow: hidden;
-  color: var(--color-primary);
-}
-
-.avatar-profile svg {
-  width: 60%;
-  height: 60%;
-}
-
-/* Dashboard Sidebar Item */
-.dashboard-card .list-group-item {
-  border: none;
-  border-radius: var(--radius-md) !important;
-  margin-bottom: 2px;
-  color: var(--text-muted);
-  font-weight: 500;
-  transition: all 0.2s ease;
-
-  /* Layout Fix */
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-}
-
-.dashboard-card .list-group-item:hover {
-  background-color: hsla(var(--hue-primary), 50%, 50%, 0.05);
-  color: var(--color-primary);
-}
-
-.dashboard-card .list-group-item.active {
-  background-color: hsla(var(--hue-primary), 80%, 60%, 0.1);
-  color: var(--color-primary);
-  border-color: transparent;
-  font-weight: 600;
-}
-
-/* Sticky Sidebar Offset */
-/* Sticky Sidebar Offset */
-.sticky-sidebar {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 90px !important;
-  /* Clears navbar height */
-  z-index: 10;
-}
-
-.dashboard-card .icon-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 20px;
-}
-
-.tracking-wide {
-  letter-spacing: 0.05em;
-}
-
-/* Mini hover card for feed */
-.card-hover-sm {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card-hover-sm:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-  background-color: var(--bg-surface) !important;
-  /* lighten on hover if it was bg-light in Light mode */
-}
-
-/* Sticky Preview for Add Suchar */
-.sticky-preview {
-  position: sticky;
-  top: 100px;
-  z-index: 1;
-}
-
 /* Adaptive Logo */
 .brand-logo {
   height: 40px;
   width: auto;
-  /* Ensure fill="currentColor" works */
   color: var(--text-main);
 }
 
-/* =========================================
-   Modals & Toasts (Glassmorphism)
-   ========================================= */
-
-/* Modal Overlay (Backdrop) */
-.modal-overlay {
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-/* Modal Content */
-.modal {
-  /* Override Bootstrap/Default if needed */
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--glass-border);
-  box-shadow: var(--shadow-2xl);
-  border-radius: var(--radius-lg);
-  color: var(--text-main);
-}
-
-.modal-header,
-.modal-footer {
-  border-color: var(--border-color);
-}
-
-/* Toasts */
-.toast {
-  background-color: var(--bg-surface-glass) !important;
-  /* Force override BS */
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--glass-border);
-  box-shadow: var(--shadow-lg);
-  color: var(--text-main);
-  border-radius: var(--radius-md);
-}
-
-.toast-header {
-  background-color: rgba(255, 255, 255, 0.05);
-  /* Slight tint header */
-  color: var(--text-main);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.btn-close {
-  filter: var(--icon-filter);
-}
-
-/* =========================================
-   Heatmap Component
-   ========================================= */
-
-/* Wrapper to allow horizontal scroll if needed */
-.heatmap-wrapper {
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-}
-
-.heatmap-grid {
-  /* Flex container for weeks */
-  /* Using flex instead of grid for column-based weeks */
-  display: flex;
-  gap: 4px;
-}
-
-.heatmap-week {
-  /* Each week is a column of days */
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.heatmap-day {
-  width: 12px;
-  height: 12px;
-  background-color: var(--heatmap-level-0);
-  border-radius: 2px;
-  transition: transform 0.1s ease, background-color 0.2s ease;
-  /* Improve Light Mode Contrast */
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  /* Subtle border for empty cells in light mode */
-}
-
-[data-theme='dark'] .heatmap-day {
-  border: none;
-}
-
-.heatmap-day:hover {
-  transform: scale(1.4);
-  z-index: 2;
-  border: 1px solid var(--text-muted);
-}
-
-.heatmap-day[data-level="1"] {
-  background-color: var(--heatmap-level-1);
-}
-
-.heatmap-day[data-level="2"] {
-  background-color: var(--heatmap-level-2);
-}
-
-.heatmap-day[data-level="3"] {
-  background-color: var(--heatmap-level-3);
-}
-
-.heatmap-day[data-level="4"] {
-  background-color: var(--heatmap-level-4);
-}
-
-.heatmap-legend {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.legend-item {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  display: inline-block;
-}
-
-/* Custom Tooltip Styling */
-.custom-tooltip .tooltip-inner {
-  background-color: var(--text-main);
-  color: var(--bg-surface);
-  box-shadow: var(--shadow-md);
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
+/* Suchar Card */
+.suchar-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: 1px solid var(--border-color);
 }
 
-/* Tooltip Arrow */
-.custom-tooltip .tooltip-arrow::before {
-  border-top-color: var(--text-main);
+.suchar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-/* Heatmap Legend Colors */
-.heatmap-bg-0 {
-  background-color: var(--heatmap-level-0);
-}
-
-.heatmap-bg-1 {
-  background-color: var(--heatmap-level-1);
-}
-
-.heatmap-bg-2 {
-  background-color: var(--heatmap-level-2);
-}
-
-.heatmap-bg-3 {
-  background-color: var(--heatmap-level-3);
-}
-
-.heatmap-bg-4 {
-  background-color: var(--heatmap-level-4);
-}
-
-/* Heatmap Layout Utilities */
-.heatmap-days-col {
-  height: 128px;
-  font-size: 10px;
-  width: 16px;
-}
-
-.heatmap-days-spacer {
-  height: 20px;
-}
-
-.heatmap-days-labels {
-  height: 108px;
-  padding-top: 18px;
-  padding-bottom: 14px;
-}
-
-.heatmap-month-label-wrapper {
-  height: 20px;
-  position: relative;
-  width: 100%;
-}
-
-.heatmap-month-label {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  font-size: 12px;
+/* Misc Utilities */
+.trophy-icon {
+  font-size: 3rem;
   line-height: 1;
-  white-space: nowrap;
+}
+
+.lang-select {
+  width: auto;
+}
+
+.form-max-width {
+  max-width: 600px;
+}
+
+.tracking-wide {
+  letter-spacing: 0.05em;
 }
 
 .chart-container-sm {
@@ -504,310 +153,4 @@ a:hover {
 
 .rank-col {
   width: 40px;
-}
-
-
-/* =========================================
-   Suchar Card Styles
-   ========================================= */
-.suchar-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid var(--border-color);
-}
-
-.suchar-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-
-.trophy-icon {
-  font-size: 3rem;
-  line-height: 1;
-}
-
-.lang-select {
-  width: auto;
-}
-
-/* Form Width Limiter */
-.form-max-width {
-  max-width: 600px;
-}
-
-/* =========================================
-   Leaderboard Tabs (Segmented Control)
-   ========================================= */
-
-/* =========================================
-   Leaderboard Tabs (Segmented Control)
-   ========================================= */
-
-#leaderboardTabs {
-  background-color: var(--bg-surface-secondary, rgba(0, 0, 0, 0.05));
-  padding: 0.5rem;
-  border-radius: 50px;
-  /* Fully rounded */
-  display: flex;
-  gap: 0.5rem;
-  border: 1px solid var(--border-color);
-  /* Ensure no list styles */
-  list-style: none;
-  margin-bottom: 2rem;
-
-  /* Centering Fix */
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-[data-theme="dark"] #leaderboardTabs {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-#leaderboardTabs .nav-item {
-  flex: 1 1 0px;
-  /* Force equal width */
-  text-align: center;
-  min-width: 0;
-}
-
-#leaderboardTabs .nav-link {
-  color: var(--text-muted);
-  border-radius: 50px;
-  padding: 0.75rem 0;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  border: none;
-  /* Remove potential borders */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  /* Fill the nav-item */
-  background-color: transparent;
-}
-
-#leaderboardTabs .nav-link:hover {
-  background-color: rgba(0, 0, 0, 0.03);
-  color: var(--text-main);
-}
-
-[data-theme="dark"] #leaderboardTabs .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Dark Mode Inactive Text */
-[data-theme="dark"] #leaderboardTabs .nav-link:not(.active) {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* Active State Base */
-#leaderboardTabs .nav-link.active {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
-  transform: scale(1.05);
-  /* slightly bigger pop */
-}
-
-/* Tab Colors - Backgrounds for immediate feedback */
-#overall-tab.active {
-  background-color: #f59e0b !important;
-  /* Amber 500 */
-  color: #fff !important;
-}
-
-#funny-tab.active {
-  background-color: #E58E26 !important;
-  /* Orange */
-  color: #fff !important;
-}
-
-#dry-tab.active {
-  background-color: #0ea5e9 !important;
-  /* Blue */
-  color: #fff !important;
-}
-
-/* Animation for active click */
-#leaderboardTabs .nav-link:active {
-  transform: scale(0.95);
-}
-
-/* Tab Animations & Visibility Fixes */
-.tab-content>.tab-pane {
-  display: none;
-  /* Force hidden by default */
-}
-
-.tab-content>.active {
-  display: block;
-  /* Show active */
-}
-
-/* Only animate the active tab */
-.tab-pane.active {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Achievement Icons */
-.achievement-icon {
-  transition: transform 0.2s ease;
-  cursor: pointer;
-}
-
-.achievement-icon:hover {
-  transform: scale(1.2) rotate(5deg);
-}
-
-.achievement-icon:hover i {
-  filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.5));
-}
-
-/* =========================================
-   Achievements Popover & Animations
-   ========================================= */
-
-.achievement-container {
-  position: relative;
-  display: inline-block;
-  margin: 4px;
-}
-
-.achievement-container:hover {
-  z-index: 100;
-}
-
-.achievement-icon-wrapper {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  cursor: pointer;
-  z-index: 10;
-  position: relative;
-  border-radius: 50%;
-  background: rgba(255, 193, 7, 0.1);
-  /* Slight yellow tint bg */
-}
-
-/* Hover Effect: Scale Icon */
-.achievement-container:hover .achievement-icon-wrapper {
-  transform: scale(1.25);
-  background: rgba(255, 193, 7, 0.2);
-  box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
-}
-
-/* Popover Box */
-.achievement-details-popover {
-  position: absolute;
-  bottom: 125%;
-  /* Position above */
-  left: 50%;
-  transform: translateX(-50%) translateY(10px) scale(0.9);
-  background: var(--bg-surface);
-
-  /* Glassmorphism fallback */
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
-  padding: 1rem;
-  width: 260px;
-
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-  transition-delay: 0.1s;
-  pointer-events: none;
-  /* Let clicks pass through if needed, though usually on hover */
-  z-index: 100;
-
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  text-align: left;
-}
-
-/* Hover Effect: Show Popover */
-.achievement-container:hover .achievement-details-popover {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0) scale(1);
-}
-
-/* Popover Content */
-.achievement-details-icon {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-  color: #ffc107;
-  /* Bootstrap warning color */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.achievement-details-icon svg {
-  width: 100%;
-  height: 100%;
-}
-
-.achievement-details-content {
-  flex: 1;
-  min-width: 0;
-  /* Flexbox text overflow fix */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.achievement-title {
-  display: block;
-  font-weight: 800;
-  font-size: 1.1rem;
-  margin-bottom: 0.25rem;
-  color: var(--text-main);
-  line-height: 1.2;
-}
-
-.achievement-description {
-  display: block;
-  font-size: 0.8rem;
-  line-height: 1.4;
-  color: var(--text-muted);
-}
-
-/* Arrow Indicator */
-.achievement-details-popover::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 8px;
-  border-style: solid;
-  border-color: var(--bg-surface) transparent transparent transparent;
-}
-
-/* Utilities */
-.overflow-visible {
-  overflow: visible !important;
 }

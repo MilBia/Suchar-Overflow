@@ -119,7 +119,7 @@
                       </h6>
                       <small class="text-muted">{{ suchar.created_at|date:"d M" }}</small>
                     </div>
-                    <p class="mb-2 fst-italic">"{{ suchar.text|truncatechars:100 }}"</p>
+                    <p class="mb-2 fst-italic">{{ suchar.text|truncatechars:100|linebreaksbr }}</p>
                     <div class="d-flex justify-content-between align-items-center">
                       <span class="badge bg-light text-secondary border">#{{ suchar.tags.first.name|default:"general" }}</span>
                       <div class="d-flex align-items-center gap-2">
@@ -194,7 +194,7 @@
                       </h6>
                       <small class="text-muted">{{ suchar.created_at|date:"d M" }}</small>
                     </div>
-                    <p class="mb-2 fst-italic">"{{ suchar.text|truncatechars:100 }}"</p>
+                    <p class="mb-2 fst-italic">{{ suchar.text|truncatechars:100|linebreaksbr }}</p>
                     <div class="d-flex justify-content-between align-items-center">
                       <span class="badge bg-light text-secondary border">#{{ suchar.tags.first.name|default:"general" }}</span>
                       <div class="d-flex align-items-center gap-2">
@@ -267,7 +267,7 @@
                       </h6>
                       <small class="text-muted">{{ suchar.created_at|date:"d M" }}</small>
                     </div>
-                    <p class="mb-2 fst-italic">"{{ suchar.text|truncatechars:100 }}"</p>
+                    <p class="mb-2 fst-italic">{{ suchar.text|truncatechars:100|linebreaksbr }}</p>
                     <div class="d-flex justify-content-between align-items-center">
                       <span class="badge bg-light text-secondary border">#{{ suchar.tags.first.name|default:"general" }}</span>
                       <div class="d-flex align-items-center gap-2">

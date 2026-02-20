@@ -20,3 +20,11 @@
 @import 'components/list_group.css';
 @import 'components/pagination.css';
 @import 'components/dropdowns.css';
+@import 'components/voting.css';
+@import 'components/heatmap.css';
+@import 'components/achievements.css';
+@import 'components/footer.css';
+@import 'components/leaderboard.css';
+
+/* Pages */
+@import 'pages/profile.css';

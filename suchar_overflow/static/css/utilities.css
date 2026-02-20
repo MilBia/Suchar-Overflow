@@ -100,15 +100,6 @@
 }
 
 /* Spacing Utilities */
-/* Assuming space variables are defined in variables.css or inherited.
-   variables.css defines --header-height, --radius-*, but spacing might be missing if I stripped it.
-   Wait, I didn't include --space-sm/md/lg in my variables.css rewrite.
-   I MUST ADD THEM BACK to variables.css or validy reliance on defaults.
-   The original variables.css had them. I missed them in step 408.
-   I need to fix variables.css first! */
-
-/* ... (I will fix variables.css in next step, but let's finish this file) */
-
 .mb-3 {
     margin-bottom: 1rem;
 }

@@ -1,11 +1,10 @@
-/* Typography Base */
+/* =========================================
+   Typography Base
+   ========================================= */
+
 body {
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: var(--font-sans);
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Headings */
@@ -15,19 +14,19 @@ h3,
 h4,
 h5,
 h6 {
-    color: var(--text-primary);
+    color: var(--text-main);
     font-weight: 700;
     margin-bottom: var(--space-md);
 }
 
 /* Links */
 a {
-    color: var(--accent-primary);
+    color: var(--color-primary);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s;
 }
 
 a:hover {
-    color: var(--accent-secondary);
+    color: var(--color-secondary);
 }

@@ -1,0 +1,140 @@
+/* =========================================
+   Heatmap Component
+   ========================================= */
+
+/* Wrapper to allow horizontal scroll if needed */
+.heatmap-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+}
+
+.heatmap-grid {
+    display: flex;
+    gap: 4px;
+}
+
+.heatmap-week {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.heatmap-day {
+    width: 12px;
+    height: 12px;
+    background-color: var(--heatmap-level-0);
+    border-radius: 2px;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='dark'] .heatmap-day {
+    border: none;
+}
+
+.heatmap-day:hover {
+    transform: scale(1.4);
+    z-index: 2;
+    border: 1px solid var(--text-muted);
+}
+
+.heatmap-day[data-level="1"] {
+    background-color: var(--heatmap-level-1);
+}
+
+.heatmap-day[data-level="2"] {
+    background-color: var(--heatmap-level-2);
+}
+
+.heatmap-day[data-level="3"] {
+    background-color: var(--heatmap-level-3);
+}
+
+.heatmap-day[data-level="4"] {
+    background-color: var(--heatmap-level-4);
+}
+
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.legend-item {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+/* Custom Tooltip Styling */
+.custom-tooltip .tooltip-inner {
+    background-color: var(--text-main);
+    color: var(--bg-surface);
+    box-shadow: var(--shadow-md);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    border: 1px solid var(--border-color);
+}
+
+.custom-tooltip .tooltip-arrow::before {
+    border-top-color: var(--text-main);
+}
+
+/* Heatmap Legend Colors */
+.heatmap-bg-0 {
+    background-color: var(--heatmap-level-0);
+}
+
+.heatmap-bg-1 {
+    background-color: var(--heatmap-level-1);
+}
+
+.heatmap-bg-2 {
+    background-color: var(--heatmap-level-2);
+}
+
+.heatmap-bg-3 {
+    background-color: var(--heatmap-level-3);
+}
+
+.heatmap-bg-4 {
+    background-color: var(--heatmap-level-4);
+}
+
+/* Heatmap Layout Utilities */
+.heatmap-days-col {
+    height: 128px;
+    font-size: 10px;
+    width: 16px;
+}
+
+.heatmap-days-spacer {
+    height: 20px;
+}
+
+.heatmap-days-labels {
+    height: 108px;
+    padding-top: 18px;
+    padding-bottom: 14px;
+}
+
+.heatmap-month-label-wrapper {
+    height: 20px;
+    position: relative;
+    width: 100%;
+}
+
+.heatmap-month-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
+}
