@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% load static i18n %}
+
+{% block title %}
+  {% trans "Moje Osiągnięcia" %} | Suchar Overflow
+{% endblock title %}
+
+{% block css %}
+  {{ block.super }}
+  <link href="{% static 'css/achievements.css' %}" rel="stylesheet" />
+{% endblock css %}
+
+{% block content %}
+  <div class="achievements-container fade-in-up">
+    <header class="achievements-header text-center pb-4 mb-5 border-bottom border-secondary">
+      <h1 class="achievements-title gradient-text fw-bold">{% trans "Hall of Fame" %}</h1>
+      <p class="achievements-subtitle text-muted fs-5">
+        {% trans "Twoje odznaki, medale i wstydliwe sekrety z Suchar Overflow." %}
+      </p>
+    </header>
+
+    <div class="achievements-grid">
+      {% for ach in achievements %}
+        {% if ach.id in user_achievements %}
+          <div class="achievement-card unlocked tier-{{ ach.tier }}">
+            <div class="achievement-glow"></div>
+            <div class="achievement-icon-wrapper tier-icon-{{ ach.tier }}">
+              {% if ach.icon_content %}
+                {{ ach.icon_content|safe }}
+              {% else %}
+                <div class="default-icon">🏆</div>
+              {% endif %}
+            </div>
+            <div class="achievement-info">
+              <h3 class="achievement-name">{{ ach.name }}</h3>
+              <p class="achievement-desc">{{ ach.description }}</p>
+              <div class="achievement-tags mt-2">
+                {% if ach.theme %}<span class="badge theme-badge">{{ ach.theme }}</span>{% endif %}
+                <span class="badge tier-badge tier-color-{{ ach.tier }}">
+                  {% if ach.tier == 1 %}
+                    {% trans "Brąz" %}
+                  {% elif ach.tier == 2 %}
+                    {% trans "Srebro" %}
+                  {% elif ach.tier == 3 %}
+                    {% trans "Złoto" %}
+                  {% elif ach.tier == 4 %}
+                    {% trans "Platyna" %}
+                  {% elif ach.tier == 5 %}
+                    {% trans "Diament" %}
+                  {% else %}
+                    {% trans "Zwykłe" %}
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="achievement-card locked tier-{{ ach.tier }}">
+            <div class="achievement-icon-wrapper tier-icon-{{ ach.tier }}">
+              {% if ach.is_secret %}
+                <div class="lock-icon text-muted">🔒</div>
+              {% else %}
+                {% if ach.icon_content %}
+                  {{ ach.icon_content|safe }}
+                {% else %}
+                  <div class="lock-icon text-muted">🔒</div>
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="achievement-info text-muted">
+              {% if ach.is_secret %}
+                <h3 class="achievement-name">???</h3>
+                <p class="achievement-desc">{% trans "Osiągnięcie zablokowane. Odkryj jego sekret grając dalej!" %}</p>
+              {% else %}
+                <h3 class="achievement-name">{{ ach.name }}</h3>
+                <p class="achievement-desc">{{ ach.description }}</p>
+                <div class="achievement-tags mt-2">
+                  {% if ach.theme %}<span class="badge theme-badge">{{ ach.theme }}</span>{% endif %}
+                  <span class="badge tier-badge tier-color-{{ ach.tier }}">
+                    {% if ach.tier == 1 %}
+                      {% trans "Brąz" %}
+                    {% elif ach.tier == 2 %}
+                      {% trans "Srebro" %}
+                    {% elif ach.tier == 3 %}
+                      {% trans "Złoto" %}
+                    {% elif ach.tier == 4 %}
+                      {% trans "Platyna" %}
+                    {% elif ach.tier == 5 %}
+                      {% trans "Diament" %}
+                    {% else %}
+                      {% trans "Zwykłe" %}
+                    {% endif %}
+                  </span>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+{% endblock content %}

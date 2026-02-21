@@ -1,0 +1,202 @@
+/* achievements.css */
+
+.achievements-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+[data-theme="dark"] .gradient-text {
+    background: linear-gradient(135deg, #12c2e9 0%, #c471ed 50%, #f64f59 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.achievement-card {
+    position: relative;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    backdrop-filter: blur(5px);
+}
+
+.achievement-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    z-index: 10;
+}
+
+/* Unlocked states */
+.achievement-card.unlocked {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.achievement-card.locked {
+    opacity: 0.6;
+    filter: grayscale(100%);
+}
+
+.achievement-card.locked:hover {
+    filter: grayscale(80%);
+    transform: translateY(-2px);
+}
+
+.achievement-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .achievement-icon-wrapper {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.achievement-info {
+    z-index: 2;
+}
+
+.achievement-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.achievement-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0;
+}
+
+/* Tier Specific Styles (Glow and borders) */
+.achievement-card.tier-1 {
+    /* Bronze */
+    border-bottom: 4px solid #cd7f32;
+}
+
+.achievement-card.tier-2 {
+    /* Silver */
+    border-bottom: 4px solid #c0c0c0;
+}
+
+.achievement-card.tier-3 {
+    /* Gold */
+    border-bottom: 4px solid #ffd700;
+}
+
+.achievement-card.tier-4 {
+    /* Platinum */
+    border-bottom: 4px solid #e5e4e2;
+    box-shadow: 0 0 15px rgba(229, 228, 226, 0.2);
+}
+
+.achievement-card.tier-5 {
+    /* Diamond */
+    border-bottom: 4px solid #b9f2ff;
+    box-shadow: 0 0 20px rgba(185, 242, 255, 0.4);
+    background: linear-gradient(135deg, var(--bg-surface) 40%, rgba(185, 242, 255, 0.05) 100%);
+}
+
+.achievement-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.achievement-card.unlocked:hover .achievement-glow {
+    opacity: 1;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    margin: 0 0.2rem;
+}
+
+.theme-badge {
+    background: var(--brand-color);
+    color: #fff;
+}
+
+.tier-color-1 {
+    background: #cd7f32;
+    color: #fff;
+}
+
+.tier-color-2 {
+    background: #c0c0c0;
+    color: #000;
+}
+
+.tier-color-3 {
+    background: #ffd700;
+    color: #000;
+}
+
+.tier-color-4 {
+    background: #e5e4e2;
+    color: #000;
+}
+
+.tier-color-5 {
+    background: #b9f2ff;
+    color: #000;
+}

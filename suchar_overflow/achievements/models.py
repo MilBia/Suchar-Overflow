@@ -20,6 +20,17 @@ class Achievement(models.Model):
         COUNT_VOTE_DRY = "COUNT_VOTE_DRY", _("Dry Vote Count")
         COUNT_VOTE_CAST = "COUNT_VOTE_CAST", _("Vote Cast Count")
         SUM_SCORE = "SUM_SCORE", _("Total Score")
+        NIGHT_OWL = "NIGHT_OWL", _("Night Owl")
+        STREAK_LOGIN = "STREAK_LOGIN", _("Login Streak")
+        POLARIZER = "POLARIZER", _("Polarizer")
+
+    class Tier(models.IntegerChoices):
+        NONE = 0, _("None")
+        BRONZE = 1, _("Bronze")
+        SILVER = 2, _("Silver")
+        GOLD = 3, _("Gold")
+        PLATINUM = 4, _("Platinum")
+        DIAMOND = 5, _("Diamond")
 
     name = models.CharField(_("Name"), max_length=100)
     slug = models.SlugField(_("Slug"), unique=True, max_length=100)
@@ -48,6 +59,25 @@ class Achievement(models.Model):
         default=Metric.COUNT_SUCHAR,
     )
     threshold = models.PositiveIntegerField(_("Threshold"), default=1)
+
+    # Progression / Grouping
+    theme = models.CharField(
+        _("Theme"),
+        max_length=100,
+        blank=True,
+        help_text=_("E.g. 'Christmas', 'Programming'. Leave blank for general."),
+    )
+    tier = models.IntegerField(
+        _("Tier"),
+        choices=Tier.choices,
+        default=Tier.NONE,
+        help_text=_("Difficulty/Rarity tier of the achievement"),
+    )
+    is_secret = models.BooleanField(
+        _("Secret Achievement"),
+        default=False,
+        help_text=_("If checked, name and description are hidden until unlocked."),
+    )
 
     class Meta:
         verbose_name = _("Achievement")
