@@ -175,5 +175,4 @@ dependencies = [
     "django-ninja==1.5.3",
     "celery==5.4.0",
     "redis==5.2.1",
-    "django-modeltranslation==0.19.12",
 ]

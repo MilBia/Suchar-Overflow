@@ -70,9 +70,7 @@ DJANGO_APPS = [
     "django.contrib.admin",
     "django.forms",
 ]
-THIRD_PARTY_APPS = [
-    "modeltranslation",
-]
+THIRD_PARTY_APPS = []
 
 LOCAL_APPS = [
     "suchar_overflow.users",
