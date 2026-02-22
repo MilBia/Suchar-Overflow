@@ -69,3 +69,19 @@ docker compose -f docker-compose.local.yml run --rm django pytest
 
 ### Forms
 *   **Hidden Inputs**: Must be `disabled` when hidden to prevent validation blocking.
+
+### Migrations
+*   **File Permissions**: When adding an empty migration or generating a new one inside Docker (`makemigrations`), the created files often inherit `root` ownership.
+    *   **Action Required**: Always **remind the user** to fix the file permissions (e.g., using `sudo chown -R $USER:$USER .` or changing the file owner to their user account) right after the migration file is generated.
+
+## 5. Translations (i18n)
+
+### Frontend & Views
+*   **Mark for Translation**: Always mark any user-visible strings for translation.
+    *   **Templates**: Use `{% trans "Text" %}` or `{% blocktrans %}`.
+    *   **Python (Views/Forms)**: Use `gettext_lazy` imported as `_`.
+
+### After Implementing a Feature
+*   Run the `/update_translations` workflow or manually update translation files using `makemessages` and `compilemessages`.
+    *   `docker compose -f docker-compose.local.yml run --rm django python manage.py makemessages -l pl -l en`
+    *   `docker compose -f docker-compose.local.yml run --rm django python manage.py compilemessages`
