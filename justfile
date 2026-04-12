@@ -36,3 +36,28 @@ logs *args:
 # manage: Executes `manage.py` command.
 manage +args:
     @docker compose run --rm django python ./manage.py {{args}}
+
+# ---------- Production ----------
+
+# prod-build: Build production images.
+prod-build *args:
+    @echo "Building production images..."
+    @docker compose -f docker-compose.production.yml build {{args}}
+
+# prod-up: Start production containers.
+prod-up:
+    @echo "Starting production containers..."
+    @docker compose -f docker-compose.production.yml up -d --remove-orphans
+
+# prod-down: Stop production containers.
+prod-down:
+    @echo "Stopping production containers..."
+    @docker compose -f docker-compose.production.yml down
+
+# prod-logs: View production container logs.
+prod-logs *args:
+    @docker compose -f docker-compose.production.yml logs -f {{args}}
+
+# prod-manage: Executes `manage.py` command in production.
+prod-manage +args:
+    @docker compose -f docker-compose.production.yml run --rm django python ./manage.py {{args}}
