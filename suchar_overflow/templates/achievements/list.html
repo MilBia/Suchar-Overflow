@@ -3,7 +3,7 @@
 {% load static i18n %}
 
 {% block title %}
-  {% trans "Moje Osiągnięcia" %} | Suchar Overflow
+  {% trans "My Achievements" %} | Suchar Overflow
 {% endblock title %}
 
 {% block css %}
@@ -16,7 +16,7 @@
     <header class="achievements-header text-center pb-4 mb-5 border-bottom border-secondary">
       <h1 class="achievements-title gradient-text fw-bold">{% trans "Hall of Fame" %}</h1>
       <p class="achievements-subtitle text-muted fs-5">
-        {% trans "Twoje odznaki, medale i wstydliwe sekrety z Suchar Overflow." %}
+        {% trans "Your badges, medals, and shameful secrets from Suchar Overflow." %}
       </p>
     </header>
 
@@ -39,17 +39,17 @@
                 {% if ach.theme %}<span class="badge theme-badge">{{ ach.theme }}</span>{% endif %}
                 <span class="badge tier-badge tier-color-{{ ach.tier }}">
                   {% if ach.tier == 1 %}
-                    {% trans "Brąz" %}
+                    {% trans "Bronze" %}
                   {% elif ach.tier == 2 %}
-                    {% trans "Srebro" %}
+                    {% trans "Silver" %}
                   {% elif ach.tier == 3 %}
-                    {% trans "Złoto" %}
+                    {% trans "Gold" %}
                   {% elif ach.tier == 4 %}
-                    {% trans "Platyna" %}
+                    {% trans "Platinum" %}
                   {% elif ach.tier == 5 %}
-                    {% trans "Diament" %}
+                    {% trans "Diamond" %}
                   {% else %}
-                    {% trans "Zwykłe" %}
+                    {% trans "Common" %}
                   {% endif %}
                 </span>
               </div>
@@ -71,7 +71,7 @@
             <div class="achievement-info text-muted">
               {% if ach.is_secret %}
                 <h3 class="achievement-name">???</h3>
-                <p class="achievement-desc">{% trans "Osiągnięcie zablokowane. Odkryj jego sekret grając dalej!" %}</p>
+                <p class="achievement-desc">{% trans "Achievement locked. Discover its secret by playing!" %}</p>
               {% else %}
                 <h3 class="achievement-name">{{ ach.name }}</h3>
                 <p class="achievement-desc">{{ ach.description }}</p>
@@ -79,17 +79,17 @@
                   {% if ach.theme %}<span class="badge theme-badge">{{ ach.theme }}</span>{% endif %}
                   <span class="badge tier-badge tier-color-{{ ach.tier }}">
                     {% if ach.tier == 1 %}
-                      {% trans "Brąz" %}
+                      {% trans "Bronze" %}
                     {% elif ach.tier == 2 %}
-                      {% trans "Srebro" %}
+                      {% trans "Silver" %}
                     {% elif ach.tier == 3 %}
-                      {% trans "Złoto" %}
+                      {% trans "Gold" %}
                     {% elif ach.tier == 4 %}
-                      {% trans "Platyna" %}
+                      {% trans "Platinum" %}
                     {% elif ach.tier == 5 %}
-                      {% trans "Diament" %}
+                      {% trans "Diamond" %}
                     {% else %}
-                      {% trans "Zwykłe" %}
+                      {% trans "Common" %}
                     {% endif %}
                   </span>
                 </div>

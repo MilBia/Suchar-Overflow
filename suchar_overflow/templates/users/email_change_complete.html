@@ -20,10 +20,12 @@
           <div class="icon-wrapper">{% include "svgs/icon-check.svg" %}</div>
         </div>
 
-        <h1 class="h2 mb-3">Udało się!</h1>
-        <p class="text-muted mb-4">Twój adres e-mail został zmieniony. Teraz możesz spać spokojnie (albo i nie).</p>
+        <h1 class="h2 mb-3">{% trans "It worked!" %}</h1>
+        <p class="text-muted mb-4">
+          {% trans "Your email address has been changed. You can now sleep peacefully (or not)." %}
+        </p>
 
-        <a href="{% url 'users:update' %}" class="btn btn-primary mt-3">Wróć do ustawień</a>
+        <a href="{% url 'users:update' %}" class="btn btn-primary mt-3">{% trans "Back to settings" %}</a>
       </div>
     </div>
   </div>

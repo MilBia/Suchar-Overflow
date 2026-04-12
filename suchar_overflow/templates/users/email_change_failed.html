@@ -20,12 +20,12 @@
           <div class="icon-wrapper">{% include "svgs/icon-vote-down.svg" %}</div>
         </div>
 
-        <h1 class="h2 mb-3">Coś poszło nie tak</h1>
-        <p class="text-muted mb-4">{{ error|default:"Link wygasł, jest nieprawidłowy, albo ktoś go już zużył." }}</p>
-        <p class="small text-muted">Spróbuj ponownie, jeśli naprawdę musisz.</p>
+        <h1 class="h2 mb-3">{% trans "Something went wrong" %}</h1>
+        <p class="text-muted mb-4">{{ error|default:_("The link has expired, is invalid, or has already been used.") }}</p>
+        <p class="small text-muted">{% trans "Try again if you really must." %}</p>
 
         <a href="{% url 'users:email_change_initiate' %}"
-           class="btn btn-primary mt-3">Spróbuj ponownie</a>
+           class="btn btn-primary mt-3">{% trans "Try again" %}</a>
       </div>
     </div>
   </div>

@@ -275,7 +275,7 @@ class SignupView(CreateView):
         )
         current_site = self.request.get_host()
 
-        mail_subject = "Potwierdź, że masz poczucie humoru (Aktywacja konta)"
+        mail_subject = _("Confirm you have a sense of humor (Account Activation)")
         message = render_to_string(
             "registration/activation_email.txt",
             {
@@ -339,7 +339,7 @@ class EmailChangeInitiateView(LoginRequiredMixin, FormView):
         )
         verify_link = f"{protocol}://{current_site}{verify_url}"
 
-        mail_subject_new = "Potwierdź, że to Ty (Zmiana maila)"
+        mail_subject_new = _("Confirm it's you (Email Change)")
         message_new = render_to_string(
             "users/email_verify_email.txt",
             {
@@ -362,8 +362,8 @@ class EmailChangeInitiateView(LoginRequiredMixin, FormView):
         )
         revoke_link = f"{protocol}://{current_site}{revoke_url}"
 
-        mail_subject_old = (
-            "Ktoś chce zmienić Twój adres e-mail (Mamy nadzieję, że to Ty)"
+        mail_subject_old = _(
+            "Someone wants to change your email address (We hope it's you)",
         )
         message_old = render_to_string(
             "users/email_notify_old_email.txt",
@@ -405,7 +405,7 @@ class EmailChangeConfirmView(LoginRequiredMixin, View):
                 return render(
                     request,
                     "users/email_change_failed.html",
-                    {"error": "Link został już wykorzystany lub anulowany."},
+                    {"error": _("The link has already been used or cancelled.")},
                 )
 
             # Check expiry (24h)
@@ -415,7 +415,7 @@ class EmailChangeConfirmView(LoginRequiredMixin, View):
                 return render(
                     request,
                     "users/email_change_failed.html",
-                    {"error": "Link wygasł (minęły 24h)."},
+                    {"error": _("The link has expired (24 hours have passed).")},
                 )
 
             # Verify uniqueness agai
@@ -423,7 +423,7 @@ class EmailChangeConfirmView(LoginRequiredMixin, View):
                 return render(
                     request,
                     "users/email_change_failed.html",
-                    {"error": "Email już zajęty."},
+                    {"error": _("Email already taken.")},
                 )
 
             # Success
@@ -441,7 +441,7 @@ class EmailChangeConfirmView(LoginRequiredMixin, View):
             return render(
                 request,
                 "users/email_change_failed.html",
-                {"error": "Link jest nieprawidłowy."},
+                {"error": _("The link is invalid.")},
             )
 
 

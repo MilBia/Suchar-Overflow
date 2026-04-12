@@ -1,14 +1,15 @@
+{% load i18n %}
 {% autoescape off %}
-Cześć {{ user.username }}!
+{% blocktrans with username=user.username %}Hello {{ username }}!{% endblocktrans %}
 
-Otrzymaliśmy prośbę o zmianę adresu e-mail na ten właśnie, na który to czytasz ({{ new_email }}).
+{% blocktrans with email=new_email %}We received a request to change your email address to this one you're reading ({{ email }}).{% endblocktrans %}
 
-Jeśli to Ty, kliknij w poniższy link, aby potwierdzić zmianę:
+{% trans "If it's you, click the link below to confirm the change:" %}
 {{ verify_link }}
 
-Link jest ważny przez 24 godziny (lub do momentu aż wyparuje).
+{% trans "The link is valid for 24 hours (or until it evaporates)." %}
 
-Jeśli to nie Ty, zignoruj tę wiadomość, a na stary adres wysłaliśmy instrukcję jak zablokować intruza.
+{% trans "If it wasn't you, ignore this message. We sent instructions on how to block the intruder to your old address." %}
 
-Suchar Overflow
+{% trans "Suchar Overflow" %}
 {% endautoescape %}

@@ -1,14 +1,14 @@
 {% load i18n %}
 {% autoescape off %}
-Cześć {{ user.username }}!
+{% blocktrans with username=user.username %}Hello {{ username }}!{% endblocktrans %}
 
-Witamy w Suchar Overflow - miejscu, gdzie wilgotność powietrza spada poniżej zera.
-Abyśmy mieli pewność, że nie jesteś botem (ani osobą bez poczucia humoru), musisz aktywować swoje konto.
+{% trans "Welcome to Suchar Overflow - a place where air humidity drops below zero." %}
+{% trans "To make sure you're not a bot (or a person without a sense of humor), you need to activate your account." %}
 
-Kliknij w ten link, zanim wyschnie:
+{% trans "Click this link before it dries out:" %}
 {{ protocol }}://{{ domain }}{% url 'users:activate' uidb64=uid token=token %}
 
-Pamiętaj: Pij dużo wody.
+{% trans "Remember: Drink plenty of water." %}
 
-Zespół Suchar Overflow
+{% trans "The Suchar Overflow Team" %}
 {% endautoescape %}

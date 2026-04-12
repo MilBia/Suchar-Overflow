@@ -20,18 +20,18 @@
           <div class="icon-wrapper">{% include "svgs/icon-mail.svg" %}</div>
         </div>
 
-        <h1 class="h2 mb-3">Sprawdź obie skrzynki!</h1>
+        <h1 class="h2 mb-3">{% trans "Check both inboxes!" %}</h1>
         <p class="text-muted mb-4">
-          Wysłaliśmy wiadomość na <strong>NOWY</strong> adres z linkiem aktywacyjnym.
+          {% blocktrans %}We sent a message to your <strong>NEW</strong> address with an activation link.
           <br />
-          Ale wysłaliśmy też ostrzeżenie na <strong>STARY</strong> adres, żebyś wiedział, że to na pewno Ty.
+          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you.{% endblocktrans %}
         </p>
         <p class="small text-muted">
-          Jeśli nie klikniesz w link, nic się nie zmieni. Twoje konto pozostanie tak suche jak nasze żarty.
+          {% trans "If you don't click the link, nothing will change. Your account will remain as dry as our jokes." %}
         </p>
 
         <a href="{% url 'users:detail' request.user.username %}"
-           class="btn btn-primary mt-3">Wróć do profilu</a>
+           class="btn btn-primary mt-3">{% trans "Back to profile" %}</a>
       </div>
     </div>
   </div>
