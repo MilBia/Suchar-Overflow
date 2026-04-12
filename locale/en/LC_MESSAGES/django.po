@@ -350,6 +350,10 @@ msgstr ""
 msgid "All rights reserved (but jokes stolen)."
 msgstr ""
 
+#: suchar_overflow/templates/base.html:185
+msgid "Report a Bug"
+msgstr ""
+
 #: suchar_overflow/templates/base.html:189
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"

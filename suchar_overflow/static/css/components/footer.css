@@ -11,3 +11,27 @@
     background: var(--bg-surface-glass);
     backdrop-filter: blur(10px);
 }
+
+.footer-feedback {
+    font-size: 0.8rem;
+}
+
+.footer-feedback-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+    opacity: 0.7;
+}
+
+.footer-feedback-link:hover {
+    color: var(--color-accent, var(--text-primary));
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.footer-feedback-link svg {
+    flex-shrink: 0;
+}

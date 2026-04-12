@@ -175,6 +175,17 @@
           © {% now "Y" %} Suchar Overflow.
           <span class="d-block d-sm-inline mt-1 mt-sm-0">{% trans "All rights reserved (but jokes stolen)." %}</span>
         </p>
+        {% if FEEDBACK_URL %}
+          <p class="text-muted mt-1 mb-0 footer-feedback">
+            <a href="{{ FEEDBACK_URL }}"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="footer-feedback-link">
+              {% include "svgs/icon-bug.svg" %}
+              {% trans "Report a Bug" %}
+            </a>
+          </p>
+        {% endif %}
       </div>
     </footer>
 

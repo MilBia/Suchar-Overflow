@@ -351,6 +351,10 @@ msgstr "Domyślna treść."
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Wszelkie prawa zastrzeżone (ale żarty ukradzione)."
 
+#: suchar_overflow/templates/base.html:185
+msgid "Report a Bug"
+msgstr "Zgłoś błąd"
+
 #: suchar_overflow/templates/base.html:189
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"

@@ -182,6 +182,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
+                "suchar_overflow.context_processors.site_settings",
             ],
         },
     },
@@ -285,3 +286,12 @@ CELERY_TASK_SEND_SENT_EVENT = True
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# FEEDBACK
+# ------------------------------------------------------------------------------
+# URL for the feedback/bug report link shown in the footer.
+# Override via the FEEDBACK_URL environment variable.
+FEEDBACK_URL = env(
+    "FEEDBACK_URL",
+    default="https://github.com/MilBia/Suchar-Overflow/issues/new",
+)
