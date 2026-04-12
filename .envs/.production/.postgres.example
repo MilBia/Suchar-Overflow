@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=suchar_overflow
+POSTGRES_USER=<GENERATE_A_RANDOM_USER>
+POSTGRES_PASSWORD=<GENERATE_A_LONG_RANDOM_PASSWORD>

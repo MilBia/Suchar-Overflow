@@ -1,0 +1,34 @@
+# General
+# ------------------------------------------------------------------------------
+# DJANGO_READ_DOT_ENV_FILE=True
+DJANGO_SETTINGS_MODULE=config.settings.production
+DJANGO_SECRET_KEY=<GENERATE_A_LONG_RANDOM_SECRET_KEY>
+DJANGO_ADMIN_URL=<YOUR_ADMIN_URL_PATH>/
+DJANGO_ALLOWED_HOSTS=<your-domain.com>
+
+# Security
+# ------------------------------------------------------------------------------
+DJANGO_SECURE_SSL_REDIRECT=True
+
+# Email (SMTP)
+# ------------------------------------------------------------------------------
+# DJANGO_DEFAULT_FROM_EMAIL=Suchar Overflow <noreply@your-domain.com>
+# DJANGO_SERVER_EMAIL=Suchar Overflow <noreply@your-domain.com>
+# DJANGO_EMAIL_SUBJECT_PREFIX=[Suchar Overflow]
+# EMAIL_HOST=smtp.your-provider.com
+# EMAIL_PORT=587
+# EMAIL_HOST_USER=<your-smtp-user>
+# EMAIL_HOST_PASSWORD=<your-smtp-password>
+# EMAIL_USE_TLS=True
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+# Celery
+# ------------------------------------------------------------------------------
+CELERY_BROKER_URL=redis://redis:6379/0
+
+# Feedback
+# ------------------------------------------------------------------------------
+FEEDBACK_URL=https://github.com/MilBia/Suchar-Overflow/issues/new
