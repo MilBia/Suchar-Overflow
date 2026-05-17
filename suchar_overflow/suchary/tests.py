@@ -1,8 +1,8 @@
-import time
 from http import HTTPStatus
 
 import pytest
 from django.urls import reverse
+from django.utils import timezone
 
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
@@ -88,8 +88,12 @@ def test_suchar_list_sorting(client, django_user_model):
         password="password",  # noqa: S106
     )
     s1 = Suchar.objects.create(text="Older joke", author=user)
-    time.sleep(0.01)  # Ensure different created_at
     s2 = Suchar.objects.create(text="Newer joke", author=user)
+    # Force deterministic ordering by pinning created_at directly
+    Suchar.objects.filter(pk=s1.pk).update(
+        created_at=timezone.now() - timezone.timedelta(seconds=10),
+    )
+    Suchar.objects.filter(pk=s2.pk).update(created_at=timezone.now())
 
     url = reverse("suchary:list")
 

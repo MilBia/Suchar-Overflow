@@ -8,15 +8,9 @@ from suchar_overflow.suchary.models import Vote
 
 User = get_user_model()
 
-# Ensure migration data is loaded or create it if strategy differs.
-# Pytest-django with migrations enabled should have data.
-# But just in case, or for clarity, we can check/create.
-
 
 @pytest.fixture
 def ensure_achievements():
-    # Helper to ensure achievements exist for tests if not loaded via migration
-    # (Though they should be).
     if not Achievement.objects.filter(slug="first-suchar").exists():
         Achievement.objects.create(
             name="First Suchar",
@@ -35,7 +29,7 @@ def ensure_achievements():
             description="Cast your first vote!",
             icon_content="<svg>...</svg>",
             category="LIFETIME",
-            event_type="VOTE_CAST",  # VOTE_CAST changed from VOTE_RECEIVED for voter
+            event_type="VOTE_CAST",
             metric="COUNT_VOTE_CAST",
             threshold=1,
         )
@@ -52,24 +46,29 @@ def ensure_achievements():
         )
 
 
-@pytest.mark.django_db
-def test_first_suchar_achievement(ensure_achievements):
-    user = User.objects.create_user(
-        username="joker",
-        email="joker@example.com",
+def make_user(username):
+    return User.objects.create_user(
+        username=username,
+        email=f"{username}@example.com",
         password="password",  # noqa: S106
     )
 
-    # User should not have achievement yet
+
+# ---------------------------------------------------------------------------
+# first-suchar
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_first_suchar_achievement(ensure_achievements):
+    user = make_user("joker")
     assert not UserAchievement.objects.filter(
         user=user,
         achievement__slug="first-suchar",
     ).exists()
 
-    # Create first Suchar
     Suchar.objects.create(text="Why did the chicken cross the road?", author=user)
 
-    # User should have achievement now
     assert UserAchievement.objects.filter(
         user=user,
         achievement__slug="first-suchar",
@@ -77,29 +76,58 @@ def test_first_suchar_achievement(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_first_vote_achievement(ensure_achievements):
-    author = User.objects.create_user(
-        username="author",
-        email="author@example.com",
-        password="password",  # noqa: S106
+def test_first_suchar_achievement_not_awarded_twice(ensure_achievements):
+    user = make_user("joker")
+    Suchar.objects.create(text="First joke", author=user)
+    Suchar.objects.create(text="Second joke", author=user)
+
+    assert (
+        UserAchievement.objects.filter(
+            user=user,
+            achievement__slug="first-suchar",
+        ).count()
+        == 1
     )
-    voter = User.objects.create_user(
-        username="voter",
-        email="voter@example.com",
-        password="password",  # noqa: S106
-    )
+
+
+# ---------------------------------------------------------------------------
+# first-vote (funny)  # noqa: ERA001
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_first_vote_achievement_funny(ensure_achievements):
+    author = make_user("author")
+    voter = make_user("voter")
     suchar = Suchar.objects.create(text="Knock knock", author=author)
 
-    # Voter should not have achievement yet
     assert not UserAchievement.objects.filter(
         user=voter,
         achievement__slug="first-vote",
     ).exists()
 
-    # Vote
     Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
 
-    # Voter should have achievement now
+    assert UserAchievement.objects.filter(
+        user=voter,
+        achievement__slug="first-vote",
+    ).exists()
+
+
+# ---------------------------------------------------------------------------
+# first-vote (dry)  # noqa: ERA001
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_first_vote_achievement_dry(ensure_achievements):
+    """Casting a dry vote (not funny) should also award the first-vote achievement."""
+    author = make_user("author")
+    voter = make_user("voter")
+    suchar = Suchar.objects.create(text="A dry joke", author=author)
+
+    Vote.objects.create(suchar=suchar, user=voter, is_dry=True)
+
     assert UserAchievement.objects.filter(
         user=voter,
         achievement__slug="first-vote",
@@ -107,21 +135,36 @@ def test_first_vote_achievement(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_rising_star_achievement(ensure_achievements):
-    author = User.objects.create_user(
-        username="popular_author",
-        email="pop@example.com",
-        password="password",  # noqa: S106
+def test_first_vote_achievement_not_awarded_twice(ensure_achievements):
+    author = make_user("author")
+    voter = make_user("voter")
+    s1 = Suchar.objects.create(text="Joke 1", author=author)
+    s2 = Suchar.objects.create(text="Joke 2", author=author)
+
+    Vote.objects.create(suchar=s1, user=voter, is_funny=True)
+    Vote.objects.create(suchar=s2, user=voter, is_dry=True)
+
+    assert (
+        UserAchievement.objects.filter(
+            user=voter,
+            achievement__slug="first-vote",
+        ).count()
+        == 1
     )
+
+
+# ---------------------------------------------------------------------------
+# rising-star (threshold = 5 votes)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_rising_star_not_awarded_before_threshold(ensure_achievements):
+    author = make_user("popular_author")
     suchar = Suchar.objects.create(text="Very funny joke", author=author)
 
-    # Vote 4 times (threshold is 5)
     for i in range(4):
-        voter = User.objects.create_user(
-            username=f"voter_{i}",
-            email=f"voter_{i}@example.com",
-            password="password",  # noqa: S106
-        )
+        voter = make_user(f"voter_{i}")
         Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
 
     assert not UserAchievement.objects.filter(
@@ -129,15 +172,96 @@ def test_rising_star_achievement(ensure_achievements):
         achievement__slug="rising-star",
     ).exists()
 
-    # 5th vote
-    voter_5 = User.objects.create_user(
-        username="voter_5",
-        email="voter_5@example.com",
-        password="password",  # noqa: S106
-    )
+
+@pytest.mark.django_db
+def test_rising_star_awarded_on_fifth_vote(ensure_achievements):
+    author = make_user("popular_author")
+    suchar = Suchar.objects.create(text="Very funny joke", author=author)
+
+    for i in range(4):
+        voter = make_user(f"voter_{i}")
+        Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+
+    voter_5 = make_user("voter_5")
     Vote.objects.create(suchar=suchar, user=voter_5, is_funny=True)
 
     assert UserAchievement.objects.filter(
         user=author,
         achievement__slug="rising-star",
     ).exists()
+
+
+@pytest.mark.django_db
+def test_rising_star_dry_votes_count_negatively(ensure_achievements):
+    """Dry votes subtract from SUM_SCORE so 5 dry-only votes must NOT award rising-star."""  # noqa: E501
+    author = make_user("popular_author")
+    suchar = Suchar.objects.create(text="A controversial classic", author=author)
+
+    for i in range(5):
+        voter = make_user(f"dry_voter_{i}")
+        Vote.objects.create(suchar=suchar, user=voter, is_dry=True)
+
+    # Score = 5 x (-1) = -5, below the threshold of 5
+    assert not UserAchievement.objects.filter(
+        user=author,
+        achievement__slug="rising-star",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_rising_star_net_score_reaches_threshold(ensure_achievements):
+    """Net score (funny +1, dry -1) must reach threshold=5 to award rising-star."""
+    author = make_user("popular_author")
+    suchar = Suchar.objects.create(text="A mixed joke", author=author)
+
+    # 7 funny (+7) + 2 dry (-2) = net 5 → exactly at threshold
+    for i in range(7):
+        voter = make_user(f"funny_voter_{i}")
+        Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+    for i in range(2):
+        voter = make_user(f"dry_voter_{i}")
+        Vote.objects.create(suchar=suchar, user=voter, is_dry=True)
+
+    assert UserAchievement.objects.filter(
+        user=author,
+        achievement__slug="rising-star",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_rising_star_counts_votes_across_multiple_suchars(ensure_achievements):
+    """Votes spread across multiple suchars by the same author should accumulate."""
+    author = make_user("popular_author")
+    s1 = Suchar.objects.create(text="Joke A", author=author)
+    s2 = Suchar.objects.create(text="Joke B", author=author)
+
+    for i in range(3):
+        voter = make_user(f"va{i}")
+        Vote.objects.create(suchar=s1, user=voter, is_funny=True)
+
+    for i in range(2):
+        voter = make_user(f"vb{i}")
+        Vote.objects.create(suchar=s2, user=voter, is_funny=True)
+
+    assert UserAchievement.objects.filter(
+        user=author,
+        achievement__slug="rising-star",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_rising_star_not_awarded_twice(ensure_achievements):
+    author = make_user("popular_author")
+    suchar = Suchar.objects.create(text="Very funny joke", author=author)
+
+    for i in range(6):
+        voter = make_user(f"voter_{i}")
+        Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+
+    assert (
+        UserAchievement.objects.filter(
+            user=author,
+            achievement__slug="rising-star",
+        ).count()
+        == 1
+    )
