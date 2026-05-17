@@ -63,11 +63,11 @@ msgstr "Liczba sucharów"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Funny Vote Count"
-msgstr "Liczba głosów śmieszne"
+msgstr "Liczba śmiesznych głosów"
 
 #: suchar_overflow/achievements/models.py:20
 msgid "Dry Vote Count"
-msgstr "Liczba głosów suche"
+msgstr "Liczba suchych głosów"
 
 #: suchar_overflow/achievements/models.py:21
 msgid "Vote Cast Count"
@@ -238,7 +238,7 @@ msgstr "Data publikacji nie może być w przeszłości."
 
 #: suchar_overflow/suchary/models.py:16
 msgid "Suchar text"
-msgstr "Przykładowy tekst"
+msgstr "Tekst suchara"
 
 #: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
 #: suchar_overflow/templates/403_csrf.html:6
@@ -290,7 +290,7 @@ msgstr "Sala sławy"
 
 #: suchar_overflow/templates/achievements/list.html:19
 msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
-msgstr "Two odznaki, medale i wstydliwe sekrety z Suchar Overflow."
+msgstr "Twoje odznaki, medale i wstydliwe sekrety z Suchar Overflow."
 
 #: suchar_overflow/templates/achievements/list.html:52
 #: suchar_overflow/templates/achievements/list.html:92
@@ -518,7 +518,7 @@ msgstr ""
 
 #: suchar_overflow/templates/registration/activation_email.txt:8
 msgid "Click this link before it dries out:"
-msgstr "Kliknij ten link, zanim zniknie:"
+msgstr "Kliknij ten link, zanim wyschnie:"
 
 #: suchar_overflow/templates/registration/activation_email.txt:11
 msgid "Remember: Drink plenty of water."
@@ -663,11 +663,11 @@ msgstr "Dziękujemy za korzystanie z naszej strony!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
 msgid "The"
-msgstr "To"
+msgstr "Zespół"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
 msgid "team"
-msgstr "zespół"
+msgstr ""
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -766,7 +766,7 @@ msgstr "Najśmieszniejsze dowcipy"
 
 #: suchar_overflow/templates/stats/leaderboard.html:226
 msgid "Lords of Drought"
-msgstr "Lords of Drought"
+msgstr "Władcy Suszy"
 
 #: suchar_overflow/templates/stats/leaderboard.html:247
 msgid "No dry data."
@@ -1075,7 +1075,7 @@ msgstr ""
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:9
 msgid "BUT IF IT WASN'T YOU:"
-msgstr "ALE JEŚLI TO NIE BYŁAŚ TY:"
+msgstr "ALE JEŚLI TO NIE BYŁEŚ TY:"
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:10
 msgid ""
@@ -1193,7 +1193,7 @@ msgstr "Pt"
 
 #: suchar_overflow/templates/users/user_detail.html:167
 msgid "jokes on"
-msgstr "żarty włączone"
+msgstr "żartów w dniu"
 
 #: suchar_overflow/templates/users/user_detail.html:179
 msgid "Latest Jokes"
