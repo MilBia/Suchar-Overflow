@@ -35,16 +35,97 @@ LANGUAGE_NAMES: dict[str, str] = {
     "ar": "Arabic",
 }
 
-SYSTEM_PROMPT = (
-    "You are a professional translator. "
-    "Translate the given text to {language}. "
-    "Return ONLY the translated text — no explanations, no quotes, nothing else. "
-    "Preserve any format specifiers (e.g. %(name)s, {{0}}, %s, %d) exactly as they appear."  # noqa: E501
+# Prompt for models that support chat/completions (non-translategemma).
+CHAT_SYSTEM_PROMPT = (
+    "You are a professional translator working on a Django web application UI. "
+    "Translate the given UI string from {source_language} to {target_language}. "
+    "Rules: "
+    "1. Output ONLY the translated string — no explanations, no quotes, nothing extra. "
+    "2. Keep translations short and natural, matching the original tone and length. "
+    "3. Preserve ALL format specifiers and markup exactly: %(name)s, {{0}}, %s, %d, "
+    "<strong>, <br />, <a href=...>, and any other HTML tags. Never use Markdown. "
+    "4. Never translate proper names and brand names (e.g. 'Suchar Overflow'). "
+    "5. Treat words like 'Slug', 'Tier', 'Draft' as technical Django/web terms"
+    " — do not translate them literally if they serve as UI labels. "
+    "6. Pick one best translation — never output alternatives separated by '/' or '|'."
 )
+
+# Few-shot prompt template for translategemma via /v1/completions.
+# The examples teach the model to produce concise UI labels, not definitions.
+# Rules embedded in the template:
+#   - preserve HTML tags verbatim, never convert to Markdown
+#   - do not translate proper/brand names (e.g. "Suchar Overflow")
+#   - output one translation only, never slash-separated alternatives
+COMPLETIONS_PROMPT_TEMPLATE = """\
+Translate {source_language} UI text to {target_language}. \
+Output only the translation. Preserve HTML tags. \
+Do not translate brand names. Pick one translation only.
+
+Text: Home
+Translation: {home_translation}
+
+Text: Cancel
+Translation: {cancel_translation}
+
+Text: Save Changes
+Translation: {save_changes_translation}
+
+Text: {msgid}
+Translation:"""
+
+# Language-specific few-shot answers so the model sees the expected output style.
+_FEW_SHOT_ANSWERS: dict[str, dict[str, str]] = {
+    "pl": {
+        "home": "Strona główna",
+        "cancel": "Anuluj",
+        "save_changes": "Zapisz zmiany",
+    },
+    "de": {
+        "home": "Startseite",
+        "cancel": "Abbrechen",
+        "save_changes": "Änderungen speichern",
+    },
+    "fr": {
+        "home": "Accueil",
+        "cancel": "Annuler",
+        "save_changes": "Enregistrer les modifications",
+    },
+}
+_FEW_SHOT_FALLBACK = {
+    "home": "Home",
+    "cancel": "Cancel",
+    "save_changes": "Save Changes",
+}
+
+# Responses longer than this multiple of the msgid are considered hallucinations.
+_MAX_LENGTH_RATIO = 4
+_MAX_RESPONSE_CHARS = 500
+
+# Pattern that indicates the model returned slash-separated alternatives.
+_ALTERNATIVES_MARKERS = (" / ", " | ", " OR ", " LUB ", " lub ")
 
 
 def _is_translategemma(model: str) -> bool:
     return "translategemma" in model.lower()
+
+
+def _looks_like_hallucination(msgid: str, response: str) -> bool:
+    """Return True if the response is suspiciously long."""
+    return len(response) > _MAX_RESPONSE_CHARS or (
+        len(msgid) > 0 and len(response) > len(msgid) * _MAX_LENGTH_RATIO
+    )
+
+
+def _has_multiple_alternatives(response: str) -> bool:
+    """Return True if the model returned slash/pipe-separated alternatives."""
+    return any(marker in response for marker in _ALTERNATIVES_MARKERS)
+
+
+def _has_markdown_html_corruption(msgid: str, response: str) -> bool:
+    """Return True if the msgid has HTML tags but the response used Markdown instead."""
+    if "<strong>" not in msgid and "<em>" not in msgid:
+        return False
+    return "**" in response and "<strong>" not in response
 
 
 class Command(BaseCommand):
@@ -112,6 +193,7 @@ class Command(BaseCommand):
 
         model = options["model"]
         api_key = options["api_key"]
+        source_lang = options["source_lang"]
 
         # For translategemma we bypass the OpenAI SDK because its content part schema
         # strips unknown fields (source_lang_code, target_lang_code) before sending.
@@ -146,23 +228,15 @@ class Command(BaseCommand):
 
         total = 0
         try:
-            for po_path in po_files:
-                lang_code = po_path.parts[-3]
-                lang_name = LANGUAGE_NAMES.get(lang_code, lang_code)
-                self.stdout.write(
-                    f"\nProcessing {po_path.name} [{lang_code} — {lang_name}]",
-                )
-                total += self._translate_file(
-                    openai_client=openai_client,
-                    http_client=http_client,
-                    model=model,
-                    po_path=po_path,
-                    lang_code=lang_code,
-                    lang_name=lang_name,
-                    source_lang=options["source_lang"],
-                    translate_all=options["translate_all"],
-                    dry_run=options["dry_run"],
-                )
+            total = self._process_po_files(
+                po_files=po_files,
+                openai_client=openai_client,
+                http_client=http_client,
+                model=model,
+                source_lang=source_lang,
+                translate_all=options["translate_all"],
+                dry_run=options["dry_run"],
+            )
         finally:
             if http_client:
                 http_client.close()
@@ -174,6 +248,43 @@ class Command(BaseCommand):
             self.stdout.write(
                 "Run 'manage.py compilemessages' to compile the updated .po files.",
             )
+
+    def _process_po_files(  # noqa: PLR0913
+        self,
+        po_files: list[Path],
+        openai_client: OpenAI | None,
+        http_client: httpx.Client | None,
+        model: str,
+        source_lang: str,
+        *,
+        translate_all: bool,
+        dry_run: bool,
+    ) -> int:
+        total = 0
+        for po_path in po_files:
+            lang_code = po_path.parts[-3]
+            if lang_code == source_lang:
+                self.stdout.write(
+                    f"\nSkipping {po_path.name} [{lang_code}]"
+                    f" — same as source language.",
+                )
+                continue
+            lang_name = LANGUAGE_NAMES.get(lang_code, lang_code)
+            self.stdout.write(
+                f"\nProcessing {po_path.name} [{lang_code} — {lang_name}]",
+            )
+            total += self._translate_file(
+                openai_client=openai_client,
+                http_client=http_client,
+                model=model,
+                po_path=po_path,
+                lang_code=lang_code,
+                lang_name=lang_name,
+                source_lang=source_lang,
+                translate_all=translate_all,
+                dry_run=dry_run,
+            )
+        return total
 
     def _resolve_locale_dir(self, locale_dir_option: str | None) -> Path | None:
         if locale_dir_option:
@@ -220,8 +331,10 @@ class Command(BaseCommand):
 
         self.stdout.write(f"  {len(entries)} entries to translate.")
         translated = 0
+        skipped = 0
 
         for entry in entries:
+            location_hint = entry.occurrences[0][0] if entry.occurrences else ""
             translation = self._translate_entry(
                 openai_client=openai_client,
                 http_client=http_client,
@@ -230,8 +343,10 @@ class Command(BaseCommand):
                 source_lang=source_lang,
                 target_lang_code=lang_code,
                 lang_name=lang_name,
+                location_hint=location_hint,
             )
             if translation is None:
+                skipped += 1
                 continue
             if dry_run:
                 self.stdout.write(f"  [dry] {entry.msgid!r}\n       -> {translation!r}")
@@ -239,6 +354,11 @@ class Command(BaseCommand):
                 entry.msgstr = translation
                 self.stdout.write(f"  {entry.msgid!r} -> {translation!r}")
             translated += 1
+
+        if skipped:
+            self.stdout.write(
+                self.style.WARNING(f"  Skipped (errors/hallucinations): {skipped}"),
+            )
 
         if not dry_run and translated > 0:
             try:
@@ -264,10 +384,11 @@ class Command(BaseCommand):
         source_lang: str,
         target_lang_code: str,
         lang_name: str,
+        location_hint: str,
     ) -> str | None:
         try:
             if http_client is not None:
-                return self._translate_via_httpx(
+                result = self._translate_via_httpx(
                     http_client,
                     model,
                     msgid,
@@ -275,7 +396,15 @@ class Command(BaseCommand):
                     target_lang_code,
                     lang_name,
                 )
-            return self._translate_via_openai(openai_client, model, msgid, lang_name)  # type: ignore[arg-type]
+            else:
+                result = self._translate_via_openai(  # type: ignore[arg-type]
+                    openai_client,
+                    model,
+                    msgid,
+                    source_lang,
+                    lang_name,
+                    location_hint,
+                )
         except httpx.HTTPStatusError as exc:
             self.stderr.write(
                 self.style.ERROR(f"  API error for {msgid!r}: {exc.response.text}"),
@@ -284,6 +413,35 @@ class Command(BaseCommand):
         except Exception as exc:  # noqa: BLE001
             self.stderr.write(self.style.ERROR(f"  API error for {msgid!r}: {exc}"))
             return None
+
+        return self._validate_result(msgid, result)
+
+    def _validate_result(self, msgid: str, result: str | None) -> str | None:
+        if result is None:
+            return None
+        if _looks_like_hallucination(msgid, result):
+            self.stderr.write(
+                self.style.WARNING(
+                    f"  Hallucination for {msgid!r} "
+                    f"(len {len(result)} vs {len(msgid)}), skipping.",
+                ),
+            )
+            return None
+        if _has_multiple_alternatives(result):
+            self.stderr.write(
+                self.style.WARNING(
+                    f"  Multiple alternatives for {msgid!r}: {result!r}, skipping.",
+                ),
+            )
+            return None
+        if _has_markdown_html_corruption(msgid, result):
+            self.stderr.write(
+                self.style.WARNING(
+                    f"  HTML→Markdown corruption for {msgid!r}, skipping.",
+                ),
+            )
+            return None
+        return result
 
     def _translate_via_httpx(  # noqa: PLR0913
         self,
@@ -299,41 +457,58 @@ class Command(BaseCommand):
         chat/completions breaks its Jinja template in LM Studio.
         """
         source_lang_name = LANGUAGE_NAMES.get(source_lang, source_lang)
-        prompt = (
-            f"Translate from {source_lang_name} to {lang_name}."
-            f" Output only the translation.\n\n"
-            f"Text: {msgid}\n"
-            f"Translation:"
+        few_shot = _FEW_SHOT_ANSWERS.get(target_lang_code, _FEW_SHOT_FALLBACK)
+        prompt = COMPLETIONS_PROMPT_TEMPLATE.format(
+            source_language=source_lang_name,
+            target_language=lang_name,
+            home_translation=few_shot["home"],
+            cancel_translation=few_shot["cancel"],
+            save_changes_translation=few_shot["save_changes"],
+            msgid=msgid,
         )
+        # Scale max_tokens to the source length to limit runaway responses.
+        max_tokens = max(64, min(len(msgid) * 3, 256))
         payload: dict[str, Any] = {
             "model": model,
             "prompt": prompt,
             "temperature": 0.1,
-            "max_tokens": 512,
-            "stop": ["\n\nText:", "\nText:"],
+            "max_tokens": max_tokens,
+            "stop": ["\n\nText:", "\nText:", "\n\n"],
         }
         response = client.post("/completions", json=payload)
         response.raise_for_status()
         data = response.json()
         return data["choices"][0]["text"].strip()
 
-    def _translate_via_openai(
+    def _translate_via_openai(  # noqa: PLR0913
         self,
         client: OpenAI,
         model: str,
         msgid: str,
+        source_lang: str,
         lang_name: str,
+        location_hint: str,
     ) -> str | None:
+        source_lang_name = LANGUAGE_NAMES.get(source_lang, source_lang)
+        user_content = msgid
+        if location_hint:
+            user_content = f"[Context: {location_hint}]\n{msgid}"
         response = client.chat.completions.create(
             model=model,
             messages=[
                 {
+                    "role": "system",
+                    "content": CHAT_SYSTEM_PROMPT.format(
+                        source_language=source_lang_name,
+                        target_language=lang_name,
+                    ),
+                },
+                {
                     "role": "user",
-                    "content": SYSTEM_PROMPT.format(language=lang_name)
-                    + "\n\n"
-                    + msgid,
+                    "content": user_content,
                 },
             ],
             temperature=0.1,
+            max_tokens=max(64, min(len(msgid) * 3, 256)),
         )
         return response.choices[0].message.content.strip()
