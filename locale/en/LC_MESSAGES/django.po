@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-23 04:34+0000\n"
+"POT-Creation-Date: 2026-05-17 22:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: config/settings/base.py:34
 msgid "Polish"
 msgstr ""
@@ -32,7 +33,7 @@ msgstr ""
 msgid "Achievements"
 msgstr ""
 
-#: suchar_overflow/achievements/middleware.py:23
+#: suchar_overflow/achievements/middleware.py:24
 #, python-format
 msgid "Achievement Unlocked: %(name)s!"
 msgstr ""
@@ -233,7 +234,7 @@ msgstr ""
 msgid "Leave empty to publish immediately."
 msgstr ""
 
-#: suchar_overflow/suchary/forms.py:67
+#: suchar_overflow/suchary/forms.py:57
 msgid "Publication date cannot be in the past."
 msgstr ""
 
@@ -327,7 +328,7 @@ msgid "About"
 msgstr ""
 
 #: suchar_overflow/templates/base.html:154
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:228
 msgid "Log Out"
 msgstr ""
 
@@ -354,28 +355,28 @@ msgstr ""
 msgid "Report a Bug"
 msgstr ""
 
-#: suchar_overflow/templates/base.html:189
+#: suchar_overflow/templates/base.html:201
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr ""
 
-#: suchar_overflow/templates/base.html:191
+#: suchar_overflow/templates/base.html:203
 msgid "Success"
 msgstr ""
 
-#: suchar_overflow/templates/base.html:193
+#: suchar_overflow/templates/base.html:205
 msgid "Notification"
 msgstr ""
 
-#: suchar_overflow/templates/base.html:208
+#: suchar_overflow/templates/base.html:220
 msgid "Confirm Logout"
 msgstr ""
 
-#: suchar_overflow/templates/base.html:211
+#: suchar_overflow/templates/base.html:223
 msgid "Are you sure you want to log out?"
 msgstr ""
 
-#: suchar_overflow/templates/base.html:213
+#: suchar_overflow/templates/base.html:225
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
@@ -902,12 +903,12 @@ msgstr ""
 msgid "It worked!"
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_complete.html:24
+#: suchar_overflow/templates/users/email_change_complete.html:25
 msgid ""
 "Your email address has been changed. You can now sleep peacefully (or not)."
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_complete.html:26
+#: suchar_overflow/templates/users/email_change_complete.html:28
 msgid "Back to settings"
 msgstr ""
 
@@ -935,7 +936,7 @@ msgid ""
 msgstr ""
 
 #: suchar_overflow/templates/users/email_change_done.html:34
-#: suchar_overflow/templates/users/email_change_revoked.html:45
+#: suchar_overflow/templates/users/email_change_revoked.html:43
 msgid "Back to profile"
 msgstr ""
 
@@ -963,17 +964,17 @@ msgstr ""
 msgid "Change email address"
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_form.html:13
+#: suchar_overflow/templates/users/email_change_form.html:14
 msgid ""
 "Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
 "judge."
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_form.html:23
+#: suchar_overflow/templates/users/email_change_form.html:25
 msgid "Send a pigeon with the link"
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_form.html:24
+#: suchar_overflow/templates/users/email_change_form.html:26
 msgid "Changed my mind (go back)"
 msgstr ""
 
@@ -982,35 +983,35 @@ msgstr ""
 msgid "Revoked"
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_revoked.html:17
+#: suchar_overflow/templates/users/email_change_revoked.html:15
 msgid "We've reverted the changes!"
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_revoked.html:19
+#: suchar_overflow/templates/users/email_change_revoked.html:17
 msgid ""
 "Phew, that was close. Your email address has been restored to its previous "
 "state."
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_revoked.html:21
+#: suchar_overflow/templates/users/email_change_revoked.html:19
 msgid "You can breathe a sigh of relief. We recommend changing your password."
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_revoked.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:32
 msgid "Change cancelled"
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_revoked.html:36
+#: suchar_overflow/templates/users/email_change_revoked.html:34
 msgid "All active email change links have been invalidated."
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_revoked.html:38
+#: suchar_overflow/templates/users/email_change_revoked.html:36
 msgid ""
 "If it wasn't you who tried to change the email, we recommend changing your "
 "password."
 msgstr ""
 
-#: suchar_overflow/templates/users/email_change_revoked.html:43
+#: suchar_overflow/templates/users/email_change_revoked.html:41
 msgid "Change password (just in case)"
 msgstr ""
 
@@ -1229,34 +1230,34 @@ msgid "Email Change Requests"
 msgstr ""
 
 #: suchar_overflow/users/tests/test_views.py:74
-#: suchar_overflow/users/views.py:238
+#: suchar_overflow/users/views.py:208
 msgid "Information successfully updated"
 msgstr ""
 
-#: suchar_overflow/users/views.py:278
+#: suchar_overflow/users/views.py:248
 msgid "Confirm you have a sense of humor (Account Activation)"
 msgstr ""
 
-#: suchar_overflow/users/views.py:342
+#: suchar_overflow/users/views.py:312
 msgid "Confirm it's you (Email Change)"
 msgstr ""
 
-#: suchar_overflow/users/views.py:366
+#: suchar_overflow/users/views.py:336
 msgid "Someone wants to change your email address (We hope it's you)"
 msgstr ""
 
-#: suchar_overflow/users/views.py:408
+#: suchar_overflow/users/views.py:378
 msgid "The link has already been used or cancelled."
 msgstr ""
 
-#: suchar_overflow/users/views.py:418
+#: suchar_overflow/users/views.py:388
 msgid "The link has expired (24 hours have passed)."
 msgstr ""
 
-#: suchar_overflow/users/views.py:426
+#: suchar_overflow/users/views.py:396
 msgid "Email already taken."
 msgstr ""
 
-#: suchar_overflow/users/views.py:444
+#: suchar_overflow/users/views.py:414
 msgid "The link is invalid."
 msgstr ""

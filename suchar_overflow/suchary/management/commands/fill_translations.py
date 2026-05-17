@@ -1,5 +1,6 @@
 """Management command to fill empty .po translation strings using a local AI model."""
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -103,6 +104,11 @@ _MAX_RESPONSE_CHARS = 500
 
 # Pattern that indicates the model returned slash-separated alternatives.
 _ALTERNATIVES_MARKERS = (" / ", " | ", " OR ", " LUB ", " lub ")
+# Matches unspaced slash between words (e.g. "Ten/Ta/To") in short responses.
+_UNSPACED_SLASH_RE = re.compile(r"\w/\w")
+
+# Terms that must never be translated — copied verbatim from msgid.
+_PROTECTED_TERMS: frozenset[str] = frozenset({"Suchar Overflow"})
 
 
 def _is_translategemma(model: str) -> bool:
@@ -118,7 +124,10 @@ def _looks_like_hallucination(msgid: str, response: str) -> bool:
 
 def _has_multiple_alternatives(response: str) -> bool:
     """Return True if the model returned slash/pipe-separated alternatives."""
-    return any(marker in response for marker in _ALTERNATIVES_MARKERS)
+    if any(marker in response for marker in _ALTERNATIVES_MARKERS):
+        return True
+    # Also catch unspaced slash alternatives like "Ten/Ta/To".
+    return bool(_UNSPACED_SLASH_RE.search(response))
 
 
 def _has_markdown_html_corruption(msgid: str, response: str) -> bool:
@@ -304,7 +313,7 @@ class Command(BaseCommand):
 
         return path
 
-    def _translate_file(  # noqa: PLR0913
+    def _translate_file(  # noqa: PLR0913, C901
         self,
         openai_client: OpenAI | None,
         http_client: httpx.Client | None,
@@ -334,6 +343,21 @@ class Command(BaseCommand):
         skipped = 0
 
         for entry in entries:
+            if entry.msgid in _PROTECTED_TERMS:
+                if dry_run:
+                    self.stdout.write(
+                        f"  [dry] {entry.msgid!r}\n"
+                        f"       -> {entry.msgid!r} (protected)",
+                    )
+                else:
+                    entry.msgstr = entry.msgid
+                    self.stdout.write(
+                        f"  {entry.msgid!r} -> {entry.msgid!r}"
+                        " (protected, verbatim copy)",
+                    )
+                translated += 1
+                continue
+
             location_hint = entry.occurrences[0][0] if entry.occurrences else ""
             translation = self._translate_entry(
                 openai_client=openai_client,
