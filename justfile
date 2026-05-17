@@ -37,6 +37,10 @@ logs *args:
 manage +args:
     @docker compose run --rm django python ./manage.py {{args}}
 
+# test: Run pytest inside the Django container.
+test *args:
+    @docker compose run --rm django pytest {{args}}
+
 # ---------- Production ----------
 
 # prod-build: Build production images.

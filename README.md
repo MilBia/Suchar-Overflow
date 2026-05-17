@@ -249,6 +249,7 @@ Projekt udostępnia skróty poprzez [just](https://github.com/casey/just):
 | `just prune`         | Zatrzymanie + usunięcie wolumenów     |
 | `just logs [serwis]` | Podgląd logów                         |
 | `just manage <cmd>`  | Wykonanie komendy `manage.py`         |
+| `just test [args]`   | Uruchomienie testów (pytest)          |
 
 ### Produkcyjne
 
@@ -301,6 +302,12 @@ Suchar-Overflow/
 Testy uruchamiane są wewnątrz kontenera Docker:
 
 ```bash
+just test
+```
+
+Lub bezpośrednio:
+
+```bash
 docker compose -f docker-compose.local.yml run --rm django pytest
 ```
 
@@ -333,9 +340,8 @@ Projekt używa [pre-commit](https://pre-commit.com/) do automatycznego sprawdzan
 ### Instalacja hooków (wymagany lokalny `.venv`):
 
 ```bash
-uv venv
+uv sync
 source .venv/bin/activate
-uv pip install pre-commit
 pre-commit install
 ```
 

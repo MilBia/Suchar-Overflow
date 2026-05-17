@@ -9,6 +9,8 @@ ARG APP_HOME=/app
 
 WORKDIR ${APP_HOME}
 
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=0
+
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
