@@ -1,5 +1,6 @@
 from django.db.models import Case
 from django.db.models import Count
+from django.db.models import F
 from django.db.models import IntegerField
 from django.db.models import Q
 from django.db.models import Sum
@@ -94,14 +95,15 @@ class PolarizerRule(AchievementRule):
 
     @classmethod
     def evaluate(cls, user, threshold, instance=None):
-        suchary_stats = Suchar.objects.filter(author=user).annotate(
-            funny_count=Count("votes", filter=Q(votes__is_funny=True)),
-            dry_count=Count("votes", filter=Q(votes__is_dry=True)),
+        return (
+            Suchar.objects.filter(author=user)
+            .annotate(
+                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
+                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
+            )
+            .filter(funny_count=F("dry_count"), funny_count__gte=threshold)
+            .exists()
         )
-        for s in suchary_stats:
-            if s.funny_count == s.dry_count and s.funny_count >= threshold:
-                return True
-        return False
 
 
 class StreakLoginRule(AchievementRule):
@@ -109,12 +111,11 @@ class StreakLoginRule(AchievementRule):
 
     @classmethod
     def evaluate(cls, user, threshold, instance=None):
-        suchar_dates = list(
-            Suchar.objects.filter(author=user).values_list("created_at", flat=True),
+        # .dates() truncates to day in the DB and returns distinct date objects,
+        # avoiding loading every suchar datetime into Python memory.
+        dates = set(
+            Suchar.objects.filter(author=user).dates("created_at", "day"),
         )
-        dates = {
-            dt.astimezone(timezone.get_current_timezone()).date() for dt in suchar_dates
-        }
 
         if not dates:
             return False

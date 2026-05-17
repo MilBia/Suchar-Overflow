@@ -51,21 +51,11 @@ class SucharForm(forms.ModelForm):
         if not published_at:
             return timezone.now()
 
-        if published_at:
-            # Allow a small buffer (e.g. 1 minute) for 'now' submissions
-            # But generally, if set explicitly, it shouldn't be in the past
-            # However, if it's "now" (immediate), it might be slightly in the past
-            # by the time it reaches server
-            # The requirement is mainly for *scheduling* not to pick a past date.
-
-            # Since the default is timezone.now, we need to distinguish between
-            # "default"
-            # and "user picked past date"
-            # But simplicity: if it's more than 5 minutes in the past, reject it.
-            if published_at < timezone.now() - timezone.timedelta(minutes=5):
-                raise forms.ValidationError(
-                    _("Publication date cannot be in the past."),
-                )
+        # Allow a small buffer for clock skew; reject dates more than 5 min in the past.
+        if published_at < timezone.now() - timezone.timedelta(minutes=5):
+            raise forms.ValidationError(
+                _("Publication date cannot be in the past."),
+            )
         return published_at
 
     def save(self, commit=True):  # noqa: FBT002

@@ -10,13 +10,14 @@ class AchievementNotificationMiddleware:
 
     def __call__(self, request):
         if request.user.is_authenticated:
-            # Check for unseen achievements
-            new_achievements = UserAchievement.objects.filter(
-                user=request.user,
-                is_seen=False,
-            ).select_related("achievement")
+            new_achievements = list(
+                UserAchievement.objects.filter(
+                    user=request.user,
+                    is_seen=False,
+                ).select_related("achievement"),
+            )
 
-            if new_achievements.exists():
+            if new_achievements:
                 for user_ach in new_achievements:
                     messages.success(
                         request,
@@ -24,6 +25,6 @@ class AchievementNotificationMiddleware:
                         % {"name": user_ach.achievement.name},
                     )
                     user_ach.is_seen = True
-                    user_ach.save()
+                UserAchievement.objects.bulk_update(new_achievements, ["is_seen"])
 
         return self.get_response(request)
