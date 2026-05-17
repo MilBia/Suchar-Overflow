@@ -20,6 +20,7 @@ Wchodzisz na własną odpowiedzialność (i z butelką wody).
 - [Przydatne komendy](#przydatne-komendy)
 - [Struktura projektu](#struktura-projektu)
 - [Testy](#testy)
+- [Dev Container](#dev-container)
 - [Pre-commit](#pre-commit)
 - [Licencja](#licencja)
 
@@ -49,16 +50,18 @@ rankingiem użytkowników, osiągnięciami i statystykami. Projekt wspiera dwa j
 | ---------------- | -------------------------------------------------- |
 | **Język**        | Python 3.13                                        |
 | **Framework**    | Django 5.2                                         |
+| **REST API**     | Django Ninja                                       |
 | **Baza danych**  | PostgreSQL 18                                      |
 | **Cache/Broker** | Redis 7                                            |
-| **Task Queue**   | Celery 5.4                                         |
+| **Task Queue**   | Celery 5.4 + Celery Beat                           |
 | **Serwer WSGI** | Gunicorn                                           |
 | **Reverse Proxy** | Traefik 3 (produkcja)                             |
 | **Media Proxy**  | Nginx (produkcja)                                  |
 | **Konteneryzacja** | Docker & Docker Compose                          |
 | **Zarządzanie zależnościami** | [uv](https://docs.astral.sh/uv/)     |
 | **Linting**      | Ruff, djLint                                       |
-| **Testy**        | pytest, pytest-django                              |
+| **Type checking** | mypy + django-stubs                               |
+| **Testy**        | pytest, pytest-django, factory-boy                 |
 
 ---
 
@@ -120,11 +123,12 @@ just manage createsuperuser
 
 ### 5. Otwórz w przeglądarce
 
-| Usługa      | URL                       |
-| ----------- | ------------------------- |
-| Aplikacja   | http://127.0.0.1:8000     |
-| Mailpit     | http://127.0.0.1:8025     |
+| Usługa      | URL                          |
+| ----------- | ---------------------------- |
+| Aplikacja   | http://127.0.0.1:8000        |
+| Mailpit     | http://127.0.0.1:8025        |
 | Admin       | http://127.0.0.1:8000/admin/ |
+| API         | http://127.0.0.1:8000/api/   |
 
 ### 6. Zatrzymaj kontenery
 
@@ -268,21 +272,26 @@ Suchar-Overflow/
 ├── config/                   # Konfiguracja Django
 │   ├── settings/             #   └─ base.py, local.py, production.py, test.py
 │   ├── urls.py               #   └─ główny routing
+│   ├── api.py                #   └─ Django Ninja – rejestracja routerów API
 │   ├── celery_app.py         #   └─ konfiguracja Celery
 │   └── wsgi.py
 ├── suchar_overflow/          # Kod aplikacji
-│   ├── achievements/         #   └─ system osiągnięć
-│   ├── suchary/              #   └─ główna apka – żarty, głosowanie
+│   ├── achievements/         #   └─ system osiągnięć (engine, signals, tasks, middleware)
+│   ├── suchary/              #   └─ główna apka – żarty, głosowanie, API
 │   ├── stats/                #   └─ statystyki i leaderboard
-│   ├── users/                #   └─ zarządzanie użytkownikami
-│   ├── static/               #   └─ CSS, JS, obrazy
+│   ├── users/                #   └─ zarządzanie użytkownikami (custom User model)
+│   ├── contrib/              #   └─ współdzielone narzędzia i mixiny
+│   ├── static/               #   └─ CSS, JS, obrazy, czcionki
 │   └── templates/            #   └─ szablony Django (HTML)
 ├── locale/                   # Tłumaczenia (PL, EN)
-├── tests/                    # Testy
+├── tests/                    # Testy narzędziowe (root-level)
+├── .devcontainer/            # Konfiguracja VS Code Dev Container
+├── .github/                  # GitHub Actions CI + Dependabot
 ├── docker-compose.local.yml  # Compose – development
 ├── docker-compose.production.yml  # Compose – produkcja
 ├── justfile                  # Skróty komend
-└── pyproject.toml            # Zależności i konfiguracja narzędzi
+├── pyproject.toml            # Zależności i konfiguracja narzędzi
+└── uv.lock                   # Zablokowane wersje zależności
 ```
 
 ---
@@ -302,6 +311,19 @@ docker compose -f docker-compose.local.yml run --rm django coverage run -m pytes
 docker compose -f docker-compose.local.yml run --rm django coverage report
 ```
 
+Konfiguracja pytest (w `pyproject.toml`) używa `--reuse-db` dla szybszych przebiegów oraz `factory-boy` do tworzenia danych testowych. Wyniki testów w formacie JUnit XML są generowane w CI automatycznie.
+
+---
+
+## Dev Container
+
+Projekt zawiera konfigurację [VS Code Dev Container](https://code.visualstudio.com/docs/devcontainers/containers) (`.devcontainer/`).
+Po otwarciu projektu w VS Code z zainstalowanym rozszerzeniem Dev Containers środowisko uruchomi się automatycznie z:
+
+- Python 3.13, uv, Ruff, Pylance, mypy
+- podłączonym do lokalnego `docker-compose.local.yml`
+- zamontowanym `.ssh` i historią bash
+
 ---
 
 ## Pre-commit
@@ -311,9 +333,9 @@ Projekt używa [pre-commit](https://pre-commit.com/) do automatycznego sprawdzan
 ### Instalacja hooków (wymagany lokalny `.venv`):
 
 ```bash
-python -m venv .venv
+uv venv
 source .venv/bin/activate
-pip install pre-commit
+uv pip install pre-commit
 pre-commit install
 ```
 
