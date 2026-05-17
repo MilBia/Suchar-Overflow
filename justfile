@@ -41,6 +41,11 @@ manage +args:
 test *args:
     @docker compose run --rm django pytest {{args}}
 
+# fill-translations: Fill empty .po translation strings using a local AI model.
+# Example: just fill-translations --url http://localhost:11434/v1 --model translategemma --language pl
+fill-translations *args:
+    @docker compose run --rm django python ./manage.py fill_translations {{args}}
+
 # ---------- Production ----------
 
 # prod-build: Build production images.

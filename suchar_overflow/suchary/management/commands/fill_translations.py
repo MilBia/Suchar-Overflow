@@ -1,0 +1,339 @@
+"""Management command to fill empty .po translation strings using a local AI model."""
+
+from pathlib import Path
+from typing import Any
+
+import httpx
+import polib
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from openai import OpenAI
+
+LANGUAGE_NAMES: dict[str, str] = {
+    "pl": "Polish",
+    "en": "English",
+    "de": "German",
+    "fr": "French",
+    "es": "Spanish",
+    "it": "Italian",
+    "pt": "Portuguese",
+    "ru": "Russian",
+    "uk": "Ukrainian",
+    "cs": "Czech",
+    "sk": "Slovak",
+    "hu": "Hungarian",
+    "ro": "Romanian",
+    "nl": "Dutch",
+    "sv": "Swedish",
+    "da": "Danish",
+    "fi": "Finnish",
+    "nb": "Norwegian",
+    "tr": "Turkish",
+    "ja": "Japanese",
+    "zh": "Chinese",
+    "ko": "Korean",
+    "ar": "Arabic",
+}
+
+SYSTEM_PROMPT = (
+    "You are a professional translator. "
+    "Translate the given text to {language}. "
+    "Return ONLY the translated text — no explanations, no quotes, nothing else. "
+    "Preserve any format specifiers (e.g. %(name)s, {{0}}, %s, %d) exactly as they appear."  # noqa: E501
+)
+
+
+def _is_translategemma(model: str) -> bool:
+    return "translategemma" in model.lower()
+
+
+class Command(BaseCommand):
+    help = "Fill empty .po translation strings using a local OpenAI-compatible AI model"
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--url",
+            type=str,
+            required=True,
+            help="Base URL of the OpenAI-compatible API (e.g. http://localhost:11434/v1)",
+        )
+        parser.add_argument(
+            "--model",
+            type=str,
+            default="translategemma",
+            help="Model name to use for translation (default: translategemma)",
+        )
+        parser.add_argument(
+            "--language",
+            type=str,
+            default=None,
+            metavar="LANG_CODE",
+            help="Target language code to process (e.g. pl, en). Defaults to all.",
+        )
+        parser.add_argument(
+            "--source-lang",
+            type=str,
+            default="en",
+            metavar="LANG_CODE",
+            help="Source language code of the msgid strings (default: en).",
+        )
+        parser.add_argument(
+            "--locale-dir",
+            type=str,
+            default=None,
+            help="Path to the locale directory. Defaults to Django's LOCALE_PATHS[0].",
+        )
+        parser.add_argument(
+            "--all",
+            action="store_true",
+            dest="translate_all",
+            help="Re-translate all entries, including already-translated ones.",
+        )
+        parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help="Print what would be translated without writing any changes.",
+        )
+        parser.add_argument(
+            "--api-key",
+            type=str,
+            default="nokey",
+            help="API key for the endpoint (default: 'nokey' for local models).",
+        )
+
+    def handle(self, *args, **options):
+        locale_dir = self._resolve_locale_dir(options["locale_dir"])
+        if locale_dir is None:
+            return
+
+        url = options["url"]
+        if not url.startswith(("http://", "https://")):
+            url = f"http://{url}"
+
+        model = options["model"]
+        api_key = options["api_key"]
+
+        # For translategemma we bypass the OpenAI SDK because its content part schema
+        # strips unknown fields (source_lang_code, target_lang_code) before sending.
+        if _is_translategemma(model):
+            openai_client = None
+            http_client = httpx.Client(
+                base_url=url,
+                headers={"Authorization": f"Bearer {api_key}"},
+                timeout=120.0,
+            )
+        else:
+            openai_client = OpenAI(base_url=url, api_key=api_key)
+            http_client = None
+
+        if options["dry_run"]:
+            self.stdout.write(
+                self.style.WARNING("DRY RUN — no files will be modified."),
+            )
+
+        po_glob = (
+            f"{options['language']}/LC_MESSAGES/*.po"
+            if options["language"]
+            else "*/LC_MESSAGES/*.po"
+        )
+        po_files = sorted(locale_dir.glob(po_glob))
+
+        if not po_files:
+            self.stdout.write(self.style.WARNING(f"No .po files found in {locale_dir}"))
+            if http_client:
+                http_client.close()
+            return
+
+        total = 0
+        try:
+            for po_path in po_files:
+                lang_code = po_path.parts[-3]
+                lang_name = LANGUAGE_NAMES.get(lang_code, lang_code)
+                self.stdout.write(
+                    f"\nProcessing {po_path.name} [{lang_code} — {lang_name}]",
+                )
+                total += self._translate_file(
+                    openai_client=openai_client,
+                    http_client=http_client,
+                    model=model,
+                    po_path=po_path,
+                    lang_code=lang_code,
+                    lang_name=lang_name,
+                    source_lang=options["source_lang"],
+                    translate_all=options["translate_all"],
+                    dry_run=options["dry_run"],
+                )
+        finally:
+            if http_client:
+                http_client.close()
+
+        self.stdout.write(
+            self.style.SUCCESS(f"\nDone. Total entries translated: {total}"),
+        )
+        if not options["dry_run"] and total > 0:
+            self.stdout.write(
+                "Run 'manage.py compilemessages' to compile the updated .po files.",
+            )
+
+    def _resolve_locale_dir(self, locale_dir_option: str | None) -> Path | None:
+        if locale_dir_option:
+            path = Path(locale_dir_option)
+        else:
+            locale_paths = getattr(settings, "LOCALE_PATHS", [])
+            if not locale_paths:
+                self.stderr.write(
+                    self.style.ERROR("No LOCALE_PATHS configured in Django settings."),
+                )
+                return None
+            path = Path(locale_paths[0])
+
+        if not path.exists():
+            self.stderr.write(self.style.ERROR(f"Locale directory not found: {path}"))
+            return None
+
+        return path
+
+    def _translate_file(  # noqa: PLR0913
+        self,
+        openai_client: OpenAI | None,
+        http_client: httpx.Client | None,
+        model: str,
+        po_path: Path,
+        lang_code: str,
+        lang_name: str,
+        source_lang: str,
+        *,
+        translate_all: bool,
+        dry_run: bool,
+    ) -> int:
+        try:
+            po = polib.pofile(str(po_path))
+        except OSError as exc:
+            self.stderr.write(self.style.ERROR(f"  Cannot read {po_path}: {exc}"))
+            return 0
+
+        entries = [e for e in po if e.msgid and (translate_all or not e.msgstr)]
+
+        if not entries:
+            self.stdout.write("  Nothing to translate.")
+            return 0
+
+        self.stdout.write(f"  {len(entries)} entries to translate.")
+        translated = 0
+
+        for entry in entries:
+            translation = self._translate_entry(
+                openai_client=openai_client,
+                http_client=http_client,
+                model=model,
+                msgid=entry.msgid,
+                source_lang=source_lang,
+                target_lang_code=lang_code,
+                lang_name=lang_name,
+            )
+            if translation is None:
+                continue
+            if dry_run:
+                self.stdout.write(f"  [dry] {entry.msgid!r}\n       -> {translation!r}")
+            else:
+                entry.msgstr = translation
+                self.stdout.write(f"  {entry.msgid!r} -> {translation!r}")
+            translated += 1
+
+        if not dry_run and translated > 0:
+            try:
+                po.save(str(po_path))
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"  Saved {translated} translations to {po_path.name}",
+                    ),
+                )
+            except OSError as exc:
+                self.stderr.write(
+                    self.style.ERROR(f"  Failed to save {po_path}: {exc}"),
+                )
+
+        return translated
+
+    def _translate_entry(  # noqa: PLR0913
+        self,
+        openai_client: OpenAI | None,
+        http_client: httpx.Client | None,
+        model: str,
+        msgid: str,
+        source_lang: str,
+        target_lang_code: str,
+        lang_name: str,
+    ) -> str | None:
+        try:
+            if http_client is not None:
+                return self._translate_via_httpx(
+                    http_client,
+                    model,
+                    msgid,
+                    source_lang,
+                    target_lang_code,
+                    lang_name,
+                )
+            return self._translate_via_openai(openai_client, model, msgid, lang_name)  # type: ignore[arg-type]
+        except httpx.HTTPStatusError as exc:
+            self.stderr.write(
+                self.style.ERROR(f"  API error for {msgid!r}: {exc.response.text}"),
+            )
+            return None
+        except Exception as exc:  # noqa: BLE001
+            self.stderr.write(self.style.ERROR(f"  API error for {msgid!r}: {exc}"))
+            return None
+
+    def _translate_via_httpx(  # noqa: PLR0913
+        self,
+        client: httpx.Client,
+        model: str,
+        msgid: str,
+        source_lang: str,
+        target_lang_code: str,
+        lang_name: str,
+    ) -> str | None:
+        """Use /v1/completions for translategemma.
+
+        chat/completions breaks its Jinja template in LM Studio.
+        """
+        source_lang_name = LANGUAGE_NAMES.get(source_lang, source_lang)
+        prompt = (
+            f"Translate from {source_lang_name} to {lang_name}."
+            f" Output only the translation.\n\n"
+            f"Text: {msgid}\n"
+            f"Translation:"
+        )
+        payload: dict[str, Any] = {
+            "model": model,
+            "prompt": prompt,
+            "temperature": 0.1,
+            "max_tokens": 512,
+            "stop": ["\n\nText:", "\nText:"],
+        }
+        response = client.post("/completions", json=payload)
+        response.raise_for_status()
+        data = response.json()
+        return data["choices"][0]["text"].strip()
+
+    def _translate_via_openai(
+        self,
+        client: OpenAI,
+        model: str,
+        msgid: str,
+        lang_name: str,
+    ) -> str | None:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": SYSTEM_PROMPT.format(language=lang_name)
+                    + "\n\n"
+                    + msgid,
+                },
+            ],
+            temperature=0.1,
+        )
+        return response.choices[0].message.content.strip()

@@ -18,6 +18,7 @@ Wchodzisz na własną odpowiedzialność (i z butelką wody).
 - [Uruchomienie lokalne](#uruchomienie-lokalne)
 - [Uruchomienie na produkcji](#uruchomienie-na-produkcji)
 - [Przydatne komendy](#przydatne-komendy)
+- [Tłumaczenia AI](#tłumaczenia-ai-fill_translations)
 - [Struktura projektu](#struktura-projektu)
 - [Testy](#testy)
 - [Dev Container](#dev-container)
@@ -250,6 +251,7 @@ Projekt udostępnia skróty poprzez [just](https://github.com/casey/just):
 | `just logs [serwis]` | Podgląd logów                         |
 | `just manage <cmd>`  | Wykonanie komendy `manage.py`         |
 | `just test [args]`   | Uruchomienie testów (pytest)          |
+| `just fill-translations [args]` | Uzupełnianie tłumaczeń przez lokalny model AI |
 
 ### Produkcyjne
 
@@ -260,6 +262,51 @@ Projekt udostępnia skróty poprzez [just](https://github.com/casey/just):
 | `just prod-down`         | Zatrzymanie produkcji                 |
 | `just prod-logs [serwis]`| Podgląd logów produkcyjnych           |
 | `just prod-manage <cmd>` | Wykonanie komendy `manage.py`         |
+
+---
+
+## Tłumaczenia AI (`fill_translations`)
+
+Projekt zawiera komendę zarządzania Django do automatycznego uzupełniania pustych ciągów w plikach `.po` za pomocą lokalnego modelu AI z interfejsem kompatybilnym z OpenAI API (np. LM Studio, Ollama).
+
+### Wymagania
+
+Model musi być dostępny przez endpoint `/v1` kompatybilny z OpenAI. Domyślnie używany jest model `translategemma`.
+
+### Użycie
+
+```bash
+# Uzupełnij angielskie tłumaczenia (wszystkie puste wpisy)
+just fill-translations --url 192.168.1.1:1234/v1 --language en --model translategemma-12b-it
+
+# Podgląd bez zapisu (dry run)
+just fill-translations --url 192.168.1.1:1234/v1 --language en --dry-run
+
+# Ponowne przetłumaczenie wszystkich wpisów (także już wypełnionych)
+just fill-translations --url 192.168.1.1:1234/v1 --language pl --all
+
+# Bezpośrednio przez manage.py / uv
+uv run manage.py fill_translations --url http://localhost:11434/v1 --language en --model llama3.2
+```
+
+Po uzupełnieniu tłumaczeń skompiluj pliki `.po`:
+
+```bash
+just manage compilemessages
+```
+
+### Parametry
+
+| Parametr | Opis | Domyślna wartość |
+| --- | --- | --- |
+| `--url` | URL endpointu API (schemat `http://` jest opcjonalny) | *wymagany* |
+| `--model` | Nazwa modelu | `translategemma` |
+| `--language` | Kod języka docelowego (np. `pl`, `en`) | wszystkie języki |
+| `--source-lang` | Kod języka źródłowego stringów `msgid` | `en` |
+| `--locale-dir` | Ścieżka do katalogu locale | `LOCALE_PATHS[0]` z ustawień Django |
+| `--all` | Przetłumacz też już wypełnione wpisy | `false` |
+| `--dry-run` | Wyświetl wynik bez zapisu | `false` |
+| `--api-key` | Klucz API (dla lokalnych modeli zwykle zbędny) | `nokey` |
 
 ---
 
