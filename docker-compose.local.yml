@@ -54,3 +54,13 @@ services:
       - postgres
     ports: []
     command: /start-cron
+
+  rqworker:
+    <<: *django
+    image: suchar_overflow_local_rqworker
+    container_name: suchar_overflow_local_rqworker
+    depends_on:
+      - postgres
+      - redis
+    ports: []
+    command: /start-rqworker

@@ -70,7 +70,9 @@ DJANGO_APPS = [
     "django.contrib.admin",
     "django.forms",
 ]
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    "django_rq",
+]
 
 LOCAL_APPS = [
     "suchar_overflow.users",
@@ -250,6 +252,23 @@ LOGGING = {
 
 REDIS_URL = env("REDIS_URL", default="redis://redis:6379/0")
 REDIS_SSL = REDIS_URL.startswith("rediss://")
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"ssl_cert_reqs": None} if REDIS_SSL else {},
+        },
+    },
+}
+
+RQ_QUEUES = {
+    "default": {
+        "USE_REDIS_CACHE": "default",
+    },
+}
 
 # Your stuff...
 # ------------------------------------------------------------------------------

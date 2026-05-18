@@ -59,4 +59,8 @@ COPY ./compose/local/django/start-cron /start-cron
 RUN sed -i 's/\r$//g' /start-cron
 RUN chmod +x /start-cron
 
+COPY ./compose/local/django/start-rqworker /start-rqworker
+RUN sed -i 's/\r$//g' /start-rqworker
+RUN chmod +x /start-rqworker
+
 ENTRYPOINT ["/entrypoint"]

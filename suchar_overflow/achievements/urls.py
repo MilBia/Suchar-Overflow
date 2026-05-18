@@ -5,4 +5,5 @@ from . import views
 app_name = "achievements"
 urlpatterns = [
     path("", views.AchievementListView.as_view(), name="list"),
+    path("inbox/", views.NotificationInboxView.as_view(), name="inbox"),
 ]

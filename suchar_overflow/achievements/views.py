@@ -5,6 +5,19 @@ from .models import Achievement
 from .models import UserAchievement
 
 
+class NotificationInboxView(LoginRequiredMixin, ListView):
+    model = UserAchievement
+    template_name = "achievements/inbox.html"
+    context_object_name = "user_achievements"
+
+    def get_queryset(self):
+        return (
+            UserAchievement.objects.filter(user=self.request.user)
+            .select_related("achievement")
+            .order_by("-awarded_at")
+        )
+
+
 class AchievementListView(LoginRequiredMixin, ListView):
     model = Achievement
     template_name = "achievements/list.html"

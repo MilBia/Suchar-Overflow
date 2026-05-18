@@ -55,6 +55,14 @@ services:
     image: suchar_overflow_production_cron
     command: /start-cron
 
+  rqworker:
+    <<: *django
+    image: suchar_overflow_production_rqworker
+    depends_on:
+      - postgres
+      - redis
+    command: /start-rqworker
+
   nginx:
     build:
       context: .

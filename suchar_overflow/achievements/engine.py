@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.db.models import Case
 from django.db.models import Count
 from django.db.models import F
@@ -163,7 +164,16 @@ class AchievementEngine:
             .exclude(id__in=existing_ids)
         )
 
+        awarded = False
         for achievement in candidates:
             rule_cls = AchievementEngine._rules.get(achievement.metric)
             if rule_cls and rule_cls.evaluate(user, achievement.threshold, instance):
                 UserAchievement.objects.create(user=user, achievement=achievement)
+                awarded = True
+
+        if awarded:
+            cache.set(
+                f"achievements_pending:{user.pk}",
+                value=True,
+                timeout=60 * 60 * 24 * 30,
+            )

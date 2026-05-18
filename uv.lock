@@ -172,6 +172,18 @@ wheels = [
 ]
 
 [[package]]
+name = "croniter"
+version = "6.2.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/df/de/5832661ed55107b8a09af3f0a2e71e0957226a59eb1dcf0a445cce6daf20/croniter-6.2.2.tar.gz", hash = "sha256:ba60832a5ec8e12e51b8691c3309a113d1cf6526bdf1a48150ce8ec7a532d0ab", size = 113762, upload-time = "2026-03-15T08:43:48.112Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d0/39/783980e78cb92c2d7bdb1fc7dbc86e94ccc6d58224d76a7f1f51b6c51e30/croniter-6.2.2-py3-none-any.whl", hash = "sha256:a5d17b1060974d36251ea4faf388233eca8acf0d09cbd92d35f4c4ac8f279960", size = 45422, upload-time = "2026-03-15T08:43:46.626Z" },
+]
+
+[[package]]
 name = "cssbeautifier"
 version = "1.15.4"
 source = { registry = "https://pypi.org/simple" }
@@ -297,6 +309,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/08/53/dbcfa1e528e0d6c39947092625b2c89274b5d88f14d357cee53c4d6dbbd4/django_redis-6.0.0.tar.gz", hash = "sha256:2d9cb12a20424a4c4dde082c6122f486628bae2d9c2bee4c0126a4de7fda00dd", size = 56904, upload-time = "2025-06-17T18:15:46.376Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7e/79/055dfcc508cfe9f439d9f453741188d633efa9eab90fc78a67b0ab50b137/django_redis-6.0.0-py3-none-any.whl", hash = "sha256:20bf0063a8abee567eb5f77f375143c32810c8700c0674ced34737f8de4e36c0", size = 33687, upload-time = "2025-06-17T18:15:34.165Z" },
+]
+
+[[package]]
+name = "django-rq"
+version = "3.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "redis" },
+    { name = "rq" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e1/71/0412cc1bd0f4026e727ad9fa8f407a2225b6ce593e15ed6fcccebeef50ef/django-rq-3.0.0.tar.gz", hash = "sha256:7bdadb85d9909c118cf1ee1b9bdd1a74ebf141bf8f3c2de2409fcac6080f67ac", size = 53356, upload-time = "2024-10-28T15:40:27.633Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fe/9a/6a9cdc19805c31019021f582728de5493ef4381c391434f64af6e4b5121c/django_rq-3.0.0-py2.py3-none-any.whl", hash = "sha256:bd2ef287a28301f64c4282293648e4f8c6076dd895a545c9c6b98bde4a82a4ce", size = 64432, upload-time = "2024-10-28T15:40:25.686Z" },
 ]
 
 [[package]]
@@ -999,6 +1025,18 @@ wheels = [
 ]
 
 [[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "six" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/66/c0/0c8b6ad9f17a802ee498c46e004a0eb49bc148f2fd230864601a86dcf6db/python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3", size = 342432, upload-time = "2024-03-01T18:36:20.211Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427", size = 229892, upload-time = "2024-03-01T18:36:18.57Z" },
+]
+
+[[package]]
 name = "python-slugify"
 version = "8.0.4"
 source = { registry = "https://pypi.org/simple" }
@@ -1078,6 +1116,20 @@ wheels = [
 ]
 
 [[package]]
+name = "rq"
+version = "2.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "croniter" },
+    { name = "redis" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/39/91/cdb1517255b28fdaa44d0377caa810524e6a38d24373e5ef3911b04e4228/rq-2.8.0.tar.gz", hash = "sha256:dd75b5a19016efd235143058e82fdc5658a0c1e9a76664cc7d02f721c7308a4a", size = 743395, upload-time = "2026-04-17T00:21:13.734Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3c/07/9a8c6ac2440f8e532260adaa3fe4a8f7edfcac4f038f3428e71cb32e13e2/rq-2.8.0-py3-none-any.whl", hash = "sha256:49d87c8d0068b890e83052050ffd18be328339ae00c9c6d5dbf2702eb06107d2", size = 119484, upload-time = "2026-04-17T00:21:11.513Z" },
+]
+
+[[package]]
 name = "ruff"
 version = "0.14.13"
 source = { registry = "https://pypi.org/simple" }
@@ -1154,6 +1206,7 @@ dependencies = [
     { name = "django-environ" },
     { name = "django-ninja" },
     { name = "django-redis" },
+    { name = "django-rq" },
     { name = "gunicorn" },
     { name = "hiredis" },
     { name = "openai" },
@@ -1192,6 +1245,7 @@ requires-dist = [
     { name = "django-environ", specifier = "==0.12.0" },
     { name = "django-ninja", specifier = "==1.5.3" },
     { name = "django-redis", specifier = "==6.0.0" },
+    { name = "django-rq", specifier = "==3.0.0" },
     { name = "gunicorn", specifier = "==23.0.0" },
     { name = "hiredis", specifier = "==3.3.0" },
     { name = "openai", specifier = ">=1.0.0" },

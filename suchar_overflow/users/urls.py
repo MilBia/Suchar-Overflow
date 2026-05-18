@@ -38,6 +38,6 @@ urlpatterns = [
         view=TemplateView.as_view(template_name="registration/signup_done.html"),
         name="signup_done",
     ),
-    path("activate/<uidb64>/<token>/", view=activate_view, name="activate"),
+    path("activate/<uuid:token>/", view=activate_view, name="activate"),
     path("<str:username>/", view=user_detail_view, name="detail"),
 ]

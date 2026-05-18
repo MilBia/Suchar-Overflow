@@ -105,6 +105,9 @@
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'achievements:list' %}">{% trans "Achievements" %}</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'achievements:inbox' %}">{% trans "Inbox" %}</a>
+              </li>
             {% endif %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'about' %}">{% trans "About" %}</a>
@@ -194,47 +197,55 @@
     <div class="toast-container" id="toast-container">
       {% if messages %}
         {% for message in messages %}
-          <div class="toast toast-{{ message.tags }}" role="alert">
-            <div class="toast-header">
-              <strong class="me-auto">
-                {% if 'error' in message.tags %}
-                  {% trans "Error" %}
-                {% elif 'success' in message.tags %}
-                  {% trans "Success" %}
-                {% else %}
-                  {% trans "Notification" %}
-                {% endif %}
-              </strong>
-              <button type="button" class="btn-close" aria-label="Close"></button>
+          {% if "Achievement" in message.message %}
+            <div class="toast toast-{{ message.tags }}"
+                 role="alert"
+                 data-persistent="true">
+            {% else %}
+              <div class="toast toast-{{ message.tags }}" role="alert">
+              {% endif %}
+              <div class="toast-header">
+                <strong class="me-auto">
+                  {% if 'error' in message.tags %}
+                    {% trans "Error" %}
+                  {% elif 'success' in message.tags and "Achievement" in message.message %}
+                    {% trans "Achievement Unlocked" %}
+                  {% elif 'success' in message.tags %}
+                    {% trans "Success" %}
+                  {% else %}
+                    {% trans "Notification" %}
+                  {% endif %}
+                </strong>
+                <button type="button" class="btn-close" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">{{ message }}</div>
             </div>
-            <div class="toast-body">{{ message }}</div>
-          </div>
-        {% endfor %}
-      {% endif %}
-    </div>
+          {% endfor %}
+        {% endif %}
+      </div>
 
-    <!-- Logout Modal -->
-    <div class="modal-overlay" id="logoutModal" hidden>
-      <div class="modal" role="dialog" aria-modal="true">
-        <div class="modal-header">
-          <h5 class="modal-title">{% trans "Confirm Logout" %}</h5>
-          <button type="button" class="btn-close modal-close" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">{% trans "Are you sure you want to log out?" %}</div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary modal-close">{% trans "Cancel" %}</button>
-          <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
-          </form>
+      <!-- Logout Modal -->
+      <div class="modal-overlay" id="logoutModal" hidden>
+        <div class="modal" role="dialog" aria-modal="true">
+          <div class="modal-header">
+            <h5 class="modal-title">{% trans "Confirm Logout" %}</h5>
+            <button type="button" class="btn-close modal-close" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">{% trans "Are you sure you want to log out?" %}</div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary modal-close">{% trans "Cancel" %}</button>
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
 
-    {% block modal %}
-    {% endblock modal %}
-    {% block inline_javascript %}
-    {% endblock inline_javascript %}
-  </body>
+      {% block modal %}
+      {% endblock modal %}
+      {% block inline_javascript %}
+      {% endblock inline_javascript %}
+    </body>
 
-</html>
+  </html>

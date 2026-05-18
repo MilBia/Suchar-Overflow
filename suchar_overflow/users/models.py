@@ -1,9 +1,11 @@
+import datetime
 import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import CharField
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -34,6 +36,31 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"username": self.username})
+
+
+class ActivationToken(models.Model):
+    EXPIRY_HOURS = 72
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="activation_token",
+        verbose_name=_("User"),
+    )
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("Activation Token")
+        verbose_name_plural = _("Activation Tokens")
+
+    def __str__(self):
+        return f"ActivationToken({self.user.username})"
+
+    def is_valid(self):
+        return timezone.now() < self.created_at + datetime.timedelta(
+            hours=self.EXPIRY_HOURS,
+        )
 
 
 class EmailChangeRequest(models.Model):

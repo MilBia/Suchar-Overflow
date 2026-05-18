@@ -6,7 +6,7 @@
 {% trans "To make sure you're not a bot (or a person without a sense of humor), you need to activate your account." %}
 
 {% trans "Click this link before it dries out:" %}
-{{ protocol }}://{{ domain }}{% url 'users:activate' uidb64=uid token=token %}
+{{ protocol }}://{{ domain }}{% url 'users:activate' token=token %}
 
 {% trans "Remember: Drink plenty of water." %}
 

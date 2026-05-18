@@ -1,27 +1,19 @@
 import datetime
 import json
 
-from django.conf import settings
-from django.contrib.auth import get_user_model
+import django_rq
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.mail import send_mail
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models import QuerySet
 from django.db.models.functions import TruncDay
 from django.shortcuts import redirect
 from django.shortcuts import render
-from django.template.loader import render_to_string
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.utils.encoding import force_bytes
-from django.utils.encoding import force_str
 from django.utils.formats import date_format
-from django.utils.http import urlsafe_base64_decode
-from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import DetailView
@@ -34,7 +26,10 @@ from suchar_overflow.users.models import User
 
 from .forms import EmailChangeForm
 from .forms import UserCreationForm
+from .models import ActivationToken
 from .models import EmailChangeRequest
+from .tasks import send_activation_email
+from .tasks import send_email_change_emails
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
@@ -239,25 +234,14 @@ class SignupView(CreateView):
         user.is_active = False
         user.save()
 
-        # Send activation email
-        current_site = (
-            settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else "localhost:8000"
+        activation = ActivationToken.objects.create(user=user)
+        django_rq.enqueue(
+            send_activation_email,
+            user.pk,
+            self.request.get_host(),
+            str(activation.token),
+            "https" if self.request.is_secure() else "http",
         )
-        current_site = self.request.get_host()
-
-        mail_subject = _("Confirm you have a sense of humor (Account Activation)")
-        message = render_to_string(
-            "registration/activation_email.txt",
-            {
-                "user": user,
-                "domain": current_site,
-                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                "token": default_token_generator.make_token(user),
-                "protocol": "https" if self.request.is_secure() else "http",
-            },
-        )
-
-        send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
         return redirect(self.success_url)
 
 
@@ -265,18 +249,21 @@ signup_view = SignupView.as_view()
 
 
 class ActivateAccountView(View):
-    def get(self, request, uidb64, token):
+    def get(self, request, token):
         try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            user = get_user_model().objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
+            activation = ActivationToken.objects.select_related("user").get(token=token)
+        except ActivationToken.DoesNotExist:
+            return render(request, "registration/activation_failed.html")
 
-        if user is not None and default_token_generator.check_token(user, token):
-            user.is_active = True
-            user.save()
-            return render(request, "registration/activation_complete.html")
-        return render(request, "registration/activation_failed.html")
+        if not activation.is_valid():
+            activation.delete()
+            return render(request, "registration/activation_failed.html")
+
+        user = activation.user
+        user.is_active = True
+        user.save()
+        activation.delete()
+        return render(request, "registration/activation_complete.html")
 
 
 activate_view = ActivateAccountView.as_view()
@@ -298,56 +285,25 @@ class EmailChangeInitiateView(LoginRequiredMixin, FormView):
             old_email=user.email,
         )
 
-        # Domains
         current_site = self.request.get_host()
         protocol = "https" if self.request.is_secure() else "http"
 
-        # Send Verification Email (New Address)
         verify_url = reverse(
             "users:email_change_verify",
             kwargs={"token": str(email_request.verification_token)},
         )
-        verify_link = f"{protocol}://{current_site}{verify_url}"
-
-        mail_subject_new = _("Confirm it's you (Email Change)")
-        message_new = render_to_string(
-            "users/email_verify_email.txt",
-            {
-                "user": user,
-                "verify_link": verify_link,
-                "new_email": new_email,
-            },
-        )
-        send_mail(
-            mail_subject_new,
-            message_new,
-            settings.DEFAULT_FROM_EMAIL,
-            [new_email],
-        )
-
-        # Send Notification Email (Old Address) with Revocation Link
         revoke_url = reverse(
             "users:email_change_revoke",
             kwargs={"token": str(email_request.revocation_token)},
         )
-        revoke_link = f"{protocol}://{current_site}{revoke_url}"
 
-        mail_subject_old = _(
-            "Someone wants to change your email address (We hope it's you)",
-        )
-        message_old = render_to_string(
-            "users/email_notify_old_email.txt",
-            {
-                "user": user,
-                "revoke_link": revoke_link,
-                "new_email": new_email,
-            },
-        )
-        send_mail(
-            mail_subject_old,
-            message_old,
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
+        django_rq.enqueue(
+            send_email_change_emails,
+            user.pk,
+            user.email,
+            new_email,
+            f"{protocol}://{current_site}{verify_url}",
+            f"{protocol}://{current_site}{revoke_url}",
         )
 
         return super().form_valid(form)

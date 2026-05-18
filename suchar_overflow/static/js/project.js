@@ -53,19 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Toasts
     const toasts = document.querySelectorAll('.toast');
     toasts.forEach(toast => {
-        // Auto remove after 5s
-        setTimeout(() => {
+        const dismiss = () => {
             toast.classList.add('hiding');
-            toast.addEventListener('transitionend', () => toast.remove());
-        }, 5000);
+            toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+        };
+
+        // Achievement toasts stay until manually closed; others auto-dismiss after 5s
+        if (toast.dataset.persistent !== 'true') {
+            setTimeout(dismiss, 5000);
+        }
 
         // Dismiss button
         const closeBtn = toast.querySelector('.btn-close');
         if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                toast.classList.add('hiding');
-                toast.addEventListener('transitionend', () => toast.remove());
-            });
+            closeBtn.addEventListener('click', dismiss);
         }
     });
 
