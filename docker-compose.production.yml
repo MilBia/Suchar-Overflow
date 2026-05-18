@@ -50,15 +50,10 @@ services:
   redis:
     image: docker.io/redis:7.2
 
-  celeryworker:
+  cron:
     <<: *django
-    image: suchar_overflow_production_celeryworker
-    command: /start-celeryworker
-
-  celerybeat:
-    <<: *django
-    image: suchar_overflow_production_celerybeat
-    command: /start-celerybeat
+    image: suchar_overflow_production_cron
+    command: /start-cron
 
   nginx:
     build:

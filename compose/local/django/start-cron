@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+# Write the crontab: run on the 1st of every month at 00:05 UTC.
+echo "5 0 1 * * root /app/.venv/bin/python /app/manage.py award_periodic --period month >> /proc/1/fd/1 2>&1" > /etc/cron.d/suchar-overflow
+chmod 0644 /etc/cron.d/suchar-overflow
+
+exec cron -f

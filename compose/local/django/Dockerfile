@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg dependencies
   libpq-dev \
   gettext \
-  wait-for-it
+  wait-for-it \
+  cron
 
 # Requirements are installed here to ensure they will be cached.
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -54,12 +55,8 @@ COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
-COPY ./compose/local/django/start-celeryworker /start-celeryworker
-RUN sed -i 's/\r$//g' /start-celeryworker
-RUN chmod +x /start-celeryworker
-
-COPY ./compose/local/django/start-celerybeat /start-celerybeat
-RUN sed -i 's/\r$//g' /start-celerybeat
-RUN chmod +x /start-celerybeat
+COPY ./compose/local/django/start-cron /start-cron
+RUN sed -i 's/\r$//g' /start-cron
+RUN chmod +x /start-cron
 
 ENTRYPOINT ["/entrypoint"]

@@ -31,7 +31,7 @@ Wchodzisz na własną odpowiedzialność (i z butelką wody).
 
 Suchar Overflow to platforma do dzielenia się żartami (sucharami) – z systemem głosowania,
 rankingiem użytkowników, osiągnięciami i statystykami. Projekt wspiera dwa języki
-(polski i angielski) i używa Celery do zadań w tle (np. przyznawanie osiągnięć).
+(polski i angielski) i używa crona do cyklicznych zadań (np. przyznawanie osiągnięć).
 
 ### Główne funkcje
 
@@ -53,8 +53,8 @@ rankingiem użytkowników, osiągnięciami i statystykami. Projekt wspiera dwa j
 | **Framework**    | Django 5.2                                         |
 | **REST API**     | Django Ninja                                       |
 | **Baza danych**  | PostgreSQL 18                                      |
-| **Cache/Broker** | Redis 7                                            |
-| **Task Queue**   | Celery 5.4 + Celery Beat                           |
+| **Cache**        | Redis 7                                            |
+| **Zadania cykliczne** | cron (kontener Docker)                        |
 | **Serwer WSGI** | Gunicorn                                           |
 | **Reverse Proxy** | Traefik 3 (produkcja)                             |
 | **Media Proxy**  | Nginx (produkcja)                                  |
@@ -315,13 +315,12 @@ just manage compilemessages
 ```
 Suchar-Overflow/
 ├── compose/                  # Konfiguracja Docker
-│   ├── local/                #   └─ development (Django, Celery)
+│   ├── local/                #   └─ development (Django, cron)
 │   └── production/           #   └─ produkcja (Django, Nginx, Traefik, Postgres)
 ├── config/                   # Konfiguracja Django
 │   ├── settings/             #   └─ base.py, local.py, production.py, test.py
 │   ├── urls.py               #   └─ główny routing
 │   ├── api.py                #   └─ Django Ninja – rejestracja routerów API
-│   ├── celery_app.py         #   └─ konfiguracja Celery
 │   └── wsgi.py
 ├── suchar_overflow/          # Kod aplikacji
 │   ├── achievements/         #   └─ system osiągnięć (engine, signals, tasks, middleware)

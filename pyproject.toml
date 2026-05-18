@@ -173,7 +173,6 @@ dependencies = [
     "python-slugify==8.0.4",
     "whitenoise==6.11.0",
     "django-ninja==1.5.3",
-    "celery==5.4.0",
     "redis==5.2.1",
     "openai>=1.0.0",
     "polib>=1.2.0",

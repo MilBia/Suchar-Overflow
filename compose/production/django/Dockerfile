@@ -47,6 +47,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   gettext \
   # entrypoint
   wait-for-it \
+  cron \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
@@ -61,13 +62,9 @@ COPY --chown=django:django ./compose/production/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
-COPY --chown=django:django ./compose/production/django/start-celeryworker /start-celeryworker
-RUN sed -i 's/\r$//g' /start-celeryworker
-RUN chmod +x /start-celeryworker
-
-COPY --chown=django:django ./compose/production/django/start-celerybeat /start-celerybeat
-RUN sed -i 's/\r$//g' /start-celerybeat
-RUN chmod +x /start-celerybeat
+COPY --chown=django:django ./compose/production/django/start-cron /start-cron
+RUN sed -i 's/\r$//g' /start-cron
+RUN chmod +x /start-cron
 
 # Copy the application from the builder
 COPY --from=python-build-stage --chown=django:django ${APP_HOME} ${APP_HOME}

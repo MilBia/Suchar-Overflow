@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-from celery import shared_task
 from django.db.models import Count
 from django.utils import timezone
 
@@ -10,7 +9,6 @@ from .models import Achievement
 from .models import UserAchievement
 
 
-@shared_task
 def award_periodic_achievements_task():
     # Comedian of the month logic.
     # Get all PERIODIC achievements
