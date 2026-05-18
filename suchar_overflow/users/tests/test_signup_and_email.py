@@ -8,13 +8,11 @@ from http import HTTPStatus
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
 
+from suchar_overflow.users.models import ActivationToken
 from suchar_overflow.users.models import EmailChangeRequest
 
 User = get_user_model()
@@ -34,10 +32,13 @@ def make_user(username, email=None, password="password", *, is_active=True):  # 
     )
 
 
-def make_uid_token(user):
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
-    token = default_token_generator.make_token(user)
-    return uid, token
+@pytest.fixture(autouse=True)
+def sync_rq(monkeypatch):
+    """Run RQ jobs synchronously so emails land in mail.outbox during tests."""
+    monkeypatch.setattr(
+        "django_rq.enqueue",
+        lambda func, *args, **kwargs: func(*args, **kwargs),
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -65,6 +66,21 @@ def test_signup_creates_inactive_user(client):
     assert response.status_code == HTTPStatus.FOUND
     user = User.objects.get(username="newuser")
     assert not user.is_active
+
+
+@pytest.mark.django_db
+def test_signup_creates_activation_token(client):
+    client.post(
+        reverse("users:signup"),
+        {
+            "username": "newuser",
+            "email": "newuser@example.com",
+            "password1": "Str0ngP@ssword!",
+            "password2": "Str0ngP@ssword!",
+        },
+    )
+    user = User.objects.get(username="newuser")
+    assert ActivationToken.objects.filter(user=user).exists()
 
 
 @pytest.mark.django_db
@@ -137,10 +153,10 @@ def test_signup_duplicate_email_shows_error(client):
 @pytest.mark.django_db
 def test_activate_valid_token_activates_user(client):
     user = make_user("inactive", is_active=False)
-    uid, token = make_uid_token(user)
+    token = ActivationToken.objects.create(user=user)
 
     response = client.get(
-        reverse("users:activate", kwargs={"uidb64": uid, "token": token}),
+        reverse("users:activate", kwargs={"token": token.token}),
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -149,12 +165,21 @@ def test_activate_valid_token_activates_user(client):
 
 
 @pytest.mark.django_db
+def test_activate_valid_token_is_deleted_after_use(client):
+    user = make_user("inactive", is_active=False)
+    token = ActivationToken.objects.create(user=user)
+
+    client.get(reverse("users:activate", kwargs={"token": token.token}))
+
+    assert not ActivationToken.objects.filter(pk=token.pk).exists()
+
+
+@pytest.mark.django_db
 def test_activate_invalid_token_does_not_activate(client):
     user = make_user("inactive", is_active=False)
-    uid, _ = make_uid_token(user)
 
     response = client.get(
-        reverse("users:activate", kwargs={"uidb64": uid, "token": "bad-token"}),
+        reverse("users:activate", kwargs={"token": uuid.uuid4()}),
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -163,14 +188,23 @@ def test_activate_invalid_token_does_not_activate(client):
 
 
 @pytest.mark.django_db
-def test_activate_invalid_uid_does_not_crash(client):
-    response = client.get(
-        reverse(
-            "users:activate",
-            kwargs={"uidb64": "not-valid-base64", "token": "token"},
-        ),
+def test_activate_expired_token_does_not_activate(client):
+    user = make_user("inactive", is_active=False)
+    token = ActivationToken.objects.create(user=user)
+    # Backdate beyond the 72-hour expiry window.
+    ActivationToken.objects.filter(pk=token.pk).update(
+        created_at=timezone.now() - datetime.timedelta(hours=73),
     )
+
+    response = client.get(
+        reverse("users:activate", kwargs={"token": token.token}),
+    )
+
     assert response.status_code == HTTPStatus.OK
+    user.refresh_from_db()
+    assert not user.is_active
+    # Expired token must be cleaned up.
+    assert not ActivationToken.objects.filter(pk=token.pk).exists()
 
 
 # ---------------------------------------------------------------------------
@@ -208,7 +242,7 @@ def test_email_change_creates_request_and_sends_emails(client):
         user=user,
         new_email="new@example.com",
     ).exists()
-    # Two emails: one to new address (verify), one to old (revoke notification)
+    # Two emails: one to new address (verify), one to old (revoke notification).
     assert len(mail.outbox) == 2  # noqa: PLR2004
     recipients = {msg.to[0] for msg in mail.outbox}
     assert "new@example.com" in recipients
@@ -267,7 +301,6 @@ def test_email_change_confirm_expired_token(client):
         new_email="new@example.com",
         old_email="old@example.com",
     )
-    # Backdate the request by more than 24 hours
     EmailChangeRequest.objects.filter(pk=email_req.pk).update(
         created_at=timezone.now() - datetime.timedelta(hours=25),
     )
@@ -282,7 +315,7 @@ def test_email_change_confirm_expired_token(client):
 
     assert response.status_code == HTTPStatus.OK
     user.refresh_from_db()
-    assert user.email == "old@example.com"  # unchanged
+    assert user.email == "old@example.com"
     email_req.refresh_from_db()
     assert email_req.status == EmailChangeRequest.Status.REVOKED
 
@@ -306,7 +339,6 @@ def test_email_change_confirm_already_used_token(client):
     )
 
     assert response.status_code == HTTPStatus.OK
-    # Email should NOT have changed again (already verified)
     user.refresh_from_db()
     assert user.email == "old@example.com"
 
@@ -331,7 +363,6 @@ def test_email_change_confirm_rejects_duplicate_email(client):
         new_email="new@example.com",
         old_email="old@example.com",
     )
-    # Another user grabs the email in the meantime
     make_user("other", email="new@example.com")
     client.force_login(user)
 
@@ -344,7 +375,7 @@ def test_email_change_confirm_rejects_duplicate_email(client):
 
     assert response.status_code == HTTPStatus.OK
     user.refresh_from_db()
-    assert user.email == "old@example.com"  # unchanged
+    assert user.email == "old@example.com"
 
 
 # ---------------------------------------------------------------------------
@@ -374,7 +405,7 @@ def test_email_change_revoke_pending_cancels(client):
     email_req.refresh_from_db()
     assert email_req.status == EmailChangeRequest.Status.REVOKED
     user.refresh_from_db()
-    assert user.email == "old@example.com"  # unchanged (was never applied)
+    assert user.email == "old@example.com"
 
 
 @pytest.mark.django_db
