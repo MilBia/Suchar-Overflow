@@ -264,11 +264,11 @@ CACHES = {
     },
 }
 
-RQ_QUEUES = {
-    "default": {
-        "USE_REDIS_CACHE": "default",
-    },
-}
+_rq_queue: dict = {"URL": REDIS_URL}
+if REDIS_SSL:
+    _rq_queue["SSL_CERT_REQS"] = None
+
+RQ_QUEUES = {"default": _rq_queue}
 
 # Your stuff...
 # ------------------------------------------------------------------------------
