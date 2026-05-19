@@ -1,0 +1,1374 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: config/settings/base.py:34
+msgid "Polish"
+msgstr "Lehçe"
+
+#: config/settings/base.py:35
+msgid "English"
+msgstr "İngilizce"
+
+#: suchar_overflow/achievements/apps.py:8
+#: suchar_overflow/achievements/models.py:84
+#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/users/user_detail.html:34
+msgid "Achievements"
+msgstr "Başarılar"
+
+#: suchar_overflow/achievements/middleware.py:29
+#, python-format
+msgid "Achievement Unlocked: %(name)s!"
+msgstr "Başarı Açıldı: %(name)s!"
+
+#: suchar_overflow/achievements/models.py:8
+msgid "Lifetime"
+msgstr "Ömür Boyu"
+
+#: suchar_overflow/achievements/models.py:9
+msgid "Periodic"
+msgstr "Periyodik"
+
+#: suchar_overflow/achievements/models.py:10
+msgid "Streak"
+msgstr "Seri"
+
+#: suchar_overflow/achievements/models.py:13
+msgid "Suchar Posted"
+msgstr "Suchar tarafından yayınlandı"
+
+#: suchar_overflow/achievements/models.py:14
+msgid "Vote Received"
+msgstr "Oy Alındı"
+
+#: suchar_overflow/achievements/models.py:15
+msgid "Vote Cast"
+msgstr "Oy Verildi"
+
+#: suchar_overflow/achievements/models.py:18
+msgid "Suchar Count"
+msgstr "Suchar Adedi"
+
+#: suchar_overflow/achievements/models.py:19
+msgid "Funny Vote Count"
+msgstr "Komik Oylama Sayısı"
+
+#: suchar_overflow/achievements/models.py:20
+msgid "Dry Vote Count"
+msgstr "Geçerli Oy Sayısı"
+
+#: suchar_overflow/achievements/models.py:21
+msgid "Vote Cast Count"
+msgstr "Oy Sayısı"
+
+#: suchar_overflow/achievements/models.py:22
+msgid "Total Score"
+msgstr "Toplam Puan"
+
+#: suchar_overflow/achievements/models.py:23
+msgid "Night Owl"
+msgstr "Gece Kuşu"
+
+#: suchar_overflow/achievements/models.py:24
+msgid "Login Streak"
+msgstr "Giriş Serisi"
+
+#: suchar_overflow/achievements/models.py:25
+msgid "Polarizer"
+msgstr "Polarize Filtre"
+
+#: suchar_overflow/achievements/models.py:28
+msgid "None"
+msgstr "Yok"
+
+#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
+#: suchar_overflow/templates/achievements/list.html:42
+#: suchar_overflow/templates/achievements/list.html:82
+msgid "Bronze"
+msgstr "Bronz"
+
+#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
+#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:84
+msgid "Silver"
+msgstr "Gümüş"
+
+#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
+#: suchar_overflow/templates/achievements/list.html:46
+#: suchar_overflow/templates/achievements/list.html:86
+msgid "Gold"
+msgstr "Altın"
+
+#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
+#: suchar_overflow/templates/achievements/list.html:48
+#: suchar_overflow/templates/achievements/list.html:88
+msgid "Platinum"
+msgstr "Platin"
+
+#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
+#: suchar_overflow/templates/achievements/list.html:50
+#: suchar_overflow/templates/achievements/list.html:90
+msgid "Diamond"
+msgstr "Elmas"
+
+#: suchar_overflow/achievements/models.py:35
+msgid "Name"
+msgstr "Ad"
+
+#: suchar_overflow/achievements/models.py:36
+msgid "Slug"
+msgstr "Takma Ad"
+
+#: suchar_overflow/achievements/models.py:37
+msgid "Description"
+msgstr "Açıklama"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Icon Content"
+msgstr "Simge İçeriği"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Raw SVG XML"
+msgstr "Ham SVG XML"
+
+#: suchar_overflow/achievements/models.py:44
+msgid "Category"
+msgstr "Kategori"
+
+#: suchar_overflow/achievements/models.py:50
+msgid "Event Type"
+msgstr "Etkinlik Türü"
+
+#: suchar_overflow/achievements/models.py:56
+msgid "Metric"
+msgstr "Metrik"
+
+#: suchar_overflow/achievements/models.py:61
+msgid "Threshold"
+msgstr "Eşik Değeri"
+
+#: suchar_overflow/achievements/models.py:65
+msgid "Theme"
+msgstr "Tema"
+
+#: suchar_overflow/achievements/models.py:68
+msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
+msgstr "Örneğin, \"Noel\", \"Programlama\". Genel için boş bırakın."
+
+#: suchar_overflow/achievements/models.py:71
+msgid "Tier"
+msgstr "Seviye"
+
+#: suchar_overflow/achievements/models.py:74
+msgid "Difficulty/Rarity tier of the achievement"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:77
+msgid "Secret Achievement"
+msgstr "Gizli Başarı"
+
+#: suchar_overflow/achievements/models.py:79
+msgid "If checked, name and description are hidden until unlocked."
+msgstr "İşaretlendiğinde, ad ve açıklama kilidi açılana kadar gizlenir."
+
+#: suchar_overflow/achievements/models.py:83
+msgid "Achievement"
+msgstr "Başarı"
+
+#: suchar_overflow/achievements/models.py:102
+msgid "Seen by user"
+msgstr "Kullanıcı tarafından görüntülendi"
+
+#: suchar_overflow/achievements/models.py:105
+msgid "User Achievement"
+msgstr "Kullanıcı Başarısı"
+
+#: suchar_overflow/achievements/models.py:106
+msgid "User Achievements"
+msgstr "Kullanıcı Başarıları"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "Metin"
+
+#: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:65
+#: suchar_overflow/templates/users/user_detail.html:217
+msgid "Votes"
+msgstr "Oylar"
+
+#: suchar_overflow/suchary/apps.py:7
+msgid "Suchary"
+msgstr "Suchary"
+
+#: suchar_overflow/suchary/forms.py:15
+msgid ""
+"Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
+"programowanie)."
+msgstr ""
+"Virgül veya boşluklarla ayrılmış etiketler girin (örneğin, kurabiye, IT, "
+"programlama)."
+
+#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+msgid "Publication Date"
+msgstr "Yayınlanma Tarihi"
+
+#: suchar_overflow/suchary/forms.py:35
+msgid "Leave empty to publish immediately."
+msgstr "Hemen yayınlamak için boş bırakın."
+
+#: suchar_overflow/suchary/forms.py:57
+msgid "Publication date cannot be in the past."
+msgstr "Yayın tarihi geçmişte olamaz."
+
+#: suchar_overflow/suchary/models.py:16
+msgid "Suchar text"
+msgstr "Suchar metni"
+
+#: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
+#: suchar_overflow/templates/403_csrf.html:6
+#: suchar_overflow/templates/403_csrf.html:9
+msgid "Forbidden (403)"
+msgstr "Erişim Engellendi (403)"
+
+#: suchar_overflow/templates/403.html:14
+#: suchar_overflow/templates/403_csrf.html:14
+msgid "You're not allowed to access this page."
+msgstr "Bu sayfaya erişiminiz yok."
+
+#: suchar_overflow/templates/404.html:6 suchar_overflow/templates/404.html:9
+msgid "Page not found"
+msgstr "Sayfa bulunamadı"
+
+#: suchar_overflow/templates/404.html:14
+msgid "This is not the page you were looking for."
+msgstr "Aradığınız sayfayı bulamadık."
+
+#: suchar_overflow/templates/500.html:6
+msgid "Server Error"
+msgstr "Sunucu Hatası"
+
+#: suchar_overflow/templates/500.html:9
+msgid "Ooops!!! 500"
+msgstr "Hata! 500"
+
+#: suchar_overflow/templates/500.html:10
+msgid "Looks like something went wrong!"
+msgstr "Bir şeyler ters gitti gibi görünüyor!"
+
+#: suchar_overflow/templates/500.html:12
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+"Bu hataları otomatik olarak takip ediyoruz, ancak sorun devam ederse bizimle"
+" iletişime geçmekten çekinmeyin. Bu arada, sayfayı yenileyerek deneyin."
+
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+msgid "Notification Inbox"
+msgstr "Bildirim Kutusu"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr "Kazandığınız tüm başarılar, en yenilerden başlayarak listelenir."
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "Ortak"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, python-format
+msgid "Unlocked: %(date)s"
+msgstr "Açıldı: %(date)s"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+msgid "No achievements yet — go post some jokes!"
+msgstr "Henüz bir başarı yok - hadi birkaç şaka paylaşın!"
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+msgid "Browse achievements"
+msgstr "Başarıları Gözden Geçir"
+
+#: suchar_overflow/templates/achievements/list.html:6
+msgid "My Achievements"
+msgstr "Başarılarım"
+
+#: suchar_overflow/templates/achievements/list.html:17
+#: suchar_overflow/templates/stats/leaderboard.html:110
+msgid "Hall of Fame"
+msgstr "Ünlülerin Galerisi"
+
+#: suchar_overflow/templates/achievements/list.html:19
+msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
+msgstr ""
+"Suchar Overflow'dan aldığınız rozetler, madalyalar ve utanç verici sırlar."
+
+#: suchar_overflow/templates/achievements/list.html:74
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr "Başarı kilitli. Gizemini oyun oynayarak keşfedin!"
+
+#: suchar_overflow/templates/base.html:17
+#: suchar_overflow/templates/base.html:24
+msgid "Joke aggregator with critically low humidity levels."
+msgstr "Kritik derecede düşük nem seviyelerine sahip bir espri toplama aracı."
+
+#: suchar_overflow/templates/base.html:96
+msgid "Home"
+msgstr "Anasayfa"
+
+#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/suchary/suchar_list.html:12
+#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/users/admin.py:68
+msgid "Jokes"
+msgstr "Şakalar"
+
+#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/stats/leaderboard.html:6
+#: suchar_overflow/templates/stats/leaderboard.html:12
+msgid "Leaderboard"
+msgstr "Lider Tablosu"
+
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "Gelen Kutusu"
+
+#: suchar_overflow/templates/base.html:113
+msgid "About"
+msgstr "Hakkında"
+
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
+msgid "Log Out"
+msgstr "Çıkış Yap"
+
+#: suchar_overflow/templates/base.html:159
+msgid "Log In"
+msgstr "Giriş Yap"
+
+#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/registration/signup.html:6
+#: suchar_overflow/templates/registration/signup.html:12
+#: suchar_overflow/templates/registration/signup.html:23
+msgid "Sign Up"
+msgstr "Kaydol"
+
+#: suchar_overflow/templates/base.html:170
+msgid "Default content."
+msgstr "Varsayılan içerik."
+
+#: suchar_overflow/templates/base.html:179
+msgid "All rights reserved (but jokes stolen)."
+msgstr "Tüm hakları saklıdır (ancak şakalar çalınmıştır)."
+
+#: suchar_overflow/templates/base.html:188
+msgid "Report a Bug"
+msgstr "Bir Hata Bildir"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/users/email_change_failed.html:6
+msgid "Error"
+msgstr "Hata"
+
+#: suchar_overflow/templates/base.html:212
+msgid "Achievement Unlocked"
+msgstr "Başarı Açıldı"
+
+#: suchar_overflow/templates/base.html:214
+msgid "Success"
+msgstr "Başarılı"
+
+#: suchar_overflow/templates/base.html:216
+msgid "Notification"
+msgstr "Bildirim"
+
+#: suchar_overflow/templates/base.html:231
+msgid "Confirm Logout"
+msgstr "Çıkışınızı Onaylayın"
+
+#: suchar_overflow/templates/base.html:234
+msgid "Are you sure you want to log out?"
+msgstr "Çıkış yapmak istediğinizden emin misiniz?"
+
+#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/users/user_form.html:35
+msgid "Cancel"
+msgstr "İptal"
+
+#: suchar_overflow/templates/pages/about.html:6
+msgid "About Project - Suchar Overflow"
+msgstr "Proje Hakkında - Suchar Overflow"
+
+#: suchar_overflow/templates/pages/about.html:13
+msgid "About Project"
+msgstr "Proje Hakkında"
+
+#: suchar_overflow/templates/pages/about.html:14
+msgid "Why do we do this? Because someone had to."
+msgstr "Neden bunu yapıyoruz? Çünkü birinin yapması gerekiyordu."
+
+#: suchar_overflow/templates/pages/about.html:18
+msgid "Mission"
+msgstr "Görev"
+
+#: suchar_overflow/templates/pages/about.html:20
+msgid ""
+"The goal of Suchar Overflow is to gather the largest collection of jokes "
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
+msgstr ""
+"Suchar Overflow'un amacı, alıcıya fiziksel acı veren en geniş şaka "
+"koleksiyonunu bir araya getirmektir. İyi bir kuru şakanın, ardından rahatsız"
+" edici sessizlik ve arka planda çıyan sesleri gelmesi gerektiğine "
+"inanıyoruz."
+
+#: suchar_overflow/templates/pages/about.html:22
+msgid "Technology"
+msgstr "Teknoloji"
+
+#: suchar_overflow/templates/pages/about.html:24
+msgid ""
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr ""
+"Bu site, en son teknolojilerle (Django + Özel CSS) oluşturulmuştur ve bu "
+"sayede komik içeriklerin hızlı ve güvenilir bir şekilde ekranınıza "
+"ulaştırılması sağlanmaktadır."
+
+#: suchar_overflow/templates/pages/home.html:8
+msgid "Dry Bread for the Horse"
+msgstr "At için Kuru Ekmek"
+
+#: suchar_overflow/templates/pages/home.html:10
+msgid ""
+"Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
+"you need a drink."
+msgstr ""
+
+#: suchar_overflow/templates/pages/home.html:11
+msgid "Vote for the best jokes, add your own, and become an office legend."
+msgstr ""
+"En iyi şakaları oylayın, kendi şakalarınızı ekleyin ve ofiste bir efsane "
+"olun."
+
+#: suchar_overflow/templates/pages/home.html:15
+msgid "Browse Jokes"
+msgstr "Şakaları Gözden Geçir"
+
+#: suchar_overflow/templates/pages/home.html:17
+msgid "Join Us"
+msgstr "Bize Katılın"
+
+#: suchar_overflow/templates/pages/home.html:31
+msgid "Vote"
+msgstr "Oy Ver"
+
+#: suchar_overflow/templates/pages/home.html:32
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr ""
+"Diğer kullanıcıların şakalarını değerlendirin. Neyin komik olduğunu (ve "
+"neyin acınası olduğunu) belirleyin."
+
+#: suchar_overflow/templates/pages/home.html:39
+#: suchar_overflow/templates/suchary/suchar_list.html:68
+msgid "Add"
+msgstr "Ekle"
+
+#: suchar_overflow/templates/pages/home.html:40
+msgid "Share your thoughts with the world. Don't be shy."
+msgstr "Düşüncelerinizi dünyayla paylaşın. Utanmayın."
+
+#: suchar_overflow/templates/pages/home.html:47
+msgid "Laugh (optional)"
+msgstr "Gülmek (isteğe bağlı)"
+
+#: suchar_overflow/templates/pages/home.html:48
+msgid "We guarantee a pity smile or your money back (the site is free)."
+msgstr ""
+"Size üzgün bir gülümseme garantili veya paranızı iade ediyoruz (site "
+"ücretsizdir)."
+
+#: suchar_overflow/templates/registration/activation_complete.html:6
+msgid "Activation Complete"
+msgstr "Aktivasyon Tamamlandı"
+
+#: suchar_overflow/templates/registration/activation_complete.html:23
+msgid "Account Activated!"
+msgstr "Hesap Aktif Oldu!"
+
+#: suchar_overflow/templates/registration/activation_complete.html:25
+msgid ""
+"Your account has been activated successfully. You can now log in and start "
+"using Suchar Overflow."
+msgstr ""
+"Hesabınız başarıyla etkinleştirildi. Artık giriş yapabilir ve Suchar "
+"Overflow'ı kullanmaya başlayabilirsiniz."
+
+#: suchar_overflow/templates/registration/activation_complete.html:28
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
+msgid "Log in"
+msgstr "Giriş Yap"
+
+#: suchar_overflow/templates/registration/activation_email.txt:3
+#: suchar_overflow/templates/users/email_notify_old_email.txt:3
+#: suchar_overflow/templates/users/email_verify_email.txt:3
+#, python-format
+msgid "Hello %(username)s!"
+msgstr "Merhaba %(username)s!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:5
+msgid ""
+"Welcome to Suchar Overflow - a place where air humidity drops below zero."
+msgstr ""
+"Suchar Overflow'a hoş geldiniz – burada havanın nem oranı sıfırın altına "
+"düşüyor."
+
+#: suchar_overflow/templates/registration/activation_email.txt:6
+msgid ""
+"To make sure you're not a bot (or a person without a sense of humor), you "
+"need to activate your account."
+msgstr ""
+"Bir bot olmadığınızdan (veya mizah anlayışı olmayan bir kişi olmadığınızdan)"
+" emin olmak için, hesabınızı etkinleştirmeniz gerekiyor."
+
+#: suchar_overflow/templates/registration/activation_email.txt:8
+msgid "Click this link before it dries out:"
+msgstr "Kurumadan önce bu bağlantıya tıklayın:"
+
+#: suchar_overflow/templates/registration/activation_email.txt:11
+msgid "Remember: Drink plenty of water."
+msgstr "Unutmayın: Bol su için."
+
+#: suchar_overflow/templates/registration/activation_email.txt:13
+msgid "The Suchar Overflow Team"
+msgstr "Suchar Overflow Ekibi"
+
+#: suchar_overflow/templates/registration/activation_failed.html:6
+#: suchar_overflow/templates/registration/activation_failed.html:24
+msgid "Activation Failed"
+msgstr "Etkinleştirme Başarısız Oldu"
+
+#: suchar_overflow/templates/registration/activation_failed.html:26
+msgid ""
+"The activation link is invalid or has expired. Please try registering again "
+"or contact support."
+msgstr ""
+"Aktivasyon bağlantısı geçersiz veya süresi dolmuştur. Lütfen tekrar kayıt "
+"olmaya çalışın veya destek ile iletişime geçin."
+
+#: suchar_overflow/templates/registration/activation_failed.html:29
+msgid "Sign Up Again"
+msgstr "Tekrar Kaydolun"
+
+#: suchar_overflow/templates/registration/activation_failed.html:30
+#: suchar_overflow/templates/registration/signup_done.html:28
+msgid "Back to Home"
+msgstr "Ana sayfaya dön"
+
+#: suchar_overflow/templates/registration/login.html:6
+#: suchar_overflow/templates/registration/login.html:12
+#: suchar_overflow/templates/registration/login.html:23
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Sign In"
+msgstr "Giriş Yap"
+
+#: suchar_overflow/templates/registration/login.html:26
+msgid "Forgot Password?"
+msgstr "Şifrenizi mi unuttunuz?"
+
+#: suchar_overflow/templates/registration/password_change_done.html:6
+#: suchar_overflow/templates/registration/password_change_done.html:12
+msgid "Password Changed"
+msgstr "Şifre Değiştirildi"
+
+#: suchar_overflow/templates/registration/password_change_done.html:13
+msgid "Your password was changed successfully."
+msgstr "Parolanız başarıyla değiştirildi."
+
+#: suchar_overflow/templates/registration/password_change_done.html:15
+msgid "Back to Profile"
+msgstr "Profili Görüntüle"
+
+#: suchar_overflow/templates/registration/password_change_form.html:6
+#: suchar_overflow/templates/registration/password_change_form.html:12
+#: suchar_overflow/templates/registration/password_change_form.html:18
+#: suchar_overflow/templates/users/base_dashboard.html:42
+msgid "Change Password"
+msgstr "Şifreyi Değiştir"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:6
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
+msgid "Password reset successful"
+msgstr "Şifre sıfırlama başarılı oldu"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Şifreniz ayarlandı. Artık oturum açabilirsiniz."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:6
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password"
+msgstr "Yeni bir şifre belirleyin"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Lütfen yeni şifrenizi iki kez girin, böylece doğru yazdığınızdan emin "
+"olabiliriz."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:20
+msgid "Change password"
+msgstr "Şifreyi değiştir"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"Şifre sıfırlama bağlantısı geçersiz, çünkü daha önce kullanılmış olabilir. "
+"Lütfen yeni bir şifre sıfırlama isteği gönderin."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:6
+#: suchar_overflow/templates/registration/password_reset_done.html:12
+msgid "Password Reset Sent"
+msgstr "Şifre sıfırlama isteği gönderildi."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "Gelen kutunuzu kontrol edin"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"Eğer girdiğiniz e-posta adresiyle bir hesap varsa, şifrenizi ayarlamak için "
+"size talimatlar içeren bir e-posta gönderdik. Kısa süre içinde almanız "
+"gerekir."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:20
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"E-posta almadıysanız, lütfen kayıt olduğunuz adresi doğru girdiğinizden emin"
+" olun ve spam klasörünüzü kontrol edin."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr ""
+"Bu e-postayı, kullanıcı hesabınız için şifre sıfırlama talebinde "
+"bulunduğunuz için alıyorsunuz."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "Lütfen aşağıdaki sayfaya gidin ve yeni bir şifre seçin:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "Kullanıcı adınızı unuttuysanız:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "Sitemizi kullandığınız için teşekkür ederiz!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr "Bu"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr "ekip"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:6
+#: suchar_overflow/templates/registration/password_reset_form.html:12
+msgid "Password Reset"
+msgstr "Şifre Sıfırlama"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"Şifrenizi mi unuttunuz? Lütfen aşağıdaki e-posta adresinizi girin ve size "
+"yeni bir şifre oluşturma talimatlarını göndereceğiz."
+
+#: suchar_overflow/templates/registration/password_reset_form.html:22
+msgid "Reset my password"
+msgstr "Şifremi sıfırla"
+
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Already have an account?"
+msgstr "Zaten bir hesabınız var mı?"
+
+#: suchar_overflow/templates/registration/signup_done.html:6
+msgid "Confirmation Sent"
+msgstr "Onay E-postası Gönderildi"
+
+#: suchar_overflow/templates/registration/signup_done.html:25
+msgid ""
+"We have sent you an email to confirm your registration. Please check your "
+"inbox and click the link to activate your account."
+msgstr ""
+"Kaydınızı doğrulamak için size bir e-posta gönderdik. Lütfen gelen kutunuzu "
+"kontrol edin ve hesabınızı etkinleştirmek için bağlantıya tıklayın."
+
+#: suchar_overflow/templates/stats/leaderboard.html:13
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr "Topluluğumuzun yarattığı en iyiyi (ve en komik olanları) kutlayalım."
+
+#: suchar_overflow/templates/stats/leaderboard.html:19
+msgid "Activity (Last 30 Days)"
+msgstr "Aktivite (Son 30 Gün)"
+
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "Genel"
+
+#: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Funny"
+msgstr "Komik"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:128
+#: suchar_overflow/templates/suchary/suchar_list.html:131
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Dry"
+msgstr "Kuru"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+msgid "Most Active Authors"
+msgstr "En Aktif Yazarlar"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
+msgid "jokes"
+msgstr "espriler"
+
+#: suchar_overflow/templates/stats/leaderboard.html:99
+msgid "No data."
+msgstr "Veri yok."
+
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+msgid "No jokes."
+msgstr "Şaka yok."
+
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr "Komedi Kralı"
+
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "Hiç komik veri yok."
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "En Komik Şakalar"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "Kuraklığın Efendileri"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "Kuru veri yok."
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "En İyi Kuru Espri Şakaları"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
+msgid "New Jokes"
+msgstr "Yeni Şakalar"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:6
+msgid "Too Late!"
+msgstr "Çok Geç!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:13
+msgid "The ship has sailed!"
+msgstr "Çoktan geçti!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:15
+msgid ""
+"This joke has already been published. You can't polish a diamond (or a dry "
+"biscuit) once it's been served."
+msgstr ""
+"Bu espri zaten yayınlanmış. Bir elması (veya kuru bir bisküviyi) servis "
+"edildikten sonra parlatamazsınız."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:21
+msgid "Time creates jokes, but it also seals them."
+msgstr "Zaman şakalar yaratır, ancak aynı zamanda onları da mühürler."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:23
+msgid "Ancient Suchar Proverb"
+msgstr "Antik Suchar Atasözü"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:29
+msgid "Back to Jokes"
+msgstr "Şakalara Geri Dön"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:8
+#: suchar_overflow/templates/suchary/suchar_form.html:29
+msgid "Add Joke"
+msgstr "Şaka Ekle"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:30
+msgid "Shine with humor."
+msgstr "Mizahla parlayın."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:38
+msgid "Joke Content"
+msgstr "Şaka İçeriği"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:43
+msgid "Why did the chicken cross the road?"
+msgstr "Tavuk neden yola geçti?"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:46
+msgid "Remember, the drier the better."
+msgstr "Unutmayın, ne kadar kuru olursa o kadar iyi."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:50
+msgid "Tags"
+msgstr "Etiketler"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:55
+msgid "e.g. it, programming, school"
+msgstr "örn. bilgisayar, programlama, okul"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:62
+msgid "Separate with commas."
+msgstr "Virgülle ayırın."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:70
+msgid "Schedule for later"
+msgstr "Daha sonra planla"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:79
+msgid "Select date and time..."
+msgstr "Tarih ve saati seçin..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:88
+msgid "Publish"
+msgstr "Yayınla"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:99
+msgid "Live Preview"
+msgstr "Canlı Önizleme"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:109
+msgid "Now"
+msgstr "Şimdi"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:116
+msgid "Your joke content will appear here..."
+msgstr "Şaka içeriğiniz burada görüntülenecektir..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:149
+msgid "This is how your joke will look on the main list."
+msgstr "Şakanız, ana listede böyle görünecektir."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:13
+msgid "The dryest jokes on the internet."
+msgstr "İnternetteki en komik şakalar."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:28
+msgid "Search..."
+msgstr "Ara..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:43
+#: suchar_overflow/templates/suchary/suchar_list.html:58
+msgid "Top"
+msgstr "Üst"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:45
+#: suchar_overflow/templates/suchary/suchar_list.html:53
+msgid "Newest"
+msgstr "En Yeni"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:85
+msgid "Scheduled"
+msgstr "Planlanmış"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:95
+#: suchar_overflow/templates/users/user_detail.html:194
+msgid "Edit"
+msgstr "Düzenle"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:139
+msgid "So dry here..."
+msgstr "Burası çok kurak..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:140
+msgid "Be the hero we need and add the first joke."
+msgstr "Bizim ihtiyacımız olan kahraman olun ve ilk espriyi ekleyin."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:158
+msgid "Previous"
+msgstr "Önceki"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:182
+msgid "Next"
+msgstr "Sonraki"
+
+#: suchar_overflow/templates/users/base_dashboard.html:17
+msgid "Your Account"
+msgstr "Hesabınız"
+
+#: suchar_overflow/templates/users/base_dashboard.html:22
+msgid "Profile"
+msgstr "Profil"
+
+#: suchar_overflow/templates/users/base_dashboard.html:27
+#: suchar_overflow/templates/users/user_form.html:6
+#: suchar_overflow/templates/users/user_form.html:11
+msgid "Edit Profile"
+msgstr "Profili Düzenle"
+
+#: suchar_overflow/templates/users/base_dashboard.html:37
+msgid "Security"
+msgstr "Güvenlik"
+
+#: suchar_overflow/templates/users/email_change_complete.html:6
+msgid "Email Changed"
+msgstr "E-posta Adresi Değiştirildi"
+
+#: suchar_overflow/templates/users/email_change_complete.html:23
+msgid "It worked!"
+msgstr "Başarılı!"
+
+#: suchar_overflow/templates/users/email_change_complete.html:25
+msgid ""
+"Your email address has been changed. You can now sleep peacefully (or not)."
+msgstr ""
+"E-posta adresiniz değiştirildi. Artık huzur içinde uyuyabilirsiniz (ya da "
+"uyamazsınız)."
+
+#: suchar_overflow/templates/users/email_change_complete.html:28
+msgid "Back to settings"
+msgstr "Ayarlara geri dön"
+
+#: suchar_overflow/templates/users/email_change_done.html:6
+msgid "Email Sent"
+msgstr "E-posta Gönderildi"
+
+#: suchar_overflow/templates/users/email_change_done.html:23
+msgid "Check both inboxes!"
+msgstr "Her iki gelen kutusunu da kontrol edin!"
+
+#: suchar_overflow/templates/users/email_change_done.html:25
+msgid ""
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"          <br />\n"
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+msgstr ""
+"Aktivasyon bağlantısı içeren bir mesajı <strong>YENİ</strong> adresinize gönderdik.\n"
+"          <br />\n"
+"          Ayrıca, gerçekten siz olduğunuzu bilmeniz için <strong>ESKİ</strong> adresinize de bir uyarı gönderdik."
+
+#: suchar_overflow/templates/users/email_change_done.html:30
+msgid ""
+"If you don't click the link, nothing will change. Your account will remain "
+"as dry as our jokes."
+msgstr ""
+"Eğer bağlantıya tıklamazsanız, hiçbir şey değişmeyecektir. Hesabınız, "
+"şakalarımız kadar kuru kalacaktır."
+
+#: suchar_overflow/templates/users/email_change_done.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:43
+msgid "Back to profile"
+msgstr "Profile'a geri dön"
+
+#: suchar_overflow/templates/users/email_change_failed.html:23
+msgid "Something went wrong"
+msgstr "Bir sorun oluştu"
+
+#: suchar_overflow/templates/users/email_change_failed.html:24
+msgid "The link has expired, is invalid, or has already been used."
+msgstr "Bağlantı süresi doldu, geçersiz veya zaten kullanıldı."
+
+#: suchar_overflow/templates/users/email_change_failed.html:25
+msgid "Try again if you really must."
+msgstr "Gerçekten gerekliyse, tekrar deneyin."
+
+#: suchar_overflow/templates/users/email_change_failed.html:28
+msgid "Try again"
+msgstr "Tekrar Dene"
+
+#: suchar_overflow/templates/users/email_change_form.html:6
+msgid "Update Email"
+msgstr "E-postayı Güncelle"
+
+#: suchar_overflow/templates/users/email_change_form.html:12
+msgid "Change email address"
+msgstr "E-posta adresini değiştir"
+
+#: suchar_overflow/templates/users/email_change_form.html:14
+msgid ""
+"Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
+"judge."
+msgstr ""
+"Eski adresinizden sıkıldınız mı? Ya da belki de bir vergi kaçırma girişimi? "
+"Biz yargılamıyoruz."
+
+#: suchar_overflow/templates/users/email_change_form.html:25
+msgid "Send a pigeon with the link"
+msgstr "Bu bağlantıyı bir güvercinle gönderin"
+
+#: suchar_overflow/templates/users/email_change_form.html:26
+msgid "Changed my mind (go back)"
+msgstr "Aklımı değiştirdim (geri dön)."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:6
+#: suchar_overflow/users/models.py:70
+msgid "Revoked"
+msgstr "İptal Edildi"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:15
+msgid "We've reverted the changes!"
+msgstr "Değişiklikler geri alındı!"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:17
+msgid ""
+"Phew, that was close. Your email address has been restored to its previous "
+"state."
+msgstr "Oh be! E-posta adresiniz önceki haline geri döndü."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:19
+msgid "You can breathe a sigh of relief. We recommend changing your password."
+msgstr "Rahat bir nefes alabilirsiniz. Parolanızı değiştirmenizi öneririz."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:32
+msgid "Change cancelled"
+msgstr "İşlem iptal edildi"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:34
+msgid "All active email change links have been invalidated."
+msgstr ""
+"Tüm aktif e-posta değişikliği bağlantıları geçersiz hale getirilmiştir."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:36
+msgid ""
+"If it wasn't you who tried to change the email, we recommend changing your "
+"password."
+msgstr ""
+"Eğer e-posta adresini değiştirmeye çalışan kişi siz değilseniz, şifrenizi "
+"değiştirmenizi öneririz."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:41
+msgid "Change password (just in case)"
+msgstr "Şifreyi değiştirin (gerektiğinde)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:5
+#, python-format
+msgid "We just received a request to change your email address to: %(email)s."
+msgstr "E-posta adresinizi %(email)s olarak değiştirmek için bir istek aldık."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:7
+msgid ""
+"If it was you - great, you don't need to do anything here (just check that "
+"other inbox)."
+msgstr ""
+"Eğer bu sizseniz, harika. Burada herhangi bir şey yapmanıza gerek yok "
+"(sadece diğer gelen kutunuzu kontrol edin)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:9
+msgid "BUT IF IT WASN'T YOU:"
+msgstr "AMA EĞER SİZ DEĞİLSEK:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:10
+msgid ""
+"Someone might be trying to take over your account (or you just have a split "
+"personality)."
+msgstr ""
+"Birisi hesabınızı ele geçirmeye çalışıyor olabilir (veya sadece farklı "
+"kişilikleriniz var)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:11
+msgid ""
+"Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
+"sent to the new address:"
+msgstr ""
+"Bu isteği HEMEN İPTAL etmek ve yeni adrese gönderilen bağlantıyı geçersiz "
+"kılmak için bu bağlantıya tıklayın:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:15
+msgid "We also recommend changing your password if you suspect a breach."
+msgstr ""
+"Güvenliğinizden emin olmak için, hesabınızın güvenliğini ihlal ettiğinden "
+"şüpheleniyorsanız, parolanızı değiştirmenizi de öneririz."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:17
+#: suchar_overflow/templates/users/email_verify_email.txt:14
+msgid "Suchar Overflow"
+msgstr "Suchar Overflow"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:5
+#, python-format
+msgid ""
+"We received a request to change your email address to this one you're "
+"reading (%(email)s)."
+msgstr ""
+"E-posta adresinizi şu adrese (%(email)s) değiştirmek için bir istek aldık."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:7
+msgid "If it's you, click the link below to confirm the change:"
+msgstr ""
+"Eğer sizseniz, değişikliği doğrulamak için aşağıdaki bağlantıya tıklayın:"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:10
+msgid "The link is valid for 24 hours (or until it evaporates)."
+msgstr "Bu bağlantı 24 saat geçerlidir (veya geçersiz olana kadar)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:12
+msgid ""
+"If it wasn't you, ignore this message. We sent instructions on how to block "
+"the intruder to your old address."
+msgstr ""
+"Eğer bu siz değilseniz, bu mesajı görmezden gelin. Saldırganı engelleme "
+"talimatlarını eski adresinize gönderdik."
+
+#: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
+msgid "User"
+msgstr "Kullanıcı"
+
+#: suchar_overflow/templates/users/user_detail.html:23
+msgid "Suchar Overflow User"
+msgstr "Suchar Overflow Kullanıcısı"
+
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "No achievements yet."
+msgstr "Henüz bir başarı elde edilmedi."
+
+#: suchar_overflow/templates/users/user_detail.html:62
+msgid "The Best Of"
+msgstr "En İyileri"
+
+#: suchar_overflow/templates/users/user_detail.html:76
+msgid "Statistics"
+msgstr "İstatistikler"
+
+#: suchar_overflow/templates/users/user_detail.html:78
+msgid "Rank"
+msgstr "Sıra"
+
+#: suchar_overflow/templates/users/user_detail.html:86
+msgid "Total Votes"
+msgstr "Toplam Oy"
+
+#: suchar_overflow/templates/users/user_detail.html:93
+msgid "Joined"
+msgstr "Katıldı"
+
+#: suchar_overflow/templates/users/user_detail.html:101
+msgid "Dryness Level"
+msgstr "Kuru Olma Seviyesi"
+
+#: suchar_overflow/templates/users/user_detail.html:109
+msgid "Reception"
+msgstr "Resepsiyon"
+
+#: suchar_overflow/templates/users/user_detail.html:125
+msgid "Drought Map"
+msgstr "Kuraklık Haritası"
+
+#: suchar_overflow/templates/users/user_detail.html:127
+msgid "Less"
+msgstr "Daha Az"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "More"
+msgstr "Daha Fazla"
+
+#: suchar_overflow/templates/users/user_detail.html:146
+msgid "Mon"
+msgstr "Pazartesi"
+
+#: suchar_overflow/templates/users/user_detail.html:147
+msgid "Wed"
+msgstr "Çarşamba"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Fri"
+msgstr "Cuma"
+
+#: suchar_overflow/templates/users/user_detail.html:167
+msgid "jokes on"
+msgstr "Şakalar açık"
+
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Latest Jokes"
+msgstr "En Yeni Şakalar"
+
+#: suchar_overflow/templates/users/user_detail.html:185
+msgid "Scheduled for Publication"
+msgstr "Yayınlanması Planlandı"
+
+#: suchar_overflow/templates/users/user_detail.html:228
+msgid "See all entries"
+msgstr "Tüm kayıtları görüntüle"
+
+#: suchar_overflow/templates/users/user_detail.html:232
+msgid "User hasn't added any jokes yet."
+msgstr "Kullanıcı henüz herhangi bir espri eklememiş."
+
+#: suchar_overflow/templates/users/user_form.html:12
+msgid "Here you can update your data."
+msgstr "Burada verilerinizi güncelleyebilirsiniz."
+
+#: suchar_overflow/templates/users/user_form.html:16
+msgid "E-mail Address"
+msgstr "E-posta Adresi"
+
+#: suchar_overflow/templates/users/user_form.html:24
+msgid "Change E-mail"
+msgstr "E-posta Adresini Değiştir"
+
+#: suchar_overflow/templates/users/user_form.html:26
+msgid "Address change requires confirmation."
+msgstr "Adres değişikliği için onay gereklidir."
+
+#: suchar_overflow/templates/users/user_form.html:36
+msgid "Save Changes"
+msgstr "Değişiklikleri kaydet"
+
+#: suchar_overflow/users/admin.py:36
+msgid "Personal info"
+msgstr "Kişisel bilgiler"
+
+#: suchar_overflow/users/admin.py:38
+msgid "Permissions"
+msgstr "İzinler"
+
+#: suchar_overflow/users/admin.py:49
+msgid "Important dates"
+msgstr "Önemli tarihler"
+
+#: suchar_overflow/users/apps.py:7
+msgid "Users"
+msgstr "Kullanıcılar"
+
+#: suchar_overflow/users/forms.py:19
+#: suchar_overflow/users/tests/test_forms.py:36
+msgid "This username has already been taken."
+msgstr "Bu kullanıcı adı zaten kullanılıyor."
+
+#: suchar_overflow/users/forms.py:32
+msgid "New Email Address"
+msgstr "Yeni E-posta Adresi"
+
+#: suchar_overflow/users/forms.py:37
+msgid "This email is already currently used."
+msgstr "Bu e-posta adresi zaten kullanılıyor."
+
+#: suchar_overflow/users/models.py:21
+msgid "Name of User"
+msgstr "Kullanıcının Adı"
+
+#: suchar_overflow/users/models.py:24
+msgid "email address"
+msgstr "e-posta adresi"
+
+#: suchar_overflow/users/models.py:54
+msgid "Activation Token"
+msgstr "Aktivasyon Kodu"
+
+#: suchar_overflow/users/models.py:55
+msgid "Activation Tokens"
+msgstr "Aktivasyon Kodları"
+
+#: suchar_overflow/users/models.py:68
+msgid "Pending"
+msgstr "Beklemede"
+
+#: suchar_overflow/users/models.py:69
+msgid "Verified"
+msgstr "Doğrulanmış"
+
+#: suchar_overflow/users/models.py:89
+msgid "Email Change Request"
+msgstr "E-posta Adresi Değiştirme Talebi"
+
+#: suchar_overflow/users/models.py:90
+msgid "Email Change Requests"
+msgstr "E-posta Değişikliği Talepleri"
+
+#: suchar_overflow/users/tasks.py:11
+msgid "Confirm you have a sense of humor (Account Activation)"
+msgstr "Mizah anlayışınızın olduğunu onaylayın (Hesap Etkinleştirme)"
+
+#: suchar_overflow/users/tasks.py:29
+msgid "Confirm it's you (Email Change)"
+msgstr "Kişisel olarak sizin olduğunuzu doğrulayın (E-posta değişikliği)"
+
+#: suchar_overflow/users/tasks.py:41
+msgid "Someone wants to change your email address (We hope it's you)"
+msgstr "Birisi e-posta adresinizi değiştirmek istiyor (Umarız sizsiniz)."
+
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "Bilgiler başarıyla güncellendi"
+
+#: suchar_overflow/users/views.py:334
+msgid "The link has already been used or cancelled."
+msgstr "Bu bağlantı zaten kullanılmış veya iptal edilmiş."
+
+#: suchar_overflow/users/views.py:344
+msgid "The link has expired (24 hours have passed)."
+msgstr "Bağlantı süresi doldu (24 saat geçti)."
+
+#: suchar_overflow/users/views.py:352
+msgid "Email already taken."
+msgstr "Bu e-posta adresi zaten kullanılıyor."
+
+#: suchar_overflow/users/views.py:370
+msgid "The link is invalid."
+msgstr "Bağlantı geçersizdir."

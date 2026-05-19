@@ -1,0 +1,1385 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: config/settings/base.py:34
+msgid "Polish"
+msgstr "Lengyel"
+
+#: config/settings/base.py:35
+msgid "English"
+msgstr "Angol"
+
+#: suchar_overflow/achievements/apps.py:8
+#: suchar_overflow/achievements/models.py:84
+#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/users/user_detail.html:34
+msgid "Achievements"
+msgstr "Eredmények"
+
+#: suchar_overflow/achievements/middleware.py:29
+#, python-format
+msgid "Achievement Unlocked: %(name)s!"
+msgstr "Elért eredmény: %(name)s!"
+
+#: suchar_overflow/achievements/models.py:8
+msgid "Lifetime"
+msgstr "Élettartam"
+
+#: suchar_overflow/achievements/models.py:9
+msgid "Periodic"
+msgstr "Periódikus"
+
+#: suchar_overflow/achievements/models.py:10
+msgid "Streak"
+msgstr "Szériaszám"
+
+#: suchar_overflow/achievements/models.py:13
+msgid "Suchar Posted"
+msgstr "Suchar által közzétett"
+
+#: suchar_overflow/achievements/models.py:14
+msgid "Vote Received"
+msgstr "Szavazat fogadva"
+
+#: suchar_overflow/achievements/models.py:15
+msgid "Vote Cast"
+msgstr "Szavazat leadva"
+
+#: suchar_overflow/achievements/models.py:18
+msgid "Suchar Count"
+msgstr "Suchar száma"
+
+#: suchar_overflow/achievements/models.py:19
+msgid "Funny Vote Count"
+msgstr "Vicces szavazatok száma"
+
+#: suchar_overflow/achievements/models.py:20
+msgid "Dry Vote Count"
+msgstr "Száraz szavazatszám"
+
+#: suchar_overflow/achievements/models.py:21
+msgid "Vote Cast Count"
+msgstr "Leadott szavazatok száma"
+
+#: suchar_overflow/achievements/models.py:22
+msgid "Total Score"
+msgstr "Összes pontszám"
+
+#: suchar_overflow/achievements/models.py:23
+msgid "Night Owl"
+msgstr "Éjjeli bagoly"
+
+#: suchar_overflow/achievements/models.py:24
+msgid "Login Streak"
+msgstr "Bejelentkezési sorozat"
+
+#: suchar_overflow/achievements/models.py:25
+msgid "Polarizer"
+msgstr "Polarizátor"
+
+#: suchar_overflow/achievements/models.py:28
+msgid "None"
+msgstr "Nincs"
+
+#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
+#: suchar_overflow/templates/achievements/list.html:42
+#: suchar_overflow/templates/achievements/list.html:82
+msgid "Bronze"
+msgstr "Bronz"
+
+#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
+#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:84
+msgid "Silver"
+msgstr "Ezüst"
+
+#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
+#: suchar_overflow/templates/achievements/list.html:46
+#: suchar_overflow/templates/achievements/list.html:86
+msgid "Gold"
+msgstr "Arany"
+
+#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
+#: suchar_overflow/templates/achievements/list.html:48
+#: suchar_overflow/templates/achievements/list.html:88
+msgid "Platinum"
+msgstr "Platina"
+
+#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
+#: suchar_overflow/templates/achievements/list.html:50
+#: suchar_overflow/templates/achievements/list.html:90
+msgid "Diamond"
+msgstr "Gyémánt"
+
+#: suchar_overflow/achievements/models.py:35
+msgid "Name"
+msgstr "Név"
+
+#: suchar_overflow/achievements/models.py:36
+msgid "Slug"
+msgstr "URL alias"
+
+#: suchar_overflow/achievements/models.py:37
+msgid "Description"
+msgstr "Leírás"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Icon Content"
+msgstr "Ikon tartalom"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Raw SVG XML"
+msgstr "Nyers SVG XML"
+
+#: suchar_overflow/achievements/models.py:44
+msgid "Category"
+msgstr "Kategória"
+
+#: suchar_overflow/achievements/models.py:50
+msgid "Event Type"
+msgstr "Esemény típusa"
+
+#: suchar_overflow/achievements/models.py:56
+msgid "Metric"
+msgstr "Metrika"
+
+#: suchar_overflow/achievements/models.py:61
+msgid "Threshold"
+msgstr "Határérték"
+
+#: suchar_overflow/achievements/models.py:65
+msgid "Theme"
+msgstr "Téma"
+
+#: suchar_overflow/achievements/models.py:68
+msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
+msgstr "Pl.: „Karácsony”, „Programozás”. Hagyja üresen általános esetekhez."
+
+#: suchar_overflow/achievements/models.py:71
+msgid "Tier"
+msgstr "Fajta"
+
+#: suchar_overflow/achievements/models.py:74
+msgid "Difficulty/Rarity tier of the achievement"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:77
+msgid "Secret Achievement"
+msgstr "Rejtett eredmény"
+
+#: suchar_overflow/achievements/models.py:79
+msgid "If checked, name and description are hidden until unlocked."
+msgstr ""
+"Ha ez a beállítás aktív, a név és leírás addig rejtett marad, amíg feloldva "
+"nem lesz."
+
+#: suchar_overflow/achievements/models.py:83
+msgid "Achievement"
+msgstr "Eredmény"
+
+#: suchar_overflow/achievements/models.py:102
+msgid "Seen by user"
+msgstr "A felhasználó látta"
+
+#: suchar_overflow/achievements/models.py:105
+msgid "User Achievement"
+msgstr "Felhasználói eredmények"
+
+#: suchar_overflow/achievements/models.py:106
+msgid "User Achievements"
+msgstr "Felhasználói eredmények"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "Szöveg"
+
+#: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:65
+#: suchar_overflow/templates/users/user_detail.html:217
+msgid "Votes"
+msgstr "Szavazatok"
+
+#: suchar_overflow/suchary/apps.py:7
+msgid "Suchary"
+msgstr "Suchary"
+
+#: suchar_overflow/suchary/forms.py:15
+msgid ""
+"Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
+"programowanie)."
+msgstr ""
+"Adjon meg címkéket, vesszővel vagy szóközökkel elválasztva (pl. kenyér, IT, "
+"programozás)."
+
+#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+msgid "Publication Date"
+msgstr "Publikációs dátum"
+
+#: suchar_overflow/suchary/forms.py:35
+msgid "Leave empty to publish immediately."
+msgstr "Hagyja üresen, ha azonnal közzé szeretné tenni."
+
+#: suchar_overflow/suchary/forms.py:57
+msgid "Publication date cannot be in the past."
+msgstr "A publikációs dátum nem lehet a múltban."
+
+#: suchar_overflow/suchary/models.py:16
+msgid "Suchar text"
+msgstr "Szöveg"
+
+#: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
+#: suchar_overflow/templates/403_csrf.html:6
+#: suchar_overflow/templates/403_csrf.html:9
+msgid "Forbidden (403)"
+msgstr "Engedély nélkül (403)"
+
+#: suchar_overflow/templates/403.html:14
+#: suchar_overflow/templates/403_csrf.html:14
+msgid "You're not allowed to access this page."
+msgstr "Nincs jogosultsága ehhez az oldalhoz való hozzáféréshez."
+
+#: suchar_overflow/templates/404.html:6 suchar_overflow/templates/404.html:9
+msgid "Page not found"
+msgstr "Az oldal nem található"
+
+#: suchar_overflow/templates/404.html:14
+msgid "This is not the page you were looking for."
+msgstr "Ez nem az a lap, amit keresett."
+
+#: suchar_overflow/templates/500.html:6
+msgid "Server Error"
+msgstr "Szerverhiba"
+
+#: suchar_overflow/templates/500.html:9
+msgid "Ooops!!! 500"
+msgstr "Sajnáljuk! Hiba történt (500)."
+
+#: suchar_overflow/templates/500.html:10
+msgid "Looks like something went wrong!"
+msgstr "Úgy tűnik, valami hiba történt!"
+
+#: suchar_overflow/templates/500.html:12
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+"Ezeket a hibákat automatikusan rögzítjük, de ha a probléma továbbra is "
+"fennáll, ne habozzon kapcsolatba lépni velünk. Addig próbálja meg újra "
+"betölteni az oldalt."
+
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+msgid "Notification Inbox"
+msgstr "Értesítési beérkező"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr "Az összes elért eredmény megjelenítése, a legújabbaktól kezdve."
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "Általános"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, python-format
+msgid "Unlocked: %(date)s"
+msgstr "Feloldva: %(date)s"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+msgid "No achievements yet — go post some jokes!"
+msgstr "Még nincs eredményed – menj, és ossz meg néhány viccet!"
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+msgid "Browse achievements"
+msgstr "Eredmények böngészése"
+
+#: suchar_overflow/templates/achievements/list.html:6
+msgid "My Achievements"
+msgstr "Eredményeim"
+
+#: suchar_overflow/templates/achievements/list.html:17
+#: suchar_overflow/templates/stats/leaderboard.html:110
+msgid "Hall of Fame"
+msgstr "Hírességek csarnoka"
+
+#: suchar_overflow/templates/achievements/list.html:19
+msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
+msgstr "A Suchar Overflow-ból származó kitüntetései, érmeje és kínos titkai."
+
+#: suchar_overflow/templates/achievements/list.html:74
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr "A teljesítmény le van zárva. Fedezze fel titkát a játék során!"
+
+#: suchar_overflow/templates/base.html:17
+#: suchar_overflow/templates/base.html:24
+msgid "Joke aggregator with critically low humidity levels."
+msgstr ""
+"Viccgyűjtő, amely kritikus mértékben alacsony páratartalommal rendelkezik."
+
+#: suchar_overflow/templates/base.html:96
+msgid "Home"
+msgstr "Kezdőlap"
+
+#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/suchary/suchar_list.html:12
+#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/users/admin.py:68
+msgid "Jokes"
+msgstr "Viccek"
+
+#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/stats/leaderboard.html:6
+#: suchar_overflow/templates/stats/leaderboard.html:12
+msgid "Leaderboard"
+msgstr "Ranglista"
+
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "Beérkezett üzenetek"
+
+#: suchar_overflow/templates/base.html:113
+msgid "About"
+msgstr "Rólunk"
+
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
+msgid "Log Out"
+msgstr "Kilogolás"
+
+#: suchar_overflow/templates/base.html:159
+msgid "Log In"
+msgstr "Bejelentkezés"
+
+#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/registration/signup.html:6
+#: suchar_overflow/templates/registration/signup.html:12
+#: suchar_overflow/templates/registration/signup.html:23
+msgid "Sign Up"
+msgstr "Regisztráció"
+
+#: suchar_overflow/templates/base.html:170
+msgid "Default content."
+msgstr "Alapértelmezett tartalom."
+
+#: suchar_overflow/templates/base.html:179
+msgid "All rights reserved (but jokes stolen)."
+msgstr "Minden jog fenntartva (de a vicceket elloptuk)."
+
+#: suchar_overflow/templates/base.html:188
+msgid "Report a Bug"
+msgstr "Hiba jelentése"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/users/email_change_failed.html:6
+msgid "Error"
+msgstr "Hiba"
+
+#: suchar_overflow/templates/base.html:212
+msgid "Achievement Unlocked"
+msgstr "Elért eredmény"
+
+#: suchar_overflow/templates/base.html:214
+msgid "Success"
+msgstr "Sikeres"
+
+#: suchar_overflow/templates/base.html:216
+msgid "Notification"
+msgstr "Értesítés"
+
+#: suchar_overflow/templates/base.html:231
+msgid "Confirm Logout"
+msgstr "Kijelentkezés megerősítése"
+
+#: suchar_overflow/templates/base.html:234
+msgid "Are you sure you want to log out?"
+msgstr "Biztosan kilogout szeretne?"
+
+#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/users/user_form.html:35
+msgid "Cancel"
+msgstr "Mégse"
+
+#: suchar_overflow/templates/pages/about.html:6
+msgid "About Project - Suchar Overflow"
+msgstr "A projekt ismertetése - Suchar Overflow"
+
+#: suchar_overflow/templates/pages/about.html:13
+msgid "About Project"
+msgstr "A projektről"
+
+#: suchar_overflow/templates/pages/about.html:14
+msgid "Why do we do this? Because someone had to."
+msgstr "Miért csináljuk ezt? Mert valakinek kellett."
+
+#: suchar_overflow/templates/pages/about.html:18
+msgid "Mission"
+msgstr "Feladat"
+
+#: suchar_overflow/templates/pages/about.html:20
+msgid ""
+"The goal of Suchar Overflow is to gather the largest collection of jokes "
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
+msgstr ""
+"A Suchar Overflow célja, hogy összegyűjtse a lehető legtöbb olyan viccet, "
+"amelyek fizikai fájdalmat okoznak az olvasónak. Úgy gondoljuk, egy jó száraz"
+" vicc az, amely után kínos csend következik, és a háttérben tücskök "
+"csiripelése hallatszik."
+
+#: suchar_overflow/templates/pages/about.html:22
+msgid "Technology"
+msgstr "Technológia"
+
+#: suchar_overflow/templates/pages/about.html:24
+msgid ""
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr ""
+"A webhely a legújabb technológiákra épül (Django + egyedi CSS), hogy gyors "
+"és megbízható módon biztosítsa a \"cringe\" tartalmak közvetlen "
+"megjelenítését a képernyőn."
+
+#: suchar_overflow/templates/pages/home.html:8
+msgid "Dry Bread for the Horse"
+msgstr "Szárított kenyér a lovaknak"
+
+#: suchar_overflow/templates/pages/home.html:10
+msgid ""
+"Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
+"you need a drink."
+msgstr ""
+
+#: suchar_overflow/templates/pages/home.html:11
+msgid "Vote for the best jokes, add your own, and become an office legend."
+msgstr ""
+"Szavazz a legjobb viccekre, adj hozzá saját vicceket, és válj az irodában "
+"legendává."
+
+#: suchar_overflow/templates/pages/home.html:15
+msgid "Browse Jokes"
+msgstr "Viccek böngészése"
+
+#: suchar_overflow/templates/pages/home.html:17
+msgid "Join Us"
+msgstr "Csatlakozzon hozzánk"
+
+#: suchar_overflow/templates/pages/home.html:31
+msgid "Vote"
+msgstr "Szavazás"
+
+#: suchar_overflow/templates/pages/home.html:32
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr "Értékeld mások vicceit. Dönts el, mi a vicces (és mi a szánalmas)."
+
+#: suchar_overflow/templates/pages/home.html:39
+#: suchar_overflow/templates/suchary/suchar_list.html:68
+msgid "Add"
+msgstr "Hozzáadás"
+
+#: suchar_overflow/templates/pages/home.html:40
+msgid "Share your thoughts with the world. Don't be shy."
+msgstr "Oszd meg gondolataidat a világgal. Ne félj!"
+
+#: suchar_overflow/templates/pages/home.html:47
+msgid "Laugh (optional)"
+msgstr "Nevetés (opcionális)"
+
+#: suchar_overflow/templates/pages/home.html:48
+msgid "We guarantee a pity smile or your money back (the site is free)."
+msgstr ""
+"Garantáljuk, hogy legalább egy kedves mosolyt elkap, különben visszatérítjük"
+" az összeget (a weboldal ingyenes)."
+
+#: suchar_overflow/templates/registration/activation_complete.html:6
+msgid "Activation Complete"
+msgstr "Sikeres aktiválás"
+
+#: suchar_overflow/templates/registration/activation_complete.html:23
+msgid "Account Activated!"
+msgstr "A fiók aktiválva!"
+
+#: suchar_overflow/templates/registration/activation_complete.html:25
+msgid ""
+"Your account has been activated successfully. You can now log in and start "
+"using Suchar Overflow."
+msgstr ""
+"A fiókja sikeresen aktiválva lett. Most már bejelentkezhet és használhatja a"
+" Suchar Overflow-t."
+
+#: suchar_overflow/templates/registration/activation_complete.html:28
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
+msgid "Log in"
+msgstr "Bejelentkezés"
+
+#: suchar_overflow/templates/registration/activation_email.txt:3
+#: suchar_overflow/templates/users/email_notify_old_email.txt:3
+#: suchar_overflow/templates/users/email_verify_email.txt:3
+#, python-format
+msgid "Hello %(username)s!"
+msgstr "Szia, %(username)s!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:5
+msgid ""
+"Welcome to Suchar Overflow - a place where air humidity drops below zero."
+msgstr ""
+"Üdvözöljük a Suchar Overflow-ban – egy olyan helyen, ahol a levegő "
+"nedvessége nullával alatti értékre csökken."
+
+#: suchar_overflow/templates/registration/activation_email.txt:6
+msgid ""
+"To make sure you're not a bot (or a person without a sense of humor), you "
+"need to activate your account."
+msgstr ""
+"Ahhoz, hogy megbizonyosodjunk arról, hogy nem egy robot vagy (vagy valaki, "
+"akinek nincs humora), aktiválnia kell a fiókját."
+
+#: suchar_overflow/templates/registration/activation_email.txt:8
+msgid "Click this link before it dries out:"
+msgstr "Kattintson erre a linkre, mielőtt lejárt!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:11
+msgid "Remember: Drink plenty of water."
+msgstr "Ne feledje: Igyon sok vizet."
+
+#: suchar_overflow/templates/registration/activation_email.txt:13
+msgid "The Suchar Overflow Team"
+msgstr "A Suchar Overflow csapat"
+
+#: suchar_overflow/templates/registration/activation_failed.html:6
+#: suchar_overflow/templates/registration/activation_failed.html:24
+msgid "Activation Failed"
+msgstr "Sikertelen aktiválás"
+
+#: suchar_overflow/templates/registration/activation_failed.html:26
+msgid ""
+"The activation link is invalid or has expired. Please try registering again "
+"or contact support."
+msgstr ""
+"Az aktivációs hivatkozás érvénytelen vagy lejárt. Kérjük, próbálja meg újra "
+"regisztrálni, vagy vegye fel a kapcsolatot a támogatással."
+
+#: suchar_overflow/templates/registration/activation_failed.html:29
+msgid "Sign Up Again"
+msgstr "Regisztráció ismételt elindítása"
+
+#: suchar_overflow/templates/registration/activation_failed.html:30
+#: suchar_overflow/templates/registration/signup_done.html:28
+msgid "Back to Home"
+msgstr "Vissza a főoldalra"
+
+#: suchar_overflow/templates/registration/login.html:6
+#: suchar_overflow/templates/registration/login.html:12
+#: suchar_overflow/templates/registration/login.html:23
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Sign In"
+msgstr "Bejelentkezés"
+
+#: suchar_overflow/templates/registration/login.html:26
+msgid "Forgot Password?"
+msgstr "Elfelejtette a jelszavát?"
+
+#: suchar_overflow/templates/registration/password_change_done.html:6
+#: suchar_overflow/templates/registration/password_change_done.html:12
+msgid "Password Changed"
+msgstr "Jelszó módosítva"
+
+#: suchar_overflow/templates/registration/password_change_done.html:13
+msgid "Your password was changed successfully."
+msgstr "Sikeresen megváltoztatta a jelszavát."
+
+#: suchar_overflow/templates/registration/password_change_done.html:15
+msgid "Back to Profile"
+msgstr "Vissza a profilhoz"
+
+#: suchar_overflow/templates/registration/password_change_form.html:6
+#: suchar_overflow/templates/registration/password_change_form.html:12
+#: suchar_overflow/templates/registration/password_change_form.html:18
+#: suchar_overflow/templates/users/base_dashboard.html:42
+msgid "Change Password"
+msgstr "Jelszó módosítása"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:6
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
+msgid "Password reset successful"
+msgstr "A jelszó visszaállítás sikeres volt."
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Megadta az új jelszavát. Most már bejelentkezhet."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:6
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password"
+msgstr "Új jelszó beállítása"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Kérjük, adja meg az új jelszavát kétszer, hogy ellenőrizni tudjuk, helyesen "
+"írta-e be."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:20
+msgid "Change password"
+msgstr "Jelszó megváltoztatása"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"A jelszó-visszaállítás hivatkozása érvénytelen lehet, mert már használatban "
+"van. Kérjen új jelszó-visszaállítást."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:6
+#: suchar_overflow/templates/registration/password_reset_done.html:12
+msgid "Password Reset Sent"
+msgstr "Jelszó-visszaállítás kérése elküldve"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "Ellenőrizze a beérkezett üzeneteit"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"Ha a megadott e-mail címmel már létezik egy fiók, akkor utasításokat "
+"küldtünk az Ön által megadott címre a jelszó beállításához. Ezeket hamarosan"
+" megkapja."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:20
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"Ha nem kap e-mailt, kérjük, ellenőrizze, hogy a regisztrációhoz használt "
+"címet adta-e meg, és nézze meg a spam mappáját."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr ""
+"Ezt az e-mailt azért kapja, mert felhasználói fiókjának jelszavát szeretné "
+"visszaállítani."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "Kérjük, látogasson el az alábbi oldalra, és válasszon új jelszót:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "Felhasználónév (ha elfelejtette):"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "Köszönjük, hogy oldalunkat használja!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr ""
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr "csapat"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:6
+#: suchar_overflow/templates/registration/password_reset_form.html:12
+msgid "Password Reset"
+msgstr "Jelszó visszaállítás"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"Elfelejtette a jelszavát? Adja meg az e-mail címét alább, és elküldjük az "
+"utasításokat egy új jelszó beállításához."
+
+#: suchar_overflow/templates/registration/password_reset_form.html:22
+msgid "Reset my password"
+msgstr "Jelszó visszaállítása"
+
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Already have an account?"
+msgstr "Már van fiókod?"
+
+#: suchar_overflow/templates/registration/signup_done.html:6
+msgid "Confirmation Sent"
+msgstr "Megerősítés elküldve"
+
+#: suchar_overflow/templates/registration/signup_done.html:25
+msgid ""
+"We have sent you an email to confirm your registration. Please check your "
+"inbox and click the link to activate your account."
+msgstr ""
+"E-mailt küldtünk Önnek a regisztráció megerősítéséhez. Kérjük, nézze meg a "
+"beérkezett leveleket, és kattintson a hivatkozásra a fiókja aktiválásához."
+
+#: suchar_overflow/templates/stats/leaderboard.html:13
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr ""
+"A közösségünk által létrehozott legjobb (és legviccesebb) tartalmakat "
+"mutatjuk be."
+
+#: suchar_overflow/templates/stats/leaderboard.html:19
+msgid "Activity (Last 30 Days)"
+msgstr "Aktivitás (az utolsó 30 napban)"
+
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "Összesen"
+
+#: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Funny"
+msgstr "Vicces"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:128
+#: suchar_overflow/templates/suchary/suchar_list.html:131
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Dry"
+msgstr "Száraz"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+msgid "Most Active Authors"
+msgstr "Aktív szerzők most"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
+msgid "jokes"
+msgstr "viccek"
+
+#: suchar_overflow/templates/stats/leaderboard.html:99
+msgid "No data."
+msgstr "Nincs adat."
+
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+msgid "No jokes."
+msgstr "Komolyra fordítva."
+
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr "Comedy Kings"
+
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "Nincs humoros tartalom."
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "A legviccesebb viccek"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "Szárazság urai"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "Nincs elérhető adat."
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "A legjobb száraz humorok"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
+msgid "New Jokes"
+msgstr "Új viccek"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:6
+msgid "Too Late!"
+msgstr "Sajnálom, túl késő!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:13
+msgid "The ship has sailed!"
+msgstr "Már késő!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:15
+msgid ""
+"This joke has already been published. You can't polish a diamond (or a dry "
+"biscuit) once it's been served."
+msgstr ""
+"Ezt a viccet már közzétették. Egy gyémántot (vagy egy száraz kekszet) nem "
+"lehet újra megcsiszolni, miután kiosztották."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:21
+msgid "Time creates jokes, but it also seals them."
+msgstr "Az idő poénokat teremt, de egyben le is pecsétez."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:23
+msgid "Ancient Suchar Proverb"
+msgstr "Ókori Suchar mondás"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:29
+msgid "Back to Jokes"
+msgstr "Vissza a viccekhez"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:8
+#: suchar_overflow/templates/suchary/suchar_form.html:29
+msgid "Add Joke"
+msgstr "Új vicc hozzáadása"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:30
+msgid "Shine with humor."
+msgstr "Ragyogj a humorral!"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:38
+msgid "Joke Content"
+msgstr "Vicc tartalom"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:43
+msgid "Why did the chicken cross the road?"
+msgstr "Miért kelt át a csirke az úton?"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:46
+msgid "Remember, the drier the better."
+msgstr "Ne feledje, minél szárazabb, annál jobb."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:50
+msgid "Tags"
+msgstr "Címkék"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:55
+msgid "e.g. it, programming, school"
+msgstr "pl. programozás, iskola"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:62
+msgid "Separate with commas."
+msgstr "Vesszővel válassza el őket."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:70
+msgid "Schedule for later"
+msgstr "Később"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:79
+msgid "Select date and time..."
+msgstr "Dátum és idő kiválasztása..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:88
+msgid "Publish"
+msgstr "Publikálás"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:99
+msgid "Live Preview"
+msgstr "Előnézet"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:109
+msgid "Now"
+msgstr "Most"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:116
+msgid "Your joke content will appear here..."
+msgstr "A vicc tartalma itt jelenik meg..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:149
+msgid "This is how your joke will look on the main list."
+msgstr "Így fog kinézni a vicc az főoldalon."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:13
+msgid "The dryest jokes on the internet."
+msgstr "Az internet legviccesebb viccei."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:28
+msgid "Search..."
+msgstr "Keresés..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:43
+#: suchar_overflow/templates/suchary/suchar_list.html:58
+msgid "Top"
+msgstr "Felül"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:45
+#: suchar_overflow/templates/suchary/suchar_list.html:53
+msgid "Newest"
+msgstr "Legfrissebb"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:85
+msgid "Scheduled"
+msgstr "Ütemezett"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:95
+#: suchar_overflow/templates/users/user_detail.html:194
+msgid "Edit"
+msgstr "Szerkesztés"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:139
+msgid "So dry here..."
+msgstr "Nagyon száraz itt..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:140
+msgid "Be the hero we need and add the first joke."
+msgstr "Legyél a hős, akire várunk, és adj hozzá az első viccet!"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:158
+msgid "Previous"
+msgstr "Előző"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:182
+msgid "Next"
+msgstr "Következő"
+
+#: suchar_overflow/templates/users/base_dashboard.html:17
+msgid "Your Account"
+msgstr "A fiókja"
+
+#: suchar_overflow/templates/users/base_dashboard.html:22
+msgid "Profile"
+msgstr "Profil"
+
+#: suchar_overflow/templates/users/base_dashboard.html:27
+#: suchar_overflow/templates/users/user_form.html:6
+#: suchar_overflow/templates/users/user_form.html:11
+msgid "Edit Profile"
+msgstr "Profil szerkesztése"
+
+#: suchar_overflow/templates/users/base_dashboard.html:37
+msgid "Security"
+msgstr "Biztonság"
+
+#: suchar_overflow/templates/users/email_change_complete.html:6
+msgid "Email Changed"
+msgstr "E-mail cím módosítva"
+
+#: suchar_overflow/templates/users/email_change_complete.html:23
+msgid "It worked!"
+msgstr "Sikeres volt!"
+
+#: suchar_overflow/templates/users/email_change_complete.html:25
+msgid ""
+"Your email address has been changed. You can now sleep peacefully (or not)."
+msgstr "Az e-mail címét módosította. Most nyugodtan alhat (vagy nem)."
+
+#: suchar_overflow/templates/users/email_change_complete.html:28
+msgid "Back to settings"
+msgstr "Vissza a beállításokhoz"
+
+#: suchar_overflow/templates/users/email_change_done.html:6
+msgid "Email Sent"
+msgstr "E-mail elküldve"
+
+#: suchar_overflow/templates/users/email_change_done.html:23
+msgid "Check both inboxes!"
+msgstr "Ellenőrizze mindkét beérkezett levelezést!"
+
+#: suchar_overflow/templates/users/email_change_done.html:25
+msgid ""
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"          <br />\n"
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+msgstr ""
+"Üzenetet küldtünk az Ön <strong>ÚJ</strong> címére egy aktivációs hivatkozással.\n"
+"          <br />\n"
+"          Emellett figyelmeztetést is küldtünk a régi címére, hogy tudja, valóban Önről van szó."
+
+#: suchar_overflow/templates/users/email_change_done.html:30
+msgid ""
+"If you don't click the link, nothing will change. Your account will remain "
+"as dry as our jokes."
+msgstr ""
+"Ha nem kattintasz a linkre, semmi sem változik. A fiókod továbbra is olyan "
+"száraz marad, mint a vicceink."
+
+#: suchar_overflow/templates/users/email_change_done.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:43
+msgid "Back to profile"
+msgstr "Vissza a profilhoz"
+
+#: suchar_overflow/templates/users/email_change_failed.html:23
+msgid "Something went wrong"
+msgstr "Valami hiba történt"
+
+#: suchar_overflow/templates/users/email_change_failed.html:24
+msgid "The link has expired, is invalid, or has already been used."
+msgstr "A hivatkozás lejárt, érvénytelen vagy már használatban van."
+
+#: suchar_overflow/templates/users/email_change_failed.html:25
+msgid "Try again if you really must."
+msgstr "Próbálkozz újra, ha feltétlenül szükséges."
+
+#: suchar_overflow/templates/users/email_change_failed.html:28
+msgid "Try again"
+msgstr "Próbálkozz újra"
+
+#: suchar_overflow/templates/users/email_change_form.html:6
+msgid "Update Email"
+msgstr "E-mail cím frissítése"
+
+#: suchar_overflow/templates/users/email_change_form.html:12
+msgid "Change email address"
+msgstr "E-mail cím módosítása"
+
+#: suchar_overflow/templates/users/email_change_form.html:14
+msgid ""
+"Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
+"judge."
+msgstr ""
+"Unalmas a régi címed? Vagy esetleg adócsökkentési kísérlet? Mi nem "
+"ítélkezünk."
+
+#: suchar_overflow/templates/users/email_change_form.html:25
+msgid "Send a pigeon with the link"
+msgstr "Küldj egy galambot a hivatkozással"
+
+#: suchar_overflow/templates/users/email_change_form.html:26
+msgid "Changed my mind (go back)"
+msgstr "Megváltoztattam a véleményem (vissza)"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:6
+#: suchar_overflow/users/models.py:70
+msgid "Revoked"
+msgstr "Érvénytelenítve"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:15
+msgid "We've reverted the changes!"
+msgstr "Visszavontuk a módosításokat!"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:17
+msgid ""
+"Phew, that was close. Your email address has been restored to its previous "
+"state."
+msgstr ""
+"Szia! A fiókod biztonságban van. Az e-mail címedet visszaállítottuk az előző"
+" állapotára."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:19
+msgid "You can breathe a sigh of relief. We recommend changing your password."
+msgstr ""
+"Most már nyugodtan lélegzethez. Javasoljuk, hogy változtassa meg a "
+"jelszavát."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:32
+msgid "Change cancelled"
+msgstr "A módosítás elvetve."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:34
+msgid "All active email change links have been invalidated."
+msgstr ""
+"Minden aktív e-mail cím változtatásra szolgáló hivatkozás érvénytelenítve "
+"lett."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:36
+msgid ""
+"If it wasn't you who tried to change the email, we recommend changing your "
+"password."
+msgstr ""
+"Ha nem Ön próbálta megváltoztatni az e-mail címét, javasoljuk, hogy "
+"változtassa meg a jelszavát."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:41
+msgid "Change password (just in case)"
+msgstr "Jelszó megváltoztatása (csak ha szükséges)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:5
+#, python-format
+msgid "We just received a request to change your email address to: %(email)s."
+msgstr ""
+"Éppen egy kérést kaptunk, hogy az e-mail címét a következőre változtassák: "
+"%(email)s."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:7
+msgid ""
+"If it was you - great, you don't need to do anything here (just check that "
+"other inbox)."
+msgstr ""
+"Ha ez Ön volt – nagyszerű, ebben az esetben itt nem kell semmit tennie (csak"
+" ellenőrizze a másik beérkezett üzenetek mappáját)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:9
+msgid "BUT IF IT WASN'T YOU:"
+msgstr "DE HA NEM ÖN VOLT:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:10
+msgid ""
+"Someone might be trying to take over your account (or you just have a split "
+"personality)."
+msgstr ""
+"Valaki éppen megpróbálhatja átvenni az Ön fiókját (vagy esetleg kettő "
+"személyisége van)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:11
+msgid ""
+"Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
+"sent to the new address:"
+msgstr ""
+"Kattintson ide, hogy ABLAKONTLÁG megszüntesse ezt a kérést és "
+"érvénytelenítse az új címre küldött hivatkozást:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:15
+msgid "We also recommend changing your password if you suspect a breach."
+msgstr ""
+"Javasoljuk, hogy változtassa meg jelszavát is, ha azt gyanítja, hogy "
+"valamilyen biztonsági incidens történt."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:17
+#: suchar_overflow/templates/users/email_verify_email.txt:14
+msgid "Suchar Overflow"
+msgstr "Suchar Overflow"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:5
+#, python-format
+msgid ""
+"We received a request to change your email address to this one you're "
+"reading (%(email)s)."
+msgstr ""
+"Egy kérést kaptunk, hogy az e-mail címét erre változtassuk, amit most olvas "
+"(%(email)s)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:7
+msgid "If it's you, click the link below to confirm the change:"
+msgstr ""
+"Ha Ön az, kattintson az alábbi hivatkozásra a módosítás megerősítéséhez:"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:10
+msgid "The link is valid for 24 hours (or until it evaporates)."
+msgstr "A hivatkozás 24 óráig érvényes (vagy amíg le nem jár)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:12
+msgid ""
+"If it wasn't you, ignore this message. We sent instructions on how to block "
+"the intruder to your old address."
+msgstr ""
+"Ha nem Ön végzett a művelettel, kérjük, figyelmen kívül hagyja ezt az "
+"üzenetet. Az illetéktelen bejelentkezést megakadályozó utasításokat régi "
+"címére küldtük."
+
+#: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
+msgid "User"
+msgstr "Felhasználó"
+
+#: suchar_overflow/templates/users/user_detail.html:23
+msgid "Suchar Overflow User"
+msgstr "Suchar Overflow Felhasználó"
+
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "No achievements yet."
+msgstr "Nincs még elérhető eredmény."
+
+#: suchar_overflow/templates/users/user_detail.html:62
+msgid "The Best Of"
+msgstr "A legjobb"
+
+#: suchar_overflow/templates/users/user_detail.html:76
+msgid "Statistics"
+msgstr "Statisztikák"
+
+#: suchar_overflow/templates/users/user_detail.html:78
+msgid "Rank"
+msgstr "Rangsor"
+
+#: suchar_overflow/templates/users/user_detail.html:86
+msgid "Total Votes"
+msgstr "Összes szavazat"
+
+#: suchar_overflow/templates/users/user_detail.html:93
+msgid "Joined"
+msgstr "Csatlakozott"
+
+#: suchar_overflow/templates/users/user_detail.html:101
+msgid "Dryness Level"
+msgstr "Szárazságfok"
+
+#: suchar_overflow/templates/users/user_detail.html:109
+msgid "Reception"
+msgstr "Recepció"
+
+#: suchar_overflow/templates/users/user_detail.html:125
+msgid "Drought Map"
+msgstr "Szárazság térkép"
+
+#: suchar_overflow/templates/users/user_detail.html:127
+msgid "Less"
+msgstr "Kevesebb"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "More"
+msgstr "Továbbiak"
+
+#: suchar_overflow/templates/users/user_detail.html:146
+msgid "Mon"
+msgstr "Hf"
+
+#: suchar_overflow/templates/users/user_detail.html:147
+msgid "Wed"
+msgstr "Szerda"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Fri"
+msgstr "Péntek"
+
+#: suchar_overflow/templates/users/user_detail.html:167
+msgid "jokes on"
+msgstr "viccek bekapcsolva"
+
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Latest Jokes"
+msgstr "Legfrissebb viccek"
+
+#: suchar_overflow/templates/users/user_detail.html:185
+msgid "Scheduled for Publication"
+msgstr "Közzétételre tervezve"
+
+#: suchar_overflow/templates/users/user_detail.html:228
+msgid "See all entries"
+msgstr "Minden elem megjelenítése"
+
+#: suchar_overflow/templates/users/user_detail.html:232
+msgid "User hasn't added any jokes yet."
+msgstr "A felhasználó még nem töltött fel viccet."
+
+#: suchar_overflow/templates/users/user_form.html:12
+msgid "Here you can update your data."
+msgstr "Itt frissítheti az adatait."
+
+#: suchar_overflow/templates/users/user_form.html:16
+msgid "E-mail Address"
+msgstr "E-mail cím"
+
+#: suchar_overflow/templates/users/user_form.html:24
+msgid "Change E-mail"
+msgstr "E-mail cím módosítása"
+
+#: suchar_overflow/templates/users/user_form.html:26
+msgid "Address change requires confirmation."
+msgstr "A cím módosításához megerősítés szükséges."
+
+#: suchar_overflow/templates/users/user_form.html:36
+msgid "Save Changes"
+msgstr "Mentés"
+
+#: suchar_overflow/users/admin.py:36
+msgid "Personal info"
+msgstr "Személyes adatok"
+
+#: suchar_overflow/users/admin.py:38
+msgid "Permissions"
+msgstr "Jogosultságok"
+
+#: suchar_overflow/users/admin.py:49
+msgid "Important dates"
+msgstr "Fontos dátumok"
+
+#: suchar_overflow/users/apps.py:7
+msgid "Users"
+msgstr "Felhasználók"
+
+#: suchar_overflow/users/forms.py:19
+#: suchar_overflow/users/tests/test_forms.py:36
+msgid "This username has already been taken."
+msgstr "Ez a felhasználónév már foglalt."
+
+#: suchar_overflow/users/forms.py:32
+msgid "New Email Address"
+msgstr "Új e-mail cím"
+
+#: suchar_overflow/users/forms.py:37
+msgid "This email is already currently used."
+msgstr "Ez az e-mail cím már használatban van."
+
+#: suchar_overflow/users/models.py:21
+msgid "Name of User"
+msgstr "Felhasználó neve"
+
+#: suchar_overflow/users/models.py:24
+msgid "email address"
+msgstr "e-mail cím"
+
+#: suchar_overflow/users/models.py:54
+msgid "Activation Token"
+msgstr "Aktivációs kód"
+
+#: suchar_overflow/users/models.py:55
+msgid "Activation Tokens"
+msgstr "Aktivációs kódok"
+
+#: suchar_overflow/users/models.py:68
+msgid "Pending"
+msgstr "Folyamatban"
+
+#: suchar_overflow/users/models.py:69
+msgid "Verified"
+msgstr "Ellenőrzött"
+
+#: suchar_overflow/users/models.py:89
+msgid "Email Change Request"
+msgstr "E-mail cím módosítási kérelem"
+
+#: suchar_overflow/users/models.py:90
+msgid "Email Change Requests"
+msgstr "E-mail cím változtatás kérelmek"
+
+#: suchar_overflow/users/tasks.py:11
+msgid "Confirm you have a sense of humor (Account Activation)"
+msgstr "Kérjük, erősítse meg, hogy rendelkezik humorérzékkel (Fiók aktiválás)"
+
+#: suchar_overflow/users/tasks.py:29
+msgid "Confirm it's you (Email Change)"
+msgstr "Kérjük, erősítse meg, hogy Ön a felhasználó (E-mail cím módosítása)"
+
+#: suchar_overflow/users/tasks.py:41
+msgid "Someone wants to change your email address (We hope it's you)"
+msgstr ""
+"Valaki meg szeretné változtatni az e-mail címét (Reméljük, ez te vagy)."
+
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "Az adatok sikeresen frissítve lettek."
+
+#: suchar_overflow/users/views.py:334
+msgid "The link has already been used or cancelled."
+msgstr "A hivatkozás már használatban van vagy törölve lett."
+
+#: suchar_overflow/users/views.py:344
+msgid "The link has expired (24 hours have passed)."
+msgstr "A hivatkozás lejárt (24 óra eltelt)."
+
+#: suchar_overflow/users/views.py:352
+msgid "Email already taken."
+msgstr "Ez az e-mail cím már foglalt."
+
+#: suchar_overflow/users/views.py:370
+msgid "The link is invalid."
+msgstr "A hivatkozás érvénytelen."

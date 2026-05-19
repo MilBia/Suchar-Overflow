@@ -1,0 +1,1379 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: config/settings/base.py:34
+msgid "Polish"
+msgstr "पॉलिश"
+
+#: config/settings/base.py:35
+msgid "English"
+msgstr "इंग्रजी"
+
+#: suchar_overflow/achievements/apps.py:8
+#: suchar_overflow/achievements/models.py:84
+#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/users/user_detail.html:34
+msgid "Achievements"
+msgstr "यश"
+
+#: suchar_overflow/achievements/middleware.py:29
+#, python-format
+msgid "Achievement Unlocked: %(name)s!"
+msgstr "यश प्राप्त झाले: %(name)s!"
+
+#: suchar_overflow/achievements/models.py:8
+msgid "Lifetime"
+msgstr "आयुष्यभर"
+
+#: suchar_overflow/achievements/models.py:9
+msgid "Periodic"
+msgstr "नियमित"
+
+#: suchar_overflow/achievements/models.py:10
+msgid "Streak"
+msgstr "क्रम"
+
+#: suchar_overflow/achievements/models.py:13
+msgid "Suchar Posted"
+msgstr "सुचर यांनी पोस्ट केले"
+
+#: suchar_overflow/achievements/models.py:14
+msgid "Vote Received"
+msgstr "मत प्राप्त झाले"
+
+#: suchar_overflow/achievements/models.py:15
+msgid "Vote Cast"
+msgstr "मत नोंदवले"
+
+#: suchar_overflow/achievements/models.py:18
+msgid "Suchar Count"
+msgstr "सुचर संख्या"
+
+#: suchar_overflow/achievements/models.py:19
+msgid "Funny Vote Count"
+msgstr "मजेदार मत संख्या"
+
+#: suchar_overflow/achievements/models.py:20
+msgid "Dry Vote Count"
+msgstr "कोरड्या मतांची संख्या"
+
+#: suchar_overflow/achievements/models.py:21
+msgid "Vote Cast Count"
+msgstr "मतदानाची संख्या"
+
+#: suchar_overflow/achievements/models.py:22
+msgid "Total Score"
+msgstr "एकूण गुण"
+
+#: suchar_overflow/achievements/models.py:23
+msgid "Night Owl"
+msgstr "रात्री जागणे"
+
+#: suchar_overflow/achievements/models.py:24
+msgid "Login Streak"
+msgstr "लॉगिन क्रम"
+
+#: suchar_overflow/achievements/models.py:25
+msgid "Polarizer"
+msgstr "ध्रुवीकरण फिल्टर"
+
+#: suchar_overflow/achievements/models.py:28
+msgid "None"
+msgstr "काही नाही"
+
+#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
+#: suchar_overflow/templates/achievements/list.html:42
+#: suchar_overflow/templates/achievements/list.html:82
+msgid "Bronze"
+msgstr "कांस्य"
+
+#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
+#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:84
+msgid "Silver"
+msgstr "चांदी"
+
+#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
+#: suchar_overflow/templates/achievements/list.html:46
+#: suchar_overflow/templates/achievements/list.html:86
+msgid "Gold"
+msgstr "सोने"
+
+#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
+#: suchar_overflow/templates/achievements/list.html:48
+#: suchar_overflow/templates/achievements/list.html:88
+msgid "Platinum"
+msgstr "प्लॅटिनम"
+
+#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
+#: suchar_overflow/templates/achievements/list.html:50
+#: suchar_overflow/templates/achievements/list.html:90
+msgid "Diamond"
+msgstr "हिरा"
+
+#: suchar_overflow/achievements/models.py:35
+msgid "Name"
+msgstr "नाव"
+
+#: suchar_overflow/achievements/models.py:36
+msgid "Slug"
+msgstr "स्लग"
+
+#: suchar_overflow/achievements/models.py:37
+msgid "Description"
+msgstr "वर्णन"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Icon Content"
+msgstr "चिन्ह सामग्री"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Raw SVG XML"
+msgstr "कच्चा SVG XML"
+
+#: suchar_overflow/achievements/models.py:44
+msgid "Category"
+msgstr "श्रेणी"
+
+#: suchar_overflow/achievements/models.py:50
+msgid "Event Type"
+msgstr "कार्यक्रमाचा प्रकार"
+
+#: suchar_overflow/achievements/models.py:56
+msgid "Metric"
+msgstr "मेट्रिक"
+
+#: suchar_overflow/achievements/models.py:61
+msgid "Threshold"
+msgstr "मर्यादा"
+
+#: suchar_overflow/achievements/models.py:65
+msgid "Theme"
+msgstr "थीम"
+
+#: suchar_overflow/achievements/models.py:68
+msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
+msgstr "उदा. 'ख्रिसमस', 'प्रोग्रामिंग'. सामान्यसाठी रिकामे ठेवा."
+
+#: suchar_overflow/achievements/models.py:71
+msgid "Tier"
+msgstr "स्तर"
+
+#: suchar_overflow/achievements/models.py:74
+msgid "Difficulty/Rarity tier of the achievement"
+msgstr "उपलब्धीची कठीणता/दुर्मिळता स्तर"
+
+#: suchar_overflow/achievements/models.py:77
+msgid "Secret Achievement"
+msgstr "गुप्त यश"
+
+#: suchar_overflow/achievements/models.py:79
+msgid "If checked, name and description are hidden until unlocked."
+msgstr "जर हे निवडले असेल, तर नाव आणि वर्णन अनलॉक होईपर्यंत लपवले जातील."
+
+#: suchar_overflow/achievements/models.py:83
+msgid "Achievement"
+msgstr "यश"
+
+#: suchar_overflow/achievements/models.py:102
+msgid "Seen by user"
+msgstr "वापरकर्त्याने पाहिले"
+
+#: suchar_overflow/achievements/models.py:105
+msgid "User Achievement"
+msgstr "वापरकर्ता यश"
+
+#: suchar_overflow/achievements/models.py:106
+msgid "User Achievements"
+msgstr "वापरकर्त्यांची उपलब्धी"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "मजकूर"
+
+#: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:65
+#: suchar_overflow/templates/users/user_detail.html:217
+msgid "Votes"
+msgstr "मतं"
+
+#: suchar_overflow/suchary/apps.py:7
+msgid "Suchary"
+msgstr "सुरू ठेवा"
+
+#: suchar_overflow/suchary/forms.py:15
+msgid ""
+"Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
+"programowanie)."
+msgstr ""
+"स्पेस किंवा स्वल्पविराम वापरून टॅग लिहा (उदा. ब्रेड, इटली, प्रोग्रामिंग)."
+
+#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+msgid "Publication Date"
+msgstr "प्रकाशन तारीख"
+
+#: suchar_overflow/suchary/forms.py:35
+msgid "Leave empty to publish immediately."
+msgstr "त्वरित प्रकाशित करण्यासाठी रिक्त ठेवा."
+
+#: suchar_overflow/suchary/forms.py:57
+msgid "Publication date cannot be in the past."
+msgstr "प्रकाशनाची तारीख भूतकाळात असू शकत नाही."
+
+#: suchar_overflow/suchary/models.py:16
+msgid "Suchar text"
+msgstr "असा मजकूर"
+
+#: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
+#: suchar_overflow/templates/403_csrf.html:6
+#: suchar_overflow/templates/403_csrf.html:9
+msgid "Forbidden (403)"
+msgstr "प्रतिबंधित (४०३)"
+
+#: suchar_overflow/templates/403.html:14
+#: suchar_overflow/templates/403_csrf.html:14
+msgid "You're not allowed to access this page."
+msgstr "तुम्हाला या पृष्ठावर प्रवेश करण्याची परवानगी नाही."
+
+#: suchar_overflow/templates/404.html:6 suchar_overflow/templates/404.html:9
+msgid "Page not found"
+msgstr "पृष्ठ सापडले नाही"
+
+#: suchar_overflow/templates/404.html:14
+msgid "This is not the page you were looking for."
+msgstr "तुम्ही ज्या पानाची अपेक्षा करत होता, ते हे नाही."
+
+#: suchar_overflow/templates/500.html:6
+msgid "Server Error"
+msgstr "सर्व्हर त्रुटी"
+
+#: suchar_overflow/templates/500.html:9
+msgid "Ooops!!! 500"
+msgstr "अरेरे!!! ५००"
+
+#: suchar_overflow/templates/500.html:10
+msgid "Looks like something went wrong!"
+msgstr "काहीतरी चूक झाली आहे!"
+
+#: suchar_overflow/templates/500.html:12
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+"आम्ही या त्रुटी आपोआप ट्रॅक करतो, परंतु समस्या कायम राहिल्यास, आमच्याशी "
+"संपर्क साधण्यास अजिबात संकोच करू नका. दरम्यान, पुन्हा प्रयत्न करा."
+
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+msgid "Notification Inbox"
+msgstr "सूचना पेटी"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr ""
+"तुम्ही मिळवलेल्या सर्व उपलब्धियांना येथे दर्शविले आहे, सर्वात नवीन प्रथम."
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "सामान्य"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, python-format
+msgid "Unlocked: %(date)s"
+msgstr "अनलॉक केले: %(date)s"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+msgid "No achievements yet — go post some jokes!"
+msgstr "अजून कोणतीही उपलब्धी नाही - काही विनोद पोस्ट करा!"
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+msgid "Browse achievements"
+msgstr "यश ब्राउझ करा"
+
+#: suchar_overflow/templates/achievements/list.html:6
+msgid "My Achievements"
+msgstr "माझे यश"
+
+#: suchar_overflow/templates/achievements/list.html:17
+#: suchar_overflow/templates/stats/leaderboard.html:110
+msgid "Hall of Fame"
+msgstr "सन्माननीय व्यक्तींची यादी"
+
+#: suchar_overflow/templates/achievements/list.html:19
+msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
+msgstr "सुचार ओव्हरफ्लोमधील तुमचे बॅजेस, पदके आणि लज्जास्पद रहस्ये."
+
+#: suchar_overflow/templates/achievements/list.html:74
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr "हे यश अजून अनलॉक केलेले नाही. खेळून त्याचा रहस्य उलगडा!"
+
+#: suchar_overflow/templates/base.html:17
+#: suchar_overflow/templates/base.html:24
+msgid "Joke aggregator with critically low humidity levels."
+msgstr "कमी आर्द्रता पातळी असलेले विनोद संग्रह."
+
+#: suchar_overflow/templates/base.html:96
+msgid "Home"
+msgstr "मुख्य पृष्ठ"
+
+#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/suchary/suchar_list.html:12
+#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/users/admin.py:68
+msgid "Jokes"
+msgstr "विनोद"
+
+#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/stats/leaderboard.html:6
+#: suchar_overflow/templates/stats/leaderboard.html:12
+msgid "Leaderboard"
+msgstr "लीडरबोर्ड"
+
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "इनबॉक्स"
+
+#: suchar_overflow/templates/base.html:113
+msgid "About"
+msgstr "आमच्याबद्दल"
+
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
+msgid "Log Out"
+msgstr "लॉग आउट करा"
+
+#: suchar_overflow/templates/base.html:159
+msgid "Log In"
+msgstr "लॉगिन करा"
+
+#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/registration/signup.html:6
+#: suchar_overflow/templates/registration/signup.html:12
+#: suchar_overflow/templates/registration/signup.html:23
+msgid "Sign Up"
+msgstr "साइन अप करा"
+
+#: suchar_overflow/templates/base.html:170
+msgid "Default content."
+msgstr "डीफॉल्ट सामग्री."
+
+#: suchar_overflow/templates/base.html:179
+msgid "All rights reserved (but jokes stolen)."
+msgstr "सर्व अधिकार सुरक्षित (पण विनोद चोरले आहेत)."
+
+#: suchar_overflow/templates/base.html:188
+msgid "Report a Bug"
+msgstr "त्रुटी नोंदवा"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/users/email_change_failed.html:6
+msgid "Error"
+msgstr "त्रुटी"
+
+#: suchar_overflow/templates/base.html:212
+msgid "Achievement Unlocked"
+msgstr "यश प्राप्त झाले"
+
+#: suchar_overflow/templates/base.html:214
+msgid "Success"
+msgstr "यश"
+
+#: suchar_overflow/templates/base.html:216
+msgid "Notification"
+msgstr "सूचना"
+
+#: suchar_overflow/templates/base.html:231
+msgid "Confirm Logout"
+msgstr "लॉगआउट निश्चित करा"
+
+#: suchar_overflow/templates/base.html:234
+msgid "Are you sure you want to log out?"
+msgstr "तुम्ही नक्कीच लॉग आउट करू इच्छिता?"
+
+#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/users/user_form.html:35
+msgid "Cancel"
+msgstr "रद्द करा"
+
+#: suchar_overflow/templates/pages/about.html:6
+msgid "About Project - Suchar Overflow"
+msgstr "प्रकल्पाबद्दल - सुचर ओव्हरफ्लो"
+
+#: suchar_overflow/templates/pages/about.html:13
+msgid "About Project"
+msgstr "प्रकल्पाबद्दल"
+
+#: suchar_overflow/templates/pages/about.html:14
+msgid "Why do we do this? Because someone had to."
+msgstr "आम्ही हे का करतो? कारण कोणीतरी हे करायला हवे होते."
+
+#: suchar_overflow/templates/pages/about.html:18
+msgid "Mission"
+msgstr "ध्येय"
+
+#: suchar_overflow/templates/pages/about.html:20
+msgid ""
+"The goal of Suchar Overflow is to gather the largest collection of jokes "
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
+msgstr ""
+"\"सुचार ओव्हरफ्लो\" चा उद्देश हा अशा विनोदांचा सर्वात मोठा संग्रह तयार करणे "
+"आहे, ज्यामुळे ज्या व्यक्तीला तो विनोद ऐकतो त्याला शारीरिक वेदना होतात. "
+"आम्हाला असे वाटते की एक चांगला 'ड्राई' विनोद म्हणजे असा विनोद, त्यानंतर अवघड"
+" शांतता आणि पार्श्वभूमीमध्ये किड्यांचा आवाज येतो."
+
+#: suchar_overflow/templates/pages/about.html:22
+msgid "Technology"
+msgstr "तंत्रज्ञान"
+
+#: suchar_overflow/templates/pages/about.html:24
+msgid ""
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr ""
+"ही साइट नवीनतम तंत्रज्ञानावर (Django + Custom CSS) आधारित आहे, ज्यामुळे "
+"मजेदार आणि मनोरंजक सामग्री जलद आणि নির্ভরযোগ্যपणे तुमच्या स्क्रीनवर पोहोचते."
+
+#: suchar_overflow/templates/pages/home.html:8
+msgid "Dry Bread for the Horse"
+msgstr "घोड्यासाठी कोरडी ब्रेड"
+
+#: suchar_overflow/templates/pages/home.html:10
+msgid ""
+"Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
+"you need a drink."
+msgstr ""
+"<strong>Suchar Overflow</strong> मध्ये आपले स्वागत आहे. ही अशी जागा आहे जिथे"
+" विनोद इतका कोरडा असतो की तुम्हाला नक्कीच एक पेय पिण्याची इच्छा होईल."
+
+#: suchar_overflow/templates/pages/home.html:11
+msgid "Vote for the best jokes, add your own, and become an office legend."
+msgstr ""
+"सर्वोत्तम विनोद मत देऊन निवडा, तुमचे स्वतःचे विनोद जोडा आणि ऑफिसमध्ये एक "
+"महान व्यक्ती बना."
+
+#: suchar_overflow/templates/pages/home.html:15
+msgid "Browse Jokes"
+msgstr "विनोद ब्राउझ करा"
+
+#: suchar_overflow/templates/pages/home.html:17
+msgid "Join Us"
+msgstr "आमच्यात सामील व्हा"
+
+#: suchar_overflow/templates/pages/home.html:31
+msgid "Vote"
+msgstr "मत द्या"
+
+#: suchar_overflow/templates/pages/home.html:32
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr ""
+"इतर लोकांच्या विनोदांना रेटिंग द्या. काय मजेदार आहे आणि काय निराशाजनक आहे ते"
+" ठरवा."
+
+#: suchar_overflow/templates/pages/home.html:39
+#: suchar_overflow/templates/suchary/suchar_list.html:68
+msgid "Add"
+msgstr "जोडा"
+
+#: suchar_overflow/templates/pages/home.html:40
+msgid "Share your thoughts with the world. Don't be shy."
+msgstr "तुमचे विचार जगासोबत सामायिक करा. संकोच करू नका."
+
+#: suchar_overflow/templates/pages/home.html:47
+msgid "Laugh (optional)"
+msgstr "हसा (पर्यायी)"
+
+#: suchar_overflow/templates/pages/home.html:48
+msgid "We guarantee a pity smile or your money back (the site is free)."
+msgstr ""
+"आम्ही खात्री देतो की तुम्हाला नक्कीच आनंद होईल, नाहीतर तुमचे पैसे परत (ही "
+"साइट विनामूल्य आहे)."
+
+#: suchar_overflow/templates/registration/activation_complete.html:6
+msgid "Activation Complete"
+msgstr "सक्रियण पूर्ण झाले."
+
+#: suchar_overflow/templates/registration/activation_complete.html:23
+msgid "Account Activated!"
+msgstr "खाते सक्रिय झाले आहे!"
+
+#: suchar_overflow/templates/registration/activation_complete.html:25
+msgid ""
+"Your account has been activated successfully. You can now log in and start "
+"using Suchar Overflow."
+msgstr ""
+"तुमचे खाते यशस्वीरित्या सक्रिय झाले आहे. आता तुम्ही लॉग इन करू शकता आणि "
+"Suchar Overflow वापरणे सुरू करू शकता."
+
+#: suchar_overflow/templates/registration/activation_complete.html:28
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
+msgid "Log in"
+msgstr "लॉगिन करा"
+
+#: suchar_overflow/templates/registration/activation_email.txt:3
+#: suchar_overflow/templates/users/email_notify_old_email.txt:3
+#: suchar_overflow/templates/users/email_verify_email.txt:3
+#, python-format
+msgid "Hello %(username)s!"
+msgstr "नमस्कार, %(username)s!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:5
+msgid ""
+"Welcome to Suchar Overflow - a place where air humidity drops below zero."
+msgstr ""
+"\"सुचर ओवरफ्लो\" मध्ये आपले स्वागत आहे - जिथे हवेतील आर्द्रता शून्यापेक्षा "
+"कमी होते."
+
+#: suchar_overflow/templates/registration/activation_email.txt:6
+msgid ""
+"To make sure you're not a bot (or a person without a sense of humor), you "
+"need to activate your account."
+msgstr ""
+"हे सुनिश्चित करण्यासाठी की तुम्ही एक बॉट नाही आहात (किंवा विनोदाची जाण "
+"नसलेले व्यक्ती नाही), तुम्हाला तुमचा खाते सक्रिय करणे आवश्यक आहे."
+
+#: suchar_overflow/templates/registration/activation_email.txt:8
+msgid "Click this link before it dries out:"
+msgstr "हे लिंक सुकण्यापूर्वी क्लिक करा:"
+
+#: suchar_overflow/templates/registration/activation_email.txt:11
+msgid "Remember: Drink plenty of water."
+msgstr "लक्षात ठेवा: भरपूर पाणी प्या."
+
+#: suchar_overflow/templates/registration/activation_email.txt:13
+msgid "The Suchar Overflow Team"
+msgstr "सुचर ओव्हरफ्लो टीम"
+
+#: suchar_overflow/templates/registration/activation_failed.html:6
+#: suchar_overflow/templates/registration/activation_failed.html:24
+msgid "Activation Failed"
+msgstr "सक्रियण अयशस्वी झाले."
+
+#: suchar_overflow/templates/registration/activation_failed.html:26
+msgid ""
+"The activation link is invalid or has expired. Please try registering again "
+"or contact support."
+msgstr ""
+"ॲक्टिव्हेशन लिंक अवैध आहे किंवा कालबाह्य झाली आहे. कृपया पुन्हा नोंदणी "
+"करण्याचा प्रयत्न करा किंवा सपोर्टशी संपर्क साधा."
+
+#: suchar_overflow/templates/registration/activation_failed.html:29
+msgid "Sign Up Again"
+msgstr "पुन्हा नोंदणी करा"
+
+#: suchar_overflow/templates/registration/activation_failed.html:30
+#: suchar_overflow/templates/registration/signup_done.html:28
+msgid "Back to Home"
+msgstr "मुखपृष्ठावर परत जा"
+
+#: suchar_overflow/templates/registration/login.html:6
+#: suchar_overflow/templates/registration/login.html:12
+#: suchar_overflow/templates/registration/login.html:23
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Sign In"
+msgstr "साइन इन करा"
+
+#: suchar_overflow/templates/registration/login.html:26
+msgid "Forgot Password?"
+msgstr "पासवर्ड विसरलात का?"
+
+#: suchar_overflow/templates/registration/password_change_done.html:6
+#: suchar_overflow/templates/registration/password_change_done.html:12
+msgid "Password Changed"
+msgstr "पासवर्ड बदलला गेला आहे."
+
+#: suchar_overflow/templates/registration/password_change_done.html:13
+msgid "Your password was changed successfully."
+msgstr "तुमचा पासवर्ड यशस्वीरित्या बदलला गेला आहे."
+
+#: suchar_overflow/templates/registration/password_change_done.html:15
+msgid "Back to Profile"
+msgstr "प्रोफाइलवर परत जा"
+
+#: suchar_overflow/templates/registration/password_change_form.html:6
+#: suchar_overflow/templates/registration/password_change_form.html:12
+#: suchar_overflow/templates/registration/password_change_form.html:18
+#: suchar_overflow/templates/users/base_dashboard.html:42
+msgid "Change Password"
+msgstr "पासवर्ड बदला"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:6
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
+msgid "Password reset successful"
+msgstr "पासवर्ड रीसेट यशस्वी झाला."
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "तुमचा पासवर्ड सेट झाला आहे. तुम्ही आता लॉग इन करू शकता."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:6
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password"
+msgstr "नवीन पासवर्ड सेट करा"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"कृपया तुमचा नवीन पासवर्ड दोनदा प्रविष्ट करा जेणेकरून आम्ही ते योग्यरित्या "
+"टाइप केले आहे की नाही हे तपासू शकू."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:20
+msgid "Change password"
+msgstr "पासवर्ड बदला"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"पासवर्ड रीसेट लिंक अवैध आहे, शक्यतो कारण ती आधीच वापरली गेली आहे. कृपया नवीन"
+" पासवर्ड रीसेटची विनंती करा."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:6
+#: suchar_overflow/templates/registration/password_reset_done.html:12
+msgid "Password Reset Sent"
+msgstr "पासवर्ड रीसेट करण्याची सूचना पाठवली आहे."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "तुमचा इनबॉक्स तपासा"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"तुम्ही दिलेल्या ईमेल आयडीने खाते असल्यास, आम्ही तुम्हाला तुमचा पासवर्ड सेट "
+"करण्यासाठी सूचना पाठवल्या आहेत. तुम्हाला त्या लवकरच मिळतील."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:20
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"तुम्हाला ईमेल न मिळाल्यास, कृपया तुम्ही नोंदणी केलेल्या पत्त्याचा वापर केला "
+"आहे का ते तपासा आणि तुमचा स्पॅम फोल्डर देखील तपासा."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr ""
+"तुम्ही हा ईमेल तेव्हाच पाहत आहात कारण तुमच्या यूजर खात्यासाठी तुम्ही पासवर्ड"
+" रीसेट करण्याची विनंती केली आहे."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "कृपया खालील पृष्ठावर जा आणि एक नवीन पासवर्ड निवडा:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "तुमचा वापरकर्ता आयडी, जर तुम्ही तो विसरला असाल तर:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "आमच्या साइटचा वापर केल्याबद्दल धन्यवाद!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr "तो/ती/ते"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr "टीम"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:6
+#: suchar_overflow/templates/registration/password_reset_form.html:12
+msgid "Password Reset"
+msgstr "पासवर्ड रीसेट करा"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"तुमचा पासवर्ड विसरला आहात? खाली तुमचा ईमेल ॲड्रेस टाका, आणि आम्ही तुम्हाला "
+"नवीन पासवर्ड सेट करण्यासाठी सूचना पाठवू."
+
+#: suchar_overflow/templates/registration/password_reset_form.html:22
+msgid "Reset my password"
+msgstr "माझा पासवर्ड रीसेट करा"
+
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Already have an account?"
+msgstr "तुमच्याकडे आधीपासूनच खाते आहे का?"
+
+#: suchar_overflow/templates/registration/signup_done.html:6
+msgid "Confirmation Sent"
+msgstr "पुष्टीकरण पाठवले गेले आहे."
+
+#: suchar_overflow/templates/registration/signup_done.html:25
+msgid ""
+"We have sent you an email to confirm your registration. Please check your "
+"inbox and click the link to activate your account."
+msgstr ""
+"आम्ही तुम्हाला तुमच्या नोंदणीची पुष्टी करण्यासाठी एक ईमेल पाठवला आहे. कृपया "
+"तुमचा इनबॉक्स तपासा आणि तुमचा खाते सक्रिय करण्यासाठी लिंकवर क्लिक करा."
+
+#: suchar_overflow/templates/stats/leaderboard.html:13
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr ""
+"आमच्या समुदायामुळे निर्माण झालेल्या सर्वोत्तम (आणि मजेदार) गोष्टींचा उत्सव "
+"साजरा करत आहोत."
+
+#: suchar_overflow/templates/stats/leaderboard.html:19
+msgid "Activity (Last 30 Days)"
+msgstr "क्रियाकलाप (मागील ३० दिवस)"
+
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "एकूण"
+
+#: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Funny"
+msgstr "मजेदार"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:128
+#: suchar_overflow/templates/suchary/suchar_list.html:131
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Dry"
+msgstr "कोरडे"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+msgid "Most Active Authors"
+msgstr "सर्वाधिक सक्रिय लेखक"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
+msgid "jokes"
+msgstr "विनोद"
+
+#: suchar_overflow/templates/stats/leaderboard.html:99
+msgid "No data."
+msgstr "डेटा उपलब्ध नाही."
+
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+msgid "No jokes."
+msgstr "कोणताही विनोद नाही."
+
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr "विनोदी कलाकार"
+
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "कोणताही मजेदार डेटा नाही."
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "सर्वात मजेदार विनोद"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "दुष्काळचे स्वामी"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "कोणताही डेटा उपलब्ध नाही."
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "उत्कृष्ट विनोदी विनोद"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
+msgid "New Jokes"
+msgstr "नवीन विनोद"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:6
+msgid "Too Late!"
+msgstr "खूप उशीर झाला!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:13
+msgid "The ship has sailed!"
+msgstr "जहाज निघून गेले आहे!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:15
+msgid ""
+"This joke has already been published. You can't polish a diamond (or a dry "
+"biscuit) once it's been served."
+msgstr ""
+"ही विनोद आधीच प्रकाशित झाली आहे. एकदा एखादी गोष्ट सादर झाल्यावर, ती पुन्हा "
+"सुधारता येत नाही."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:21
+msgid "Time creates jokes, but it also seals them."
+msgstr "वेळ विनोद निर्माण करते, पण तोच ते सील करतो."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:23
+msgid "Ancient Suchar Proverb"
+msgstr "प्राचीन सुचार म्हणी"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:29
+msgid "Back to Jokes"
+msgstr "विनोदांकडे परत जा"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:8
+#: suchar_overflow/templates/suchary/suchar_form.html:29
+msgid "Add Joke"
+msgstr "विनोद जोडा"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:30
+msgid "Shine with humor."
+msgstr "विनोदाने चमकून घ्या."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:38
+msgid "Joke Content"
+msgstr "विनोद सामग्री"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:43
+msgid "Why did the chicken cross the road?"
+msgstr "कोंबडीने रस्ता का ओलांडला?"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:46
+msgid "Remember, the drier the better."
+msgstr "लक्षात ठेवा, जितके जास्त कोरडे तितके चांगले."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:50
+msgid "Tags"
+msgstr "टॅग"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:55
+msgid "e.g. it, programming, school"
+msgstr "उदा. माहिती तंत्रज्ञान, प्रोग्रामिंग, शाळा"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:62
+msgid "Separate with commas."
+msgstr "स्वल्पविरामाने वेगळे करा."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:70
+msgid "Schedule for later"
+msgstr "नंतर शेड्यूल करा"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:79
+msgid "Select date and time..."
+msgstr "तारीख आणि वेळ निवडा..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:88
+msgid "Publish"
+msgstr "प्रकाशित करा"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:99
+msgid "Live Preview"
+msgstr "थेट पूर्वावलोकन"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:109
+msgid "Now"
+msgstr "आता"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:116
+msgid "Your joke content will appear here..."
+msgstr "तुमचा विनोद येथे दिसेल..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:149
+msgid "This is how your joke will look on the main list."
+msgstr "तुमचा विनोद मुख्य यादीमध्ये कसा दिसेल, ते येथे पहा."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:13
+msgid "The dryest jokes on the internet."
+msgstr "इंटरनेटवरील सर्वात मजेदार विनोद."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:28
+msgid "Search..."
+msgstr "शोधा..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:43
+#: suchar_overflow/templates/suchary/suchar_list.html:58
+msgid "Top"
+msgstr "शीर्ष"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:45
+#: suchar_overflow/templates/suchary/suchar_list.html:53
+msgid "Newest"
+msgstr "नवीनतम"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:85
+msgid "Scheduled"
+msgstr "नियोजित"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:95
+#: suchar_overflow/templates/users/user_detail.html:194
+msgid "Edit"
+msgstr "संपादन करा"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:139
+msgid "So dry here..."
+msgstr "येथे खूप कोरडे आहे..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:140
+msgid "Be the hero we need and add the first joke."
+msgstr "आम्ही ज्या नायकाची गरज आहे, तो बना आणि पहिला विनोद जोडा."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:158
+msgid "Previous"
+msgstr "मागील"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:182
+msgid "Next"
+msgstr "पुढे"
+
+#: suchar_overflow/templates/users/base_dashboard.html:17
+msgid "Your Account"
+msgstr "तुमचे खाते"
+
+#: suchar_overflow/templates/users/base_dashboard.html:22
+msgid "Profile"
+msgstr "प्रोफाइल"
+
+#: suchar_overflow/templates/users/base_dashboard.html:27
+#: suchar_overflow/templates/users/user_form.html:6
+#: suchar_overflow/templates/users/user_form.html:11
+msgid "Edit Profile"
+msgstr "प्रोफाइल संपादित करा"
+
+#: suchar_overflow/templates/users/base_dashboard.html:37
+msgid "Security"
+msgstr "सुरक्षा"
+
+#: suchar_overflow/templates/users/email_change_complete.html:6
+msgid "Email Changed"
+msgstr "ईमेल बदलला आहे"
+
+#: suchar_overflow/templates/users/email_change_complete.html:23
+msgid "It worked!"
+msgstr "हे काम झाले!"
+
+#: suchar_overflow/templates/users/email_change_complete.html:25
+msgid ""
+"Your email address has been changed. You can now sleep peacefully (or not)."
+msgstr ""
+"तुमचा ईमेल पत्ता बदलला गेला आहे. आता तुम्ही शांतपणे झोपू शकता (किंवा नाही)."
+
+#: suchar_overflow/templates/users/email_change_complete.html:28
+msgid "Back to settings"
+msgstr "सेटिंग्जवर परत जा"
+
+#: suchar_overflow/templates/users/email_change_done.html:6
+msgid "Email Sent"
+msgstr "ईमेल पाठवला गेला आहे"
+
+#: suchar_overflow/templates/users/email_change_done.html:23
+msgid "Check both inboxes!"
+msgstr "दोन्ही इनबॉक्स तपासा!"
+
+#: suchar_overflow/templates/users/email_change_done.html:25
+msgid ""
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"          <br />\n"
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+msgstr ""
+"आम्ही तुमच्या <strong>नवीन</strong> पत्त्यावर एक संदेश पाठवला आहे ज्यामध्ये ॲक्टिव्हेशन लिंक आहे.\n"
+"          <br />\n"
+"          तसेच, आम्ही तुमच्या <strong>जुन्या</strong> पत्त्यावर एक सूचना पाठवली आहे, जेणेकरून आम्हाला खात्री होईल की हे तुम्हीच आहात."
+
+#: suchar_overflow/templates/users/email_change_done.html:30
+msgid ""
+"If you don't click the link, nothing will change. Your account will remain "
+"as dry as our jokes."
+msgstr ""
+"जर तुम्ही लिंकवर क्लिक केले नाही, तर काहीही बदलणार नाही. तुमचे खाते आमच्या "
+"विनोदांप्रमाणेच कोरडे राहील."
+
+#: suchar_overflow/templates/users/email_change_done.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:43
+msgid "Back to profile"
+msgstr "प्रोफाइलवर परत जा"
+
+#: suchar_overflow/templates/users/email_change_failed.html:23
+msgid "Something went wrong"
+msgstr "काहीतरी चूक झाली."
+
+#: suchar_overflow/templates/users/email_change_failed.html:24
+msgid "The link has expired, is invalid, or has already been used."
+msgstr "ही लिंक कालबाह्य झाली आहे, अवैध आहे किंवा ती आधीच वापरली गेली आहे."
+
+#: suchar_overflow/templates/users/email_change_failed.html:25
+msgid "Try again if you really must."
+msgstr "तुम्हाला खरंच असे करायचे असल्यास, पुन्हा प्रयत्न करा."
+
+#: suchar_overflow/templates/users/email_change_failed.html:28
+msgid "Try again"
+msgstr "पुन्हा प्रयत्न करा"
+
+#: suchar_overflow/templates/users/email_change_form.html:6
+msgid "Update Email"
+msgstr "ईमेल अपडेट करा"
+
+#: suchar_overflow/templates/users/email_change_form.html:12
+msgid "Change email address"
+msgstr "ईमेल पत्ता बदला"
+
+#: suchar_overflow/templates/users/email_change_form.html:14
+msgid ""
+"Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
+"judge."
+msgstr ""
+"तुमचा जुना पत्ता तुम्हाला कंटाळवाणा वाटतोय का? किंवा कदाचित तुम्ही "
+"करचुकवेगिरी करण्याचा प्रयत्न करत आहात? आम्ही कोणताही निर्णय घेत नाही."
+
+#: suchar_overflow/templates/users/email_change_form.html:25
+msgid "Send a pigeon with the link"
+msgstr "लिंकसह एक कबूतर पाठवा"
+
+#: suchar_overflow/templates/users/email_change_form.html:26
+msgid "Changed my mind (go back)"
+msgstr "माझा विचार बदलला आहे (परत जा)"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:6
+#: suchar_overflow/users/models.py:70
+msgid "Revoked"
+msgstr "रद्द केलेले"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:15
+msgid "We've reverted the changes!"
+msgstr "आम्ही केलेले बदल पूर्ववत केले आहेत!"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:17
+msgid ""
+"Phew, that was close. Your email address has been restored to its previous "
+"state."
+msgstr "हुश्श! तुमचे ईमेल ॲड्रेस पूर्वीच्या स्थितीत परत आणले आहे."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:19
+msgid "You can breathe a sigh of relief. We recommend changing your password."
+msgstr ""
+"तुम्ही आता निश्चिंत होऊ शकता. आम्ही तुम्हाला तुमचा पासवर्ड बदलण्याची शिफारस "
+"करतो."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:32
+msgid "Change cancelled"
+msgstr "बदल रद्द केले."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:34
+msgid "All active email change links have been invalidated."
+msgstr "सर्व सक्रिय ईमेल बदलाचे दुवे निष्क्रिय केले आहेत."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:36
+msgid ""
+"If it wasn't you who tried to change the email, we recommend changing your "
+"password."
+msgstr ""
+"जर तुम्ही तुमचा ईमेल बदलण्याचा प्रयत्न केला नसेल, तर आम्ही तुम्हाला तुमचा "
+"पासवर्ड बदलण्याची शिफारस करतो."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:41
+msgid "Change password (just in case)"
+msgstr "पासवर्ड बदला (फक्त احتياط म्हणून)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:5
+#, python-format
+msgid "We just received a request to change your email address to: %(email)s."
+msgstr ""
+"आम्हाला नुकतेच तुमची ईमेल आयडी %(email)s मध्ये बदलण्याची विनंती प्राप्त झाली"
+" आहे."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:7
+msgid ""
+"If it was you - great, you don't need to do anything here (just check that "
+"other inbox)."
+msgstr ""
+"जर हे तुम्ही केले असेल, तर उत्तम, तुम्हाला येथे काही करण्याची आवश्यकता नाही "
+"(फक्त दुसरा इनबॉक्स तपासा)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:9
+msgid "BUT IF IT WASN'T YOU:"
+msgstr "पण जर ते तुम्ही नसाल:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:10
+msgid ""
+"Someone might be trying to take over your account (or you just have a split "
+"personality)."
+msgstr ""
+"कोणीतरी तुमच्या खात्यावर ताबा मिळवण्याचा प्रयत्न करत असेल (किंवा "
+"तुमच्यामध्ये दोन व्यक्तिमत्त्वे असू शकतात)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:11
+msgid ""
+"Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
+"sent to the new address:"
+msgstr ""
+"हे लिंकवर क्लिक करून तुम्ही तात्काळ ही विनंती रद्द करू शकता आणि नवीन "
+"पत्त्यावर पाठवलेले लिंक अवैध ठरवू शकता:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:15
+msgid "We also recommend changing your password if you suspect a breach."
+msgstr ""
+"जर तुम्हाला तुमच्या खात्यात काही गडबड वाटल्यास, तुमचा पासवर्ड बदलण्याची "
+"आम्ही शिफारस करतो."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:17
+#: suchar_overflow/templates/users/email_verify_email.txt:14
+msgid "Suchar Overflow"
+msgstr "Suchar Overflow"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:5
+#, python-format
+msgid ""
+"We received a request to change your email address to this one you're "
+"reading (%(email)s)."
+msgstr ""
+"आम्हाला तुमचा ईमेल पत्ता बदलण्याची विनंती प्राप्त झाली आहे, आणि तुम्ही आता "
+"जो ईमेल वाचत आहात तोच %(email)s हा नवीन ईमेल पत्ता असेल."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:7
+msgid "If it's you, click the link below to confirm the change:"
+msgstr ""
+"जर हे तुम्ही असाल, तर बदलाची पुष्टी करण्यासाठी खालील लिंकवर क्लिक करा:"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:10
+msgid "The link is valid for 24 hours (or until it evaporates)."
+msgstr "ही लिंक २४ तासांसाठी वैध आहे (किंवा ती निष्क्रिय होईपर्यंत)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:12
+msgid ""
+"If it wasn't you, ignore this message. We sent instructions on how to block "
+"the intruder to your old address."
+msgstr ""
+"जर हे तुम्ही केले नसेल, तर हा संदेश दुर्लक्षित करा. आम्ही तुमच्या जुन्या "
+"पत्त्यावर घुसखोरी करणाऱ्या व्यक्तीला ब्लॉक करण्याच्या सूचना पाठवल्या आहेत."
+
+#: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
+msgid "User"
+msgstr "वापरकर्ता"
+
+#: suchar_overflow/templates/users/user_detail.html:23
+msgid "Suchar Overflow User"
+msgstr "सुचार ओव्हरफ्लो वापरकर्ता"
+
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "No achievements yet."
+msgstr "अजून कोणतीही उपलब्धी नाही."
+
+#: suchar_overflow/templates/users/user_detail.html:62
+msgid "The Best Of"
+msgstr "उत्कृष्ट"
+
+#: suchar_overflow/templates/users/user_detail.html:76
+msgid "Statistics"
+msgstr "आकडेवारी"
+
+#: suchar_overflow/templates/users/user_detail.html:78
+msgid "Rank"
+msgstr "क्रम"
+
+#: suchar_overflow/templates/users/user_detail.html:86
+msgid "Total Votes"
+msgstr "एकूण मतं"
+
+#: suchar_overflow/templates/users/user_detail.html:93
+msgid "Joined"
+msgstr "सामील झाले"
+
+#: suchar_overflow/templates/users/user_detail.html:101
+msgid "Dryness Level"
+msgstr "कोरडेपणा पातळी"
+
+#: suchar_overflow/templates/users/user_detail.html:109
+msgid "Reception"
+msgstr "स्वागत कक्ष"
+
+#: suchar_overflow/templates/users/user_detail.html:125
+msgid "Drought Map"
+msgstr "दुष्काळ नकाशा"
+
+#: suchar_overflow/templates/users/user_detail.html:127
+msgid "Less"
+msgstr "कमी"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "More"
+msgstr "आणखी"
+
+#: suchar_overflow/templates/users/user_detail.html:146
+msgid "Mon"
+msgstr "सोमवार"
+
+#: suchar_overflow/templates/users/user_detail.html:147
+msgid "Wed"
+msgstr "बुधवार"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Fri"
+msgstr "शुक्र"
+
+#: suchar_overflow/templates/users/user_detail.html:167
+msgid "jokes on"
+msgstr "विनोद"
+
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Latest Jokes"
+msgstr "नवीनतम विनोद"
+
+#: suchar_overflow/templates/users/user_detail.html:185
+msgid "Scheduled for Publication"
+msgstr "प्रकाशनासाठी नियोजित"
+
+#: suchar_overflow/templates/users/user_detail.html:228
+msgid "See all entries"
+msgstr "सर्व नोंदी पहा"
+
+#: suchar_overflow/templates/users/user_detail.html:232
+msgid "User hasn't added any jokes yet."
+msgstr "वापरकर्त्याने अजून कोणतेही विनोद समाविष्ट केलेले नाहीत."
+
+#: suchar_overflow/templates/users/user_form.html:12
+msgid "Here you can update your data."
+msgstr "येथे तुम्ही तुमचा डेटा अपडेट करू शकता."
+
+#: suchar_overflow/templates/users/user_form.html:16
+msgid "E-mail Address"
+msgstr "ईमेल पत्ता"
+
+#: suchar_overflow/templates/users/user_form.html:24
+msgid "Change E-mail"
+msgstr "ईमेल बदला"
+
+#: suchar_overflow/templates/users/user_form.html:26
+msgid "Address change requires confirmation."
+msgstr "पत्ता बदलण्यासाठी पुष्टीकरण आवश्यक आहे."
+
+#: suchar_overflow/templates/users/user_form.html:36
+msgid "Save Changes"
+msgstr "बदल सेव्ह करा"
+
+#: suchar_overflow/users/admin.py:36
+msgid "Personal info"
+msgstr "वैयक्तिक माहिती"
+
+#: suchar_overflow/users/admin.py:38
+msgid "Permissions"
+msgstr "परवानग्या"
+
+#: suchar_overflow/users/admin.py:49
+msgid "Important dates"
+msgstr "महत्त्वाच्या तारखा"
+
+#: suchar_overflow/users/apps.py:7
+msgid "Users"
+msgstr "वापरकर्ते"
+
+#: suchar_overflow/users/forms.py:19
+#: suchar_overflow/users/tests/test_forms.py:36
+msgid "This username has already been taken."
+msgstr "हे वापरकर्तानाव आधीच घेतले गेले आहे."
+
+#: suchar_overflow/users/forms.py:32
+msgid "New Email Address"
+msgstr "नवीन ईमेल पत्ता"
+
+#: suchar_overflow/users/forms.py:37
+msgid "This email is already currently used."
+msgstr "हा ईमेल आयडी सध्या वापरला जात आहे."
+
+#: suchar_overflow/users/models.py:21
+msgid "Name of User"
+msgstr "वापरकर्त्याचे नाव"
+
+#: suchar_overflow/users/models.py:24
+msgid "email address"
+msgstr "ईमेल पत्ता"
+
+#: suchar_overflow/users/models.py:54
+msgid "Activation Token"
+msgstr "सक्रियण टोकन"
+
+#: suchar_overflow/users/models.py:55
+msgid "Activation Tokens"
+msgstr "सक्रियण टोकन"
+
+#: suchar_overflow/users/models.py:68
+msgid "Pending"
+msgstr "प्रलंबित"
+
+#: suchar_overflow/users/models.py:69
+msgid "Verified"
+msgstr "सत्यापित"
+
+#: suchar_overflow/users/models.py:89
+msgid "Email Change Request"
+msgstr "ईमेल बदलाची विनंती"
+
+#: suchar_overflow/users/models.py:90
+msgid "Email Change Requests"
+msgstr "ईमेल बदलाच्या विनंत्या"
+
+#: suchar_overflow/users/tasks.py:11
+msgid "Confirm you have a sense of humor (Account Activation)"
+msgstr "तुमच्यामध्ये विनोदबुद्धी आहे याची खात्री करा (खाते सक्रियण)"
+
+#: suchar_overflow/users/tasks.py:29
+msgid "Confirm it's you (Email Change)"
+msgstr "हे तुम्हीच आहात याची खात्री करा (ईमेल बदल)"
+
+#: suchar_overflow/users/tasks.py:41
+msgid "Someone wants to change your email address (We hope it's you)"
+msgstr ""
+"कोणीतरी तुमचा ईमेल पत्ता बदलू इच्छितो (आम्हाला आशा आहे की तो तुम्हीच आहात)."
+
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "माहिती यशस्वीरित्या अद्ययावत केली गेली आहे."
+
+#: suchar_overflow/users/views.py:334
+msgid "The link has already been used or cancelled."
+msgstr "हे लिंक आधीच वापरले गेले आहे किंवा रद्द केले आहे."
+
+#: suchar_overflow/users/views.py:344
+msgid "The link has expired (24 hours have passed)."
+msgstr "लिंक कालबाह्य झाली आहे (24 तास उलटले आहेत)."
+
+#: suchar_overflow/users/views.py:352
+msgid "Email already taken."
+msgstr "हा ईमेल आयडी आधीच वापरला गेला आहे."
+
+#: suchar_overflow/users/views.py:370
+msgid "The link is invalid."
+msgstr "ही लिंक अवैध आहे."

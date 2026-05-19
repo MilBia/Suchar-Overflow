@@ -1,0 +1,1388 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+
+#: config/settings/base.py:34
+msgid "Polish"
+msgstr "Pulir"
+
+#: config/settings/base.py:35
+msgid "English"
+msgstr "Inglés"
+
+#: suchar_overflow/achievements/apps.py:8
+#: suchar_overflow/achievements/models.py:84
+#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/users/user_detail.html:34
+msgid "Achievements"
+msgstr "Logros"
+
+#: suchar_overflow/achievements/middleware.py:29
+#, python-format
+msgid "Achievement Unlocked: %(name)s!"
+msgstr "Logro desbloqueado: %(name)s!"
+
+#: suchar_overflow/achievements/models.py:8
+msgid "Lifetime"
+msgstr "De por vida"
+
+#: suchar_overflow/achievements/models.py:9
+msgid "Periodic"
+msgstr "Periódico"
+
+#: suchar_overflow/achievements/models.py:10
+msgid "Streak"
+msgstr "Racha"
+
+#: suchar_overflow/achievements/models.py:13
+msgid "Suchar Posted"
+msgstr "Publicado por Suchar"
+
+#: suchar_overflow/achievements/models.py:14
+msgid "Vote Received"
+msgstr "Voto recibido"
+
+#: suchar_overflow/achievements/models.py:15
+msgid "Vote Cast"
+msgstr "Voto emitido"
+
+#: suchar_overflow/achievements/models.py:18
+msgid "Suchar Count"
+msgstr "Cantidad de resultados"
+
+#: suchar_overflow/achievements/models.py:19
+msgid "Funny Vote Count"
+msgstr "Número de votos divertidos"
+
+#: suchar_overflow/achievements/models.py:20
+msgid "Dry Vote Count"
+msgstr "Votos válidos"
+
+#: suchar_overflow/achievements/models.py:21
+msgid "Vote Cast Count"
+msgstr "Votos emitidos"
+
+#: suchar_overflow/achievements/models.py:22
+msgid "Total Score"
+msgstr "Puntuación total"
+
+#: suchar_overflow/achievements/models.py:23
+msgid "Night Owl"
+msgstr "Noctámbulo"
+
+#: suchar_overflow/achievements/models.py:24
+msgid "Login Streak"
+msgstr "Racha de inicio de sesión"
+
+#: suchar_overflow/achievements/models.py:25
+msgid "Polarizer"
+msgstr "Polarizador"
+
+#: suchar_overflow/achievements/models.py:28
+msgid "None"
+msgstr "Ninguno"
+
+#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
+#: suchar_overflow/templates/achievements/list.html:42
+#: suchar_overflow/templates/achievements/list.html:82
+msgid "Bronze"
+msgstr "Bronce"
+
+#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
+#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:84
+msgid "Silver"
+msgstr "Plata"
+
+#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
+#: suchar_overflow/templates/achievements/list.html:46
+#: suchar_overflow/templates/achievements/list.html:86
+msgid "Gold"
+msgstr "Oro"
+
+#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
+#: suchar_overflow/templates/achievements/list.html:48
+#: suchar_overflow/templates/achievements/list.html:88
+msgid "Platinum"
+msgstr "Platino"
+
+#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
+#: suchar_overflow/templates/achievements/list.html:50
+#: suchar_overflow/templates/achievements/list.html:90
+msgid "Diamond"
+msgstr "Diamante"
+
+#: suchar_overflow/achievements/models.py:35
+msgid "Name"
+msgstr "Nombre"
+
+#: suchar_overflow/achievements/models.py:36
+msgid "Slug"
+msgstr "Título SEO"
+
+#: suchar_overflow/achievements/models.py:37
+msgid "Description"
+msgstr "Descripción"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Icon Content"
+msgstr "Contenido del icono"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Raw SVG XML"
+msgstr "XML SVG sin formato"
+
+#: suchar_overflow/achievements/models.py:44
+msgid "Category"
+msgstr "Categoría"
+
+#: suchar_overflow/achievements/models.py:50
+msgid "Event Type"
+msgstr "Tipo de evento"
+
+#: suchar_overflow/achievements/models.py:56
+msgid "Metric"
+msgstr "Métrica"
+
+#: suchar_overflow/achievements/models.py:61
+msgid "Threshold"
+msgstr "Umbral"
+
+#: suchar_overflow/achievements/models.py:65
+msgid "Theme"
+msgstr "Tema"
+
+#: suchar_overflow/achievements/models.py:68
+msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
+msgstr "Ej. 'Navidad', 'Programación'. Dejar en blanco para general."
+
+#: suchar_overflow/achievements/models.py:71
+msgid "Tier"
+msgstr "Nivel"
+
+#: suchar_overflow/achievements/models.py:74
+msgid "Difficulty/Rarity tier of the achievement"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:77
+msgid "Secret Achievement"
+msgstr "Logro secreto"
+
+#: suchar_overflow/achievements/models.py:79
+msgid "If checked, name and description are hidden until unlocked."
+msgstr ""
+"Si está marcado, el nombre y la descripción se ocultan hasta que se "
+"desbloqueen."
+
+#: suchar_overflow/achievements/models.py:83
+msgid "Achievement"
+msgstr "Logro"
+
+#: suchar_overflow/achievements/models.py:102
+msgid "Seen by user"
+msgstr "Visto por el usuario"
+
+#: suchar_overflow/achievements/models.py:105
+msgid "User Achievement"
+msgstr "Logro del usuario"
+
+#: suchar_overflow/achievements/models.py:106
+msgid "User Achievements"
+msgstr "Logros del usuario"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "Texto"
+
+#: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:65
+#: suchar_overflow/templates/users/user_detail.html:217
+msgid "Votes"
+msgstr "Votos"
+
+#: suchar_overflow/suchary/apps.py:7
+msgid "Suchary"
+msgstr "Suchary"
+
+#: suchar_overflow/suchary/forms.py:15
+msgid ""
+"Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
+"programowanie)."
+msgstr ""
+"Introduzca etiquetas separadas por espacios o comas (por ejemplo, galleta, "
+"IT, programación)."
+
+#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+msgid "Publication Date"
+msgstr "Fecha de publicación"
+
+#: suchar_overflow/suchary/forms.py:35
+msgid "Leave empty to publish immediately."
+msgstr "Déjelo vacío para publicar inmediatamente."
+
+#: suchar_overflow/suchary/forms.py:57
+msgid "Publication date cannot be in the past."
+msgstr "La fecha de publicación no puede ser en el pasado."
+
+#: suchar_overflow/suchary/models.py:16
+msgid "Suchar text"
+msgstr "Buscar texto"
+
+#: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
+#: suchar_overflow/templates/403_csrf.html:6
+#: suchar_overflow/templates/403_csrf.html:9
+msgid "Forbidden (403)"
+msgstr "Prohibido (403)"
+
+#: suchar_overflow/templates/403.html:14
+#: suchar_overflow/templates/403_csrf.html:14
+msgid "You're not allowed to access this page."
+msgstr "No tiene permiso para acceder a esta página."
+
+#: suchar_overflow/templates/404.html:6 suchar_overflow/templates/404.html:9
+msgid "Page not found"
+msgstr "Página no encontrada"
+
+#: suchar_overflow/templates/404.html:14
+msgid "This is not the page you were looking for."
+msgstr "Esta no es la página que estaba buscando."
+
+#: suchar_overflow/templates/500.html:6
+msgid "Server Error"
+msgstr "Error de servidor"
+
+#: suchar_overflow/templates/500.html:9
+msgid "Ooops!!! 500"
+msgstr "¡Uy! Error 500"
+
+#: suchar_overflow/templates/500.html:10
+msgid "Looks like something went wrong!"
+msgstr "¡Parece que algo salió mal!"
+
+#: suchar_overflow/templates/500.html:12
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+"Rastreamos estos errores automáticamente, pero si el problema persiste, no "
+"dude en ponerse en contacto con nosotros. Mientras tanto, intente actualizar"
+" la página."
+
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+msgid "Notification Inbox"
+msgstr "Bandeja de entrada de notificaciones"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr ""
+"Todos los logros que has obtenido, ordenados por fecha de obtención (los más"
+" recientes primero)."
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "Común"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, python-format
+msgid "Unlocked: %(date)s"
+msgstr "Desbloqueado: %(date)s"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+msgid "No achievements yet — go post some jokes!"
+msgstr "Aún no hay logros — ¡ve a publicar algunos chistes!"
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+msgid "Browse achievements"
+msgstr "Ver logros"
+
+#: suchar_overflow/templates/achievements/list.html:6
+msgid "My Achievements"
+msgstr "Mis logros"
+
+#: suchar_overflow/templates/achievements/list.html:17
+#: suchar_overflow/templates/stats/leaderboard.html:110
+msgid "Hall of Fame"
+msgstr "Salón de la fama"
+
+#: suchar_overflow/templates/achievements/list.html:19
+msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
+msgstr "Tus insignias, medallas y secretos vergonzosos de Suchar Overflow."
+
+#: suchar_overflow/templates/achievements/list.html:74
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr "Logro bloqueado. ¡Descubre su secreto jugando!"
+
+#: suchar_overflow/templates/base.html:17
+#: suchar_overflow/templates/base.html:24
+msgid "Joke aggregator with critically low humidity levels."
+msgstr "Agregador de chistes con niveles de humedad críticamente bajos."
+
+#: suchar_overflow/templates/base.html:96
+msgid "Home"
+msgstr "Inicio"
+
+#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/suchary/suchar_list.html:12
+#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/users/admin.py:68
+msgid "Jokes"
+msgstr "Chistes"
+
+#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/stats/leaderboard.html:6
+#: suchar_overflow/templates/stats/leaderboard.html:12
+msgid "Leaderboard"
+msgstr "Tabla de clasificación"
+
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "Bandeja de entrada"
+
+#: suchar_overflow/templates/base.html:113
+msgid "About"
+msgstr "Acerca de"
+
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
+msgid "Log Out"
+msgstr "Cerrar sesión"
+
+#: suchar_overflow/templates/base.html:159
+msgid "Log In"
+msgstr "Acceder"
+
+#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/registration/signup.html:6
+#: suchar_overflow/templates/registration/signup.html:12
+#: suchar_overflow/templates/registration/signup.html:23
+msgid "Sign Up"
+msgstr "Registrarse"
+
+#: suchar_overflow/templates/base.html:170
+msgid "Default content."
+msgstr "Contenido predeterminado."
+
+#: suchar_overflow/templates/base.html:179
+msgid "All rights reserved (but jokes stolen)."
+msgstr "Todos los derechos reservados (pero las bromas son robadas)."
+
+#: suchar_overflow/templates/base.html:188
+msgid "Report a Bug"
+msgstr "Informar de un error"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/users/email_change_failed.html:6
+msgid "Error"
+msgstr "Error"
+
+#: suchar_overflow/templates/base.html:212
+msgid "Achievement Unlocked"
+msgstr "Logro desbloqueado"
+
+#: suchar_overflow/templates/base.html:214
+msgid "Success"
+msgstr "Éxito"
+
+#: suchar_overflow/templates/base.html:216
+msgid "Notification"
+msgstr "Notificación"
+
+#: suchar_overflow/templates/base.html:231
+msgid "Confirm Logout"
+msgstr "Confirmar cierre de sesión"
+
+#: suchar_overflow/templates/base.html:234
+msgid "Are you sure you want to log out?"
+msgstr "¿Está seguro de que desea cerrar sesión?"
+
+#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/users/user_form.html:35
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: suchar_overflow/templates/pages/about.html:6
+msgid "About Project - Suchar Overflow"
+msgstr "Acerca del proyecto - Suchar Overflow"
+
+#: suchar_overflow/templates/pages/about.html:13
+msgid "About Project"
+msgstr "Acerca del proyecto"
+
+#: suchar_overflow/templates/pages/about.html:14
+msgid "Why do we do this? Because someone had to."
+msgstr "¿Por qué hacemos esto? Porque alguien tenía que hacerlo."
+
+#: suchar_overflow/templates/pages/about.html:18
+msgid "Mission"
+msgstr "Misión"
+
+#: suchar_overflow/templates/pages/about.html:20
+msgid ""
+"The goal of Suchar Overflow is to gather the largest collection of jokes "
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
+msgstr ""
+"El objetivo de Suchar Overflow es recopilar la colección más grande de "
+"chistes que causan dolor físico al receptor. Creemos que un buen chiste seco"
+" es aquel seguido por un silencio incómodo y el sonido de grillos en el "
+"fondo."
+
+#: suchar_overflow/templates/pages/about.html:22
+msgid "Technology"
+msgstr "Tecnología"
+
+#: suchar_overflow/templates/pages/about.html:24
+msgid ""
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr ""
+"El sitio está construido con las últimas tecnologías (Django + CSS "
+"personalizado) para garantizar una entrega rápida y confiable de contenido "
+"divertido directamente a tu pantalla."
+
+#: suchar_overflow/templates/pages/home.html:8
+msgid "Dry Bread for the Horse"
+msgstr "Pan seco para el caballo"
+
+#: suchar_overflow/templates/pages/home.html:10
+msgid ""
+"Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
+"you need a drink."
+msgstr ""
+"Bienvenido a <strong>Suchar Overflow</strong>. Un lugar donde el humor es "
+"tan seco que necesitas una bebida."
+
+#: suchar_overflow/templates/pages/home.html:11
+msgid "Vote for the best jokes, add your own, and become an office legend."
+msgstr ""
+"Vota por los mejores chistes, añade los tuyos y conviértete en una leyenda "
+"de la oficina."
+
+#: suchar_overflow/templates/pages/home.html:15
+msgid "Browse Jokes"
+msgstr "Ver chistes"
+
+#: suchar_overflow/templates/pages/home.html:17
+msgid "Join Us"
+msgstr "Únase a nosotros"
+
+#: suchar_overflow/templates/pages/home.html:31
+msgid "Vote"
+msgstr "Votar"
+
+#: suchar_overflow/templates/pages/home.html:32
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr ""
+"Califica los chistes de otras personas. Decide qué es divertido (y qué es "
+"patético)."
+
+#: suchar_overflow/templates/pages/home.html:39
+#: suchar_overflow/templates/suchary/suchar_list.html:68
+msgid "Add"
+msgstr "Agregar"
+
+#: suchar_overflow/templates/pages/home.html:40
+msgid "Share your thoughts with the world. Don't be shy."
+msgstr "Comparte tus ideas con el mundo. No tengas miedo."
+
+#: suchar_overflow/templates/pages/home.html:47
+msgid "Laugh (optional)"
+msgstr "Reír (opcional)"
+
+#: suchar_overflow/templates/pages/home.html:48
+msgid "We guarantee a pity smile or your money back (the site is free)."
+msgstr ""
+"Garantizamos una sonrisa de satisfacción o le devolvemos su dinero (el sitio"
+" es gratuito)."
+
+#: suchar_overflow/templates/registration/activation_complete.html:6
+msgid "Activation Complete"
+msgstr "Activación completada"
+
+#: suchar_overflow/templates/registration/activation_complete.html:23
+msgid "Account Activated!"
+msgstr "¡Cuenta activada!"
+
+#: suchar_overflow/templates/registration/activation_complete.html:25
+msgid ""
+"Your account has been activated successfully. You can now log in and start "
+"using Suchar Overflow."
+msgstr ""
+"Su cuenta ha sido activada correctamente. Ahora puede iniciar sesión y "
+"comenzar a usar Suchar Overflow."
+
+#: suchar_overflow/templates/registration/activation_complete.html:28
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
+msgid "Log in"
+msgstr "Iniciar sesión"
+
+#: suchar_overflow/templates/registration/activation_email.txt:3
+#: suchar_overflow/templates/users/email_notify_old_email.txt:3
+#: suchar_overflow/templates/users/email_verify_email.txt:3
+#, python-format
+msgid "Hello %(username)s!"
+msgstr "¡Hola, %(username)s!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:5
+msgid ""
+"Welcome to Suchar Overflow - a place where air humidity drops below zero."
+msgstr ""
+"Bienvenido a Suchar Overflow, un lugar donde la humedad del aire cae por "
+"debajo de cero."
+
+#: suchar_overflow/templates/registration/activation_email.txt:6
+msgid ""
+"To make sure you're not a bot (or a person without a sense of humor), you "
+"need to activate your account."
+msgstr ""
+"Para asegurarte de que no eres un robot (o una persona sin sentido del "
+"humor), debes activar tu cuenta."
+
+#: suchar_overflow/templates/registration/activation_email.txt:8
+msgid "Click this link before it dries out:"
+msgstr "Haga clic en este enlace antes de que expire:"
+
+#: suchar_overflow/templates/registration/activation_email.txt:11
+msgid "Remember: Drink plenty of water."
+msgstr "Recuerde: Beba mucha agua."
+
+#: suchar_overflow/templates/registration/activation_email.txt:13
+msgid "The Suchar Overflow Team"
+msgstr "El equipo de Suchar Overflow"
+
+#: suchar_overflow/templates/registration/activation_failed.html:6
+#: suchar_overflow/templates/registration/activation_failed.html:24
+msgid "Activation Failed"
+msgstr "Activación fallida"
+
+#: suchar_overflow/templates/registration/activation_failed.html:26
+msgid ""
+"The activation link is invalid or has expired. Please try registering again "
+"or contact support."
+msgstr ""
+"El enlace de activación no es válido o ha caducado. Por favor, inténtelo de "
+"nuevo registrándose o póngase en contacto con el servicio de asistencia."
+
+#: suchar_overflow/templates/registration/activation_failed.html:29
+msgid "Sign Up Again"
+msgstr "Registrarse de nuevo"
+
+#: suchar_overflow/templates/registration/activation_failed.html:30
+#: suchar_overflow/templates/registration/signup_done.html:28
+msgid "Back to Home"
+msgstr "Volver al inicio"
+
+#: suchar_overflow/templates/registration/login.html:6
+#: suchar_overflow/templates/registration/login.html:12
+#: suchar_overflow/templates/registration/login.html:23
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Sign In"
+msgstr "Acceder"
+
+#: suchar_overflow/templates/registration/login.html:26
+msgid "Forgot Password?"
+msgstr "¿Olvidó su contraseña?"
+
+#: suchar_overflow/templates/registration/password_change_done.html:6
+#: suchar_overflow/templates/registration/password_change_done.html:12
+msgid "Password Changed"
+msgstr "Contraseña cambiada"
+
+#: suchar_overflow/templates/registration/password_change_done.html:13
+msgid "Your password was changed successfully."
+msgstr "Tu contraseña se ha cambiado correctamente."
+
+#: suchar_overflow/templates/registration/password_change_done.html:15
+msgid "Back to Profile"
+msgstr "Volver al perfil"
+
+#: suchar_overflow/templates/registration/password_change_form.html:6
+#: suchar_overflow/templates/registration/password_change_form.html:12
+#: suchar_overflow/templates/registration/password_change_form.html:18
+#: suchar_overflow/templates/users/base_dashboard.html:42
+msgid "Change Password"
+msgstr "Cambiar contraseña"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:6
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
+msgid "Password reset successful"
+msgstr "Restablecimiento de contraseña exitoso"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Su contraseña ha sido configurada. Puede iniciar sesión ahora."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:6
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password"
+msgstr "Establecer una nueva contraseña"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Por favor, introduzca su nueva contraseña dos veces para que podamos "
+"verificar que la ha escrito correctamente."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:20
+msgid "Change password"
+msgstr "Cambiar contraseña"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"El enlace para restablecer la contraseña no es válido, posiblemente porque "
+"ya se ha utilizado. Por favor, solicite un nuevo restablecimiento de "
+"contraseña."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:6
+#: suchar_overflow/templates/registration/password_reset_done.html:12
+msgid "Password Reset Sent"
+msgstr "Se ha enviado un correo electrónico para restablecer la contraseña."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "Revisa tu bandeja de entrada"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"Si existe una cuenta con el correo electrónico que ingresaste, te hemos "
+"enviado instrucciones para establecer tu contraseña. Deberías recibirlas en "
+"breve."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:20
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"Si no recibe un correo electrónico, asegúrese de haber ingresado la "
+"dirección con la que se registró y revise su carpeta de correo no deseado."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr ""
+"Está recibiendo este correo electrónico porque solicitó un restablecimiento "
+"de contraseña para su cuenta de usuario en"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "Por favor, vaya a la siguiente página y elija una nueva contraseña:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "Tu nombre de usuario, en caso de que lo hayas olvidado:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "¡Gracias por usar nuestro sitio web!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr ""
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr "equipo"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:6
+#: suchar_overflow/templates/registration/password_reset_form.html:12
+msgid "Password Reset"
+msgstr "Restablecer contraseña"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"¿Olvidaste tu contraseña? Introduce tu dirección de correo electrónico a "
+"continuación y te enviaremos instrucciones para establecer una nueva."
+
+#: suchar_overflow/templates/registration/password_reset_form.html:22
+msgid "Reset my password"
+msgstr "Restablecer mi contraseña"
+
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Already have an account?"
+msgstr "¿Ya tienes una cuenta?"
+
+#: suchar_overflow/templates/registration/signup_done.html:6
+msgid "Confirmation Sent"
+msgstr "Confirmación enviada"
+
+#: suchar_overflow/templates/registration/signup_done.html:25
+msgid ""
+"We have sent you an email to confirm your registration. Please check your "
+"inbox and click the link to activate your account."
+msgstr ""
+"Hemos enviado un correo electrónico para confirmar tu registro. Por favor, "
+"revisa tu bandeja de entrada y haz clic en el enlace para activar tu cuenta."
+
+#: suchar_overflow/templates/stats/leaderboard.html:13
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr ""
+"Celebrando lo mejor (y lo más divertido) creado por nuestra comunidad."
+
+#: suchar_overflow/templates/stats/leaderboard.html:19
+msgid "Activity (Last 30 Days)"
+msgstr "Actividad (últimos 30 días)"
+
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "General"
+
+#: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Funny"
+msgstr "Divertido"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:128
+#: suchar_overflow/templates/suchary/suchar_list.html:131
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Dry"
+msgstr "Seco"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+msgid "Most Active Authors"
+msgstr "Autores más activos"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
+msgid "jokes"
+msgstr "chistes"
+
+#: suchar_overflow/templates/stats/leaderboard.html:99
+msgid "No data."
+msgstr "Sin datos."
+
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+msgid "No jokes."
+msgstr "Nada de bromas."
+
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr "Reyes de la comedia"
+
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "Sin datos divertidos."
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "Los chistes más divertidos"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "Lords of Drought"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "Sin datos disponibles."
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "Los mejores chistes secos"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
+msgid "New Jokes"
+msgstr "Chistes nuevos"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:6
+msgid "Too Late!"
+msgstr "¡Demasiado tarde!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:13
+msgid "The ship has sailed!"
+msgstr "¡Ya es demasiado tarde!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:15
+msgid ""
+"This joke has already been published. You can't polish a diamond (or a dry "
+"biscuit) once it's been served."
+msgstr ""
+"Este chiste ya ha sido publicado. No se puede pulir un diamante (ni una "
+"galleta seca) una vez que se ha contado."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:21
+msgid "Time creates jokes, but it also seals them."
+msgstr "El tiempo crea chistes, pero también los sella."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:23
+msgid "Ancient Suchar Proverb"
+msgstr "Proverbio antiguo de Suchar"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:29
+msgid "Back to Jokes"
+msgstr "Volver a los chistes"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:8
+#: suchar_overflow/templates/suchary/suchar_form.html:29
+msgid "Add Joke"
+msgstr "Agregar chiste"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:30
+msgid "Shine with humor."
+msgstr "Brilla con humor."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:38
+msgid "Joke Content"
+msgstr "Contenido del chiste"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:43
+msgid "Why did the chicken cross the road?"
+msgstr "¿Por qué cruzó la gallina la calle?"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:46
+msgid "Remember, the drier the better."
+msgstr "Recuerde, cuanto más seco, mejor."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:50
+msgid "Tags"
+msgstr "Etiquetas"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:55
+msgid "e.g. it, programming, school"
+msgstr "p. ej. informática, programación, escuela"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:62
+msgid "Separate with commas."
+msgstr "Separe con comas."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:70
+msgid "Schedule for later"
+msgstr "Programar para más tarde"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:79
+msgid "Select date and time..."
+msgstr "Seleccionar fecha y hora..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:88
+msgid "Publish"
+msgstr "Publicar"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:99
+msgid "Live Preview"
+msgstr "Vista previa en vivo"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:109
+msgid "Now"
+msgstr "Ahora"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:116
+msgid "Your joke content will appear here..."
+msgstr "Aquí aparecerá el contenido de tu chiste..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:149
+msgid "This is how your joke will look on the main list."
+msgstr "Así es como se verá tu chiste en la lista principal."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:13
+msgid "The dryest jokes on the internet."
+msgstr "Los chistes más secos de Internet."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:28
+msgid "Search..."
+msgstr "Buscar..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:43
+#: suchar_overflow/templates/suchary/suchar_list.html:58
+msgid "Top"
+msgstr "Arriba"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:45
+#: suchar_overflow/templates/suchary/suchar_list.html:53
+msgid "Newest"
+msgstr "Más reciente"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:85
+msgid "Scheduled"
+msgstr "Programado"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:95
+#: suchar_overflow/templates/users/user_detail.html:194
+msgid "Edit"
+msgstr "Editar"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:139
+msgid "So dry here..."
+msgstr "Aquí hace mucho calor..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:140
+msgid "Be the hero we need and add the first joke."
+msgstr "Sé el héroe que necesitamos y añade el primer chiste."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:158
+msgid "Previous"
+msgstr "Anterior"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:182
+msgid "Next"
+msgstr "Siguiente"
+
+#: suchar_overflow/templates/users/base_dashboard.html:17
+msgid "Your Account"
+msgstr "Tu cuenta"
+
+#: suchar_overflow/templates/users/base_dashboard.html:22
+msgid "Profile"
+msgstr "Perfil"
+
+#: suchar_overflow/templates/users/base_dashboard.html:27
+#: suchar_overflow/templates/users/user_form.html:6
+#: suchar_overflow/templates/users/user_form.html:11
+msgid "Edit Profile"
+msgstr "Editar perfil"
+
+#: suchar_overflow/templates/users/base_dashboard.html:37
+msgid "Security"
+msgstr "Seguridad"
+
+#: suchar_overflow/templates/users/email_change_complete.html:6
+msgid "Email Changed"
+msgstr "Correo electrónico cambiado"
+
+#: suchar_overflow/templates/users/email_change_complete.html:23
+msgid "It worked!"
+msgstr "¡Funcionó!"
+
+#: suchar_overflow/templates/users/email_change_complete.html:25
+msgid ""
+"Your email address has been changed. You can now sleep peacefully (or not)."
+msgstr ""
+"Su dirección de correo electrónico ha sido cambiada. Ahora puede dormir "
+"tranquilo (o no)."
+
+#: suchar_overflow/templates/users/email_change_complete.html:28
+msgid "Back to settings"
+msgstr "Volver a la configuración"
+
+#: suchar_overflow/templates/users/email_change_done.html:6
+msgid "Email Sent"
+msgstr "Correo electrónico enviado"
+
+#: suchar_overflow/templates/users/email_change_done.html:23
+msgid "Check both inboxes!"
+msgstr "¡Revisa ambas bandejas de entrada!"
+
+#: suchar_overflow/templates/users/email_change_done.html:25
+msgid ""
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"          <br />\n"
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+msgstr ""
+"Enviamos un mensaje a tu nueva dirección con un enlace de activación.\n"
+"          <br />\n"
+"          También enviamos una advertencia a tu antigua dirección, para que sepas que realmente eres tú."
+
+#: suchar_overflow/templates/users/email_change_done.html:30
+msgid ""
+"If you don't click the link, nothing will change. Your account will remain "
+"as dry as our jokes."
+msgstr ""
+"Si no haces clic en el enlace, nada cambiará. Tu cuenta seguirá siendo tan "
+"aburrida como nuestros chistes."
+
+#: suchar_overflow/templates/users/email_change_done.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:43
+msgid "Back to profile"
+msgstr "Volver al perfil"
+
+#: suchar_overflow/templates/users/email_change_failed.html:23
+msgid "Something went wrong"
+msgstr "Algo salió mal"
+
+#: suchar_overflow/templates/users/email_change_failed.html:24
+msgid "The link has expired, is invalid, or has already been used."
+msgstr "El enlace ha expirado, no es válido o ya se ha utilizado."
+
+#: suchar_overflow/templates/users/email_change_failed.html:25
+msgid "Try again if you really must."
+msgstr "Inténtalo de nuevo si es absolutamente necesario."
+
+#: suchar_overflow/templates/users/email_change_failed.html:28
+msgid "Try again"
+msgstr "Intentarlo de nuevo"
+
+#: suchar_overflow/templates/users/email_change_form.html:6
+msgid "Update Email"
+msgstr "Actualizar correo electrónico"
+
+#: suchar_overflow/templates/users/email_change_form.html:12
+msgid "Change email address"
+msgstr "Cambiar dirección de correo electrónico"
+
+#: suchar_overflow/templates/users/email_change_form.html:14
+msgid ""
+"Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
+"judge."
+msgstr ""
+"¿Cansado de tu antigua dirección? O tal vez sea un intento de evasión "
+"fiscal. No juzgamos."
+
+#: suchar_overflow/templates/users/email_change_form.html:25
+msgid "Send a pigeon with the link"
+msgstr "Enviar un mensaje con el enlace"
+
+#: suchar_overflow/templates/users/email_change_form.html:26
+msgid "Changed my mind (go back)"
+msgstr "Cambié de opinión (volver)"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:6
+#: suchar_overflow/users/models.py:70
+msgid "Revoked"
+msgstr "Revocado"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:15
+msgid "We've reverted the changes!"
+msgstr "¡Hemos revertido los cambios!"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:17
+msgid ""
+"Phew, that was close. Your email address has been restored to its previous "
+"state."
+msgstr ""
+"¡Uf, eso estuvo cerca! Tu dirección de correo electrónico ha sido restaurada"
+" a su estado anterior."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:19
+msgid "You can breathe a sigh of relief. We recommend changing your password."
+msgstr "Puede respirar tranquilo. Le recomendamos cambiar su contraseña."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:32
+msgid "Change cancelled"
+msgstr "Cambio cancelado"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:34
+msgid "All active email change links have been invalidated."
+msgstr ""
+"Todos los enlaces de cambio de correo electrónico activos han sido "
+"invalidados."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:36
+msgid ""
+"If it wasn't you who tried to change the email, we recommend changing your "
+"password."
+msgstr ""
+"Si no fuiste tú quien intentó cambiar el correo electrónico, te recomendamos"
+" que cambies tu contraseña."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:41
+msgid "Change password (just in case)"
+msgstr "Cambiar contraseña (por si acaso)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:5
+#, python-format
+msgid "We just received a request to change your email address to: %(email)s."
+msgstr ""
+"Acabamos de recibir una solicitud para cambiar tu dirección de correo "
+"electrónico a: %(email)s."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:7
+msgid ""
+"If it was you - great, you don't need to do anything here (just check that "
+"other inbox)."
+msgstr ""
+"Si fuiste tú, ¡genial! No necesitas hacer nada aquí (solo verifica esa otra "
+"bandeja de entrada)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:9
+msgid "BUT IF IT WASN'T YOU:"
+msgstr "PERO SI NO FUISTE TÚ:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:10
+msgid ""
+"Someone might be trying to take over your account (or you just have a split "
+"personality)."
+msgstr ""
+"Alguien podría estar intentando hacerse cargo de tu cuenta (o tal vez tengas"
+" una doble personalidad)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:11
+msgid ""
+"Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
+"sent to the new address:"
+msgstr ""
+"Haga clic en este enlace para CANCELAR inmediatamente esta solicitud e "
+"invalidar el enlace enviado a la nueva dirección:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:15
+msgid "We also recommend changing your password if you suspect a breach."
+msgstr ""
+"También recomendamos cambiar su contraseña si sospecha de una vulneración."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:17
+#: suchar_overflow/templates/users/email_verify_email.txt:14
+msgid "Suchar Overflow"
+msgstr "Suchar Overflow"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:5
+#, python-format
+msgid ""
+"We received a request to change your email address to this one you're "
+"reading (%(email)s)."
+msgstr ""
+"Hemos recibido una solicitud para cambiar tu dirección de correo electrónico"
+" a la que estás leyendo ahora (%(email)s)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:7
+msgid "If it's you, click the link below to confirm the change:"
+msgstr "Si eres tú, haz clic en el enlace de abajo para confirmar el cambio:"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:10
+msgid "The link is valid for 24 hours (or until it evaporates)."
+msgstr "El enlace es válido durante 24 horas (o hasta que expire)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:12
+msgid ""
+"If it wasn't you, ignore this message. We sent instructions on how to block "
+"the intruder to your old address."
+msgstr ""
+"Si no fue usted, ignore este mensaje. Le enviamos instrucciones sobre cómo "
+"bloquear al intruso a su antigua dirección."
+
+#: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
+msgid "User"
+msgstr "Usuario"
+
+#: suchar_overflow/templates/users/user_detail.html:23
+msgid "Suchar Overflow User"
+msgstr "Desbordamiento de búsqueda del usuario"
+
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "No achievements yet."
+msgstr "Aún no hay logros."
+
+#: suchar_overflow/templates/users/user_detail.html:62
+msgid "The Best Of"
+msgstr "Lo mejor de"
+
+#: suchar_overflow/templates/users/user_detail.html:76
+msgid "Statistics"
+msgstr "Estadísticas"
+
+#: suchar_overflow/templates/users/user_detail.html:78
+msgid "Rank"
+msgstr "Posición"
+
+#: suchar_overflow/templates/users/user_detail.html:86
+msgid "Total Votes"
+msgstr "Votos totales"
+
+#: suchar_overflow/templates/users/user_detail.html:93
+msgid "Joined"
+msgstr "Unido"
+
+#: suchar_overflow/templates/users/user_detail.html:101
+msgid "Dryness Level"
+msgstr "Nivel de sequedad"
+
+#: suchar_overflow/templates/users/user_detail.html:109
+msgid "Reception"
+msgstr "Recepción"
+
+#: suchar_overflow/templates/users/user_detail.html:125
+msgid "Drought Map"
+msgstr "Mapa de sequía"
+
+#: suchar_overflow/templates/users/user_detail.html:127
+msgid "Less"
+msgstr "Menos"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "More"
+msgstr "Más"
+
+#: suchar_overflow/templates/users/user_detail.html:146
+msgid "Mon"
+msgstr "Lun"
+
+#: suchar_overflow/templates/users/user_detail.html:147
+msgid "Wed"
+msgstr "Mié"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Fri"
+msgstr "Vie"
+
+#: suchar_overflow/templates/users/user_detail.html:167
+msgid "jokes on"
+msgstr "chistes activados"
+
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Latest Jokes"
+msgstr "Últimos chistes"
+
+#: suchar_overflow/templates/users/user_detail.html:185
+msgid "Scheduled for Publication"
+msgstr "Programado para publicación"
+
+#: suchar_overflow/templates/users/user_detail.html:228
+msgid "See all entries"
+msgstr "Ver todas las entradas"
+
+#: suchar_overflow/templates/users/user_detail.html:232
+msgid "User hasn't added any jokes yet."
+msgstr "El usuario aún no ha agregado ningún chiste."
+
+#: suchar_overflow/templates/users/user_form.html:12
+msgid "Here you can update your data."
+msgstr "Aquí puede actualizar sus datos."
+
+#: suchar_overflow/templates/users/user_form.html:16
+msgid "E-mail Address"
+msgstr "Dirección de correo electrónico"
+
+#: suchar_overflow/templates/users/user_form.html:24
+msgid "Change E-mail"
+msgstr "Cambiar correo electrónico"
+
+#: suchar_overflow/templates/users/user_form.html:26
+msgid "Address change requires confirmation."
+msgstr "El cambio de dirección requiere confirmación."
+
+#: suchar_overflow/templates/users/user_form.html:36
+msgid "Save Changes"
+msgstr "Guardar cambios"
+
+#: suchar_overflow/users/admin.py:36
+msgid "Personal info"
+msgstr "Información personal"
+
+#: suchar_overflow/users/admin.py:38
+msgid "Permissions"
+msgstr "Permisos"
+
+#: suchar_overflow/users/admin.py:49
+msgid "Important dates"
+msgstr "Fechas importantes"
+
+#: suchar_overflow/users/apps.py:7
+msgid "Users"
+msgstr "Usuarios"
+
+#: suchar_overflow/users/forms.py:19
+#: suchar_overflow/users/tests/test_forms.py:36
+msgid "This username has already been taken."
+msgstr "Este nombre de usuario ya está en uso."
+
+#: suchar_overflow/users/forms.py:32
+msgid "New Email Address"
+msgstr "Nueva dirección de correo electrónico"
+
+#: suchar_overflow/users/forms.py:37
+msgid "This email is already currently used."
+msgstr "Esta dirección de correo electrónico ya está en uso."
+
+#: suchar_overflow/users/models.py:21
+msgid "Name of User"
+msgstr "Nombre del usuario"
+
+#: suchar_overflow/users/models.py:24
+msgid "email address"
+msgstr "dirección de correo electrónico"
+
+#: suchar_overflow/users/models.py:54
+msgid "Activation Token"
+msgstr "Token de activación"
+
+#: suchar_overflow/users/models.py:55
+msgid "Activation Tokens"
+msgstr "Tokens de activación"
+
+#: suchar_overflow/users/models.py:68
+msgid "Pending"
+msgstr "Pendiente"
+
+#: suchar_overflow/users/models.py:69
+msgid "Verified"
+msgstr "Verificado"
+
+#: suchar_overflow/users/models.py:89
+msgid "Email Change Request"
+msgstr "Solicitud de cambio de correo electrónico"
+
+#: suchar_overflow/users/models.py:90
+msgid "Email Change Requests"
+msgstr "Solicitudes de cambio de correo electrónico"
+
+#: suchar_overflow/users/tasks.py:11
+msgid "Confirm you have a sense of humor (Account Activation)"
+msgstr "Confirme que tiene sentido del humor (Activación de la cuenta)"
+
+#: suchar_overflow/users/tasks.py:29
+msgid "Confirm it's you (Email Change)"
+msgstr "Confirme que es usted (Cambio de correo electrónico)"
+
+#: suchar_overflow/users/tasks.py:41
+msgid "Someone wants to change your email address (We hope it's you)"
+msgstr ""
+"Alguien quiere cambiar tu dirección de correo electrónico (Esperamos que "
+"seas tú)."
+
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "Información actualizada correctamente"
+
+#: suchar_overflow/users/views.py:334
+msgid "The link has already been used or cancelled."
+msgstr "El enlace ya ha sido utilizado o cancelado."
+
+#: suchar_overflow/users/views.py:344
+msgid "The link has expired (24 hours have passed)."
+msgstr "El enlace ha expirado (han pasado 24 horas)."
+
+#: suchar_overflow/users/views.py:352
+msgid "Email already taken."
+msgstr "El correo electrónico ya está en uso."
+
+#: suchar_overflow/users/views.py:370
+msgid "The link is invalid."
+msgstr "El enlace no es válido."

@@ -1,0 +1,1376 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
+
+#: config/settings/base.py:34
+msgid "Polish"
+msgstr "Polija"
+
+#: config/settings/base.py:35
+msgid "English"
+msgstr "Angļu valoda"
+
+#: suchar_overflow/achievements/apps.py:8
+#: suchar_overflow/achievements/models.py:84
+#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/users/user_detail.html:34
+msgid "Achievements"
+msgstr "Sasniegumi"
+
+#: suchar_overflow/achievements/middleware.py:29
+#, python-format
+msgid "Achievement Unlocked: %(name)s!"
+msgstr "Sasniegums atbloķēts: %(name)s!"
+
+#: suchar_overflow/achievements/models.py:8
+msgid "Lifetime"
+msgstr "Visu mūžu"
+
+#: suchar_overflow/achievements/models.py:9
+msgid "Periodic"
+msgstr "Periodisks"
+
+#: suchar_overflow/achievements/models.py:10
+msgid "Streak"
+msgstr "Virkne"
+
+#: suchar_overflow/achievements/models.py:13
+msgid "Suchar Posted"
+msgstr "Publicēja Suchar"
+
+#: suchar_overflow/achievements/models.py:14
+msgid "Vote Received"
+msgstr "Balss saņemta"
+
+#: suchar_overflow/achievements/models.py:15
+msgid "Vote Cast"
+msgstr "Balss iesniegta"
+
+#: suchar_overflow/achievements/models.py:18
+msgid "Suchar Count"
+msgstr "Suchar skaits"
+
+#: suchar_overflow/achievements/models.py:19
+msgid "Funny Vote Count"
+msgstr "Jautru balsojumu skaits"
+
+#: suchar_overflow/achievements/models.py:20
+msgid "Dry Vote Count"
+msgstr "Sausā balsošanas rezultāts"
+
+#: suchar_overflow/achievements/models.py:21
+msgid "Vote Cast Count"
+msgstr "Balsu skaits"
+
+#: suchar_overflow/achievements/models.py:22
+msgid "Total Score"
+msgstr "Kopējais rezultāts"
+
+#: suchar_overflow/achievements/models.py:23
+msgid "Night Owl"
+msgstr "Naktsaktī rosīgāks"
+
+#: suchar_overflow/achievements/models.py:24
+msgid "Login Streak"
+msgstr "Ielogošanās sērija"
+
+#: suchar_overflow/achievements/models.py:25
+msgid "Polarizer"
+msgstr "Polarisators"
+
+#: suchar_overflow/achievements/models.py:28
+msgid "None"
+msgstr "Nav"
+
+#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
+#: suchar_overflow/templates/achievements/list.html:42
+#: suchar_overflow/templates/achievements/list.html:82
+msgid "Bronze"
+msgstr "Bronza"
+
+#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
+#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:84
+msgid "Silver"
+msgstr "Sudrabs"
+
+#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
+#: suchar_overflow/templates/achievements/list.html:46
+#: suchar_overflow/templates/achievements/list.html:86
+msgid "Gold"
+msgstr "Zelta"
+
+#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
+#: suchar_overflow/templates/achievements/list.html:48
+#: suchar_overflow/templates/achievements/list.html:88
+msgid "Platinum"
+msgstr "Platīns"
+
+#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
+#: suchar_overflow/templates/achievements/list.html:50
+#: suchar_overflow/templates/achievements/list.html:90
+msgid "Diamond"
+msgstr "Dimants"
+
+#: suchar_overflow/achievements/models.py:35
+msgid "Name"
+msgstr "Vārds"
+
+#: suchar_overflow/achievements/models.py:36
+msgid "Slug"
+msgstr "Adrese"
+
+#: suchar_overflow/achievements/models.py:37
+msgid "Description"
+msgstr "Apraksts"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Icon Content"
+msgstr "Ikona un saturs"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Raw SVG XML"
+msgstr "Ņedzītais SVG XML"
+
+#: suchar_overflow/achievements/models.py:44
+msgid "Category"
+msgstr "Kategorija"
+
+#: suchar_overflow/achievements/models.py:50
+msgid "Event Type"
+msgstr "Pasākuma veids"
+
+#: suchar_overflow/achievements/models.py:56
+msgid "Metric"
+msgstr "Mērījuma vienība"
+
+#: suchar_overflow/achievements/models.py:61
+msgid "Threshold"
+msgstr "Sliekonis"
+
+#: suchar_overflow/achievements/models.py:65
+msgid "Theme"
+msgstr "Tēma"
+
+#: suchar_overflow/achievements/models.py:68
+msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
+msgstr ""
+"Piemēram, \"Ziemassvētki\", \"Programmēšana\". Atstājiet tukšu, ja vēlaties "
+"vispārīgu kategoriju."
+
+#: suchar_overflow/achievements/models.py:71
+msgid "Tier"
+msgstr "Līmenis"
+
+#: suchar_overflow/achievements/models.py:74
+msgid "Difficulty/Rarity tier of the achievement"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:77
+msgid "Secret Achievement"
+msgstr "Slepenais sasniegums"
+
+#: suchar_overflow/achievements/models.py:79
+msgid "If checked, name and description are hidden until unlocked."
+msgstr ""
+"Ja atzīmēts, nosaukums un apraksts ir paslēpti līdz brīdim, kad tie tiek "
+"atbloķēti."
+
+#: suchar_overflow/achievements/models.py:83
+msgid "Achievement"
+msgstr "Sasniegums"
+
+#: suchar_overflow/achievements/models.py:102
+msgid "Seen by user"
+msgstr "Redzēts lietotājam"
+
+#: suchar_overflow/achievements/models.py:105
+msgid "User Achievement"
+msgstr "Lietotāja sasniegumi"
+
+#: suchar_overflow/achievements/models.py:106
+msgid "User Achievements"
+msgstr "Lietotāja sasniegumi"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "Teksts"
+
+#: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:65
+#: suchar_overflow/templates/users/user_detail.html:217
+msgid "Votes"
+msgstr "Balsojumi"
+
+#: suchar_overflow/suchary/apps.py:7
+msgid "Suchary"
+msgstr "Šukari"
+
+#: suchar_overflow/suchary/forms.py:15
+msgid ""
+"Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
+"programowanie)."
+msgstr ""
+"Ievadiet atslēgvārdus, kas atdalīti ar atstarpēm vai komatiem (piemēram, "
+"maize, IT, programmēšana)."
+
+#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+msgid "Publication Date"
+msgstr "Publicēšanas datums"
+
+#: suchar_overflow/suchary/forms.py:35
+msgid "Leave empty to publish immediately."
+msgstr "Atstājiet tukšu, lai publicētu uzreiz."
+
+#: suchar_overflow/suchary/forms.py:57
+msgid "Publication date cannot be in the past."
+msgstr "Publicēšanas datums nevar būt pagātnē."
+
+#: suchar_overflow/suchary/models.py:16
+msgid "Suchar text"
+msgstr "Teksts"
+
+#: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
+#: suchar_overflow/templates/403_csrf.html:6
+#: suchar_overflow/templates/403_csrf.html:9
+msgid "Forbidden (403)"
+msgstr "Aizliegts (403)"
+
+#: suchar_overflow/templates/403.html:14
+#: suchar_overflow/templates/403_csrf.html:14
+msgid "You're not allowed to access this page."
+msgstr "Jums nav atļauts piekļūt šai lapai."
+
+#: suchar_overflow/templates/404.html:6 suchar_overflow/templates/404.html:9
+msgid "Page not found"
+msgstr "Lapa nav atrasta"
+
+#: suchar_overflow/templates/404.html:14
+msgid "This is not the page you were looking for."
+msgstr "Šī nav lapa, ko jūs meklējāt."
+
+#: suchar_overflow/templates/500.html:6
+msgid "Server Error"
+msgstr "Servera kļūda"
+
+#: suchar_overflow/templates/500.html:9
+msgid "Ooops!!! 500"
+msgstr "Oops!!! 500"
+
+#: suchar_overflow/templates/500.html:10
+msgid "Looks like something went wrong!"
+msgstr "Šķiet, ka kaut kas nav bijis kārtībā!"
+
+#: suchar_overflow/templates/500.html:12
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+"Mēs automātiski uzskaitām šīs kļūdas, taču, ja problēma turpinās, droši "
+"sazinieties ar mums. Lūdzu, pagaidām mēģiniet atsvaidzināt lapu."
+
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+msgid "Notification Inbox"
+msgstr "Paziņojumu indekss"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr "Visi iegūtie sasniegumi, sākot ar jaunākajiem."
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "Kopīgs"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, python-format
+msgid "Unlocked: %(date)s"
+msgstr "Atbloķēts: %(date)s"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+msgid "No achievements yet — go post some jokes!"
+msgstr "Vēl nav sasniegumu — dodieties un publicējiet kādus jokus!"
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+msgid "Browse achievements"
+msgstr "Skatīt sasniegumiem"
+
+#: suchar_overflow/templates/achievements/list.html:6
+msgid "My Achievements"
+msgstr "Mani sasniegumi"
+
+#: suchar_overflow/templates/achievements/list.html:17
+#: suchar_overflow/templates/stats/leaderboard.html:110
+msgid "Hall of Fame"
+msgstr "Slavas zāle"
+
+#: suchar_overflow/templates/achievements/list.html:19
+msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
+msgstr "Jūsu goda zīmes, medaļas un kaunpilnās noslēpums no \"Suchar Overflow\"."
+
+#: suchar_overflow/templates/achievements/list.html:74
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr "Sasniegums bloķēts. Uzziniet tā noslēpumu, spēlējot!"
+
+#: suchar_overflow/templates/base.html:17
+#: suchar_overflow/templates/base.html:24
+msgid "Joke aggregator with critically low humidity levels."
+msgstr "Joku agregators ar ļoti zemu mitruma līmeni."
+
+#: suchar_overflow/templates/base.html:96
+msgid "Home"
+msgstr "Sākums"
+
+#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/suchary/suchar_list.html:12
+#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/users/admin.py:68
+msgid "Jokes"
+msgstr "Joki"
+
+#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/stats/leaderboard.html:6
+#: suchar_overflow/templates/stats/leaderboard.html:12
+msgid "Leaderboard"
+msgstr "Rezultatīvu saraksts"
+
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "Ienākošais"
+
+#: suchar_overflow/templates/base.html:113
+msgid "About"
+msgstr "Par mums"
+
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
+msgid "Log Out"
+msgstr "Izrakstīties"
+
+#: suchar_overflow/templates/base.html:159
+msgid "Log In"
+msgstr "Ielogoties"
+
+#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/registration/signup.html:6
+#: suchar_overflow/templates/registration/signup.html:12
+#: suchar_overflow/templates/registration/signup.html:23
+msgid "Sign Up"
+msgstr "Reģistrēties"
+
+#: suchar_overflow/templates/base.html:170
+msgid "Default content."
+msgstr "Noklusējuma saturs."
+
+#: suchar_overflow/templates/base.html:179
+msgid "All rights reserved (but jokes stolen)."
+msgstr "Visas tiesības aizsargātas (bet jociņi ir nozagti)."
+
+#: suchar_overflow/templates/base.html:188
+msgid "Report a Bug"
+msgstr "Ziņot par kļūdu"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/users/email_change_failed.html:6
+msgid "Error"
+msgstr "Kļūda"
+
+#: suchar_overflow/templates/base.html:212
+msgid "Achievement Unlocked"
+msgstr "Sasniegums atbloķēts"
+
+#: suchar_overflow/templates/base.html:214
+msgid "Success"
+msgstr "Veiksmīgi"
+
+#: suchar_overflow/templates/base.html:216
+msgid "Notification"
+msgstr "Paziņojums"
+
+#: suchar_overflow/templates/base.html:231
+msgid "Confirm Logout"
+msgstr "Apstiprināt izeju no sistēmas"
+
+#: suchar_overflow/templates/base.html:234
+msgid "Are you sure you want to log out?"
+msgstr "Vai esat pārliecināts, ka vēlaties izlogoties?"
+
+#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/users/user_form.html:35
+msgid "Cancel"
+msgstr "Atcelt"
+
+#: suchar_overflow/templates/pages/about.html:6
+msgid "About Project - Suchar Overflow"
+msgstr "Par projektu - Suchar Overflow"
+
+#: suchar_overflow/templates/pages/about.html:13
+msgid "About Project"
+msgstr "Par projektu"
+
+#: suchar_overflow/templates/pages/about.html:14
+msgid "Why do we do this? Because someone had to."
+msgstr "Kāpēc mēs to darām? Jo kādam tas bija jādara."
+
+#: suchar_overflow/templates/pages/about.html:18
+msgid "Mission"
+msgstr "Uzdevums"
+
+#: suchar_overflow/templates/pages/about.html:20
+msgid ""
+"The goal of Suchar Overflow is to gather the largest collection of jokes "
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
+msgstr ""
+"Suchar Overflow mērķis ir apkopot visplašāko joku kolekciju, kas izraisa "
+"fizisku sāpi lasītājam. Mēs uzskatām, ka labs sauss joks ir tāds, kam seko "
+"neērtīgs klusums un cikādes čirkstēšanās fonā."
+
+#: suchar_overflow/templates/pages/about.html:22
+msgid "Technology"
+msgstr "Tehnoloģijas"
+
+#: suchar_overflow/templates/pages/about.html:24
+msgid ""
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr ""
+"Šī vietne ir izveidota, izmantojot jaunākās tehnoloģijas (Django + pielāgota"
+" CSS), lai nodrošinātu ātru un uzticamu \"cringe\" satura piegādi tieši uz "
+"jūsu ekrāna."
+
+#: suchar_overflow/templates/pages/home.html:8
+msgid "Dry Bread for the Horse"
+msgstr "Sausi maizes gabaliņi zirgam"
+
+#: suchar_overflow/templates/pages/home.html:10
+msgid ""
+"Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
+"you need a drink."
+msgstr ""
+"Laipni lūdzam <strong>Suchar Overflow</strong>. Vietā, kur humors ir tik "
+"sauss, ka jums vajadzēs dzert."
+
+#: suchar_overflow/templates/pages/home.html:11
+msgid "Vote for the best jokes, add your own, and become an office legend."
+msgstr ""
+"Balso par labākajiem jociem, pievieno savus un kļūsti par biroja leģendu."
+
+#: suchar_overflow/templates/pages/home.html:15
+msgid "Browse Jokes"
+msgstr "Pārlūkot jokus"
+
+#: suchar_overflow/templates/pages/home.html:17
+msgid "Join Us"
+msgstr "Pievienojieties mums"
+
+#: suchar_overflow/templates/pages/home.html:31
+msgid "Vote"
+msgstr "Balss"
+
+#: suchar_overflow/templates/pages/home.html:32
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr ""
+"Novērtējiet citu cilvēku jokus. Izlemiet, kas ir smieklīgi (un kas ir "
+"žēlīgi)."
+
+#: suchar_overflow/templates/pages/home.html:39
+#: suchar_overflow/templates/suchary/suchar_list.html:68
+msgid "Add"
+msgstr "Pievienot"
+
+#: suchar_overflow/templates/pages/home.html:40
+msgid "Share your thoughts with the world. Don't be shy."
+msgstr "Pārmeklējiet savas domas ar pasauli. Nebaidieties."
+
+#: suchar_overflow/templates/pages/home.html:47
+msgid "Laugh (optional)"
+msgstr "Smiekli (pēc izvēles)"
+
+#: suchar_overflow/templates/pages/home.html:48
+msgid "We guarantee a pity smile or your money back (the site is free)."
+msgstr ""
+"Mēs garantējam, ka jūs smaidīsiet vai naudu atpakaļ (vietne ir bezmaksas)."
+
+#: suchar_overflow/templates/registration/activation_complete.html:6
+msgid "Activation Complete"
+msgstr "Aktivācija veiksmīga"
+
+#: suchar_overflow/templates/registration/activation_complete.html:23
+msgid "Account Activated!"
+msgstr "Konts ir aktivizēts!"
+
+#: suchar_overflow/templates/registration/activation_complete.html:25
+msgid ""
+"Your account has been activated successfully. You can now log in and start "
+"using Suchar Overflow."
+msgstr ""
+"Jūsu konts ir veiksmīgi aktivizēts. Tagad varat pieteikties un sākt lietot "
+"Suchar Overflow."
+
+#: suchar_overflow/templates/registration/activation_complete.html:28
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
+msgid "Log in"
+msgstr "Ielogoties"
+
+#: suchar_overflow/templates/registration/activation_email.txt:3
+#: suchar_overflow/templates/users/email_notify_old_email.txt:3
+#: suchar_overflow/templates/users/email_verify_email.txt:3
+#, python-format
+msgid "Hello %(username)s!"
+msgstr "Sveiki, %(username)s!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:5
+msgid ""
+"Welcome to Suchar Overflow - a place where air humidity drops below zero."
+msgstr ""
+"Laipni lūdzam vietnē Suchar Overflow – vietā, kur gaisa mitrums noslīd zem "
+"nulles."
+
+#: suchar_overflow/templates/registration/activation_email.txt:6
+msgid ""
+"To make sure you're not a bot (or a person without a sense of humor), you "
+"need to activate your account."
+msgstr ""
+"Lai pārliecinātos, ka Jūs neesat robots (vai persona bez humora sajūtas), "
+"Jums ir jāaktivizē konts."
+
+#: suchar_overflow/templates/registration/activation_email.txt:8
+msgid "Click this link before it dries out:"
+msgstr "Noklikšķiniet uz šīs saites, pirms tā izplūst:"
+
+#: suchar_overflow/templates/registration/activation_email.txt:11
+msgid "Remember: Drink plenty of water."
+msgstr "Atcerieties: Dzeriet pietiekami daudz ūdens."
+
+#: suchar_overflow/templates/registration/activation_email.txt:13
+msgid "The Suchar Overflow Team"
+msgstr "Suchar Overflow komanda"
+
+#: suchar_overflow/templates/registration/activation_failed.html:6
+#: suchar_overflow/templates/registration/activation_failed.html:24
+msgid "Activation Failed"
+msgstr "Aktivācija nav veiksmīga"
+
+#: suchar_overflow/templates/registration/activation_failed.html:26
+msgid ""
+"The activation link is invalid or has expired. Please try registering again "
+"or contact support."
+msgstr ""
+"Aktivācijas saite ir nederīga vai ir beidzies tās derīguma termiņš. Lūdzu, "
+"mēģiniet reģistrēties vēlreiz vai sazinieties ar atbalsta dienestu."
+
+#: suchar_overflow/templates/registration/activation_failed.html:29
+msgid "Sign Up Again"
+msgstr "Reģistrēties atkārtoti"
+
+#: suchar_overflow/templates/registration/activation_failed.html:30
+#: suchar_overflow/templates/registration/signup_done.html:28
+msgid "Back to Home"
+msgstr "Atpakaļ uz sākumu"
+
+#: suchar_overflow/templates/registration/login.html:6
+#: suchar_overflow/templates/registration/login.html:12
+#: suchar_overflow/templates/registration/login.html:23
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Sign In"
+msgstr "Ielogoties"
+
+#: suchar_overflow/templates/registration/login.html:26
+msgid "Forgot Password?"
+msgstr "Vai esat aizmirsājuši paroli?"
+
+#: suchar_overflow/templates/registration/password_change_done.html:6
+#: suchar_overflow/templates/registration/password_change_done.html:12
+msgid "Password Changed"
+msgstr "Parole ir mainīta"
+
+#: suchar_overflow/templates/registration/password_change_done.html:13
+msgid "Your password was changed successfully."
+msgstr "Jūsu parole tika veiksmīgi mainīta."
+
+#: suchar_overflow/templates/registration/password_change_done.html:15
+msgid "Back to Profile"
+msgstr "Atpakaļ uz profilu"
+
+#: suchar_overflow/templates/registration/password_change_form.html:6
+#: suchar_overflow/templates/registration/password_change_form.html:12
+#: suchar_overflow/templates/registration/password_change_form.html:18
+#: suchar_overflow/templates/users/base_dashboard.html:42
+msgid "Change Password"
+msgstr "Mainīt paroli"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:6
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
+msgid "Password reset successful"
+msgstr "Parole ir veiksmīgi atiestatīta"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Jūsu parole ir iestatīta. Tagad varat pieteikties."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:6
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password"
+msgstr "Iestatīt jaunu paroli"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Lūdzu, ievadiet savu jauno paroli divreiz, lai mēs varētu pārliecināties, ka"
+" to esat ierakstījis pareizi."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:20
+msgid "Change password"
+msgstr "Izmainīt paroli"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"Parole paroli atiestatīšanas saite bija nederīga, iespējams, jo tā jau ir "
+"bijusi lietota. Lūdzu, pieprasiet jaunu parole atiestatīšanu."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:6
+#: suchar_overflow/templates/registration/password_reset_done.html:12
+msgid "Password Reset Sent"
+msgstr "Parole ir atsūtīta"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "Pārbaudiet savu iesūtni"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"Ja ir reģistrēts konts ar ievadīto e-pasta adresi, mēs nosūtījām jums "
+"norādījumus par paroles iestatīšanu. Jūs drīz vien saņemsiet tos."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:20
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"Ja neesat saņēmis e-pastu, lūdzu, pārliecinieties, ka esat ievadījis "
+"reģistrācijas laikā norādīto adresi un pārbaudiet savu surogato pastu."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr ""
+"Jūs saņemat šo e-pastu, jo pieprasījāt paroles atiestatīšanu savam lietotāja"
+" kontam vietnē."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "Lūdzu, dodieties uz šo lapu un izvēlieties jaunu paroli:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "Jūsu lietotājvārds, ja to esat aizmirsiet:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "Paldies, ka lietojat mūsu vietni!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr "Šis"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr "komanda"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:6
+#: suchar_overflow/templates/registration/password_reset_form.html:12
+msgid "Password Reset"
+msgstr "Paroles atiestatīšana"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"Vai esat aizmirsis savu paroli? Ievadiet zemāk savu e-pasta adresi, un mēs "
+"nosūtīsim norādījumus jaunas paroles iestatīšanai."
+
+#: suchar_overflow/templates/registration/password_reset_form.html:22
+msgid "Reset my password"
+msgstr "Atiestatīt savu paroli"
+
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Already have an account?"
+msgstr "Vai jau ir konts?"
+
+#: suchar_overflow/templates/registration/signup_done.html:6
+msgid "Confirmation Sent"
+msgstr "Apstiprinājums nosūtīts"
+
+#: suchar_overflow/templates/registration/signup_done.html:25
+msgid ""
+"We have sent you an email to confirm your registration. Please check your "
+"inbox and click the link to activate your account."
+msgstr ""
+"Mēs nosūtījām jums e-pastu, lai apstiprinātu reģistrāciju. Lūdzu, pārbaudiet"
+" savu iespēju pastu un noklikšķiniet uz saites, lai aktivizētu savu kontu."
+
+#: suchar_overflow/templates/stats/leaderboard.html:13
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr "Atzīmējam labākos (un sausākos) mirkļus, ko radījusi mūsu kopiena."
+
+#: suchar_overflow/templates/stats/leaderboard.html:19
+msgid "Activity (Last 30 Days)"
+msgstr "Aktivitāte (pēdējie 30 dienas)"
+
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "Kopumā"
+
+#: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Funny"
+msgstr "Smieklīgs"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:128
+#: suchar_overflow/templates/suchary/suchar_list.html:131
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Dry"
+msgstr "Sauss"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+msgid "Most Active Authors"
+msgstr "Aktīvākie autori"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
+msgid "jokes"
+msgstr "jociņi"
+
+#: suchar_overflow/templates/stats/leaderboard.html:99
+msgid "No data."
+msgstr "Nav datu."
+
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+msgid "No jokes."
+msgstr "Nekādu joku."
+
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr "Komēdiju karaļi"
+
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "Nav jautras informācijas."
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "Labākie smieklīgie jociņi"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "Sausuma valdnieki"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "Nav pieejamu datu."
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "Labākie sausie jociņi"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
+msgid "New Jokes"
+msgstr "Jauni jociņi"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:6
+msgid "Too Late!"
+msgstr "Pārāk vēlu!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:13
+msgid "The ship has sailed!"
+msgstr "Jau par vēlu!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:15
+msgid ""
+"This joke has already been published. You can't polish a diamond (or a dry "
+"biscuit) once it's been served."
+msgstr ""
+"Šo joku jau ir publicēts. Nevar pulēt dimantu (vai sausu cepumu), kad tas "
+"jau ir pasniegts."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:21
+msgid "Time creates jokes, but it also seals them."
+msgstr "Laiks rada jokus, bet arī tos noslēdz."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:23
+msgid "Ancient Suchar Proverb"
+msgstr "Senas Suchara atziņas"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:29
+msgid "Back to Jokes"
+msgstr "Atpakaļ uz jociem"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:8
+#: suchar_overflow/templates/suchary/suchar_form.html:29
+msgid "Add Joke"
+msgstr "Pievienot joku"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:30
+msgid "Shine with humor."
+msgstr "Mirdziet ar humoru."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:38
+msgid "Joke Content"
+msgstr "Joks"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:43
+msgid "Why did the chicken cross the road?"
+msgstr "Kāpēc vistai vajadzēja šķērsot ceļu?"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:46
+msgid "Remember, the drier the better."
+msgstr "Atcerieties, jo sausāks, jo labāk."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:50
+msgid "Tags"
+msgstr "Atslēgvārdi"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:55
+msgid "e.g. it, programming, school"
+msgstr "piemēram, IT, programmēšana, skola"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:62
+msgid "Separate with commas."
+msgstr "Iedali ar komatiem."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:70
+msgid "Schedule for later"
+msgstr "Plānot vēlāk"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:79
+msgid "Select date and time..."
+msgstr "Izvēlieties datumu un laiku..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:88
+msgid "Publish"
+msgstr "Publicēt"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:99
+msgid "Live Preview"
+msgstr "Priekšskatījums reāllaikā"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:109
+msgid "Now"
+msgstr "Tagad"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:116
+msgid "Your joke content will appear here..."
+msgstr "Jūsu joku saturs parādīsies šeit..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:149
+msgid "This is how your joke will look on the main list."
+msgstr "Šādi jūsu joks izskatīsies galvenajā sarakstā."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:13
+msgid "The dryest jokes on the internet."
+msgstr "Sausākie joci internetā."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:28
+msgid "Search..."
+msgstr "Meklēt..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:43
+#: suchar_overflow/templates/suchary/suchar_list.html:58
+msgid "Top"
+msgstr "Augšupele"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:45
+#: suchar_overflow/templates/suchary/suchar_list.html:53
+msgid "Newest"
+msgstr "Jaunākie"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:85
+msgid "Scheduled"
+msgstr "Plānotais"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:95
+#: suchar_overflow/templates/users/user_detail.html:194
+msgid "Edit"
+msgstr "Labot"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:139
+msgid "So dry here..."
+msgstr "Šeit ir tik sausi..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:140
+msgid "Be the hero we need and add the first joke."
+msgstr "Kļūsti par varoni, kas mums ir vajadzīgs, un pievieno pirmo joku."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:158
+msgid "Previous"
+msgstr "Iepriekšējais"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:182
+msgid "Next"
+msgstr "Turpināt"
+
+#: suchar_overflow/templates/users/base_dashboard.html:17
+msgid "Your Account"
+msgstr "Jūsu konts"
+
+#: suchar_overflow/templates/users/base_dashboard.html:22
+msgid "Profile"
+msgstr "Profils"
+
+#: suchar_overflow/templates/users/base_dashboard.html:27
+#: suchar_overflow/templates/users/user_form.html:6
+#: suchar_overflow/templates/users/user_form.html:11
+msgid "Edit Profile"
+msgstr "Labot profilu"
+
+#: suchar_overflow/templates/users/base_dashboard.html:37
+msgid "Security"
+msgstr "Drošība"
+
+#: suchar_overflow/templates/users/email_change_complete.html:6
+msgid "Email Changed"
+msgstr "E-pasts mainīts"
+
+#: suchar_overflow/templates/users/email_change_complete.html:23
+msgid "It worked!"
+msgstr "Darbojās!"
+
+#: suchar_overflow/templates/users/email_change_complete.html:25
+msgid ""
+"Your email address has been changed. You can now sleep peacefully (or not)."
+msgstr ""
+"Jūsu e-pasta adrese ir mainīta. Tagad varat mierīgi gulēt (vai arī nē)."
+
+#: suchar_overflow/templates/users/email_change_complete.html:28
+msgid "Back to settings"
+msgstr "Atpakaļ uz iestatījumiem"
+
+#: suchar_overflow/templates/users/email_change_done.html:6
+msgid "Email Sent"
+msgstr "E-pasts nosūtīts"
+
+#: suchar_overflow/templates/users/email_change_done.html:23
+msgid "Check both inboxes!"
+msgstr "Pārbaudiet abas iesūtnes!"
+
+#: suchar_overflow/templates/users/email_change_done.html:25
+msgid ""
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"          <br />\n"
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+msgstr ""
+
+#: suchar_overflow/templates/users/email_change_done.html:30
+msgid ""
+"If you don't click the link, nothing will change. Your account will remain "
+"as dry as our jokes."
+msgstr ""
+"Ja nenospiedīsiet saiti, nekas nemainīsies. Jūsu konts paliks tikpat sauss "
+"kā mūsu joki."
+
+#: suchar_overflow/templates/users/email_change_done.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:43
+msgid "Back to profile"
+msgstr "Atpakaļ uz profilu"
+
+#: suchar_overflow/templates/users/email_change_failed.html:23
+msgid "Something went wrong"
+msgstr "Kāds kļūdains moments."
+
+#: suchar_overflow/templates/users/email_change_failed.html:24
+msgid "The link has expired, is invalid, or has already been used."
+msgstr ""
+"Saite ir beidzusi derīguma termiņu, ir nederīga vai jau ir bijusi lietota."
+
+#: suchar_overflow/templates/users/email_change_failed.html:25
+msgid "Try again if you really must."
+msgstr "Ja tiešām vēlaties, mēģiniet vēlreiz."
+
+#: suchar_overflow/templates/users/email_change_failed.html:28
+msgid "Try again"
+msgstr "Mēģināt vēlreiz"
+
+#: suchar_overflow/templates/users/email_change_form.html:6
+msgid "Update Email"
+msgstr "Atjaunināt e-pastu"
+
+#: suchar_overflow/templates/users/email_change_form.html:12
+msgid "Change email address"
+msgstr "Izmainīt e-pasta adresi"
+
+#: suchar_overflow/templates/users/email_change_form.html:14
+msgid ""
+"Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
+"judge."
+msgstr ""
+"Vai jums apnīk jūsu vecā adrese? Vai varbūt tā ir mēģinājums izvairīties no "
+"nodokļiem? Mēs neizspriedam."
+
+#: suchar_overflow/templates/users/email_change_form.html:25
+msgid "Send a pigeon with the link"
+msgstr "Nosūtīt linku ar vēstuli"
+
+#: suchar_overflow/templates/users/email_change_form.html:26
+msgid "Changed my mind (go back)"
+msgstr "Mainīju viedokli (atgriezties)"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:6
+#: suchar_overflow/users/models.py:70
+msgid "Revoked"
+msgstr "Atcelts"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:15
+msgid "We've reverted the changes!"
+msgstr "Mēs atjaunojām iepriekšējo versiju!"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:17
+msgid ""
+"Phew, that was close. Your email address has been restored to its previous "
+"state."
+msgstr ""
+"Nu jau labi, viss atrisinājās. Jūsu e-pasta adrese ir atgriezta iepriekšējā "
+"stāvoklī."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:19
+msgid "You can breathe a sigh of relief. We recommend changing your password."
+msgstr "Jūs varat atvieglot elpu. Mēs iesakām mainīt savu paroli."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:32
+msgid "Change cancelled"
+msgstr "Izmaiņas atceltas"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:34
+msgid "All active email change links have been invalidated."
+msgstr "Visi aktīvās e-pasta adreses maiņas saites ir deaktivizētas."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:36
+msgid ""
+"If it wasn't you who tried to change the email, we recommend changing your "
+"password."
+msgstr ""
+"Ja tiešām neesat jūs, kurš mēģināja mainīt e-pastu, iesakām mainīt savu "
+"paroli."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:41
+msgid "Change password (just in case)"
+msgstr "Izmainīt paroli (jauki, ja nepieciešams)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:5
+#, python-format
+msgid "We just received a request to change your email address to: %(email)s."
+msgstr ""
+"Mēs tikko saņēmām pieprasījumu mainīt jūsu e-pasta adresi uz: %(email)s."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:7
+msgid ""
+"If it was you - great, you don't need to do anything here (just check that "
+"other inbox)."
+msgstr ""
+"Ja tas bijāt Jūs – lieliski, šeit Jums nav jāveic nekas (vienkārši "
+"pārbaudiet citu iesūtni)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:9
+msgid "BUT IF IT WASN'T YOU:"
+msgstr "BET JA TAS NAV BĪJA JŪS:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:10
+msgid ""
+"Someone might be trying to take over your account (or you just have a split "
+"personality)."
+msgstr ""
+"Kāds varētu mēģināt iegūt kontroli pār jūsu kontu (vai jums vienkārši ir "
+"divējāda personība)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:11
+msgid ""
+"Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
+"sent to the new address:"
+msgstr ""
+"Noklikšķiniet uz šīs saites, lai NEKAVĒJOTIES ATCELTU šo pieprasījumu un "
+"padarītu nederīgu saiti, kas nosūtīta jaunajam adresam:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:15
+msgid "We also recommend changing your password if you suspect a breach."
+msgstr ""
+"Mēs arī iesakām mainīt savu paroli, ja Jūs aizdomājaties par drošības "
+"pārkāpumu."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:17
+#: suchar_overflow/templates/users/email_verify_email.txt:14
+msgid "Suchar Overflow"
+msgstr "Suchar Overflow"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:5
+#, python-format
+msgid ""
+"We received a request to change your email address to this one you're "
+"reading (%(email)s)."
+msgstr ""
+"Mēs saņēmām pieprasījumu mainīt jūsu e-pasta adresi uz šo, ko jūs tagad "
+"redzat (%(email)s)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:7
+msgid "If it's you, click the link below to confirm the change:"
+msgstr ""
+"Ja tas esat Jūs, noklikšķiniet uz saites zemāk, lai apstiprinātu izmaiņu:"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:10
+msgid "The link is valid for 24 hours (or until it evaporates)."
+msgstr "Šī saite ir derīga 24 stundas (vai līdz tā zaudē spēku)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:12
+msgid ""
+"If it wasn't you, ignore this message. We sent instructions on how to block "
+"the intruder to your old address."
+msgstr ""
+"Ja tas nebija Jūs, ignorējiet šo ziņojumu. Mēs nosūtījām instrukcijas, kā "
+"bloķēt ļaunprātīgo lietotāju, uz Jūsu iepriekšējo adresi."
+
+#: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
+msgid "User"
+msgstr "Lietotājs"
+
+#: suchar_overflow/templates/users/user_detail.html:23
+msgid "Suchar Overflow User"
+msgstr "Suchar Overflow lietotājs"
+
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "No achievements yet."
+msgstr "Vēl nav sasniegumu."
+
+#: suchar_overflow/templates/users/user_detail.html:62
+msgid "The Best Of"
+msgstr "Labrākais no labākajiem"
+
+#: suchar_overflow/templates/users/user_detail.html:76
+msgid "Statistics"
+msgstr "Statistika"
+
+#: suchar_overflow/templates/users/user_detail.html:78
+msgid "Rank"
+msgstr "Vieta"
+
+#: suchar_overflow/templates/users/user_detail.html:86
+msgid "Total Votes"
+msgstr "Kopā balsu skaits"
+
+#: suchar_overflow/templates/users/user_detail.html:93
+msgid "Joined"
+msgstr "Pievienojies"
+
+#: suchar_overflow/templates/users/user_detail.html:101
+msgid "Dryness Level"
+msgstr "Sausuma līmenis"
+
+#: suchar_overflow/templates/users/user_detail.html:109
+msgid "Reception"
+msgstr "Reģistratūra"
+
+#: suchar_overflow/templates/users/user_detail.html:125
+msgid "Drought Map"
+msgstr "Sausuma karte"
+
+#: suchar_overflow/templates/users/user_detail.html:127
+msgid "Less"
+msgstr "Mazāk"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "More"
+msgstr "Vairāk"
+
+#: suchar_overflow/templates/users/user_detail.html:146
+msgid "Mon"
+msgstr "Pirmdiena"
+
+#: suchar_overflow/templates/users/user_detail.html:147
+msgid "Wed"
+msgstr "Trešdiena"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Fri"
+msgstr "Piektdiena"
+
+#: suchar_overflow/templates/users/user_detail.html:167
+msgid "jokes on"
+msgstr "joki"
+
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Latest Jokes"
+msgstr "Jaunākie jociņi"
+
+#: suchar_overflow/templates/users/user_detail.html:185
+msgid "Scheduled for Publication"
+msgstr "Paredzēts publicēšanai"
+
+#: suchar_overflow/templates/users/user_detail.html:228
+msgid "See all entries"
+msgstr "Skatīt visus ierakstus"
+
+#: suchar_overflow/templates/users/user_detail.html:232
+msgid "User hasn't added any jokes yet."
+msgstr "Lietotājs vēl nav pievienojis nevienu joku."
+
+#: suchar_overflow/templates/users/user_form.html:12
+msgid "Here you can update your data."
+msgstr "Šeit jūs varat atjaunināt savus datus."
+
+#: suchar_overflow/templates/users/user_form.html:16
+msgid "E-mail Address"
+msgstr "E-pasta adrese"
+
+#: suchar_overflow/templates/users/user_form.html:24
+msgid "Change E-mail"
+msgstr "Mainīt e-pastu"
+
+#: suchar_overflow/templates/users/user_form.html:26
+msgid "Address change requires confirmation."
+msgstr "Adreses maiņai nepieciešama apstiprināšana."
+
+#: suchar_overflow/templates/users/user_form.html:36
+msgid "Save Changes"
+msgstr "Saglabāt izmaiņas"
+
+#: suchar_overflow/users/admin.py:36
+msgid "Personal info"
+msgstr "Personīgā informācija"
+
+#: suchar_overflow/users/admin.py:38
+msgid "Permissions"
+msgstr "Atļaujas"
+
+#: suchar_overflow/users/admin.py:49
+msgid "Important dates"
+msgstr "Svarīgi datumi"
+
+#: suchar_overflow/users/apps.py:7
+msgid "Users"
+msgstr "Lietotāji"
+
+#: suchar_overflow/users/forms.py:19
+#: suchar_overflow/users/tests/test_forms.py:36
+msgid "This username has already been taken."
+msgstr "Šis lietotājvārds jau ir aizņemts."
+
+#: suchar_overflow/users/forms.py:32
+msgid "New Email Address"
+msgstr "Jauna e-pasta adrese"
+
+#: suchar_overflow/users/forms.py:37
+msgid "This email is already currently used."
+msgstr "Šī e-pasta adrese jau ir lietota."
+
+#: suchar_overflow/users/models.py:21
+msgid "Name of User"
+msgstr "Lietotāja vārds"
+
+#: suchar_overflow/users/models.py:24
+msgid "email address"
+msgstr "e-pasta adrese"
+
+#: suchar_overflow/users/models.py:54
+msgid "Activation Token"
+msgstr "Aktivācijas kods"
+
+#: suchar_overflow/users/models.py:55
+msgid "Activation Tokens"
+msgstr "Aktivizācijas kodi"
+
+#: suchar_overflow/users/models.py:68
+msgid "Pending"
+msgstr "Gaidīšana"
+
+#: suchar_overflow/users/models.py:69
+msgid "Verified"
+msgstr "Apstiprināts"
+
+#: suchar_overflow/users/models.py:89
+msgid "Email Change Request"
+msgstr "E-pasta adresses maiņas pieprasījums"
+
+#: suchar_overflow/users/models.py:90
+msgid "Email Change Requests"
+msgstr "E-pasta adreses maiņas pieprasījumi"
+
+#: suchar_overflow/users/tasks.py:11
+msgid "Confirm you have a sense of humor (Account Activation)"
+msgstr ""
+"Apstipriniet, ka jums ir jūtā ietilstoša humora izjūta (Konta aktivizēšana)"
+
+#: suchar_overflow/users/tasks.py:29
+msgid "Confirm it's you (Email Change)"
+msgstr "Apstipriniet, ka tas esat (e-pasta adresei mainot)"
+
+#: suchar_overflow/users/tasks.py:41
+msgid "Someone wants to change your email address (We hope it's you)"
+msgstr "Kāds vēlas mainīt jūsu e-pasta adresi (ceram, ka tas esat Jūs)."
+
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "Informācija veiksmīgi atjaunināta"
+
+#: suchar_overflow/users/views.py:334
+msgid "The link has already been used or cancelled."
+msgstr "Šī saite jau ir bijusi lietota vai atcelta."
+
+#: suchar_overflow/users/views.py:344
+msgid "The link has expired (24 hours have passed)."
+msgstr "Saite ir beidzusi derīguma termiņu (ir pagājuši 24 stundas)."
+
+#: suchar_overflow/users/views.py:352
+msgid "Email already taken."
+msgstr "Šī e-pasta adrese jau ir reģistrēta."
+
+#: suchar_overflow/users/views.py:370
+msgid "The link is invalid."
+msgstr "Saite ir nederīga."

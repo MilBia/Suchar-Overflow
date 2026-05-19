@@ -1,0 +1,1378 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);\n"
+
+#: config/settings/base.py:34
+msgid "Polish"
+msgstr "Pólski"
+
+#: config/settings/base.py:35
+msgid "English"
+msgstr "Enska"
+
+#: suchar_overflow/achievements/apps.py:8
+#: suchar_overflow/achievements/models.py:84
+#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/users/user_detail.html:34
+msgid "Achievements"
+msgstr "Afrekingar"
+
+#: suchar_overflow/achievements/middleware.py:29
+#, python-format
+msgid "Achievement Unlocked: %(name)s!"
+msgstr "Náðst: %(name)s!"
+
+#: suchar_overflow/achievements/models.py:8
+msgid "Lifetime"
+msgstr "Allt lífið"
+
+#: suchar_overflow/achievements/models.py:9
+msgid "Periodic"
+msgstr "Reglulegt"
+
+#: suchar_overflow/achievements/models.py:10
+msgid "Streak"
+msgstr "Strengja"
+
+#: suchar_overflow/achievements/models.py:13
+msgid "Suchar Posted"
+msgstr "Útgefið af Suchar"
+
+#: suchar_overflow/achievements/models.py:14
+msgid "Vote Received"
+msgstr "Atkvæði móttekið"
+
+#: suchar_overflow/achievements/models.py:15
+msgid "Vote Cast"
+msgstr "Atkvæði gefið"
+
+#: suchar_overflow/achievements/models.py:18
+msgid "Suchar Count"
+msgstr "Fjöldi leitar"
+
+#: suchar_overflow/achievements/models.py:19
+msgid "Funny Vote Count"
+msgstr "Fjöldi fyndra atkvæða"
+
+#: suchar_overflow/achievements/models.py:20
+msgid "Dry Vote Count"
+msgstr "Þurrkatali atkvæða"
+
+#: suchar_overflow/achievements/models.py:21
+msgid "Vote Cast Count"
+msgstr "Fjöldi atkvæða gefinna"
+
+#: suchar_overflow/achievements/models.py:22
+msgid "Total Score"
+msgstr "Heildarpunktur"
+
+#: suchar_overflow/achievements/models.py:23
+msgid "Night Owl"
+msgstr "Nattugla"
+
+#: suchar_overflow/achievements/models.py:24
+msgid "Login Streak"
+msgstr "Innskráningastika"
+
+#: suchar_overflow/achievements/models.py:25
+msgid "Polarizer"
+msgstr "Pólfókus"
+
+#: suchar_overflow/achievements/models.py:28
+msgid "None"
+msgstr "Enginn"
+
+#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
+#: suchar_overflow/templates/achievements/list.html:42
+#: suchar_overflow/templates/achievements/list.html:82
+msgid "Bronze"
+msgstr "Bronn"
+
+#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
+#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:84
+msgid "Silver"
+msgstr "Silfur"
+
+#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
+#: suchar_overflow/templates/achievements/list.html:46
+#: suchar_overflow/templates/achievements/list.html:86
+msgid "Gold"
+msgstr "Gull"
+
+#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
+#: suchar_overflow/templates/achievements/list.html:48
+#: suchar_overflow/templates/achievements/list.html:88
+msgid "Platinum"
+msgstr "Platína"
+
+#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
+#: suchar_overflow/templates/achievements/list.html:50
+#: suchar_overflow/templates/achievements/list.html:90
+msgid "Diamond"
+msgstr "Diamant"
+
+#: suchar_overflow/achievements/models.py:35
+msgid "Name"
+msgstr "Nafn"
+
+#: suchar_overflow/achievements/models.py:36
+msgid "Slug"
+msgstr "Slóð"
+
+#: suchar_overflow/achievements/models.py:37
+msgid "Description"
+msgstr "Lýsing"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Icon Content"
+msgstr "Íkon innihald"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Raw SVG XML"
+msgstr "Óvinndur SVG XML"
+
+#: suchar_overflow/achievements/models.py:44
+msgid "Category"
+msgstr "Flokkur"
+
+#: suchar_overflow/achievements/models.py:50
+msgid "Event Type"
+msgstr "Tegund viðburðs"
+
+#: suchar_overflow/achievements/models.py:56
+msgid "Metric"
+msgstr "Mál"
+
+#: suchar_overflow/achievements/models.py:61
+msgid "Threshold"
+msgstr "Þröskuldur"
+
+#: suchar_overflow/achievements/models.py:65
+msgid "Theme"
+msgstr "Þema"
+
+#: suchar_overflow/achievements/models.py:68
+msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
+msgstr "T.d. „Jól“, „forritun“. Láttu eftir ef þú vilt aðeins almenna leit."
+
+#: suchar_overflow/achievements/models.py:71
+msgid "Tier"
+msgstr "Stig"
+
+#: suchar_overflow/achievements/models.py:74
+msgid "Difficulty/Rarity tier of the achievement"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:77
+msgid "Secret Achievement"
+msgstr "Leyndur árangur"
+
+#: suchar_overflow/achievements/models.py:79
+msgid "If checked, name and description are hidden until unlocked."
+msgstr "Ef valið er, verður nafn og lýsing ekki sýnileg fyrr en hún er opnuð."
+
+#: suchar_overflow/achievements/models.py:83
+msgid "Achievement"
+msgstr "Afreki"
+
+#: suchar_overflow/achievements/models.py:102
+msgid "Seen by user"
+msgstr "Sýnt fyrir notanda"
+
+#: suchar_overflow/achievements/models.py:105
+msgid "User Achievement"
+msgstr "Notandaafrek"
+
+#: suchar_overflow/achievements/models.py:106
+msgid "User Achievements"
+msgstr "Aðgerðir notenda"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "Texti"
+
+#: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:65
+#: suchar_overflow/templates/users/user_detail.html:217
+msgid "Votes"
+msgstr "Atkvæði"
+
+#: suchar_overflow/suchary/apps.py:7
+msgid "Suchary"
+msgstr "Kökur"
+
+#: suchar_overflow/suchary/forms.py:15
+msgid ""
+"Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
+"programowanie)."
+msgstr ""
+"Sláðu inn tags aðskildu með bilum eða kommum (t.d. brauð, íþróttir, "
+"forritun)."
+
+#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+msgid "Publication Date"
+msgstr "Útgáfudagur"
+
+#: suchar_overflow/suchary/forms.py:35
+msgid "Leave empty to publish immediately."
+msgstr "Láttu eftir því sem er til að birta strax."
+
+#: suchar_overflow/suchary/forms.py:57
+msgid "Publication date cannot be in the past."
+msgstr "Útgáfudagurinn má ekki vera í fortíðinni."
+
+#: suchar_overflow/suchary/models.py:16
+msgid "Suchar text"
+msgstr "Leita að texta"
+
+#: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
+#: suchar_overflow/templates/403_csrf.html:6
+#: suchar_overflow/templates/403_csrf.html:9
+msgid "Forbidden (403)"
+msgstr "Bannað (403)"
+
+#: suchar_overflow/templates/403.html:14
+#: suchar_overflow/templates/403_csrf.html:14
+msgid "You're not allowed to access this page."
+msgstr "Þú hefur ekki leyfi til að skoða þessa síðu."
+
+#: suchar_overflow/templates/404.html:6 suchar_overflow/templates/404.html:9
+msgid "Page not found"
+msgstr "Síða ekki fundin"
+
+#: suchar_overflow/templates/404.html:14
+msgid "This is not the page you were looking for."
+msgstr "Þetta er ekki síðan sem þú varst að leita að."
+
+#: suchar_overflow/templates/500.html:6
+msgid "Server Error"
+msgstr "Villa á netþjóninum"
+
+#: suchar_overflow/templates/500.html:9
+msgid "Ooops!!! 500"
+msgstr "Öööps!!! 500"
+
+#: suchar_overflow/templates/500.html:10
+msgid "Looks like something went wrong!"
+msgstr "Eitthvað fór úr skriði!"
+
+#: suchar_overflow/templates/500.html:12
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+"Við fylgjum með þessum villum sjálfkrafa, en ef vandamálið heldur áfram, "
+"vinsamlegast hafðu samband við okkur. Á meðan, reyndu að endurnýja síðuna."
+
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+msgid "Notification Inbox"
+msgstr "Tilkynningakassi"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr "Allar afhendingar sem þú hefur unnið, nýjustu í fyrsta sæti."
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "Almennt"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, python-format
+msgid "Unlocked: %(date)s"
+msgstr "Læst upp: %(date)s"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+msgid "No achievements yet — go post some jokes!"
+msgstr "Engin afrek enn – farðu og deildu einhverjum fyndnum frásögnum!"
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+msgid "Browse achievements"
+msgstr "Skoða afrek"
+
+#: suchar_overflow/templates/achievements/list.html:6
+msgid "My Achievements"
+msgstr "Aðgerðir mínar"
+
+#: suchar_overflow/templates/achievements/list.html:17
+#: suchar_overflow/templates/stats/leaderboard.html:110
+msgid "Hall of Fame"
+msgstr "Hinsegin hall"
+
+#: suchar_overflow/templates/achievements/list.html:19
+msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
+msgstr "Merkin, medalíurnar og skömmum leyndarmálin þín frá Suchar Overflow."
+
+#: suchar_overflow/templates/achievements/list.html:74
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr ""
+"Náttúrulegur árangur er læst. Uppgötvaðu leyndarmál þess með því að spila!"
+
+#: suchar_overflow/templates/base.html:17
+#: suchar_overflow/templates/base.html:24
+msgid "Joke aggregator with critically low humidity levels."
+msgstr "Söguleikjasafn með afar lágum raka."
+
+#: suchar_overflow/templates/base.html:96
+msgid "Home"
+msgstr "Heimasíða"
+
+#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/suchary/suchar_list.html:12
+#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/users/admin.py:68
+msgid "Jokes"
+msgstr "Brandar"
+
+#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/stats/leaderboard.html:6
+#: suchar_overflow/templates/stats/leaderboard.html:12
+msgid "Leaderboard"
+msgstr "Stigatafla"
+
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "Innkassi"
+
+#: suchar_overflow/templates/base.html:113
+msgid "About"
+msgstr "Um"
+
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
+msgid "Log Out"
+msgstr "Útskrift"
+
+#: suchar_overflow/templates/base.html:159
+msgid "Log In"
+msgstr "Innskráning"
+
+#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/registration/signup.html:6
+#: suchar_overflow/templates/registration/signup.html:12
+#: suchar_overflow/templates/registration/signup.html:23
+msgid "Sign Up"
+msgstr "Skráðu þig"
+
+#: suchar_overflow/templates/base.html:170
+msgid "Default content."
+msgstr "Staðalefni."
+
+#: suchar_overflow/templates/base.html:179
+msgid "All rights reserved (but jokes stolen)."
+msgstr "Öll réttindi áskilin (en fyndirnir eru stolið)."
+
+#: suchar_overflow/templates/base.html:188
+msgid "Report a Bug"
+msgstr "Tilkynna um vandamál"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/users/email_change_failed.html:6
+msgid "Error"
+msgstr "Villa"
+
+#: suchar_overflow/templates/base.html:212
+msgid "Achievement Unlocked"
+msgstr "Náðist árangur"
+
+#: suchar_overflow/templates/base.html:214
+msgid "Success"
+msgstr "Velgengt"
+
+#: suchar_overflow/templates/base.html:216
+msgid "Notification"
+msgstr "Tilkynning"
+
+#: suchar_overflow/templates/base.html:231
+msgid "Confirm Logout"
+msgstr "Staðfesta útlokun"
+
+#: suchar_overflow/templates/base.html:234
+msgid "Are you sure you want to log out?"
+msgstr "Ertu viss um að þú vilt skrá þig út?"
+
+#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/users/user_form.html:35
+msgid "Cancel"
+msgstr "Hætta við"
+
+#: suchar_overflow/templates/pages/about.html:6
+msgid "About Project - Suchar Overflow"
+msgstr "Um verkefnið - Suchar Overflow"
+
+#: suchar_overflow/templates/pages/about.html:13
+msgid "About Project"
+msgstr "Um verkefnið"
+
+#: suchar_overflow/templates/pages/about.html:14
+msgid "Why do we do this? Because someone had to."
+msgstr "Af hverju gerum við þetta? Vegna þess að einhver varð að gera það."
+
+#: suchar_overflow/templates/pages/about.html:18
+msgid "Mission"
+msgstr "Markmið"
+
+#: suchar_overflow/templates/pages/about.html:20
+msgid ""
+"The goal of Suchar Overflow is to gather the largest collection of jokes "
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
+msgstr ""
+"Markmið <0xE1><0xBD><0xB3>ar Suchar Overflow er að safna stærstu söfnuninni "
+"af fyndnum sem valda líkamlegum óþægindum hjá þeim sem heyra þau. Við teljum"
+" að góður, \"dry\" spásskipti sé sá sem fylgist með óhuggunlegri þögn og "
+"grísum í baksýninu."
+
+#: suchar_overflow/templates/pages/about.html:22
+msgid "Technology"
+msgstr "Tækni"
+
+#: suchar_overflow/templates/pages/about.html:24
+msgid ""
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr ""
+"Síðan er byggð á nýjustu tækni (Django + sérsniðin CSS) til að tryggja hraða"
+" og áreiðanlega afgreiðslu á innihaldi sem getur vakið hlátur, beint í "
+"skjáinn þinn."
+
+#: suchar_overflow/templates/pages/home.html:8
+msgid "Dry Bread for the Horse"
+msgstr "Þurr brauð fyrir hestinn"
+
+#: suchar_overflow/templates/pages/home.html:10
+msgid ""
+"Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
+"you need a drink."
+msgstr ""
+"Velkomin(n) í <strong>Suchar Overflow</strong>. Staður þar sem fyndið er svo"
+" þurrt að þú þarft að fá sér eitthvað til að drekka."
+
+#: suchar_overflow/templates/pages/home.html:11
+msgid "Vote for the best jokes, add your own, and become an office legend."
+msgstr ""
+"Kosið þær fyndnustu sögurnar, bætið við eigin og gerist goða saga á "
+"skrifstofunni."
+
+#: suchar_overflow/templates/pages/home.html:15
+msgid "Browse Jokes"
+msgstr "Skoða fyndnar sögur"
+
+#: suchar_overflow/templates/pages/home.html:17
+msgid "Join Us"
+msgstr "Vertu með okkur"
+
+#: suchar_overflow/templates/pages/home.html:31
+msgid "Vote"
+msgstr "Kjörðu"
+
+#: suchar_overflow/templates/pages/home.html:32
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr "Meta fyndni annarra og ákvarða hvað er fyndið (og hvað er misfyndið)."
+
+#: suchar_overflow/templates/pages/home.html:39
+#: suchar_overflow/templates/suchary/suchar_list.html:68
+msgid "Add"
+msgstr "Bæta við"
+
+#: suchar_overflow/templates/pages/home.html:40
+msgid "Share your thoughts with the world. Don't be shy."
+msgstr "Deildu hugsunum þínum með heiminum. Ekki vera feigur."
+
+#: suchar_overflow/templates/pages/home.html:47
+msgid "Laugh (optional)"
+msgstr "Gleði (valfrjálst)"
+
+#: suchar_overflow/templates/pages/home.html:48
+msgid "We guarantee a pity smile or your money back (the site is free)."
+msgstr "Við tryggjum ykkur bros eða peningana aftur (síðan er ókeypis)."
+
+#: suchar_overflow/templates/registration/activation_complete.html:6
+msgid "Activation Complete"
+msgstr "Virkjun lokið"
+
+#: suchar_overflow/templates/registration/activation_complete.html:23
+msgid "Account Activated!"
+msgstr "Reikningurinn er virkur!"
+
+#: suchar_overflow/templates/registration/activation_complete.html:25
+msgid ""
+"Your account has been activated successfully. You can now log in and start "
+"using Suchar Overflow."
+msgstr ""
+"Reikningurinn þinn hefur verið virkjaður með góðum árangri. Þú getur núna "
+"skráð þig inn og byrjað að nota Suchar Overflow."
+
+#: suchar_overflow/templates/registration/activation_complete.html:28
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
+msgid "Log in"
+msgstr "Innskráning"
+
+#: suchar_overflow/templates/registration/activation_email.txt:3
+#: suchar_overflow/templates/users/email_notify_old_email.txt:3
+#: suchar_overflow/templates/users/email_verify_email.txt:3
+#, python-format
+msgid "Hello %(username)s!"
+msgstr "Halló, %(username)s!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:5
+msgid ""
+"Welcome to Suchar Overflow - a place where air humidity drops below zero."
+msgstr ""
+"Velkomin(n) í Suchar Overflow – stað þar sem loftúði fellur niður fyrir "
+"núllustig."
+
+#: suchar_overflow/templates/registration/activation_email.txt:6
+msgid ""
+"To make sure you're not a bot (or a person without a sense of humor), you "
+"need to activate your account."
+msgstr ""
+"Til að tryggja að þú sért ekki tölva (eða manneskja án skynsemlingar) þarftu"
+" að virkja reikninginn þinn."
+
+#: suchar_overflow/templates/registration/activation_email.txt:8
+msgid "Click this link before it dries out:"
+msgstr "Smelltu á þessa hlekk áður en hann fer úr gildi:"
+
+#: suchar_overflow/templates/registration/activation_email.txt:11
+msgid "Remember: Drink plenty of water."
+msgstr "Muna eftir: Drekið nóg af vatni."
+
+#: suchar_overflow/templates/registration/activation_email.txt:13
+msgid "The Suchar Overflow Team"
+msgstr "Liðið hjá Suchar sem sér um yfirfyllingu"
+
+#: suchar_overflow/templates/registration/activation_failed.html:6
+#: suchar_overflow/templates/registration/activation_failed.html:24
+msgid "Activation Failed"
+msgstr "Virkjun mistókst"
+
+#: suchar_overflow/templates/registration/activation_failed.html:26
+msgid ""
+"The activation link is invalid or has expired. Please try registering again "
+"or contact support."
+msgstr ""
+"Virkjunartengillinn er ónýtur eða hefur verið útrunninn. Vinsamlegast reynið"
+" að skrá ykkur aftur eða hafið samband við þjónustuver."
+
+#: suchar_overflow/templates/registration/activation_failed.html:29
+msgid "Sign Up Again"
+msgstr "Skráðu þig aftur"
+
+#: suchar_overflow/templates/registration/activation_failed.html:30
+#: suchar_overflow/templates/registration/signup_done.html:28
+msgid "Back to Home"
+msgstr "Til baka í heimsíðuna"
+
+#: suchar_overflow/templates/registration/login.html:6
+#: suchar_overflow/templates/registration/login.html:12
+#: suchar_overflow/templates/registration/login.html:23
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Sign In"
+msgstr "Innskráning"
+
+#: suchar_overflow/templates/registration/login.html:26
+msgid "Forgot Password?"
+msgstr "Hefur þú gleymt lykilorðinu?"
+
+#: suchar_overflow/templates/registration/password_change_done.html:6
+#: suchar_overflow/templates/registration/password_change_done.html:12
+msgid "Password Changed"
+msgstr "Lykilorð hefur verið skipt út"
+
+#: suchar_overflow/templates/registration/password_change_done.html:13
+msgid "Your password was changed successfully."
+msgstr "Lykilorðið þitt var breytt með góðum árangri."
+
+#: suchar_overflow/templates/registration/password_change_done.html:15
+msgid "Back to Profile"
+msgstr "Til baka í prófílinn"
+
+#: suchar_overflow/templates/registration/password_change_form.html:6
+#: suchar_overflow/templates/registration/password_change_form.html:12
+#: suchar_overflow/templates/registration/password_change_form.html:18
+#: suchar_overflow/templates/users/base_dashboard.html:42
+msgid "Change Password"
+msgstr "Breyta lyk orði"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:6
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
+msgid "Password reset successful"
+msgstr "Endurheimt lykilorðs heppnuð"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Lykilorðið þitt hefur verið sett. Þú getur núna skráð þig inn."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:6
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password"
+msgstr "Stilltu nýtt lykilorð"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Vinsamlegast sláðu inn nýja lykilorðið tvisvar, svo að við getum staðfest að"
+" þú slóst því rétt inn."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:20
+msgid "Change password"
+msgstr "Breyta lyk orði"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"Tengillinn til að endurheimta lyk orðið er ógiltur, líklega vegna þess að "
+"hann hefur þegar verið notaður. Vinsamlegast beðið um nýjan tengil til að "
+"endurheimta lyk orðið."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:6
+#: suchar_overflow/templates/registration/password_reset_done.html:12
+msgid "Password Reset Sent"
+msgstr "Endurheimt lykilorðs hefur verið sent"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "Athugaðu innkassann þinn"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"Við höfum sent þér leiðbeiningar um hvernig þú getur stillt lykilorðið í "
+"tölvupósti, ef reikningur er til fyrir netfangið sem þú slóst inn. Þú ættir "
+"að fá þau innan stutt tíma."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:20
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"Ef þú færð ekki tölvupóst, vinsamlegast vertu viss um að þú hafir slátt inn "
+"netfanginu sem þú skráðir þig með og skoða spamskuffuna þína."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr ""
+"Þú ert að fá þetta tölvupóst á vegum þess að þú baðst um endurstilling af "
+"lykilorði fyrir notendareikninginn þinn hjá."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "Vinsamlegast farðu á eftirgreinda síðuna og veldu nýtt lykilorð:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "Nafnnotandi þinn, ef þú hefur gleymt því:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "Takk fyrir að nota síðuna okkar!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr "Þessi"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr "lið"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:6
+#: suchar_overflow/templates/registration/password_reset_form.html:12
+msgid "Password Reset"
+msgstr "Endurheimt lykilorðs"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"Hefur þú gleymt lykilorðinu? Sláðu inn tölvupóstfang þitt hér að neðan og "
+"við munum senda þér leiðbeiningar um hvernig á að setja nýtt lykilorð."
+
+#: suchar_overflow/templates/registration/password_reset_form.html:22
+msgid "Reset my password"
+msgstr "Endurheimta lykilorðið mitt"
+
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Already have an account?"
+msgstr "Ertu með reikning fyrir?"
+
+#: suchar_overflow/templates/registration/signup_done.html:6
+msgid "Confirmation Sent"
+msgstr "Staðfesting send"
+
+#: suchar_overflow/templates/registration/signup_done.html:25
+msgid ""
+"We have sent you an email to confirm your registration. Please check your "
+"inbox and click the link to activate your account."
+msgstr ""
+"Við höfum sent þér tölvupóst til að staðfesta skráningu þína. Vinsamlegast "
+"skoðaðu innkassann og smelltu á hlekkinn til að virkja reikninginn þinn."
+
+#: suchar_overflow/templates/stats/leaderboard.html:13
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr ""
+"Fagnað þeim frábæra (og það sem er ekki eins frábært) sem samfélagið okkar "
+"hefur skapað."
+
+#: suchar_overflow/templates/stats/leaderboard.html:19
+msgid "Activity (Last 30 Days)"
+msgstr "Virkni (síðasti 30 dagurinn)"
+
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "Heildarmynd"
+
+#: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Funny"
+msgstr "Skemmtilegt"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:128
+#: suchar_overflow/templates/suchary/suchar_list.html:131
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Dry"
+msgstr "Þurrt"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+msgid "Most Active Authors"
+msgstr "Virkustu höfundarnir"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
+msgid "jokes"
+msgstr "Brjálæðingar"
+
+#: suchar_overflow/templates/stats/leaderboard.html:99
+msgid "No data."
+msgstr "Engin gögn til staðar."
+
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+msgid "No jokes."
+msgstr "Engin fyndnir sögur."
+
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr ""
+
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "Engin skrýtin gögn."
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "Bestu fyndnu sögurnar"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "Lords of Drought"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "Engin þurr gögn."
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "Bestu þurrátíðargleðiarnir"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
+msgid "New Jokes"
+msgstr "Nýjar fyndnar sögur"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:6
+msgid "Too Late!"
+msgstr "Of seint!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:13
+msgid "The ship has sailed!"
+msgstr "Skipin hafa siglt!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:15
+msgid ""
+"This joke has already been published. You can't polish a diamond (or a dry "
+"biscuit) once it's been served."
+msgstr ""
+"Þessi fyndni hefur þegar verið birt. Maður getur ekki pússað á demanti (eða "
+"þurrri kekki) eftir að hann er búinn að vera borinn fram."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:21
+msgid "Time creates jokes, but it also seals them."
+msgstr "Tíminn býr til fyndindir, en hann festir þær líka."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:23
+msgid "Ancient Suchar Proverb"
+msgstr "Gammalt orðaták frá Suchar"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:29
+msgid "Back to Jokes"
+msgstr "Til baka í fyndnar sögur"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:8
+#: suchar_overflow/templates/suchary/suchar_form.html:29
+msgid "Add Joke"
+msgstr "Bæta við skugga"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:30
+msgid "Shine with humor."
+msgstr "Berið ykkur af gleði."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:38
+msgid "Joke Content"
+msgstr "Bráðaskáld"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:43
+msgid "Why did the chicken cross the road?"
+msgstr "Af hverju fór hænan yfir veginum?"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:46
+msgid "Remember, the drier the better."
+msgstr "Munaðu, því þurrara, því betra."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:50
+msgid "Tags"
+msgstr "Einkunnir"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:55
+msgid "e.g. it, programming, school"
+msgstr "t.d. íslenska, forritun, skóli"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:62
+msgid "Separate with commas."
+msgstr "Aðskildu með kommum."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:70
+msgid "Schedule for later"
+msgstr "Bóka fyrir seinna"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:79
+msgid "Select date and time..."
+msgstr "Veldu dag og tíma..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:88
+msgid "Publish"
+msgstr "Birta"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:99
+msgid "Live Preview"
+msgstr "Sýnilegur forskjá"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:109
+msgid "Now"
+msgstr "Núna"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:116
+msgid "Your joke content will appear here..."
+msgstr "Bráðinn þinn mun birtast hér..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:149
+msgid "This is how your joke will look on the main list."
+msgstr "Þetta er hvernig fyndin þín mun líta út á aðalsíðunni."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:13
+msgid "The dryest jokes on the internet."
+msgstr "Þeir deyrustu fyndin á netinu."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:28
+msgid "Search..."
+msgstr "Leita eftir..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:43
+#: suchar_overflow/templates/suchary/suchar_list.html:58
+msgid "Top"
+msgstr "Efst"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:45
+#: suchar_overflow/templates/suchary/suchar_list.html:53
+msgid "Newest"
+msgstr "Nýjasta"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:85
+msgid "Scheduled"
+msgstr "Skipulagður"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:95
+#: suchar_overflow/templates/users/user_detail.html:194
+msgid "Edit"
+msgstr "Breyta"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:139
+msgid "So dry here..."
+msgstr "Þurrt hér..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:140
+msgid "Be the hero we need and add the first joke."
+msgstr "Vertu heldurinn sem við þurfum og bættu fyrsta fyndina."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:158
+msgid "Previous"
+msgstr "Fyrri"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:182
+msgid "Next"
+msgstr "Næsta"
+
+#: suchar_overflow/templates/users/base_dashboard.html:17
+msgid "Your Account"
+msgstr "Þinn reikningur"
+
+#: suchar_overflow/templates/users/base_dashboard.html:22
+msgid "Profile"
+msgstr "Prófíll"
+
+#: suchar_overflow/templates/users/base_dashboard.html:27
+#: suchar_overflow/templates/users/user_form.html:6
+#: suchar_overflow/templates/users/user_form.html:11
+msgid "Edit Profile"
+msgstr "Breyta prófíli"
+
+#: suchar_overflow/templates/users/base_dashboard.html:37
+msgid "Security"
+msgstr "Öryggi"
+
+#: suchar_overflow/templates/users/email_change_complete.html:6
+msgid "Email Changed"
+msgstr "Netfang hefur verið breytt"
+
+#: suchar_overflow/templates/users/email_change_complete.html:23
+msgid "It worked!"
+msgstr "Þetta virkaði!"
+
+#: suchar_overflow/templates/users/email_change_complete.html:25
+msgid ""
+"Your email address has been changed. You can now sleep peacefully (or not)."
+msgstr ""
+"Netfang þitt hefur verið breytt. Þú getur nú sofnað í friði (eða ekki)."
+
+#: suchar_overflow/templates/users/email_change_complete.html:28
+msgid "Back to settings"
+msgstr "Til baka í stillingarnar"
+
+#: suchar_overflow/templates/users/email_change_done.html:6
+msgid "Email Sent"
+msgstr "Tölvupóstur sendur"
+
+#: suchar_overflow/templates/users/email_change_done.html:23
+msgid "Check both inboxes!"
+msgstr "Athugaðu bæði innsöndurnar!"
+
+#: suchar_overflow/templates/users/email_change_done.html:25
+msgid ""
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"          <br />\n"
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+msgstr ""
+"Við sendum þér skilaboð í <strong>NÝJA</strong> heimilisfanginu þínu með hlekk til að virkja reikninginn.\n"
+"<br />\n"
+"En við sendum einnig varaheimild í <strong>GAMLA** heimilisfanginu þínu, svo þú vitir að þetta er raunverulega þú."
+
+#: suchar_overflow/templates/users/email_change_done.html:30
+msgid ""
+"If you don't click the link, nothing will change. Your account will remain "
+"as dry as our jokes."
+msgstr ""
+"Ef þú smellir ekki á hlekkinn, mun ekkert breytast. Reikningurinn þinn "
+"verður jafn leynihópur og fyndin okkar."
+
+#: suchar_overflow/templates/users/email_change_done.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:43
+msgid "Back to profile"
+msgstr "Til baka í prófílinn"
+
+#: suchar_overflow/templates/users/email_change_failed.html:23
+msgid "Something went wrong"
+msgstr "Eitthvað fór úr skriði"
+
+#: suchar_overflow/templates/users/email_change_failed.html:24
+msgid "The link has expired, is invalid, or has already been used."
+msgstr "Tengiliðurinn er úfarslegur, ógildur eða hefur þegar verið notaður."
+
+#: suchar_overflow/templates/users/email_change_failed.html:25
+msgid "Try again if you really must."
+msgstr "Reyndu aftur ef þú vilt virkilega."
+
+#: suchar_overflow/templates/users/email_change_failed.html:28
+msgid "Try again"
+msgstr "Reyndu aftur"
+
+#: suchar_overflow/templates/users/email_change_form.html:6
+msgid "Update Email"
+msgstr "Uppfæra tölvupóst"
+
+#: suchar_overflow/templates/users/email_change_form.html:12
+msgid "Change email address"
+msgstr "Breyta netfanginu"
+
+#: suchar_overflow/templates/users/email_change_form.html:14
+msgid ""
+"Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
+"judge."
+msgstr ""
+"Er þú leiður af gömlu heimilisfangi þínu? Eða er þetta kannski tilraun til "
+"að forðast skatta? Við dæmir ekki."
+
+#: suchar_overflow/templates/users/email_change_form.html:25
+msgid "Send a pigeon with the link"
+msgstr "Senda skjámynd með hlekknum"
+
+#: suchar_overflow/templates/users/email_change_form.html:26
+msgid "Changed my mind (go back)"
+msgstr "Ég ákvað annað (fara aftur)"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:6
+#: suchar_overflow/users/models.py:70
+msgid "Revoked"
+msgstr "Afgerð"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:15
+msgid "We've reverted the changes!"
+msgstr "Við höfum endurheimt breytingarnar!"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:17
+msgid ""
+"Phew, that was close. Your email address has been restored to its previous "
+"state."
+msgstr ""
+"Hefilaust, þetta var nálgast. Netfang þitt hefur verið endurheimt í sínu "
+"fyrri formi."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:19
+msgid "You can breathe a sigh of relief. We recommend changing your password."
+msgstr "Þú getur andað þig út. Við mælum með að þú skiptir um lykilorðið."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:32
+msgid "Change cancelled"
+msgstr "Breytingarnar voru afpöntuð"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:34
+msgid "All active email change links have been invalidated."
+msgstr "Öll virk tengsl til að breyta tölvupósti hafa verið ógilt."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:36
+msgid ""
+"If it wasn't you who tried to change the email, we recommend changing your "
+"password."
+msgstr ""
+"Ef þetta var ekki þú sem reyndir að breyta tölvupósti, mælum við með því að "
+"þú skiptir um lykilorð."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:41
+msgid "Change password (just in case)"
+msgstr "Breyta lyk orði (bara til vísis)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:5
+#, python-format
+msgid "We just received a request to change your email address to: %(email)s."
+msgstr ""
+"Við fengum nýlega beiðni um að breyta tölvupóstfanginu þínu í: %(email)s."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:7
+msgid ""
+"If it was you - great, you don't need to do anything here (just check that "
+"other inbox)."
+msgstr ""
+"Ef þetta var þú – frábært, þú þarft ekki að gera neitt hér (aðeins skoða "
+"aðra innifölduna)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:9
+msgid "BUT IF IT WASN'T YOU:"
+msgstr "EN EF ÞÚ VARST EKKI ÞÚ:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:10
+msgid ""
+"Someone might be trying to take over your account (or you just have a split "
+"personality)."
+msgstr ""
+"Einhver gæti verið að reyna að yfirta <0xE2><0x81><0xA6>a reikninginn þinn "
+"(eða þú hefur bara tvöfle persónur)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:11
+msgid ""
+"Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
+"sent to the new address:"
+msgstr ""
+"Smelltu á þennan hlekk til að FYRIRSPILA þessa beiðni strax og ógilda "
+"tengilinn sem sendur var í nýja heimilisföng."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:15
+msgid "We also recommend changing your password if you suspect a breach."
+msgstr ""
+"Við mælum einnig með því að þú skiptir um lykilorði ef þú grunar brot."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:17
+#: suchar_overflow/templates/users/email_verify_email.txt:14
+msgid "Suchar Overflow"
+msgstr "Suchar Overflow"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:5
+#, python-format
+msgid ""
+"We received a request to change your email address to this one you're "
+"reading (%(email)s)."
+msgstr ""
+"Við fengum beiðni um að breyta tölvupóstfanginu þínu í það sem þú ert að "
+"lesa núna (%(email)s)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:7
+msgid "If it's you, click the link below to confirm the change:"
+msgstr ""
+"Ef þetta er þú, smelltu á hlekkinn hér að neðan til að staðfesta "
+"breytinguna:"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:10
+msgid "The link is valid for 24 hours (or until it evaporates)."
+msgstr "Tengillinn er í gildi í 24 klukkustundir (eða þar til hann gleymist)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:12
+msgid ""
+"If it wasn't you, ignore this message. We sent instructions on how to block "
+"the intruder to your old address."
+msgstr ""
+"Ef þetta var ekki þú, láttu þessa skilaboð í óvirkri stefnu. Við sendum "
+"leiðbeiningar um hvernig á að hindra innbrytningshættuna til fyrri "
+"heimilisfangs þíns."
+
+#: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
+msgid "User"
+msgstr "Notandi"
+
+#: suchar_overflow/templates/users/user_detail.html:23
+msgid "Suchar Overflow User"
+msgstr "Notaðir stafrænir auðlindir eru of mikið"
+
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "No achievements yet."
+msgstr "Engin afreki ennþá."
+
+#: suchar_overflow/templates/users/user_detail.html:62
+msgid "The Best Of"
+msgstr "Það besta af"
+
+#: suchar_overflow/templates/users/user_detail.html:76
+msgid "Statistics"
+msgstr "Tölfræði"
+
+#: suchar_overflow/templates/users/user_detail.html:78
+msgid "Rank"
+msgstr "Stig"
+
+#: suchar_overflow/templates/users/user_detail.html:86
+msgid "Total Votes"
+msgstr "Heildarfjöldi atkvæða"
+
+#: suchar_overflow/templates/users/user_detail.html:93
+msgid "Joined"
+msgstr ""
+
+#: suchar_overflow/templates/users/user_detail.html:101
+msgid "Dryness Level"
+msgstr "Þurrkustig"
+
+#: suchar_overflow/templates/users/user_detail.html:109
+msgid "Reception"
+msgstr "Móttaka"
+
+#: suchar_overflow/templates/users/user_detail.html:125
+msgid "Drought Map"
+msgstr "Kort yfir þurrka"
+
+#: suchar_overflow/templates/users/user_detail.html:127
+msgid "Less"
+msgstr "Minna"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "More"
+msgstr "Fleiri"
+
+#: suchar_overflow/templates/users/user_detail.html:146
+msgid "Mon"
+msgstr "Mánudagur"
+
+#: suchar_overflow/templates/users/user_detail.html:147
+msgid "Wed"
+msgstr "Miðvikudagur"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Fri"
+msgstr "Fös"
+
+#: suchar_overflow/templates/users/user_detail.html:167
+msgid "jokes on"
+msgstr "Skrattur á"
+
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Latest Jokes"
+msgstr "Nýjustu fyndnum"
+
+#: suchar_overflow/templates/users/user_detail.html:185
+msgid "Scheduled for Publication"
+msgstr "Búið til útgáfu"
+
+#: suchar_overflow/templates/users/user_detail.html:228
+msgid "See all entries"
+msgstr "Sýna alla færslur"
+
+#: suchar_overflow/templates/users/user_detail.html:232
+msgid "User hasn't added any jokes yet."
+msgstr "Notandi hefur ekki bætt neinar fyndnar sögur við enn."
+
+#: suchar_overflow/templates/users/user_form.html:12
+msgid "Here you can update your data."
+msgstr "Hér getur þú uppfært gögnin þín."
+
+#: suchar_overflow/templates/users/user_form.html:16
+msgid "E-mail Address"
+msgstr "Netfang"
+
+#: suchar_overflow/templates/users/user_form.html:24
+msgid "Change E-mail"
+msgstr "Breyta tölvupósti"
+
+#: suchar_overflow/templates/users/user_form.html:26
+msgid "Address change requires confirmation."
+msgstr "Breytan á heimilisfangi krefst staðfestingar."
+
+#: suchar_overflow/templates/users/user_form.html:36
+msgid "Save Changes"
+msgstr "Vista breytingar"
+
+#: suchar_overflow/users/admin.py:36
+msgid "Personal info"
+msgstr "Persónuupplýsingar"
+
+#: suchar_overflow/users/admin.py:38
+msgid "Permissions"
+msgstr "Reyndisheimildir"
+
+#: suchar_overflow/users/admin.py:49
+msgid "Important dates"
+msgstr "Mikilvægar dagsetningar"
+
+#: suchar_overflow/users/apps.py:7
+msgid "Users"
+msgstr "Notendur"
+
+#: suchar_overflow/users/forms.py:19
+#: suchar_overflow/users/tests/test_forms.py:36
+msgid "This username has already been taken."
+msgstr "Þetta notendanafn er þegar í notkun."
+
+#: suchar_overflow/users/forms.py:32
+msgid "New Email Address"
+msgstr "Ný netfang"
+
+#: suchar_overflow/users/forms.py:37
+msgid "This email is already currently used."
+msgstr "Þessi netföng er þegar í notkun."
+
+#: suchar_overflow/users/models.py:21
+msgid "Name of User"
+msgstr "Nafn notanda"
+
+#: suchar_overflow/users/models.py:24
+msgid "email address"
+msgstr "netfang"
+
+#: suchar_overflow/users/models.py:54
+msgid "Activation Token"
+msgstr "Virkjunarkóði"
+
+#: suchar_overflow/users/models.py:55
+msgid "Activation Tokens"
+msgstr "Virkjunartónar"
+
+#: suchar_overflow/users/models.py:68
+msgid "Pending"
+msgstr "Í vinnslu"
+
+#: suchar_overflow/users/models.py:69
+msgid "Verified"
+msgstr "Staðfest"
+
+#: suchar_overflow/users/models.py:89
+msgid "Email Change Request"
+msgstr "Beiðni um breytingu á netfangi"
+
+#: suchar_overflow/users/models.py:90
+msgid "Email Change Requests"
+msgstr "Beiðnir um breytingu á netfangi"
+
+#: suchar_overflow/users/tasks.py:11
+msgid "Confirm you have a sense of humor (Account Activation)"
+msgstr "Staðfestu að þú hafir gott skynsemi (virknun reiknings)"
+
+#: suchar_overflow/users/tasks.py:29
+msgid "Confirm it's you (Email Change)"
+msgstr "Staðfestu að þetta er þú (breyting á netfanginu)"
+
+#: suchar_overflow/users/tasks.py:41
+msgid "Someone wants to change your email address (We hope it's you)"
+msgstr "Einn vill breyta tölvupóstfanginu þínu (Við vonum að þetta séu þú)."
+
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "Upplýsingarnar hafa verið uppfærðar með góðum árangri."
+
+#: suchar_overflow/users/views.py:334
+msgid "The link has already been used or cancelled."
+msgstr "Þessi hlekkur hefur þegar verið notaður eða hætt við."
+
+#: suchar_overflow/users/views.py:344
+msgid "The link has expired (24 hours have passed)."
+msgstr "Tengiliðurinn er úfarslegur (24 klukkustundir eru liðnar)."
+
+#: suchar_overflow/users/views.py:352
+msgid "Email already taken."
+msgstr "Netfang er þegar í notkun."
+
+#: suchar_overflow/users/views.py:370
+msgid "The link is invalid."
+msgstr "Tengiliðurinn er ógiltur."

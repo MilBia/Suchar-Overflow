@@ -1,0 +1,1362 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: config/settings/base.py:34
+msgid "Polish"
+msgstr "ขัดเงา"
+
+#: config/settings/base.py:35
+msgid "English"
+msgstr "ภาษาอังกฤษ"
+
+#: suchar_overflow/achievements/apps.py:8
+#: suchar_overflow/achievements/models.py:84
+#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/users/user_detail.html:34
+msgid "Achievements"
+msgstr "ความสำเร็จ"
+
+#: suchar_overflow/achievements/middleware.py:29
+#, python-format
+msgid "Achievement Unlocked: %(name)s!"
+msgstr "ปลดล็อกความสำเร็จ: %(name)s!"
+
+#: suchar_overflow/achievements/models.py:8
+msgid "Lifetime"
+msgstr "ตลอดชีวิต"
+
+#: suchar_overflow/achievements/models.py:9
+msgid "Periodic"
+msgstr "เป็นระยะ"
+
+#: suchar_overflow/achievements/models.py:10
+msgid "Streak"
+msgstr "สถิติต่อเนื่อง"
+
+#: suchar_overflow/achievements/models.py:13
+msgid "Suchar Posted"
+msgstr "โพสต์โดย Suchar"
+
+#: suchar_overflow/achievements/models.py:14
+msgid "Vote Received"
+msgstr "รับคะแนนโหวตแล้ว"
+
+#: suchar_overflow/achievements/models.py:15
+msgid "Vote Cast"
+msgstr "ลงคะแนนแล้ว"
+
+#: suchar_overflow/achievements/models.py:18
+msgid "Suchar Count"
+msgstr "จำนวนสุชิ"
+
+#: suchar_overflow/achievements/models.py:19
+msgid "Funny Vote Count"
+msgstr "จำนวนโหวตที่น่าสนใจ"
+
+#: suchar_overflow/achievements/models.py:20
+msgid "Dry Vote Count"
+msgstr "จำนวนเสียงแห้ง"
+
+#: suchar_overflow/achievements/models.py:21
+msgid "Vote Cast Count"
+msgstr "จำนวนผู้ลงคะแนนเสียง"
+
+#: suchar_overflow/achievements/models.py:22
+msgid "Total Score"
+msgstr "คะแนนรวม"
+
+#: suchar_overflow/achievements/models.py:23
+msgid "Night Owl"
+msgstr "คนขี้เซาตอนกลางคืน"
+
+#: suchar_overflow/achievements/models.py:24
+msgid "Login Streak"
+msgstr "จำนวนวันที่ล็อกอินต่อเนื่อง"
+
+#: suchar_overflow/achievements/models.py:25
+msgid "Polarizer"
+msgstr "ตัวกรองโพลาไรซ์"
+
+#: suchar_overflow/achievements/models.py:28
+msgid "None"
+msgstr "ไม่มี"
+
+#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
+#: suchar_overflow/templates/achievements/list.html:42
+#: suchar_overflow/templates/achievements/list.html:82
+msgid "Bronze"
+msgstr "ทองแดง"
+
+#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
+#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:84
+msgid "Silver"
+msgstr "เงิน"
+
+#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
+#: suchar_overflow/templates/achievements/list.html:46
+#: suchar_overflow/templates/achievements/list.html:86
+msgid "Gold"
+msgstr "ทองคำ"
+
+#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
+#: suchar_overflow/templates/achievements/list.html:48
+#: suchar_overflow/templates/achievements/list.html:88
+msgid "Platinum"
+msgstr "แพลทินัม"
+
+#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
+#: suchar_overflow/templates/achievements/list.html:50
+#: suchar_overflow/templates/achievements/list.html:90
+msgid "Diamond"
+msgstr "เพชร"
+
+#: suchar_overflow/achievements/models.py:35
+msgid "Name"
+msgstr "ชื่อ"
+
+#: suchar_overflow/achievements/models.py:36
+msgid "Slug"
+msgstr "URL ที่กำหนดเอง"
+
+#: suchar_overflow/achievements/models.py:37
+msgid "Description"
+msgstr "คำอธิบาย"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Icon Content"
+msgstr "เนื้อหาไอคอน"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Raw SVG XML"
+msgstr "XML SVG แบบดิบ"
+
+#: suchar_overflow/achievements/models.py:44
+msgid "Category"
+msgstr "หมวดหมู่"
+
+#: suchar_overflow/achievements/models.py:50
+msgid "Event Type"
+msgstr "ประเภทกิจกรรม"
+
+#: suchar_overflow/achievements/models.py:56
+msgid "Metric"
+msgstr "เมตริก"
+
+#: suchar_overflow/achievements/models.py:61
+msgid "Threshold"
+msgstr "เกณฑ์"
+
+#: suchar_overflow/achievements/models.py:65
+msgid "Theme"
+msgstr "ธีม"
+
+#: suchar_overflow/achievements/models.py:68
+msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
+msgstr "เช่น 'คริสต์มาส', 'การเขียนโปรแกรม' ปล่อยว่างเพื่อทั่วไป"
+
+#: suchar_overflow/achievements/models.py:71
+msgid "Tier"
+msgstr "ระดับ"
+
+#: suchar_overflow/achievements/models.py:74
+msgid "Difficulty/Rarity tier of the achievement"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:77
+msgid "Secret Achievement"
+msgstr "ความสำเร็จลับ"
+
+#: suchar_overflow/achievements/models.py:79
+msgid "If checked, name and description are hidden until unlocked."
+msgstr "หากเลือก ช่องชื่อและคำอธิบายจะซ่อนไว้จนกว่าจะปลดล็อก"
+
+#: suchar_overflow/achievements/models.py:83
+msgid "Achievement"
+msgstr "ความสำเร็จ"
+
+#: suchar_overflow/achievements/models.py:102
+msgid "Seen by user"
+msgstr "ผู้ใช้เคยเห็นแล้ว"
+
+#: suchar_overflow/achievements/models.py:105
+msgid "User Achievement"
+msgstr "ความสำเร็จของผู้ใช้"
+
+#: suchar_overflow/achievements/models.py:106
+msgid "User Achievements"
+msgstr "ความสำเร็จของผู้ใช้"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "ข้อความ"
+
+#: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:65
+#: suchar_overflow/templates/users/user_detail.html:217
+msgid "Votes"
+msgstr "คะแนนโหวต"
+
+#: suchar_overflow/suchary/apps.py:7
+msgid "Suchary"
+msgstr "สุชารี"
+
+#: suchar_overflow/suchary/forms.py:15
+msgid ""
+"Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
+"programowanie)."
+msgstr ""
+"ใส่แท็กโดยคั่นด้วยช่องว่างหรือเครื่องหมายจุลภาค (เช่น ขนมปังกรอบ, "
+"ภาษาอิตาลี, การเขียนโปรแกรม)"
+
+#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+msgid "Publication Date"
+msgstr "วันที่เผยแพร่"
+
+#: suchar_overflow/suchary/forms.py:35
+msgid "Leave empty to publish immediately."
+msgstr "เว้นว่างเพื่อเผยแพร่ทันที"
+
+#: suchar_overflow/suchary/forms.py:57
+msgid "Publication date cannot be in the past."
+msgstr "วันที่เผยแพร่ต้องไม่เป็นอดีต"
+
+#: suchar_overflow/suchary/models.py:16
+msgid "Suchar text"
+msgstr "ข้อความสำหรับทดสอบ"
+
+#: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
+#: suchar_overflow/templates/403_csrf.html:6
+#: suchar_overflow/templates/403_csrf.html:9
+msgid "Forbidden (403)"
+msgstr "ข้อความผิด (403)"
+
+#: suchar_overflow/templates/403.html:14
+#: suchar_overflow/templates/403_csrf.html:14
+msgid "You're not allowed to access this page."
+msgstr "คุณไม่ได้รับอนุญาตให้เข้าถึงหน้านี้"
+
+#: suchar_overflow/templates/404.html:6 suchar_overflow/templates/404.html:9
+msgid "Page not found"
+msgstr "ไม่พบหน้าดังกล่าว"
+
+#: suchar_overflow/templates/404.html:14
+msgid "This is not the page you were looking for."
+msgstr "นี่ไม่ใช่หน้านั้นที่คุณกำลังมองหา"
+
+#: suchar_overflow/templates/500.html:6
+msgid "Server Error"
+msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์"
+
+#: suchar_overflow/templates/500.html:9
+msgid "Ooops!!! 500"
+msgstr "อ๊ะ! ข้อผิดพลาด 500"
+
+#: suchar_overflow/templates/500.html:10
+msgid "Looks like something went wrong!"
+msgstr "ดูเหมือนว่ามีบางอย่างผิดพลาด!"
+
+#: suchar_overflow/templates/500.html:12
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+"เราติดตามข้อผิดพลาดเหล่านี้โดยอัตโนมัติ แต่หากปัญหายังคงอยู่ "
+"โปรดติดต่อเราได้เลย ในระหว่างนี้ ลองรีเฟรชหน้าใหม่"
+
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+msgid "Notification Inbox"
+msgstr "กล่องข้อความแจ้งเตือน"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr "แสดงรายการความสำเร็จทั้งหมดที่คุณได้รับ เรียงตามล่าสุดก่อน"
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "ทั่วไป"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, python-format
+msgid "Unlocked: %(date)s"
+msgstr "ปลดล็อกแล้ว: %(date)s"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+msgid "No achievements yet — go post some jokes!"
+msgstr "ยังไม่มีผลสำเร็จใด ๆ เลย — ลองโพสต์เรื่องตลกดูสิ!"
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+msgid "Browse achievements"
+msgstr "ดูความสำเร็จ"
+
+#: suchar_overflow/templates/achievements/list.html:6
+msgid "My Achievements"
+msgstr "ความสำเร็จของฉัน"
+
+#: suchar_overflow/templates/achievements/list.html:17
+#: suchar_overflow/templates/stats/leaderboard.html:110
+msgid "Hall of Fame"
+msgstr "ศาลาเกียรติยศ"
+
+#: suchar_overflow/templates/achievements/list.html:19
+msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
+msgstr "เหรียญตรา ความสำเร็จ และความลับน่าอายของคุณจาก Suchar Overflow"
+
+#: suchar_overflow/templates/achievements/list.html:74
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr "ปลดล็อกความสำเร็จแล้ว ค้นพบความลับด้วยการเล่นเกม!"
+
+#: suchar_overflow/templates/base.html:17
+#: suchar_overflow/templates/base.html:24
+msgid "Joke aggregator with critically low humidity levels."
+msgstr "รวมมุกตลก พร้อมระดับความชื้นที่ต่ำมาก"
+
+#: suchar_overflow/templates/base.html:96
+msgid "Home"
+msgstr "หน้าหลัก"
+
+#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/suchary/suchar_list.html:12
+#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/users/admin.py:68
+msgid "Jokes"
+msgstr "เรื่องตลก"
+
+#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/stats/leaderboard.html:6
+#: suchar_overflow/templates/stats/leaderboard.html:12
+msgid "Leaderboard"
+msgstr "ตารางคะแนน"
+
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "กล่องข้อความ"
+
+#: suchar_overflow/templates/base.html:113
+msgid "About"
+msgstr "เกี่ยวกับ"
+
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
+msgid "Log Out"
+msgstr "ออกจากระบบ"
+
+#: suchar_overflow/templates/base.html:159
+msgid "Log In"
+msgstr "เข้าสู่ระบบ"
+
+#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/registration/signup.html:6
+#: suchar_overflow/templates/registration/signup.html:12
+#: suchar_overflow/templates/registration/signup.html:23
+msgid "Sign Up"
+msgstr "สมัครสมาชิก"
+
+#: suchar_overflow/templates/base.html:170
+msgid "Default content."
+msgstr "เนื้อหาเริ่มต้น"
+
+#: suchar_overflow/templates/base.html:179
+msgid "All rights reserved (but jokes stolen)."
+msgstr "สงวนลิขสิทธิ์ (แต่ยกเว้นเรื่องตลกที่ถูกขโมยไป)"
+
+#: suchar_overflow/templates/base.html:188
+msgid "Report a Bug"
+msgstr "รายงานข้อผิดพลาด"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/users/email_change_failed.html:6
+msgid "Error"
+msgstr "ข้อผิดพลาด"
+
+#: suchar_overflow/templates/base.html:212
+msgid "Achievement Unlocked"
+msgstr "ปลดล็อกความสำเร็จ"
+
+#: suchar_overflow/templates/base.html:214
+msgid "Success"
+msgstr "สำเร็จ"
+
+#: suchar_overflow/templates/base.html:216
+msgid "Notification"
+msgstr "การแจ้งเตือน"
+
+#: suchar_overflow/templates/base.html:231
+msgid "Confirm Logout"
+msgstr "ยืนยันออกจากระบบ"
+
+#: suchar_overflow/templates/base.html:234
+msgid "Are you sure you want to log out?"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?"
+
+#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/users/user_form.html:35
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#: suchar_overflow/templates/pages/about.html:6
+msgid "About Project - Suchar Overflow"
+msgstr "เกี่ยวกับโปรเจกต์ - Suchar Overflow"
+
+#: suchar_overflow/templates/pages/about.html:13
+msgid "About Project"
+msgstr "เกี่ยวกับโครงการ"
+
+#: suchar_overflow/templates/pages/about.html:14
+msgid "Why do we do this? Because someone had to."
+msgstr "ทำไมเราถึงทำสิ่งนี้? เพราะมีคนต้องทำ"
+
+#: suchar_overflow/templates/pages/about.html:18
+msgid "Mission"
+msgstr "พันธกิจ"
+
+#: suchar_overflow/templates/pages/about.html:20
+msgid ""
+"The goal of Suchar Overflow is to gather the largest collection of jokes "
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
+msgstr ""
+"จุดประสงค์ของ Suchar Overflow "
+"คือการรวบรวมเรื่องตลกจำนวนมากที่สุดที่ทำให้ผู้รับรู้สึกเจ็บปวดทางร่างกาย "
+"เราเชื่อว่าเรื่องตลกแบบเสียดสีที่ดีคือเรื่องที่ตามมาด้วยความเงียบอึดอัดและการส่งเสียงจี๊ดของแมลง"
+
+#: suchar_overflow/templates/pages/about.html:22
+msgid "Technology"
+msgstr "เทคโนโลยี"
+
+#: suchar_overflow/templates/pages/about.html:24
+msgid ""
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr ""
+"เว็บไซต์นี้สร้างขึ้นด้วยเทคโนโลยีล่าสุด (Django + CSS แบบกำหนดเอง) "
+"เพื่อให้มั่นใจว่าเนื้อหาตลกๆ "
+"จะถูกส่งไปยังหน้าจอของคุณได้อย่างรวดเร็วและเชื่อถือได้"
+
+#: suchar_overflow/templates/pages/home.html:8
+msgid "Dry Bread for the Horse"
+msgstr "ขนมปังกรอบสำหรับม้า"
+
+#: suchar_overflow/templates/pages/home.html:10
+msgid ""
+"Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
+"you need a drink."
+msgstr ""
+
+#: suchar_overflow/templates/pages/home.html:11
+msgid "Vote for the best jokes, add your own, and become an office legend."
+msgstr ""
+"โหวตให้กับมุกตลกที่ดีที่สุด เพิ่มมุกของคุณเอง และกลายเป็นตำนานในสำนักงาน"
+
+#: suchar_overflow/templates/pages/home.html:15
+msgid "Browse Jokes"
+msgstr "ดูเรื่องตลก"
+
+#: suchar_overflow/templates/pages/home.html:17
+msgid "Join Us"
+msgstr "เข้าร่วมกับเรา"
+
+#: suchar_overflow/templates/pages/home.html:31
+msgid "Vote"
+msgstr "โหวต"
+
+#: suchar_overflow/templates/pages/home.html:32
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr "ให้คะแนนมุกตลกของคนอื่น ตัดสินว่าอะไรตลก (และอะไรน่าสมเพช)"
+
+#: suchar_overflow/templates/pages/home.html:39
+#: suchar_overflow/templates/suchary/suchar_list.html:68
+msgid "Add"
+msgstr "เพิ่ม"
+
+#: suchar_overflow/templates/pages/home.html:40
+msgid "Share your thoughts with the world. Don't be shy."
+msgstr "แบ่งปันความคิดของคุณกับโลก อย่าเกรงใจ"
+
+#: suchar_overflow/templates/pages/home.html:47
+msgid "Laugh (optional)"
+msgstr "หัวเราะ (ไม่บังคับ)"
+
+#: suchar_overflow/templates/pages/home.html:48
+msgid "We guarantee a pity smile or your money back (the site is free)."
+msgstr ""
+"เรารับประกันรอยยิ้มเล็กๆ น้อยๆ หรือคืนเงินให้คุณ (เว็บไซต์นี้ใช้งานได้ฟรี)"
+
+#: suchar_overflow/templates/registration/activation_complete.html:6
+msgid "Activation Complete"
+msgstr "การเปิดใช้งานเสร็จสมบูรณ์"
+
+#: suchar_overflow/templates/registration/activation_complete.html:23
+msgid "Account Activated!"
+msgstr "เปิดใช้งานบัญชีแล้ว!"
+
+#: suchar_overflow/templates/registration/activation_complete.html:25
+msgid ""
+"Your account has been activated successfully. You can now log in and start "
+"using Suchar Overflow."
+msgstr ""
+"ยินดีด้วย! บัญชีของคุณได้รับการเปิดใช้งานเรียบร้อยแล้ว "
+"คุณสามารถเข้าสู่ระบบและเริ่มใช้งาน Suchar Overflow ได้แล้ว"
+
+#: suchar_overflow/templates/registration/activation_complete.html:28
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
+msgid "Log in"
+msgstr "เข้าสู่ระบบ"
+
+#: suchar_overflow/templates/registration/activation_email.txt:3
+#: suchar_overflow/templates/users/email_notify_old_email.txt:3
+#: suchar_overflow/templates/users/email_verify_email.txt:3
+#, python-format
+msgid "Hello %(username)s!"
+msgstr "สวัสดีคุณ%(username)s!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:5
+msgid ""
+"Welcome to Suchar Overflow - a place where air humidity drops below zero."
+msgstr ""
+"ยินดีต้อนรับสู่ Suchar Overflow – สถานที่ที่ความชื้นในอากาศลดลงต่ำกว่าศูนย์"
+
+#: suchar_overflow/templates/registration/activation_email.txt:6
+msgid ""
+"To make sure you're not a bot (or a person without a sense of humor), you "
+"need to activate your account."
+msgstr ""
+"เพื่อให้แน่ใจว่าคุณไม่ใช่บอท (หรือคนที่ไม่ตลก) คุณต้องเปิดใช้งานบัญชีของคุณ"
+
+#: suchar_overflow/templates/registration/activation_email.txt:8
+msgid "Click this link before it dries out:"
+msgstr "คลิกที่ลิงก์นี้ก่อนที่ลิงก์จะหมดอายุ:"
+
+#: suchar_overflow/templates/registration/activation_email.txt:11
+msgid "Remember: Drink plenty of water."
+msgstr "โปรดจำไว้: ดื่มน้ำให้เพียงพอ"
+
+#: suchar_overflow/templates/registration/activation_email.txt:13
+msgid "The Suchar Overflow Team"
+msgstr "ทีมงาน Suchar Overflow"
+
+#: suchar_overflow/templates/registration/activation_failed.html:6
+#: suchar_overflow/templates/registration/activation_failed.html:24
+msgid "Activation Failed"
+msgstr "การเปิดใช้งานไม่สำเร็จ"
+
+#: suchar_overflow/templates/registration/activation_failed.html:26
+msgid ""
+"The activation link is invalid or has expired. Please try registering again "
+"or contact support."
+msgstr ""
+"ลิงก์สำหรับการเปิดใช้งานไม่ถูกต้องหรือไม่หมดอายุ "
+"กรุณาลองลงทะเบียนใหม่อีกครั้ง หรือติดต่อฝ่ายสนับสนุน"
+
+#: suchar_overflow/templates/registration/activation_failed.html:29
+msgid "Sign Up Again"
+msgstr "ลงทะเบียนอีกครั้ง"
+
+#: suchar_overflow/templates/registration/activation_failed.html:30
+#: suchar_overflow/templates/registration/signup_done.html:28
+msgid "Back to Home"
+msgstr "กลับไปที่หน้าหลัก"
+
+#: suchar_overflow/templates/registration/login.html:6
+#: suchar_overflow/templates/registration/login.html:12
+#: suchar_overflow/templates/registration/login.html:23
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Sign In"
+msgstr "เข้าสู่ระบบ"
+
+#: suchar_overflow/templates/registration/login.html:26
+msgid "Forgot Password?"
+msgstr "ลืมรหัสผ่านใช่ไหม?"
+
+#: suchar_overflow/templates/registration/password_change_done.html:6
+#: suchar_overflow/templates/registration/password_change_done.html:12
+msgid "Password Changed"
+msgstr "เปลี่ยนรหัสผ่านแล้ว"
+
+#: suchar_overflow/templates/registration/password_change_done.html:13
+msgid "Your password was changed successfully."
+msgstr "การเปลี่ยนรหัสผ่านของคุณสำเร็จแล้ว"
+
+#: suchar_overflow/templates/registration/password_change_done.html:15
+msgid "Back to Profile"
+msgstr "กลับไปที่โปรไฟล์"
+
+#: suchar_overflow/templates/registration/password_change_form.html:6
+#: suchar_overflow/templates/registration/password_change_form.html:12
+#: suchar_overflow/templates/registration/password_change_form.html:18
+#: suchar_overflow/templates/users/base_dashboard.html:42
+msgid "Change Password"
+msgstr "เปลี่ยนรหัสผ่าน"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:6
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
+msgid "Password reset successful"
+msgstr "การรีเซ็ตรหัสผ่านสำเร็จ"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "รหัสผ่านของคุณได้รับการตั้งค่าแล้ว คุณสามารถเข้าสู่ระบบได้เลย"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:6
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password"
+msgstr "ตั้งรหัสผ่านใหม่"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"โปรดป้อนรหัสผ่านใหม่ของคุณสองครั้ง "
+"เพื่อให้เราตรวจสอบว่าคุณพิมพ์ถูกต้องหรือไม่"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:20
+msgid "Change password"
+msgstr "เปลี่ยนรหัสผ่าน"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"ลิงก์รีเซ็ตรหัสผ่านไม่ถูกต้อง อาจเป็นเพราะลิงก์นี้ถูกใช้งานไปแล้ว "
+"โปรดขอรีเซ็ตรหัสผ่านใหม่"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:6
+#: suchar_overflow/templates/registration/password_reset_done.html:12
+msgid "Password Reset Sent"
+msgstr "ส่งคำขอรีเซ็ตรหัสผ่านแล้ว"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "ตรวจสอบกล่องข้อความของคุณ"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"หากมีบัญชีที่ลงทะเบียนด้วยอีเมลที่คุณป้อนไว้ "
+"เราได้ส่งคำแนะนำสำหรับการตั้งรหัสผ่านทางอีเมลแล้ว "
+"คุณจะได้รับอีเมลดังกล่าวในไม่ช้า"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:20
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"หากคุณไม่ได้รับอีเมล "
+"โปรดตรวจสอบให้แน่ใจว่าคุณได้ป้อนที่อยู่อีเมลที่คุณใช้ลงทะเบียน "
+"และตรวจสอบโฟลเดอร์สแปมของคุณ"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr ""
+"คุณได้รับอีเมลนี้เนื่องจากคุณได้ร้องขอรีเซ็ตรหัสผ่านสำหรับบัญชีผู้ใช้ของคุณที่"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "กรุณาไปที่หน้าต่อไปนี้และเลือกตั้งรหัสผ่านใหม่:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "ชื่อผู้ใช้ของคุณ (ในกรณีที่คุณลืม):"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "ขอบคุณที่ใช้บริการเว็บไซต์ของเรา!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr "(ไม่มีคำแปล)"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr "ทีม"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:6
+#: suchar_overflow/templates/registration/password_reset_form.html:12
+msgid "Password Reset"
+msgstr "รีเซ็ตรหัสผ่าน"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"ลืมรหัสผ่านใช่หรือไม่? กรุณากรอกที่อยู่อีเมลของคุณด้านล่าง "
+"แล้วเราจะส่งคำแนะนำสำหรับการตั้งรหัสผ่านใหม่ให้คุณทางอีเมล"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:22
+msgid "Reset my password"
+msgstr "รีเซ็ตรหัสผ่านของฉัน"
+
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Already have an account?"
+msgstr "มีบัญชีอยู่แล้วใช่หรือไม่?"
+
+#: suchar_overflow/templates/registration/signup_done.html:6
+msgid "Confirmation Sent"
+msgstr "ส่งข้อความยืนยันแล้ว"
+
+#: suchar_overflow/templates/registration/signup_done.html:25
+msgid ""
+"We have sent you an email to confirm your registration. Please check your "
+"inbox and click the link to activate your account."
+msgstr ""
+"เราได้ส่งอีเมลเพื่อยืนยันการลงทะเบียนของคุณแล้ว "
+"โปรดตรวจสอบกล่องข้อความและคลิกที่ลิงก์เพื่อเปิดใช้งานบัญชีของคุณ"
+
+#: suchar_overflow/templates/stats/leaderboard.html:13
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr ""
+"ร่วมเฉลิมฉลองสิ่งที่ดีที่สุด (และสิ่งที่แห้งที่สุด) ที่เกิดจากชุมชนของเรา"
+
+#: suchar_overflow/templates/stats/leaderboard.html:19
+msgid "Activity (Last 30 Days)"
+msgstr "กิจกรรม (ย้อนหลัง 30 วัน)"
+
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "โดยรวม"
+
+#: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Funny"
+msgstr "ตลก"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:128
+#: suchar_overflow/templates/suchary/suchar_list.html:131
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Dry"
+msgstr "แห้ง"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+msgid "Most Active Authors"
+msgstr "ผู้เขียนที่ได้รับความนิยมมากที่สุด"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
+msgid "jokes"
+msgstr "เรื่องตลก"
+
+#: suchar_overflow/templates/stats/leaderboard.html:99
+msgid "No data."
+msgstr "ไม่มีข้อมูล"
+
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+msgid "No jokes."
+msgstr "ไม่มีมุกตลก"
+
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr "กษัตริย์แห่งตลก"
+
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "ไม่พบข้อมูลที่น่าสนใจ"
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "เรื่องตลกฮิตยอดนิยม"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "Lords of Drought"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "ไม่มีข้อมูลที่ประมวลผลแล้ว"
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "เรื่องตลกแห้งยอดนิยม"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
+msgid "New Jokes"
+msgstr "เรื่องตลกใหม่"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:6
+msgid "Too Late!"
+msgstr "ช้าไปแล้ว!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:13
+msgid "The ship has sailed!"
+msgstr "สายเกินไปแล้ว!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:15
+msgid ""
+"This joke has already been published. You can't polish a diamond (or a dry "
+"biscuit) once it's been served."
+msgstr ""
+"เรื่องตลกนี้ถูกเผยแพร่ไปแล้ว คุณไม่สามารถขัดเกลาเพชร (หรือบิสกิตที่แห้ง) "
+"ได้อีกครั้งเมื่อมันถูกนำเสนอ"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:21
+msgid "Time creates jokes, but it also seals them."
+msgstr "เวลาสร้างเรื่องตลก แต่ก็ปิดผนึกมันเช่นกัน"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:23
+msgid "Ancient Suchar Proverb"
+msgstr "สุภาษิตโบราณของซูชาร์"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:29
+msgid "Back to Jokes"
+msgstr "กลับไปที่เรื่องตลก"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:8
+#: suchar_overflow/templates/suchary/suchar_form.html:29
+msgid "Add Joke"
+msgstr "เพิ่มเรื่องตลก"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:30
+msgid "Shine with humor."
+msgstr "ส่องประกายด้วยอารมณ์ขัน"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:38
+msgid "Joke Content"
+msgstr "เนื้อหาตลก"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:43
+msgid "Why did the chicken cross the road?"
+msgstr "ทำไมไก่ถึงข้ามถนน?"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:46
+msgid "Remember, the drier the better."
+msgstr "โปรดจำไว้ว่า ยิ่งแห้งยิ่งดี"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:50
+msgid "Tags"
+msgstr "แท็ก"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:55
+msgid "e.g. it, programming, school"
+msgstr "เช่น it, การเขียนโปรแกรม, โรงเรียน"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:62
+msgid "Separate with commas."
+msgstr "คั่นด้วยเครื่องหมายจุลภาค"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:70
+msgid "Schedule for later"
+msgstr "กำหนดเวลาในภายหลัง"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:79
+msgid "Select date and time..."
+msgstr "เลือกวันที่และเวลา..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:88
+msgid "Publish"
+msgstr "เผยแพร่"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:99
+msgid "Live Preview"
+msgstr "ดูตัวอย่างสด"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:109
+msgid "Now"
+msgstr "ตอนนี้"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:116
+msgid "Your joke content will appear here..."
+msgstr "เนื้อหาเรื่องตลกของคุณจะปรากฏที่นี่..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:149
+msgid "This is how your joke will look on the main list."
+msgstr "นี่คือลักษณะของมุกตลกของคุณที่จะปรากฏในรายการหลัก"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:13
+msgid "The dryest jokes on the internet."
+msgstr "เรื่องตลกที่แห้งที่สุดบนอินเทอร์เน็ต"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:28
+msgid "Search..."
+msgstr "ค้นหา..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:43
+#: suchar_overflow/templates/suchary/suchar_list.html:58
+msgid "Top"
+msgstr "ด้านบน"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:45
+#: suchar_overflow/templates/suchary/suchar_list.html:53
+msgid "Newest"
+msgstr "ใหม่ล่าสุด"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:85
+msgid "Scheduled"
+msgstr "กำหนดเวลาไว้แล้ว"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:95
+#: suchar_overflow/templates/users/user_detail.html:194
+msgid "Edit"
+msgstr "แก้ไข"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:139
+msgid "So dry here..."
+msgstr "ที่นี่แห้งมากเลย..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:140
+msgid "Be the hero we need and add the first joke."
+msgstr "จงเป็นฮีโร่ที่เราต้องการ และเพิ่มมุกตลกแรก"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:158
+msgid "Previous"
+msgstr "ก่อนหน้า"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:182
+msgid "Next"
+msgstr "ถัดไป"
+
+#: suchar_overflow/templates/users/base_dashboard.html:17
+msgid "Your Account"
+msgstr "บัญชีของคุณ"
+
+#: suchar_overflow/templates/users/base_dashboard.html:22
+msgid "Profile"
+msgstr "โปรไฟล์"
+
+#: suchar_overflow/templates/users/base_dashboard.html:27
+#: suchar_overflow/templates/users/user_form.html:6
+#: suchar_overflow/templates/users/user_form.html:11
+msgid "Edit Profile"
+msgstr "แก้ไขโปรไฟล์"
+
+#: suchar_overflow/templates/users/base_dashboard.html:37
+msgid "Security"
+msgstr "ความปลอดภัย"
+
+#: suchar_overflow/templates/users/email_change_complete.html:6
+msgid "Email Changed"
+msgstr "เปลี่ยนอีเมลแล้ว"
+
+#: suchar_overflow/templates/users/email_change_complete.html:23
+msgid "It worked!"
+msgstr "ทำสำเร็จ!"
+
+#: suchar_overflow/templates/users/email_change_complete.html:25
+msgid ""
+"Your email address has been changed. You can now sleep peacefully (or not)."
+msgstr ""
+"ที่อยู่อีเมลของคุณได้รับการเปลี่ยนแปลงแล้ว "
+"ตอนนี้คุณสามารถพักผ่อนได้อย่างสบายใจ (หรือไม่ก็ได้)"
+
+#: suchar_overflow/templates/users/email_change_complete.html:28
+msgid "Back to settings"
+msgstr "กลับไปที่การตั้งค่า"
+
+#: suchar_overflow/templates/users/email_change_done.html:6
+msgid "Email Sent"
+msgstr "ส่งอีเมลแล้ว"
+
+#: suchar_overflow/templates/users/email_change_done.html:23
+msgid "Check both inboxes!"
+msgstr "ตรวจสอบทั้งสองกล่องข้อความ!"
+
+#: suchar_overflow/templates/users/email_change_done.html:25
+msgid ""
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"          <br />\n"
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+msgstr ""
+"เราส่งข้อความไปยังที่อยู่อีเมล <strong>ใหม่</strong> ของคุณพร้อมลิงก์สำหรับเปิดใช้งาน\n"
+"          <br />\n"
+"          แต่เรายังส่งข้อความเตือนไปยังที่อยู่อีเมล <strong>เดิม</strong> ของคุณ เพื่อให้คุณทราบว่าเป็นตัวคุณจริงๆ"
+
+#: suchar_overflow/templates/users/email_change_done.html:30
+msgid ""
+"If you don't click the link, nothing will change. Your account will remain "
+"as dry as our jokes."
+msgstr ""
+"หากคุณไม่คลิกลิงก์ จะไม่มีอะไรเปลี่ยนแปลง "
+"บัญชีของคุณจะยังคงแห้งแล้งเหมือนกับมุกตลกของเรา"
+
+#: suchar_overflow/templates/users/email_change_done.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:43
+msgid "Back to profile"
+msgstr "กลับไปที่โปรไฟล์"
+
+#: suchar_overflow/templates/users/email_change_failed.html:23
+msgid "Something went wrong"
+msgstr "เกิดข้อผิดพลาดขึ้น"
+
+#: suchar_overflow/templates/users/email_change_failed.html:24
+msgid "The link has expired, is invalid, or has already been used."
+msgstr "ลิงก์หมดอายุ ไม่ถูกต้อง หรือถูกใช้งานไปแล้ว"
+
+#: suchar_overflow/templates/users/email_change_failed.html:25
+msgid "Try again if you really must."
+msgstr "ลองใหม่อีกครั้ง หากจำเป็นจริงๆ"
+
+#: suchar_overflow/templates/users/email_change_failed.html:28
+msgid "Try again"
+msgstr "ลองอีกครั้ง"
+
+#: suchar_overflow/templates/users/email_change_form.html:6
+msgid "Update Email"
+msgstr "อัปเดตอีเมล"
+
+#: suchar_overflow/templates/users/email_change_form.html:12
+msgid "Change email address"
+msgstr "เปลี่ยนที่อยู่อีเมล"
+
+#: suchar_overflow/templates/users/email_change_form.html:14
+msgid ""
+"Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
+"judge."
+msgstr ""
+"เบื่อที่อยู่เดิมของคุณหรือเปล่า? หรืออาจเป็นความพยายามหลีกเลี่ยงภาษี? "
+"เราไม่ตัดสินคุณ"
+
+#: suchar_overflow/templates/users/email_change_form.html:25
+msgid "Send a pigeon with the link"
+msgstr "ส่งลิงก์ทางไปรษณีย์ (โดยใช้ลูกนกพิราบ)"
+
+#: suchar_overflow/templates/users/email_change_form.html:26
+msgid "Changed my mind (go back)"
+msgstr "เปลี่ยนใจ (กลับไป)"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:6
+#: suchar_overflow/users/models.py:70
+msgid "Revoked"
+msgstr "ถูกเพิกถอน"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:15
+msgid "We've reverted the changes!"
+msgstr "เราได้ยกเลิกการเปลี่ยนแปลงแล้ว!"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:17
+msgid ""
+"Phew, that was close. Your email address has been restored to its previous "
+"state."
+msgstr "เกือบไปแล้ว อีเมลของคุณถูกคืนค่ากลับสู่สถานะเดิมแล้ว"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:19
+msgid "You can breathe a sigh of relief. We recommend changing your password."
+msgstr "คุณสามารถโล่งใจได้ ตอนนี้เราแนะนำให้คุณเปลี่ยนรหัสผ่านของคุณ"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:32
+msgid "Change cancelled"
+msgstr "การเปลี่ยนแปลงถูกยกเลิก"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:34
+msgid "All active email change links have been invalidated."
+msgstr "ลิงก์ทั้งหมดที่ใช้ในการเปลี่ยนอีเมลได้หมดอายุแล้ว"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:36
+msgid ""
+"If it wasn't you who tried to change the email, we recommend changing your "
+"password."
+msgstr "หากไม่ใช่คุณที่พยายามเปลี่ยนอีเมล เราขอแนะนำให้เปลี่ยนรหัสผ่านของคุณ"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:41
+msgid "Change password (just in case)"
+msgstr "เปลี่ยนรหัสผ่าน (เผื่อไว้ก่อน)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:5
+#, python-format
+msgid "We just received a request to change your email address to: %(email)s."
+msgstr "เราเพิ่งได้รับคำขอให้เปลี่ยนที่อยู่อีเมลของคุณเป็น: %(email)s"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:7
+msgid ""
+"If it was you - great, you don't need to do anything here (just check that "
+"other inbox)."
+msgstr ""
+"หากเป็นคุณ – เยี่ยมมาก คุณไม่จำเป็นต้องทำอะไรที่นี่ "
+"(เพียงตรวจสอบกล่องข้อความอื่น)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:9
+msgid "BUT IF IT WASN'T YOU:"
+msgstr "แต่ถ้าไม่ใช่คุณ:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:10
+msgid ""
+"Someone might be trying to take over your account (or you just have a split "
+"personality)."
+msgstr "อาจมีคนพยายามเข้าควบคุมบัญชีของคุณ (หรือคุณอาจมีบุคลิกภาพหลายด้าน)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:11
+msgid ""
+"Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
+"sent to the new address:"
+msgstr ""
+"คลิกที่ลิงก์นี้เพื่อยกเลิกคำขอทันที "
+"และทำให้ลิงก์ที่ส่งไปยังที่อยู่ใหม่ใช้งานไม่ได้:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:15
+msgid "We also recommend changing your password if you suspect a breach."
+msgstr ""
+"นอกจากนี้ เราขอแนะนำให้คุณเปลี่ยนรหัสผ่านของคุณ "
+"หากคุณสงสัยว่าบัญชีของคุณถูกบุกรุก"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:17
+#: suchar_overflow/templates/users/email_verify_email.txt:14
+msgid "Suchar Overflow"
+msgstr "Suchar Overflow"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:5
+#, python-format
+msgid ""
+"We received a request to change your email address to this one you're "
+"reading (%(email)s)."
+msgstr ""
+"เราได้รับคำขอให้เปลี่ยนที่อยู่อีเมลของคุณเป็นที่อยู่นี้ที่คุณกำลังอ่านอยู่ "
+"(%(email)s)"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:7
+msgid "If it's you, click the link below to confirm the change:"
+msgstr "หากเป็นคุณ โปรดคลิกที่ลิงก์ด้านล่างเพื่อยืนยันการเปลี่ยนแปลง:"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:10
+msgid "The link is valid for 24 hours (or until it evaporates)."
+msgstr "ลิงก์นี้ใช้งานได้ภายใน 24 ชั่วโมง (หรือจนกว่าลิงก์จะหมดอายุ)"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:12
+msgid ""
+"If it wasn't you, ignore this message. We sent instructions on how to block "
+"the intruder to your old address."
+msgstr ""
+"หากไม่ใช่คุณ โปรดเพิกเฉยกับข้อความนี้ "
+"เราได้ส่งคำแนะนำเกี่ยวกับวิธีการบล็อกผู้บุกรุกไปยังที่อยู่อดีตของคุณแล้ว"
+
+#: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
+msgid "User"
+msgstr "ผู้ใช้"
+
+#: suchar_overflow/templates/users/user_detail.html:23
+msgid "Suchar Overflow User"
+msgstr "ผู้ใช้ที่เกินขีดจำกัดของ Suchar"
+
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "No achievements yet."
+msgstr "ยังไม่มีรางวัลใดๆ"
+
+#: suchar_overflow/templates/users/user_detail.html:62
+msgid "The Best Of"
+msgstr "ที่ดีที่สุด"
+
+#: suchar_overflow/templates/users/user_detail.html:76
+msgid "Statistics"
+msgstr "สถิติ"
+
+#: suchar_overflow/templates/users/user_detail.html:78
+msgid "Rank"
+msgstr "อันดับ"
+
+#: suchar_overflow/templates/users/user_detail.html:86
+msgid "Total Votes"
+msgstr "จำนวนโหวตทั้งหมด"
+
+#: suchar_overflow/templates/users/user_detail.html:93
+msgid "Joined"
+msgstr "เข้าร่วมแล้ว"
+
+#: suchar_overflow/templates/users/user_detail.html:101
+msgid "Dryness Level"
+msgstr "ระดับความแห้ง"
+
+#: suchar_overflow/templates/users/user_detail.html:109
+msgid "Reception"
+msgstr "เคาน์เตอร์บริการลูกค้า"
+
+#: suchar_overflow/templates/users/user_detail.html:125
+msgid "Drought Map"
+msgstr "แผนที่ภัยแล้ง"
+
+#: suchar_overflow/templates/users/user_detail.html:127
+msgid "Less"
+msgstr "น้อยลง"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "More"
+msgstr "เพิ่มเติม"
+
+#: suchar_overflow/templates/users/user_detail.html:146
+msgid "Mon"
+msgstr "จ."
+
+#: suchar_overflow/templates/users/user_detail.html:147
+msgid "Wed"
+msgstr "พุธ"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Fri"
+msgstr "ศุกร์"
+
+#: suchar_overflow/templates/users/user_detail.html:167
+msgid "jokes on"
+msgstr "เปิดใช้งานมุกตลก"
+
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Latest Jokes"
+msgstr "เรื่องตลกใหม่ล่าสุด"
+
+#: suchar_overflow/templates/users/user_detail.html:185
+msgid "Scheduled for Publication"
+msgstr "กำหนดให้เผยแพร่แล้ว"
+
+#: suchar_overflow/templates/users/user_detail.html:228
+msgid "See all entries"
+msgstr "ดูรายการทั้งหมด"
+
+#: suchar_overflow/templates/users/user_detail.html:232
+msgid "User hasn't added any jokes yet."
+msgstr "ผู้ใช้ยังไม่ได้เพิ่มเรื่องตลกใดๆ เลย"
+
+#: suchar_overflow/templates/users/user_form.html:12
+msgid "Here you can update your data."
+msgstr "ที่นี่คุณสามารถอัปเดตข้อมูลของคุณได้"
+
+#: suchar_overflow/templates/users/user_form.html:16
+msgid "E-mail Address"
+msgstr "ที่อยู่อีเมล"
+
+#: suchar_overflow/templates/users/user_form.html:24
+msgid "Change E-mail"
+msgstr "เปลี่ยนอีเมล"
+
+#: suchar_overflow/templates/users/user_form.html:26
+msgid "Address change requires confirmation."
+msgstr "การเปลี่ยนแปลงที่อยู่ต้องได้รับการยืนยัน"
+
+#: suchar_overflow/templates/users/user_form.html:36
+msgid "Save Changes"
+msgstr "บันทึกข้อมูล"
+
+#: suchar_overflow/users/admin.py:36
+msgid "Personal info"
+msgstr "ข้อมูลส่วนตัว"
+
+#: suchar_overflow/users/admin.py:38
+msgid "Permissions"
+msgstr "สิทธิ์"
+
+#: suchar_overflow/users/admin.py:49
+msgid "Important dates"
+msgstr "วันสำคัญ"
+
+#: suchar_overflow/users/apps.py:7
+msgid "Users"
+msgstr "ผู้ใช้"
+
+#: suchar_overflow/users/forms.py:19
+#: suchar_overflow/users/tests/test_forms.py:36
+msgid "This username has already been taken."
+msgstr "ชื่อผู้ใช้นี้ถูกใช้งานแล้ว"
+
+#: suchar_overflow/users/forms.py:32
+msgid "New Email Address"
+msgstr "ที่อยู่อีเมลใหม่"
+
+#: suchar_overflow/users/forms.py:37
+msgid "This email is already currently used."
+msgstr "อีเมลนี้ถูกใช้งานอยู่แล้ว"
+
+#: suchar_overflow/users/models.py:21
+msgid "Name of User"
+msgstr "ชื่อผู้ใช้"
+
+#: suchar_overflow/users/models.py:24
+msgid "email address"
+msgstr "ที่อยู่อีเมล"
+
+#: suchar_overflow/users/models.py:54
+msgid "Activation Token"
+msgstr "โทเค็นสำหรับเปิดใช้งาน"
+
+#: suchar_overflow/users/models.py:55
+msgid "Activation Tokens"
+msgstr "โทเค็นสำหรับเปิดใช้งาน"
+
+#: suchar_overflow/users/models.py:68
+msgid "Pending"
+msgstr "กำลังดำเนินการ"
+
+#: suchar_overflow/users/models.py:69
+msgid "Verified"
+msgstr "ได้รับการยืนยันแล้ว"
+
+#: suchar_overflow/users/models.py:89
+msgid "Email Change Request"
+msgstr "คำขอเปลี่ยนอีเมล"
+
+#: suchar_overflow/users/models.py:90
+msgid "Email Change Requests"
+msgstr "คำขอเปลี่ยนอีเมล"
+
+#: suchar_overflow/users/tasks.py:11
+msgid "Confirm you have a sense of humor (Account Activation)"
+msgstr "ยืนยันว่าคุณมีอารมณ์ขัน (เปิดใช้งานบัญชี)"
+
+#: suchar_overflow/users/tasks.py:29
+msgid "Confirm it's you (Email Change)"
+msgstr "ยืนยันว่าเป็นคุณ (เปลี่ยนอีเมล)"
+
+#: suchar_overflow/users/tasks.py:41
+msgid "Someone wants to change your email address (We hope it's you)"
+msgstr "มีคนต้องการเปลี่ยนที่อยู่อีเมลของคุณ (เราหวังว่าจะเป็นคุณ)"
+
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "อัปเดตข้อมูลเรียบร้อยแล้ว"
+
+#: suchar_overflow/users/views.py:334
+msgid "The link has already been used or cancelled."
+msgstr "ลิงก์นี้ถูกใช้งานหรือยกเลิกไปแล้ว"
+
+#: suchar_overflow/users/views.py:344
+msgid "The link has expired (24 hours have passed)."
+msgstr "ลิงก์หมดอายุแล้ว (ผ่านไป 24 ชั่วโมง)"
+
+#: suchar_overflow/users/views.py:352
+msgid "Email already taken."
+msgstr "อีเมลนี้ถูกใช้งานแล้ว"
+
+#: suchar_overflow/users/views.py:370
+msgid "The link is invalid."
+msgstr "ลิงก์ไม่ถูกต้อง"

@@ -1,0 +1,1387 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: config/settings/base.py:34
+msgid "Polish"
+msgstr "Đánh bóng"
+
+#: config/settings/base.py:35
+msgid "English"
+msgstr "Tiếng Anh"
+
+#: suchar_overflow/achievements/apps.py:8
+#: suchar_overflow/achievements/models.py:84
+#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/users/user_detail.html:34
+msgid "Achievements"
+msgstr "Thành tích"
+
+#: suchar_overflow/achievements/middleware.py:29
+#, python-format
+msgid "Achievement Unlocked: %(name)s!"
+msgstr "Đã mở khóa thành tích: %(name)s!"
+
+#: suchar_overflow/achievements/models.py:8
+msgid "Lifetime"
+msgstr "Trọn đời"
+
+#: suchar_overflow/achievements/models.py:9
+msgid "Periodic"
+msgstr "Định kỳ"
+
+#: suchar_overflow/achievements/models.py:10
+msgid "Streak"
+msgstr "Chuỗi liên tiếp"
+
+#: suchar_overflow/achievements/models.py:13
+msgid "Suchar Posted"
+msgstr "Đã đăng bài viết"
+
+#: suchar_overflow/achievements/models.py:14
+msgid "Vote Received"
+msgstr "Đã nhận bình chọn"
+
+#: suchar_overflow/achievements/models.py:15
+msgid "Vote Cast"
+msgstr "Bỏ phiếu"
+
+#: suchar_overflow/achievements/models.py:18
+msgid "Suchar Count"
+msgstr "Số lượng sản phẩm"
+
+#: suchar_overflow/achievements/models.py:19
+msgid "Funny Vote Count"
+msgstr "Số phiếu bầu hài hước"
+
+#: suchar_overflow/achievements/models.py:20
+msgid "Dry Vote Count"
+msgstr "Tổng số phiếu bầu khô"
+
+#: suchar_overflow/achievements/models.py:21
+msgid "Vote Cast Count"
+msgstr "Tổng số phiếu bầu"
+
+#: suchar_overflow/achievements/models.py:22
+msgid "Total Score"
+msgstr "Tổng điểm"
+
+#: suchar_overflow/achievements/models.py:23
+msgid "Night Owl"
+msgstr "Thức khuya"
+
+#: suchar_overflow/achievements/models.py:24
+msgid "Login Streak"
+msgstr "Số ngày liên tiếp đăng nhập"
+
+#: suchar_overflow/achievements/models.py:25
+msgid "Polarizer"
+msgstr "Bộ lọc phân cực"
+
+#: suchar_overflow/achievements/models.py:28
+msgid "None"
+msgstr "Không có"
+
+#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
+#: suchar_overflow/templates/achievements/list.html:42
+#: suchar_overflow/templates/achievements/list.html:82
+msgid "Bronze"
+msgstr "Đồng"
+
+#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
+#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:84
+msgid "Silver"
+msgstr "Bạc"
+
+#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
+#: suchar_overflow/templates/achievements/list.html:46
+#: suchar_overflow/templates/achievements/list.html:86
+msgid "Gold"
+msgstr "Vàng"
+
+#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
+#: suchar_overflow/templates/achievements/list.html:48
+#: suchar_overflow/templates/achievements/list.html:88
+msgid "Platinum"
+msgstr "Bạch kim"
+
+#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
+#: suchar_overflow/templates/achievements/list.html:50
+#: suchar_overflow/templates/achievements/list.html:90
+msgid "Diamond"
+msgstr "Kim cương"
+
+#: suchar_overflow/achievements/models.py:35
+msgid "Name"
+msgstr "Tên"
+
+#: suchar_overflow/achievements/models.py:36
+msgid "Slug"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:37
+msgid "Description"
+msgstr "Mô tả"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Icon Content"
+msgstr "Nội dung biểu tượng"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Raw SVG XML"
+msgstr "Mã XML SVG gốc"
+
+#: suchar_overflow/achievements/models.py:44
+msgid "Category"
+msgstr "Danh mục"
+
+#: suchar_overflow/achievements/models.py:50
+msgid "Event Type"
+msgstr "Loại sự kiện"
+
+#: suchar_overflow/achievements/models.py:56
+msgid "Metric"
+msgstr "Chỉ số"
+
+#: suchar_overflow/achievements/models.py:61
+msgid "Threshold"
+msgstr "Ngưỡng"
+
+#: suchar_overflow/achievements/models.py:65
+msgid "Theme"
+msgstr "Chủ đề"
+
+#: suchar_overflow/achievements/models.py:68
+msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
+msgstr "Ví dụ: 'Giáng sinh', 'Lập trình'. Để trống nếu muốn tìm kiếm chung."
+
+#: suchar_overflow/achievements/models.py:71
+msgid "Tier"
+msgstr "Cấp độ"
+
+#: suchar_overflow/achievements/models.py:74
+msgid "Difficulty/Rarity tier of the achievement"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:77
+msgid "Secret Achievement"
+msgstr "Thành tựu bí mật"
+
+#: suchar_overflow/achievements/models.py:79
+msgid "If checked, name and description are hidden until unlocked."
+msgstr "Nếu được chọn, tên và mô tả sẽ bị ẩn cho đến khi mở khóa."
+
+#: suchar_overflow/achievements/models.py:83
+msgid "Achievement"
+msgstr "Thành tích"
+
+#: suchar_overflow/achievements/models.py:102
+msgid "Seen by user"
+msgstr "Đã xem bởi người dùng"
+
+#: suchar_overflow/achievements/models.py:105
+msgid "User Achievement"
+msgstr "Thành tích của người dùng"
+
+#: suchar_overflow/achievements/models.py:106
+msgid "User Achievements"
+msgstr "Thành tích của người dùng"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "Văn bản"
+
+#: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:65
+#: suchar_overflow/templates/users/user_detail.html:217
+msgid "Votes"
+msgstr "Số phiếu bầu"
+
+#: suchar_overflow/suchary/apps.py:7
+msgid "Suchary"
+msgstr "Suchary"
+
+#: suchar_overflow/suchary/forms.py:15
+msgid ""
+"Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
+"programowanie)."
+msgstr ""
+"Nhập các thẻ được phân tách bằng dấu cách hoặc dấu phẩy (ví dụ: bánh quy, "
+"IT, lập trình)."
+
+#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+msgid "Publication Date"
+msgstr "Ngày xuất bản"
+
+#: suchar_overflow/suchary/forms.py:35
+msgid "Leave empty to publish immediately."
+msgstr "Để trống để xuất bản ngay lập tức."
+
+#: suchar_overflow/suchary/forms.py:57
+msgid "Publication date cannot be in the past."
+msgstr "Ngày xuất bản không thể là quá khứ."
+
+#: suchar_overflow/suchary/models.py:16
+msgid "Suchar text"
+msgstr "Văn bản tìm kiếm"
+
+#: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
+#: suchar_overflow/templates/403_csrf.html:6
+#: suchar_overflow/templates/403_csrf.html:9
+msgid "Forbidden (403)"
+msgstr "Không được phép (403)"
+
+#: suchar_overflow/templates/403.html:14
+#: suchar_overflow/templates/403_csrf.html:14
+msgid "You're not allowed to access this page."
+msgstr "Bạn không có quyền truy cập trang này."
+
+#: suchar_overflow/templates/404.html:6 suchar_overflow/templates/404.html:9
+msgid "Page not found"
+msgstr "Không tìm thấy trang"
+
+#: suchar_overflow/templates/404.html:14
+msgid "This is not the page you were looking for."
+msgstr "Đây không phải là trang bạn đang tìm kiếm."
+
+#: suchar_overflow/templates/500.html:6
+msgid "Server Error"
+msgstr "Lỗi máy chủ"
+
+#: suchar_overflow/templates/500.html:9
+msgid "Ooops!!! 500"
+msgstr "Ối không!!! Lỗi 500"
+
+#: suchar_overflow/templates/500.html:10
+msgid "Looks like something went wrong!"
+msgstr "Có vẻ như đã xảy ra lỗi!"
+
+#: suchar_overflow/templates/500.html:12
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+"Chúng tôi tự động theo dõi các lỗi này, nhưng nếu sự cố vẫn tiếp diễn, vui "
+"lòng liên hệ với chúng tôi. Trong khi đó, hãy thử làm mới trang."
+
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+msgid "Notification Inbox"
+msgstr "Hộp thư thông báo"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr "Tất cả thành tích bạn đã đạt được, sắp xếp theo thứ tự mới nhất."
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "Chung"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, python-format
+msgid "Unlocked: %(date)s"
+msgstr "Đã mở khóa: %(date)s"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+msgid "No achievements yet — go post some jokes!"
+msgstr "Chưa có thành tích nào cả – hãy đăng một vài câu chuyện hài nhé!"
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+msgid "Browse achievements"
+msgstr "Xem thành tích"
+
+#: suchar_overflow/templates/achievements/list.html:6
+msgid "My Achievements"
+msgstr "Thành tích của tôi"
+
+#: suchar_overflow/templates/achievements/list.html:17
+#: suchar_overflow/templates/stats/leaderboard.html:110
+msgid "Hall of Fame"
+msgstr "Đại sảnh vinh quang"
+
+#: suchar_overflow/templates/achievements/list.html:19
+msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
+msgstr ""
+"Huy hiệu, huy chương và những bí mật đáng xấu hổ của bạn từ Suchar Overflow."
+
+#: suchar_overflow/templates/achievements/list.html:74
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr "Thành tựu đã bị khóa. Hãy khám phá bí mật của nó bằng cách chơi game!"
+
+#: suchar_overflow/templates/base.html:17
+#: suchar_overflow/templates/base.html:24
+msgid "Joke aggregator with critically low humidity levels."
+msgstr "Bộ sưu tập truyện cười với độ ẩm cực kỳ thấp."
+
+#: suchar_overflow/templates/base.html:96
+msgid "Home"
+msgstr "Trang chủ"
+
+#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/suchary/suchar_list.html:12
+#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/users/admin.py:68
+msgid "Jokes"
+msgstr ""
+
+#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/stats/leaderboard.html:6
+#: suchar_overflow/templates/stats/leaderboard.html:12
+msgid "Leaderboard"
+msgstr "Bảng xếp hạng"
+
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "Hộp thư đến"
+
+#: suchar_overflow/templates/base.html:113
+msgid "About"
+msgstr "Giới thiệu"
+
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
+msgid "Log Out"
+msgstr "Đăng xuất"
+
+#: suchar_overflow/templates/base.html:159
+msgid "Log In"
+msgstr "Đăng nhập"
+
+#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/registration/signup.html:6
+#: suchar_overflow/templates/registration/signup.html:12
+#: suchar_overflow/templates/registration/signup.html:23
+msgid "Sign Up"
+msgstr "Đăng ký"
+
+#: suchar_overflow/templates/base.html:170
+msgid "Default content."
+msgstr "Nội dung mặc định."
+
+#: suchar_overflow/templates/base.html:179
+msgid "All rights reserved (but jokes stolen)."
+msgstr ""
+"Bản quyền thuộc về [Tên công ty], mọi quyền được bảo lưu (nhưng những câu "
+"đùa thì có thể lấy đi)."
+
+#: suchar_overflow/templates/base.html:188
+msgid "Report a Bug"
+msgstr "Báo cáo lỗi"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/users/email_change_failed.html:6
+msgid "Error"
+msgstr "Lỗi"
+
+#: suchar_overflow/templates/base.html:212
+msgid "Achievement Unlocked"
+msgstr "Đã mở khóa thành tích"
+
+#: suchar_overflow/templates/base.html:214
+msgid "Success"
+msgstr "Thành công"
+
+#: suchar_overflow/templates/base.html:216
+msgid "Notification"
+msgstr "Thông báo"
+
+#: suchar_overflow/templates/base.html:231
+msgid "Confirm Logout"
+msgstr "Xác nhận đăng xuất"
+
+#: suchar_overflow/templates/base.html:234
+msgid "Are you sure you want to log out?"
+msgstr "Bạn có chắc chắn muốn đăng xuất không?"
+
+#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/users/user_form.html:35
+msgid "Cancel"
+msgstr "Hủy"
+
+#: suchar_overflow/templates/pages/about.html:6
+msgid "About Project - Suchar Overflow"
+msgstr "Giới thiệu dự án - Suchar Overflow"
+
+#: suchar_overflow/templates/pages/about.html:13
+msgid "About Project"
+msgstr "Giới thiệu dự án"
+
+#: suchar_overflow/templates/pages/about.html:14
+msgid "Why do we do this? Because someone had to."
+msgstr "Tại sao chúng tôi làm điều này? Vì có người phải làm thôi."
+
+#: suchar_overflow/templates/pages/about.html:18
+msgid "Mission"
+msgstr "Nhiệm vụ"
+
+#: suchar_overflow/templates/pages/about.html:20
+msgid ""
+"The goal of Suchar Overflow is to gather the largest collection of jokes "
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
+msgstr ""
+"Mục tiêu của Suchar Overflow là thu thập bộ sưu tập lớn nhất các câu đùa gây"
+" ra đau khổ về mặt thể chất cho người nhận. Chúng tôi tin rằng một câu đùa "
+"hay là một câu đùa khô khan, sau đó là sự im lặng khó xử và tiếng dế kêu "
+"trong nền."
+
+#: suchar_overflow/templates/pages/about.html:22
+msgid "Technology"
+msgstr "Công nghệ"
+
+#: suchar_overflow/templates/pages/about.html:24
+msgid ""
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr ""
+"Trang web được xây dựng trên các công nghệ mới nhất (Django + CSS tùy chỉnh)"
+" để đảm bảo cung cấp nội dung hài hước một cách nhanh chóng và đáng tin cậy "
+"trực tiếp đến màn hình của bạn."
+
+#: suchar_overflow/templates/pages/home.html:8
+msgid "Dry Bread for the Horse"
+msgstr "Bánh mì khô cho ngựa"
+
+#: suchar_overflow/templates/pages/home.html:10
+msgid ""
+"Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
+"you need a drink."
+msgstr ""
+"Chào mừng bạn đến với <strong>Suchar Overflow</strong>. Nơi mà sự hài hước "
+"khô khan đến mức bạn cần một ly nước."
+
+#: suchar_overflow/templates/pages/home.html:11
+msgid "Vote for the best jokes, add your own, and become an office legend."
+msgstr ""
+"Hãy bình chọn cho những câu chuyện cười hay nhất, thêm những câu chuyện của "
+"riêng bạn và trở thành một huyền thoại văn phòng."
+
+#: suchar_overflow/templates/pages/home.html:15
+msgid "Browse Jokes"
+msgstr "Xem truyện cười"
+
+#: suchar_overflow/templates/pages/home.html:17
+msgid "Join Us"
+msgstr "Tham gia cùng chúng tôi"
+
+#: suchar_overflow/templates/pages/home.html:31
+msgid "Vote"
+msgstr "Bỏ phiếu"
+
+#: suchar_overflow/templates/pages/home.html:32
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr ""
+"Đánh giá những câu chuyện cười của người khác. Quyết định điều gì là hài "
+"hước (và điều gì là buồn cười)."
+
+#: suchar_overflow/templates/pages/home.html:39
+#: suchar_overflow/templates/suchary/suchar_list.html:68
+msgid "Add"
+msgstr "Thêm"
+
+#: suchar_overflow/templates/pages/home.html:40
+msgid "Share your thoughts with the world. Don't be shy."
+msgstr "Chia sẻ suy nghĩ của bạn với thế giới. Đừng ngại ngùng."
+
+#: suchar_overflow/templates/pages/home.html:47
+msgid "Laugh (optional)"
+msgstr "Cười (tùy chọn)"
+
+#: suchar_overflow/templates/pages/home.html:48
+msgid "We guarantee a pity smile or your money back (the site is free)."
+msgstr ""
+"Chúng tôi đảm bảo bạn sẽ hài lòng hoặc hoàn tiền (trang web này miễn phí)."
+
+#: suchar_overflow/templates/registration/activation_complete.html:6
+msgid "Activation Complete"
+msgstr "Kích hoạt hoàn tất"
+
+#: suchar_overflow/templates/registration/activation_complete.html:23
+msgid "Account Activated!"
+msgstr "Tài khoản đã được kích hoạt!"
+
+#: suchar_overflow/templates/registration/activation_complete.html:25
+msgid ""
+"Your account has been activated successfully. You can now log in and start "
+"using Suchar Overflow."
+msgstr ""
+"Tài khoản của bạn đã được kích hoạt thành công. Bạn có thể đăng nhập và bắt "
+"đầu sử dụng Suchar Overflow."
+
+#: suchar_overflow/templates/registration/activation_complete.html:28
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
+msgid "Log in"
+msgstr "Đăng nhập"
+
+#: suchar_overflow/templates/registration/activation_email.txt:3
+#: suchar_overflow/templates/users/email_notify_old_email.txt:3
+#: suchar_overflow/templates/users/email_verify_email.txt:3
+#, python-format
+msgid "Hello %(username)s!"
+msgstr "Xin chào, %(username)s!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:5
+msgid ""
+"Welcome to Suchar Overflow - a place where air humidity drops below zero."
+msgstr ""
+"Chào mừng bạn đến với Suchar Overflow - nơi độ ẩm không khí giảm xuống dưới "
+"mức 0."
+
+#: suchar_overflow/templates/registration/activation_email.txt:6
+msgid ""
+"To make sure you're not a bot (or a person without a sense of humor), you "
+"need to activate your account."
+msgstr ""
+"Để đảm bảo bạn không phải là một bot (hoặc một người không có khiếu hài "
+"hước), bạn cần kích hoạt tài khoản của mình."
+
+#: suchar_overflow/templates/registration/activation_email.txt:8
+msgid "Click this link before it dries out:"
+msgstr "Nhấp vào liên kết này trước khi nó hết hạn:"
+
+#: suchar_overflow/templates/registration/activation_email.txt:11
+msgid "Remember: Drink plenty of water."
+msgstr "Nhớ nhé: Uống nhiều nước."
+
+#: suchar_overflow/templates/registration/activation_email.txt:13
+msgid "The Suchar Overflow Team"
+msgstr "Đội ngũ Suchar Overflow"
+
+#: suchar_overflow/templates/registration/activation_failed.html:6
+#: suchar_overflow/templates/registration/activation_failed.html:24
+msgid "Activation Failed"
+msgstr "Kích hoạt không thành công"
+
+#: suchar_overflow/templates/registration/activation_failed.html:26
+msgid ""
+"The activation link is invalid or has expired. Please try registering again "
+"or contact support."
+msgstr ""
+"Liên kết kích hoạt không hợp lệ hoặc đã hết hạn. Vui lòng thử đăng ký lại "
+"hoặc liên hệ với bộ phận hỗ trợ."
+
+#: suchar_overflow/templates/registration/activation_failed.html:29
+msgid "Sign Up Again"
+msgstr "Đăng ký lại"
+
+#: suchar_overflow/templates/registration/activation_failed.html:30
+#: suchar_overflow/templates/registration/signup_done.html:28
+msgid "Back to Home"
+msgstr "Quay lại trang chủ"
+
+#: suchar_overflow/templates/registration/login.html:6
+#: suchar_overflow/templates/registration/login.html:12
+#: suchar_overflow/templates/registration/login.html:23
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Sign In"
+msgstr "Đăng nhập"
+
+#: suchar_overflow/templates/registration/login.html:26
+msgid "Forgot Password?"
+msgstr "Quên mật khẩu?"
+
+#: suchar_overflow/templates/registration/password_change_done.html:6
+#: suchar_overflow/templates/registration/password_change_done.html:12
+msgid "Password Changed"
+msgstr "Đã thay đổi mật khẩu"
+
+#: suchar_overflow/templates/registration/password_change_done.html:13
+msgid "Your password was changed successfully."
+msgstr "Mật khẩu của bạn đã được thay đổi thành công."
+
+#: suchar_overflow/templates/registration/password_change_done.html:15
+msgid "Back to Profile"
+msgstr "Quay lại trang hồ sơ"
+
+#: suchar_overflow/templates/registration/password_change_form.html:6
+#: suchar_overflow/templates/registration/password_change_form.html:12
+#: suchar_overflow/templates/registration/password_change_form.html:18
+#: suchar_overflow/templates/users/base_dashboard.html:42
+msgid "Change Password"
+msgstr "Thay đổi mật khẩu"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:6
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
+msgid "Password reset successful"
+msgstr "Đặt lại mật khẩu thành công"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr ""
+"Mật khẩu của bạn đã được thiết lập. Bạn có thể đăng nhập ngay bây giờ."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:6
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password"
+msgstr "Đặt mật khẩu mới"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Vui lòng nhập mật khẩu mới của bạn hai lần để chúng tôi có thể xác minh rằng"
+" bạn đã nhập chính xác."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:20
+msgid "Change password"
+msgstr "Thay đổi mật khẩu"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"Liên kết đặt lại mật khẩu không hợp lệ, có thể vì đã được sử dụng trước đó. "
+"Vui lòng yêu cầu đặt lại mật khẩu mới."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:6
+#: suchar_overflow/templates/registration/password_reset_done.html:12
+msgid "Password Reset Sent"
+msgstr "Đã gửi yêu cầu đặt lại mật khẩu"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "Kiểm tra hộp thư đến của bạn"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"Chúng tôi đã gửi email hướng dẫn đặt mật khẩu cho bạn, nếu có tài khoản nào "
+"được đăng ký với địa chỉ email mà bạn vừa nhập. Bạn sẽ nhận được email đó "
+"trong thời gian ngắn."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:20
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"Nếu bạn không nhận được email, vui lòng kiểm tra lại địa chỉ bạn đã đăng ký "
+"và kiểm tra thư mục spam."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr ""
+"Bạn nhận được email này vì bạn đã yêu cầu đặt lại mật khẩu cho tài khoản "
+"người dùng của mình tại"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr "Vui lòng truy cập trang sau và chọn mật khẩu mới:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "Tên người dùng của bạn, nếu bạn quên mất:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "Cảm ơn bạn đã sử dụng trang web của chúng tôi!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr "Cái"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr "đội"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:6
+#: suchar_overflow/templates/registration/password_reset_form.html:12
+msgid "Password Reset"
+msgstr "Đặt lại mật khẩu"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"Quên mật khẩu? Nhập địa chỉ email của bạn bên dưới, và chúng tôi sẽ gửi "
+"hướng dẫn đặt lại mật khẩu qua email."
+
+#: suchar_overflow/templates/registration/password_reset_form.html:22
+msgid "Reset my password"
+msgstr "Đặt lại mật khẩu của tôi"
+
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Already have an account?"
+msgstr "Đã có tài khoản?"
+
+#: suchar_overflow/templates/registration/signup_done.html:6
+msgid "Confirmation Sent"
+msgstr "Xác nhận đã được gửi"
+
+#: suchar_overflow/templates/registration/signup_done.html:25
+msgid ""
+"We have sent you an email to confirm your registration. Please check your "
+"inbox and click the link to activate your account."
+msgstr ""
+"Chúng tôi đã gửi cho bạn một email để xác nhận đăng ký của bạn. Vui lòng "
+"kiểm tra hộp thư đến và nhấp vào liên kết để kích hoạt tài khoản của bạn."
+
+#: suchar_overflow/templates/stats/leaderboard.html:13
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr ""
+"Kỷ niệm những điều tốt đẹp nhất (và cả những điều hài hước nhất) mà cộng "
+"đồng của chúng tôi tạo ra."
+
+#: suchar_overflow/templates/stats/leaderboard.html:19
+msgid "Activity (Last 30 Days)"
+msgstr "Hoạt động (30 ngày gần nhất)"
+
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "Tổng quan"
+
+#: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Funny"
+msgstr "Hài hước"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:128
+#: suchar_overflow/templates/suchary/suchar_list.html:131
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Dry"
+msgstr "Khô"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+msgid "Most Active Authors"
+msgstr "Tác giả hoạt động nhất"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
+msgid "jokes"
+msgstr "truyện cười"
+
+#: suchar_overflow/templates/stats/leaderboard.html:99
+msgid "No data."
+msgstr "Không có dữ liệu."
+
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+msgid "No jokes."
+msgstr "Không có nội dung hài hước nào."
+
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr "Vua hài kịch"
+
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "Không có dữ liệu thú vị nào."
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "Những câu chuyện cười hài hước nhất"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "Chúa tể của hạn hán"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "Không có dữ liệu khô."
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "Những câu chuyện cười khô hài nhất"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
+msgid "New Jokes"
+msgstr "Những câu chuyện cười mới"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:6
+msgid "Too Late!"
+msgstr "Quá muộn rồi!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:13
+msgid "The ship has sailed!"
+msgstr "Đã quá muộn rồi!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:15
+msgid ""
+"This joke has already been published. You can't polish a diamond (or a dry "
+"biscuit) once it's been served."
+msgstr ""
+"Câu chuyện cười này đã được đăng tải rồi. Bạn không thể làm cho một viên kim"
+" cương (hoặc một chiếc bánh quy khô) trở nên hoàn hảo hơn sau khi nó đã được"
+" kể."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:21
+msgid "Time creates jokes, but it also seals them."
+msgstr ""
+"Thời gian tạo ra những trò đùa, nhưng cũng là thứ khiến chúng trở nên vĩnh "
+"viễn."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:23
+msgid "Ancient Suchar Proverb"
+msgstr "Câu nói cổ của người Suchar"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:29
+msgid "Back to Jokes"
+msgstr "Quay lại trang truyện cười"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:8
+#: suchar_overflow/templates/suchary/suchar_form.html:29
+msgid "Add Joke"
+msgstr "Thêm một câu chuyện cười"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:30
+msgid "Shine with humor."
+msgstr "Hãy tỏa sáng với sự hài hước."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:38
+msgid "Joke Content"
+msgstr "Nội dung trò đùa"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:43
+msgid "Why did the chicken cross the road?"
+msgstr "Tại sao con gà lại băng qua đường?"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:46
+msgid "Remember, the drier the better."
+msgstr "Hãy nhớ rằng, càng khô thì càng tốt."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:50
+msgid "Tags"
+msgstr "Thẻ"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:55
+msgid "e.g. it, programming, school"
+msgstr "Ví dụ: lập trình, trường học"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:62
+msgid "Separate with commas."
+msgstr "Tách bằng dấu phẩy."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:70
+msgid "Schedule for later"
+msgstr "Lên lịch cho sau"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:79
+msgid "Select date and time..."
+msgstr "Chọn ngày và giờ..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:88
+msgid "Publish"
+msgstr "Xuất bản"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:99
+msgid "Live Preview"
+msgstr "Xem trước trực tiếp"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:109
+msgid "Now"
+msgstr "Bây giờ"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:116
+msgid "Your joke content will appear here..."
+msgstr "Nội dung trò đùa của bạn sẽ hiển thị ở đây..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:149
+msgid "This is how your joke will look on the main list."
+msgstr "Đây là cách trò đùa của bạn sẽ hiển thị trên danh sách chính."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:13
+msgid "The dryest jokes on the internet."
+msgstr "Những câu chuyện cười khô khan nhất trên Internet."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:28
+msgid "Search..."
+msgstr "Tìm kiếm..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:43
+#: suchar_overflow/templates/suchary/suchar_list.html:58
+msgid "Top"
+msgstr "Đỉnh"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:45
+#: suchar_overflow/templates/suchary/suchar_list.html:53
+msgid "Newest"
+msgstr "Mới nhất"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:85
+msgid "Scheduled"
+msgstr "Lên lịch"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:95
+#: suchar_overflow/templates/users/user_detail.html:194
+msgid "Edit"
+msgstr "Chỉnh sửa"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:139
+msgid "So dry here..."
+msgstr "Ở đây quá khô..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:140
+msgid "Be the hero we need and add the first joke."
+msgstr ""
+"Hãy trở thành người hùng mà chúng ta cần và thêm câu chuyện cười đầu tiên."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:158
+msgid "Previous"
+msgstr "Trước đó"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:182
+msgid "Next"
+msgstr "Tiếp theo"
+
+#: suchar_overflow/templates/users/base_dashboard.html:17
+msgid "Your Account"
+msgstr "Tài khoản của bạn"
+
+#: suchar_overflow/templates/users/base_dashboard.html:22
+msgid "Profile"
+msgstr "Hồ sơ"
+
+#: suchar_overflow/templates/users/base_dashboard.html:27
+#: suchar_overflow/templates/users/user_form.html:6
+#: suchar_overflow/templates/users/user_form.html:11
+msgid "Edit Profile"
+msgstr "Chỉnh sửa hồ sơ"
+
+#: suchar_overflow/templates/users/base_dashboard.html:37
+msgid "Security"
+msgstr "Bảo mật"
+
+#: suchar_overflow/templates/users/email_change_complete.html:6
+msgid "Email Changed"
+msgstr "Địa chỉ email đã được thay đổi"
+
+#: suchar_overflow/templates/users/email_change_complete.html:23
+msgid "It worked!"
+msgstr "Thành công!"
+
+#: suchar_overflow/templates/users/email_change_complete.html:25
+msgid ""
+"Your email address has been changed. You can now sleep peacefully (or not)."
+msgstr ""
+"Địa chỉ email của bạn đã được thay đổi. Bây giờ bạn có thể yên tâm rồi (hoặc"
+" không)."
+
+#: suchar_overflow/templates/users/email_change_complete.html:28
+msgid "Back to settings"
+msgstr "Quay lại cài đặt"
+
+#: suchar_overflow/templates/users/email_change_done.html:6
+msgid "Email Sent"
+msgstr "Đã gửi email"
+
+#: suchar_overflow/templates/users/email_change_done.html:23
+msgid "Check both inboxes!"
+msgstr "Kiểm tra cả hai hộp thư đến!"
+
+#: suchar_overflow/templates/users/email_change_done.html:25
+msgid ""
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"          <br />\n"
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+msgstr ""
+"Chúng tôi đã gửi một tin nhắn đến địa chỉ <strong>MỚI</strong> của bạn với liên kết kích hoạt.\n"
+"          <br />\n"
+"          Nhưng chúng tôi cũng đã gửi một thông báo đến địa chỉ <strong>CŨ</strong> của bạn, để bạn biết đó thực sự là bạn."
+
+#: suchar_overflow/templates/users/email_change_done.html:30
+msgid ""
+"If you don't click the link, nothing will change. Your account will remain "
+"as dry as our jokes."
+msgstr ""
+"Nếu bạn không nhấp vào liên kết, mọi thứ sẽ không thay đổi. Tài khoản của "
+"bạn vẫn sẽ khô khan như những câu đùa của chúng tôi."
+
+#: suchar_overflow/templates/users/email_change_done.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:43
+msgid "Back to profile"
+msgstr "Quay lại trang hồ sơ"
+
+#: suchar_overflow/templates/users/email_change_failed.html:23
+msgid "Something went wrong"
+msgstr "Đã xảy ra lỗi"
+
+#: suchar_overflow/templates/users/email_change_failed.html:24
+msgid "The link has expired, is invalid, or has already been used."
+msgstr "Liên kết đã hết hạn, không hợp lệ hoặc đã được sử dụng."
+
+#: suchar_overflow/templates/users/email_change_failed.html:25
+msgid "Try again if you really must."
+msgstr "Thử lại nếu bạn thực sự cần thiết."
+
+#: suchar_overflow/templates/users/email_change_failed.html:28
+msgid "Try again"
+msgstr "Thử lại"
+
+#: suchar_overflow/templates/users/email_change_form.html:6
+msgid "Update Email"
+msgstr "Cập nhật email"
+
+#: suchar_overflow/templates/users/email_change_form.html:12
+msgid "Change email address"
+msgstr "Thay đổi địa chỉ email"
+
+#: suchar_overflow/templates/users/email_change_form.html:14
+msgid ""
+"Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
+"judge."
+msgstr ""
+"Bạn chán với địa chỉ cũ của mình rồi sao? Hoặc có lẽ bạn đang cố gắng trốn "
+"thuế? Chúng tôi không phán xét."
+
+#: suchar_overflow/templates/users/email_change_form.html:25
+msgid "Send a pigeon with the link"
+msgstr "Gửi một con bồ câu mang đường dẫn"
+
+#: suchar_overflow/templates/users/email_change_form.html:26
+msgid "Changed my mind (go back)"
+msgstr "Thay đổi ý (quay lại)"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:6
+#: suchar_overflow/users/models.py:70
+msgid "Revoked"
+msgstr "Đã thu hồi"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:15
+msgid "We've reverted the changes!"
+msgstr "Chúng tôi đã hoàn tác các thay đổi!"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:17
+msgid ""
+"Phew, that was close. Your email address has been restored to its previous "
+"state."
+msgstr ""
+"May mắn, đã sửa xong. Địa chỉ email của bạn đã được khôi phục về trạng thái "
+"trước đó."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:19
+msgid "You can breathe a sigh of relief. We recommend changing your password."
+msgstr "Bạn có thể yên tâm. Chúng tôi khuyên bạn nên thay đổi mật khẩu."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:32
+msgid "Change cancelled"
+msgstr "Đã hủy thay đổi"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:34
+msgid "All active email change links have been invalidated."
+msgstr "Tất cả các liên kết thay đổi email đã hết hạn."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:36
+msgid ""
+"If it wasn't you who tried to change the email, we recommend changing your "
+"password."
+msgstr ""
+"Nếu không phải bạn là người đã cố gắng thay đổi địa chỉ email, chúng tôi "
+"khuyên bạn nên thay đổi mật khẩu."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:41
+msgid "Change password (just in case)"
+msgstr "Thay đổi mật khẩu (đề phòng)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:5
+#, python-format
+msgid "We just received a request to change your email address to: %(email)s."
+msgstr ""
+"Chúng tôi vừa nhận được yêu cầu thay đổi địa chỉ email của bạn thành: "
+"%(email)s."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:7
+msgid ""
+"If it was you - great, you don't need to do anything here (just check that "
+"other inbox)."
+msgstr ""
+"Nếu đó là bạn, thì rất tốt, bạn không cần phải làm gì ở đây (chỉ cần kiểm "
+"tra hộp thư đến khác)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:9
+msgid "BUT IF IT WASN'T YOU:"
+msgstr "NHƯNG NẾU KHÔNG PHẢI BẠN:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:10
+msgid ""
+"Someone might be trying to take over your account (or you just have a split "
+"personality)."
+msgstr ""
+"Có thể ai đó đang cố gắng chiếm quyền điều khiển tài khoản của bạn (hoặc có "
+"lẽ bạn vừa phát hiện ra mình có nhiều tính cách)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:11
+msgid ""
+"Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
+"sent to the new address:"
+msgstr ""
+"Nhấp vào liên kết này để NGAY LẬP TỨC HỦY yêu cầu này và làm mất hiệu lực "
+"liên kết đã gửi đến địa chỉ mới:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:15
+msgid "We also recommend changing your password if you suspect a breach."
+msgstr ""
+"Chúng tôi cũng khuyên bạn nên thay đổi mật khẩu nếu nghi ngờ có xâm phạm."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:17
+#: suchar_overflow/templates/users/email_verify_email.txt:14
+msgid "Suchar Overflow"
+msgstr "Suchar Overflow"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:5
+#, python-format
+msgid ""
+"We received a request to change your email address to this one you're "
+"reading (%(email)s)."
+msgstr ""
+"Chúng tôi đã nhận được yêu cầu thay đổi địa chỉ email của bạn thành địa chỉ "
+"mà bạn đang đọc (%(email)s)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:7
+msgid "If it's you, click the link below to confirm the change:"
+msgstr "Nếu đây là bạn, hãy nhấp vào liên kết bên dưới để xác nhận thay đổi:"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:10
+msgid "The link is valid for 24 hours (or until it evaporates)."
+msgstr "Liên kết này có giá trị trong vòng 24 giờ (hoặc cho đến khi hết hạn)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:12
+msgid ""
+"If it wasn't you, ignore this message. We sent instructions on how to block "
+"the intruder to your old address."
+msgstr ""
+"Nếu không phải bạn, hãy bỏ qua thông báo này. Chúng tôi đã gửi hướng dẫn "
+"cách chặn kẻ xâm nhập đến địa chỉ cũ của bạn."
+
+#: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
+msgid "User"
+msgstr "Người dùng"
+
+#: suchar_overflow/templates/users/user_detail.html:23
+msgid "Suchar Overflow User"
+msgstr "Người dùng tràn số liệu của Suchar"
+
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "No achievements yet."
+msgstr "Chưa có thành tích nào."
+
+#: suchar_overflow/templates/users/user_detail.html:62
+msgid "The Best Of"
+msgstr "Tuyệt vời nhất"
+
+#: suchar_overflow/templates/users/user_detail.html:76
+msgid "Statistics"
+msgstr "Thống kê"
+
+#: suchar_overflow/templates/users/user_detail.html:78
+msgid "Rank"
+msgstr "Xếp hạng"
+
+#: suchar_overflow/templates/users/user_detail.html:86
+msgid "Total Votes"
+msgstr "Tổng số phiếu bầu"
+
+#: suchar_overflow/templates/users/user_detail.html:93
+msgid "Joined"
+msgstr "Đã tham gia"
+
+#: suchar_overflow/templates/users/user_detail.html:101
+msgid "Dryness Level"
+msgstr "Mức độ khô"
+
+#: suchar_overflow/templates/users/user_detail.html:109
+msgid "Reception"
+msgstr "Lễ tân"
+
+#: suchar_overflow/templates/users/user_detail.html:125
+msgid "Drought Map"
+msgstr "Bản đồ hạn hán"
+
+#: suchar_overflow/templates/users/user_detail.html:127
+msgid "Less"
+msgstr "Ít hơn"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "More"
+msgstr "Thêm"
+
+#: suchar_overflow/templates/users/user_detail.html:146
+msgid "Mon"
+msgstr "Thứ Hai"
+
+#: suchar_overflow/templates/users/user_detail.html:147
+msgid "Wed"
+msgstr "Thứ Tư"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Fri"
+msgstr "Thứ Sáu"
+
+#: suchar_overflow/templates/users/user_detail.html:167
+msgid "jokes on"
+msgstr "đang bật"
+
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Latest Jokes"
+msgstr "Những câu chuyện cười mới nhất"
+
+#: suchar_overflow/templates/users/user_detail.html:185
+msgid "Scheduled for Publication"
+msgstr "Lên lịch xuất bản"
+
+#: suchar_overflow/templates/users/user_detail.html:228
+msgid "See all entries"
+msgstr "Xem tất cả mục nhập"
+
+#: suchar_overflow/templates/users/user_detail.html:232
+msgid "User hasn't added any jokes yet."
+msgstr "Người dùng chưa thêm bất kỳ câu chuyện cười nào."
+
+#: suchar_overflow/templates/users/user_form.html:12
+msgid "Here you can update your data."
+msgstr "Tại đây, bạn có thể cập nhật thông tin của mình."
+
+#: suchar_overflow/templates/users/user_form.html:16
+msgid "E-mail Address"
+msgstr "Địa chỉ email"
+
+#: suchar_overflow/templates/users/user_form.html:24
+msgid "Change E-mail"
+msgstr "Thay đổi email"
+
+#: suchar_overflow/templates/users/user_form.html:26
+msgid "Address change requires confirmation."
+msgstr "Thay đổi địa chỉ cần xác nhận."
+
+#: suchar_overflow/templates/users/user_form.html:36
+msgid "Save Changes"
+msgstr "Lưu lại"
+
+#: suchar_overflow/users/admin.py:36
+msgid "Personal info"
+msgstr "Thông tin cá nhân"
+
+#: suchar_overflow/users/admin.py:38
+msgid "Permissions"
+msgstr "Quyền"
+
+#: suchar_overflow/users/admin.py:49
+msgid "Important dates"
+msgstr "Các ngày quan trọng"
+
+#: suchar_overflow/users/apps.py:7
+msgid "Users"
+msgstr "Người dùng"
+
+#: suchar_overflow/users/forms.py:19
+#: suchar_overflow/users/tests/test_forms.py:36
+msgid "This username has already been taken."
+msgstr "Tên người dùng này đã được sử dụng."
+
+#: suchar_overflow/users/forms.py:32
+msgid "New Email Address"
+msgstr "Địa chỉ email mới"
+
+#: suchar_overflow/users/forms.py:37
+msgid "This email is already currently used."
+msgstr "Địa chỉ email này đã được sử dụng."
+
+#: suchar_overflow/users/models.py:21
+msgid "Name of User"
+msgstr "Tên người dùng"
+
+#: suchar_overflow/users/models.py:24
+msgid "email address"
+msgstr "địa chỉ email"
+
+#: suchar_overflow/users/models.py:54
+msgid "Activation Token"
+msgstr "Mã kích hoạt"
+
+#: suchar_overflow/users/models.py:55
+msgid "Activation Tokens"
+msgstr "Mã kích hoạt"
+
+#: suchar_overflow/users/models.py:68
+msgid "Pending"
+msgstr "Đang chờ xử lý"
+
+#: suchar_overflow/users/models.py:69
+msgid "Verified"
+msgstr "Đã xác minh"
+
+#: suchar_overflow/users/models.py:89
+msgid "Email Change Request"
+msgstr "Yêu cầu thay đổi email"
+
+#: suchar_overflow/users/models.py:90
+msgid "Email Change Requests"
+msgstr "Yêu cầu thay đổi email"
+
+#: suchar_overflow/users/tasks.py:11
+msgid "Confirm you have a sense of humor (Account Activation)"
+msgstr "Xác nhận bạn có khiếu hài hước (Kích hoạt tài khoản)"
+
+#: suchar_overflow/users/tasks.py:29
+msgid "Confirm it's you (Email Change)"
+msgstr "Xác nhận là bạn (Thay đổi email)"
+
+#: suchar_overflow/users/tasks.py:41
+msgid "Someone wants to change your email address (We hope it's you)"
+msgstr ""
+"Có ai đó muốn thay đổi địa chỉ email của bạn (Chúng tôi hy vọng là bạn)."
+
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "Thông tin đã được cập nhật thành công"
+
+#: suchar_overflow/users/views.py:334
+msgid "The link has already been used or cancelled."
+msgstr "Liên kết này đã được sử dụng hoặc bị hủy."
+
+#: suchar_overflow/users/views.py:344
+msgid "The link has expired (24 hours have passed)."
+msgstr "Liên kết đã hết hạn (đã quá 24 giờ)."
+
+#: suchar_overflow/users/views.py:352
+msgid "Email already taken."
+msgstr "Địa chỉ email này đã được sử dụng."
+
+#: suchar_overflow/users/views.py:370
+msgid "The link is invalid."
+msgstr "Liên kết không hợp lệ."

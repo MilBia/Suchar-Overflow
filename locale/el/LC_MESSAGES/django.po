@@ -1,0 +1,1401 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: config/settings/base.py:34
+msgid "Polish"
+msgstr "Βελτίωση"
+
+#: config/settings/base.py:35
+msgid "English"
+msgstr "Αγγλικά"
+
+#: suchar_overflow/achievements/apps.py:8
+#: suchar_overflow/achievements/models.py:84
+#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/users/user_detail.html:34
+msgid "Achievements"
+msgstr "Επιτεύγματα"
+
+#: suchar_overflow/achievements/middleware.py:29
+#, python-format
+msgid "Achievement Unlocked: %(name)s!"
+msgstr "Επίτευγμα ξεκλείδωσε: %(name)s!"
+
+#: suchar_overflow/achievements/models.py:8
+msgid "Lifetime"
+msgstr "Διάρκεια ζωής"
+
+#: suchar_overflow/achievements/models.py:9
+msgid "Periodic"
+msgstr "Περιοδικό"
+
+#: suchar_overflow/achievements/models.py:10
+msgid "Streak"
+msgstr "Σειρά"
+
+#: suchar_overflow/achievements/models.py:13
+msgid "Suchar Posted"
+msgstr "Δημοσιεύθηκε από τον Suchar"
+
+#: suchar_overflow/achievements/models.py:14
+msgid "Vote Received"
+msgstr "Λήφθηκε η ψήφος σας"
+
+#: suchar_overflow/achievements/models.py:15
+msgid "Vote Cast"
+msgstr "Ψήφος κατατεθειμένη"
+
+#: suchar_overflow/achievements/models.py:18
+msgid "Suchar Count"
+msgstr "Αριθμός προϊόντων Suchar"
+
+#: suchar_overflow/achievements/models.py:19
+msgid "Funny Vote Count"
+msgstr "Αστεία καταμέτρηση ψήφων"
+
+#: suchar_overflow/achievements/models.py:20
+msgid "Dry Vote Count"
+msgstr "Συνολικός αριθμός ψήφων (χωρίς προσαρμογές)"
+
+#: suchar_overflow/achievements/models.py:21
+msgid "Vote Cast Count"
+msgstr "Συνολικός αριθμός ψήφων"
+
+#: suchar_overflow/achievements/models.py:22
+msgid "Total Score"
+msgstr "Συνολική βαθμολογία"
+
+#: suchar_overflow/achievements/models.py:23
+msgid "Night Owl"
+msgstr "Νυχτερίδα"
+
+#: suchar_overflow/achievements/models.py:24
+msgid "Login Streak"
+msgstr "Σειρά συνεχόμενων συνδέσεων"
+
+#: suchar_overflow/achievements/models.py:25
+msgid "Polarizer"
+msgstr "Πολωτής"
+
+#: suchar_overflow/achievements/models.py:28
+msgid "None"
+msgstr "Κανένα"
+
+#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
+#: suchar_overflow/templates/achievements/list.html:42
+#: suchar_overflow/templates/achievements/list.html:82
+msgid "Bronze"
+msgstr "Χάλκινο"
+
+#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
+#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:84
+msgid "Silver"
+msgstr "Ασήμι"
+
+#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
+#: suchar_overflow/templates/achievements/list.html:46
+#: suchar_overflow/templates/achievements/list.html:86
+msgid "Gold"
+msgstr "Χρυσός"
+
+#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
+#: suchar_overflow/templates/achievements/list.html:48
+#: suchar_overflow/templates/achievements/list.html:88
+msgid "Platinum"
+msgstr "Platinum"
+
+#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
+#: suchar_overflow/templates/achievements/list.html:50
+#: suchar_overflow/templates/achievements/list.html:90
+msgid "Diamond"
+msgstr "Διαμάντι"
+
+#: suchar_overflow/achievements/models.py:35
+msgid "Name"
+msgstr "Όνομα"
+
+#: suchar_overflow/achievements/models.py:36
+msgid "Slug"
+msgstr "URL slug"
+
+#: suchar_overflow/achievements/models.py:37
+msgid "Description"
+msgstr "Περιγραφή"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Icon Content"
+msgstr "Περιεχόμενο εικονιδίου"
+
+#: suchar_overflow/achievements/models.py:40
+msgid "Raw SVG XML"
+msgstr "Πρωτότυπο XML SVG"
+
+#: suchar_overflow/achievements/models.py:44
+msgid "Category"
+msgstr "Κατηγορία"
+
+#: suchar_overflow/achievements/models.py:50
+msgid "Event Type"
+msgstr "Τύπος εκδήλωσης"
+
+#: suchar_overflow/achievements/models.py:56
+msgid "Metric"
+msgstr "Μετρικό"
+
+#: suchar_overflow/achievements/models.py:61
+msgid "Threshold"
+msgstr "Όριο"
+
+#: suchar_overflow/achievements/models.py:65
+msgid "Theme"
+msgstr "Θέμα"
+
+#: suchar_overflow/achievements/models.py:68
+msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
+msgstr ""
+"Π.χ. «Χριστούγεννα», «Προγραμματισμός». Αφήστε το κενό για γενικές "
+"αναζητήσεις."
+
+#: suchar_overflow/achievements/models.py:71
+msgid "Tier"
+msgstr "Επίπεδο"
+
+#: suchar_overflow/achievements/models.py:74
+msgid "Difficulty/Rarity tier of the achievement"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:77
+msgid "Secret Achievement"
+msgstr "Κρυφό επίτευγμα"
+
+#: suchar_overflow/achievements/models.py:79
+msgid "If checked, name and description are hidden until unlocked."
+msgstr ""
+"Εάν είναι επιλεγμένο, το όνομα και η περιγραφή παραμένουν κρυφά μέχρι να "
+"ξεκλειδωθούν."
+
+#: suchar_overflow/achievements/models.py:83
+msgid "Achievement"
+msgstr "Επίτευγμα"
+
+#: suchar_overflow/achievements/models.py:102
+msgid "Seen by user"
+msgstr "Εμφανίζεται στον χρήστη"
+
+#: suchar_overflow/achievements/models.py:105
+msgid "User Achievement"
+msgstr "Επίτευγμα χρήστη"
+
+#: suchar_overflow/achievements/models.py:106
+msgid "User Achievements"
+msgstr "Επιτεύγματα χρήστη"
+
+#: suchar_overflow/suchary/admin.py:40
+msgid "Text"
+msgstr "Κείμενο"
+
+#: suchar_overflow/suchary/admin.py:45
+#: suchar_overflow/templates/stats/leaderboard.html:91
+#: suchar_overflow/templates/stats/leaderboard.html:126
+#: suchar_overflow/templates/users/user_detail.html:65
+#: suchar_overflow/templates/users/user_detail.html:217
+msgid "Votes"
+msgstr "Ψήφοι"
+
+#: suchar_overflow/suchary/apps.py:7
+msgid "Suchary"
+msgstr "Σουχαρί"
+
+#: suchar_overflow/suchary/forms.py:15
+msgid ""
+"Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
+"programowanie)."
+msgstr ""
+"Εισάγετε ετικέτες χωρισμένες με κενό ή κόμμα (π.χ. μπισκότο, τεχνολογία, "
+"προγραμματισμός)."
+
+#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+msgid "Publication Date"
+msgstr "Ημερομηνία δημοσίευσης"
+
+#: suchar_overflow/suchary/forms.py:35
+msgid "Leave empty to publish immediately."
+msgstr "Αφήστε το κενό για να δημοσιευτεί άμεσα."
+
+#: suchar_overflow/suchary/forms.py:57
+msgid "Publication date cannot be in the past."
+msgstr "Η ημερομηνία δημοσίευσης δεν μπορεί να είναι στο παρελθόν."
+
+#: suchar_overflow/suchary/models.py:16
+msgid "Suchar text"
+msgstr "Κείμενο Suchar"
+
+#: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
+#: suchar_overflow/templates/403_csrf.html:6
+#: suchar_overflow/templates/403_csrf.html:9
+msgid "Forbidden (403)"
+msgstr "Απαγορεύεται (403)"
+
+#: suchar_overflow/templates/403.html:14
+#: suchar_overflow/templates/403_csrf.html:14
+msgid "You're not allowed to access this page."
+msgstr "Δεν έχετε δικαίωμα πρόσβασης σε αυτή τη σελίδα."
+
+#: suchar_overflow/templates/404.html:6 suchar_overflow/templates/404.html:9
+msgid "Page not found"
+msgstr "Σελίδα δεν βρέθηκε"
+
+#: suchar_overflow/templates/404.html:14
+msgid "This is not the page you were looking for."
+msgstr "Δεν βρέθηκε η σελίδα που αναζητούσατε."
+
+#: suchar_overflow/templates/500.html:6
+msgid "Server Error"
+msgstr "Σφάλμα διακομιστή"
+
+#: suchar_overflow/templates/500.html:9
+msgid "Ooops!!! 500"
+msgstr "Ουπς!!! 500"
+
+#: suchar_overflow/templates/500.html:10
+msgid "Looks like something went wrong!"
+msgstr "Φαίνεται ότι κάτι πήγε στραβά!"
+
+#: suchar_overflow/templates/500.html:12
+msgid ""
+"We track these errors automatically, but if the problem persists feel free "
+"to contact us. In the meantime, try refreshing."
+msgstr ""
+"Παρακολουθούμε αυτά τα σφάλματα αυτόματα, αλλά εάν το πρόβλημα επιμένει, μη "
+"διστάσετε να επικοινωνήσετε μαζί μας. Εν τω μεταξύ, δοκιμάστε να ανανεώσετε "
+"τη σελίδα."
+
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+msgid "Notification Inbox"
+msgstr "Εισερχόμενα ειδοποιήσεων"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr "Όλα τα επιτεύγματα που έχετε κερδίσει, με τα πιο πρόσφατα πρώτα."
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "Κοινά"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, python-format
+msgid "Unlocked: %(date)s"
+msgstr "Ξεκλείδωσε στις: %(date)s"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+msgid "No achievements yet — go post some jokes!"
+msgstr ""
+"Δεν υπάρχουν ακόμα επιτεύγματα - πηγαίνετε να δημοσιεύσετε κάποια ανέκδοτα!"
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+msgid "Browse achievements"
+msgstr "Περιήγηση στα επιτεύγματα"
+
+#: suchar_overflow/templates/achievements/list.html:6
+msgid "My Achievements"
+msgstr "Τα επιτεύγματά μου"
+
+#: suchar_overflow/templates/achievements/list.html:17
+#: suchar_overflow/templates/stats/leaderboard.html:110
+msgid "Hall of Fame"
+msgstr "Κορυφαίοι Παίκτες"
+
+#: suchar_overflow/templates/achievements/list.html:19
+msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
+msgstr ""
+"Τα σήματα, τα μετάλλια και τα ντροπιαστικά σας μυστικά από το Suchar "
+"Overflow."
+
+#: suchar_overflow/templates/achievements/list.html:74
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr "Το επίτευγμα είναι κλειδωμένο. Ανακαλύψτε το μυστικό του παίζοντας!"
+
+#: suchar_overflow/templates/base.html:17
+#: suchar_overflow/templates/base.html:24
+msgid "Joke aggregator with critically low humidity levels."
+msgstr "Συγκεντρωτής αστείων με εξαιρετικά χαμηλά επίπεδα υγρασίας."
+
+#: suchar_overflow/templates/base.html:96
+msgid "Home"
+msgstr "Αρχική σελίδα"
+
+#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/suchary/suchar_list.html:12
+#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/users/admin.py:68
+msgid "Jokes"
+msgstr "Αστεία"
+
+#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/stats/leaderboard.html:6
+#: suchar_overflow/templates/stats/leaderboard.html:12
+msgid "Leaderboard"
+msgstr "Κατάταξη"
+
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "Εισερχόμενα"
+
+#: suchar_overflow/templates/base.html:113
+msgid "About"
+msgstr "Σχετικά με εμάς"
+
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
+msgid "Log Out"
+msgstr "Απόσυνδεση"
+
+#: suchar_overflow/templates/base.html:159
+msgid "Log In"
+msgstr "Σύνδεση"
+
+#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/registration/signup.html:6
+#: suchar_overflow/templates/registration/signup.html:12
+#: suchar_overflow/templates/registration/signup.html:23
+msgid "Sign Up"
+msgstr "Εγγραφή"
+
+#: suchar_overflow/templates/base.html:170
+msgid "Default content."
+msgstr "Προεπιλεγμένο περιεχόμενο."
+
+#: suchar_overflow/templates/base.html:179
+msgid "All rights reserved (but jokes stolen)."
+msgstr "Πνευματικά δικαιώματα κατοχυρωμένα (αλλά τα ανέκδοτα κλεμμένα)."
+
+#: suchar_overflow/templates/base.html:188
+msgid "Report a Bug"
+msgstr "Αναφορά σφάλματος"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/users/email_change_failed.html:6
+msgid "Error"
+msgstr "Σφάλμα"
+
+#: suchar_overflow/templates/base.html:212
+msgid "Achievement Unlocked"
+msgstr "Επίτευγμα ξεκλείδωσε"
+
+#: suchar_overflow/templates/base.html:214
+msgid "Success"
+msgstr "Επιτυχία"
+
+#: suchar_overflow/templates/base.html:216
+msgid "Notification"
+msgstr "Ειδοποίηση"
+
+#: suchar_overflow/templates/base.html:231
+msgid "Confirm Logout"
+msgstr "Επιβεβαίωση αποσύνδεσης"
+
+#: suchar_overflow/templates/base.html:234
+msgid "Are you sure you want to log out?"
+msgstr "Είστε σίγουροι ότι θέλετε να αποσυνδεθείτε;"
+
+#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/users/user_form.html:35
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+#: suchar_overflow/templates/pages/about.html:6
+msgid "About Project - Suchar Overflow"
+msgstr "Σχετικά με το έργο - Suchar Overflow"
+
+#: suchar_overflow/templates/pages/about.html:13
+msgid "About Project"
+msgstr "Σχετικά με το έργο"
+
+#: suchar_overflow/templates/pages/about.html:14
+msgid "Why do we do this? Because someone had to."
+msgstr "Γιατί το κάνουμε αυτό; Επειδή κάποιος έπρεπε."
+
+#: suchar_overflow/templates/pages/about.html:18
+msgid "Mission"
+msgstr "Αποστολή"
+
+#: suchar_overflow/templates/pages/about.html:20
+msgid ""
+"The goal of Suchar Overflow is to gather the largest collection of jokes "
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
+msgstr ""
+"Στόχος του Suchar Overflow είναι να συγκεντρώσει τη μεγαλύτερη συλλογή "
+"αστείων που προκαλούν σωματικό πόνο στον αποδέκτη. Πιστεύουμε ότι ένα καλό, "
+"ξηρό αστείο είναι αυτό που ακολουθείται από αμήχανη σιωπή και το κελάηδισμα "
+"των κορυδαλών στο παρασκήνιο."
+
+#: suchar_overflow/templates/pages/about.html:22
+msgid "Technology"
+msgstr "Τεχνολογία"
+
+#: suchar_overflow/templates/pages/about.html:24
+msgid ""
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr ""
+"Η ιστοσελίδα έχει δημιουργηθεί με τις πιο πρόσφατες τεχνολογίες (Django + "
+"Προσαρμοσμένο CSS) για να διασφαλιστεί η γρήγορη και αξιόπιστη παράδοση "
+"περιεχομένου, απευθείας στην οθόνη σας."
+
+#: suchar_overflow/templates/pages/home.html:8
+msgid "Dry Bread for the Horse"
+msgstr "Ξηρό ψωμί για το άλογο"
+
+#: suchar_overflow/templates/pages/home.html:10
+msgid ""
+"Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
+"you need a drink."
+msgstr ""
+"Καλώς ήρθατε στο <strong>Suchar Overflow</strong>. Ένας χώρος όπου το "
+"χιούμορ είναι τόσο στεγνό που χρειάζεστε ένα ποτό."
+
+#: suchar_overflow/templates/pages/home.html:11
+msgid "Vote for the best jokes, add your own, and become an office legend."
+msgstr ""
+"Ψηφίστε τα καλύτερα ανέκδοτα, προσθέστε τα δικά σας και γίνετε θρύλος στο "
+"γραφείο."
+
+#: suchar_overflow/templates/pages/home.html:15
+msgid "Browse Jokes"
+msgstr "Περιήγηση στις αστείες φράσεις"
+
+#: suchar_overflow/templates/pages/home.html:17
+msgid "Join Us"
+msgstr "Εγγραφείτε"
+
+#: suchar_overflow/templates/pages/home.html:31
+msgid "Vote"
+msgstr "Ψήφος"
+
+#: suchar_overflow/templates/pages/home.html:32
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr ""
+"Βαθμολογήστε τα ανέκδοτα των άλλων. Αποφασίστε τι είναι αστείο (και τι "
+"λυπητερό)."
+
+#: suchar_overflow/templates/pages/home.html:39
+#: suchar_overflow/templates/suchary/suchar_list.html:68
+msgid "Add"
+msgstr "Προσθήκη"
+
+#: suchar_overflow/templates/pages/home.html:40
+msgid "Share your thoughts with the world. Don't be shy."
+msgstr "Μοιραστείτε τις σκέψεις σας με τον κόσμο. Μην διστάζετε."
+
+#: suchar_overflow/templates/pages/home.html:47
+msgid "Laugh (optional)"
+msgstr "Γέλιο (προαιρετικό)"
+
+#: suchar_overflow/templates/pages/home.html:48
+msgid "We guarantee a pity smile or your money back (the site is free)."
+msgstr ""
+"Εγγυόμαστε ένα ελαφρύ χαμόγελο ή επιστροφή χρημάτων (η ιστοσελίδα είναι "
+"δωρεάν)."
+
+#: suchar_overflow/templates/registration/activation_complete.html:6
+msgid "Activation Complete"
+msgstr "Ενεργοποίηση ολοκληρώθηκε"
+
+#: suchar_overflow/templates/registration/activation_complete.html:23
+msgid "Account Activated!"
+msgstr "Ο λογαριασμός σας έχει ενεργοποιηθεί!"
+
+#: suchar_overflow/templates/registration/activation_complete.html:25
+msgid ""
+"Your account has been activated successfully. You can now log in and start "
+"using Suchar Overflow."
+msgstr ""
+"Ο λογαριασμός σας έχει ενεργοποιηθεί με επιτυχία. Μπορείτε τώρα να "
+"συνδεθείτε και να ξεκινήσετε να χρησιμοποιείτε το Suchar Overflow."
+
+#: suchar_overflow/templates/registration/activation_complete.html:28
+#: suchar_overflow/templates/registration/password_reset_complete.html:19
+msgid "Log in"
+msgstr "Σύνδεση"
+
+#: suchar_overflow/templates/registration/activation_email.txt:3
+#: suchar_overflow/templates/users/email_notify_old_email.txt:3
+#: suchar_overflow/templates/users/email_verify_email.txt:3
+#, python-format
+msgid "Hello %(username)s!"
+msgstr "Γεια σου, %(username)s!"
+
+#: suchar_overflow/templates/registration/activation_email.txt:5
+msgid ""
+"Welcome to Suchar Overflow - a place where air humidity drops below zero."
+msgstr ""
+"Καλώς ήρθατε στο Suchar Overflow – έναν τόπο όπου η υγρασία του αέρα πέφτει "
+"κάτω από το μηδέν."
+
+#: suchar_overflow/templates/registration/activation_email.txt:6
+msgid ""
+"To make sure you're not a bot (or a person without a sense of humor), you "
+"need to activate your account."
+msgstr ""
+"Για να βεβαιωθούμε ότι δεν είστε ένα ρομπότ (ή κάποιος χωρίς χιούμορ), "
+"πρέπει να ενεργοποιήσετε τον λογαριασμό σας."
+
+#: suchar_overflow/templates/registration/activation_email.txt:8
+msgid "Click this link before it dries out:"
+msgstr "Κάντε κλικ σε αυτόν τον σύνδεσμο πριν στεγνώσει:"
+
+#: suchar_overflow/templates/registration/activation_email.txt:11
+msgid "Remember: Drink plenty of water."
+msgstr "Θυμηθείτε: Πίνετε άφθονο νερό."
+
+#: suchar_overflow/templates/registration/activation_email.txt:13
+msgid "The Suchar Overflow Team"
+msgstr "Η ομάδα Suchar Overflow"
+
+#: suchar_overflow/templates/registration/activation_failed.html:6
+#: suchar_overflow/templates/registration/activation_failed.html:24
+msgid "Activation Failed"
+msgstr "Αποτυχία ενεργοποίησης"
+
+#: suchar_overflow/templates/registration/activation_failed.html:26
+msgid ""
+"The activation link is invalid or has expired. Please try registering again "
+"or contact support."
+msgstr ""
+"Ο σύνδεσμος ενεργοποίησης είναι άκυρος ή έχει λήξει. Παρακαλώ, προσπαθήστε "
+"να εγγραφείτε ξανά ή επικοινωνήστε με την υποστήριξη."
+
+#: suchar_overflow/templates/registration/activation_failed.html:29
+msgid "Sign Up Again"
+msgstr "Εγγραφή ξανά"
+
+#: suchar_overflow/templates/registration/activation_failed.html:30
+#: suchar_overflow/templates/registration/signup_done.html:28
+msgid "Back to Home"
+msgstr "Επιστροφή στην αρχική σελίδα"
+
+#: suchar_overflow/templates/registration/login.html:6
+#: suchar_overflow/templates/registration/login.html:12
+#: suchar_overflow/templates/registration/login.html:23
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Sign In"
+msgstr "Σύνδεση"
+
+#: suchar_overflow/templates/registration/login.html:26
+msgid "Forgot Password?"
+msgstr "Ξεχάσατε τον κωδικό πρόσβασης;"
+
+#: suchar_overflow/templates/registration/password_change_done.html:6
+#: suchar_overflow/templates/registration/password_change_done.html:12
+msgid "Password Changed"
+msgstr "Αλλαγή κωδικού πρόσβασης"
+
+#: suchar_overflow/templates/registration/password_change_done.html:13
+msgid "Your password was changed successfully."
+msgstr "Ο κωδικός πρόσβασής σας άλλαξε με επιτυχία."
+
+#: suchar_overflow/templates/registration/password_change_done.html:15
+msgid "Back to Profile"
+msgstr "Επιστροφή στο προφίλ"
+
+#: suchar_overflow/templates/registration/password_change_form.html:6
+#: suchar_overflow/templates/registration/password_change_form.html:12
+#: suchar_overflow/templates/registration/password_change_form.html:18
+#: suchar_overflow/templates/users/base_dashboard.html:42
+msgid "Change Password"
+msgstr "Αλλαγή κωδικού πρόσβασης"
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:6
+#: suchar_overflow/templates/registration/password_reset_complete.html:17
+msgid "Password reset successful"
+msgstr "Η επαναφορά κωδικού πρόσβασης ολοκληρώθηκε με επιτυχία."
+
+#: suchar_overflow/templates/registration/password_reset_complete.html:18
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Ο κωδικός πρόσβασής σας έχει οριστεί. Μπορείτε να συνδεθείτε τώρα."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:6
+#: suchar_overflow/templates/registration/password_reset_confirm.html:12
+msgid "Set a new password"
+msgstr "Ορισμός νέου κωδικού πρόσβασης"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:14
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Παρακαλώ, πληκτρολογήστε τον νέο σας κωδικό πρόσβασης δύο φορές, ώστε να "
+"μπορέσουμε να επαληθεύσουμε ότι τον έχετε πληκτρολογήσει σωστά."
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:20
+msgid "Change password"
+msgstr "Αλλαγή κωδικού πρόσβασης"
+
+#: suchar_overflow/templates/registration/password_reset_confirm.html:24
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"Ο σύνδεσμος επαναφοράς κωδικού πρόσβασης ήταν άκυρος, πιθανώς επειδή έχει "
+"ήδη χρησιμοποιηθεί. Παρακαλώ ζητήστε μια νέα επαναφορά κωδικού πρόσβασης."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:6
+#: suchar_overflow/templates/registration/password_reset_done.html:12
+msgid "Password Reset Sent"
+msgstr "Εστάλη αίτημα επαναφοράς κωδικού πρόσβασης."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:14
+#: suchar_overflow/templates/registration/signup_done.html:23
+msgid "Check your inbox"
+msgstr "Ελέγξτε τα εισερχόμενά σας"
+
+#: suchar_overflow/templates/registration/password_reset_done.html:16
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"Σας έχουμε στείλει οδηγίες μέσω email για την επαναφορά του κωδικού "
+"πρόσβασης, εάν υπάρχει λογαριασμός με το email που εισαγάγατε. Θα τα λάβετε "
+"σύντομα."
+
+#: suchar_overflow/templates/registration/password_reset_done.html:20
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"Εάν δεν λάβετε ένα email, βεβαιωθείτε ότι έχετε εισαγάγει τη διεύθυνση που "
+"χρησιμοποιήσατε κατά την εγγραφή σας και ελέγξτε το φάκελο ανεπιθύμητης "
+"αλληλογραφίας."
+
+#: suchar_overflow/templates/registration/password_reset_email.html:4
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at"
+msgstr ""
+"Λαμβάνετε αυτό το μήνυμα ηλεκτρονικού ταχυδρομείου επειδή ζητήσατε επαναφορά"
+" κωδικού πρόσβασης για τον λογαριασμό σας στην"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+"Παρακαλώ, μεταβείτε στην παρακάτω σελίδα και επιλέξτε έναν νέο κωδικό "
+"πρόσβασης:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:9
+msgid "Your username, in case you've forgotten:"
+msgstr "Το όνομα χρήστη σας, σε περίπτωση που το έχετε ξεχάσει:"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:11
+msgid "Thanks for using our site!"
+msgstr "Σας ευχαριστούμε που χρησιμοποιείτε την ιστοσελίδα μας!"
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "The"
+msgstr ""
+
+#: suchar_overflow/templates/registration/password_reset_email.html:13
+msgid "team"
+msgstr "ομάδα"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:6
+#: suchar_overflow/templates/registration/password_reset_form.html:12
+msgid "Password Reset"
+msgstr "Επαναφορά κωδικού πρόσβασης"
+
+#: suchar_overflow/templates/registration/password_reset_form.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"Ξεχάσατε τον κωδικό πρόσβασής σας; Εισαγάγετε τη διεύθυνση ηλεκτρονικού "
+"ταχυδρομείου σας παρακάτω και θα σας στείλουμε οδηγίες για να ορίσετε έναν "
+"νέο."
+
+#: suchar_overflow/templates/registration/password_reset_form.html:22
+msgid "Reset my password"
+msgstr "Επαναφορά κωδικού πρόσβασης"
+
+#: suchar_overflow/templates/registration/signup.html:26
+msgid "Already have an account?"
+msgstr "Έχετε ήδη λογαριασμό;"
+
+#: suchar_overflow/templates/registration/signup_done.html:6
+msgid "Confirmation Sent"
+msgstr "Ελήφθη επιβεβαίωση"
+
+#: suchar_overflow/templates/registration/signup_done.html:25
+msgid ""
+"We have sent you an email to confirm your registration. Please check your "
+"inbox and click the link to activate your account."
+msgstr ""
+"Σας έχουμε στείλει ένα email για να επιβεβαιώσετε την εγγραφή σας. Παρακαλώ "
+"ελέγξτε τα εισερχόμενά σας και κάντε κλικ στον σύνδεσμο για να "
+"ενεργοποιήσετε τον λογαριασμό σας."
+
+#: suchar_overflow/templates/stats/leaderboard.html:13
+msgid "Celebreating the best (and the driest) caused by our community."
+msgstr ""
+"Γιορτάζοντας τα καλύτερα (και τα πιο αστεία) που δημιουργήθηκαν από την "
+"κοινότητά μας."
+
+#: suchar_overflow/templates/stats/leaderboard.html:19
+msgid "Activity (Last 30 Days)"
+msgstr "Δραστηριότητα (Τελευταίες 30 ημέρες)"
+
+#: suchar_overflow/templates/stats/leaderboard.html:36
+msgid "Overall"
+msgstr "Συνολικά"
+
+#: suchar_overflow/templates/stats/leaderboard.html:46
+#: suchar_overflow/templates/stats/leaderboard.html:169
+#: suchar_overflow/templates/suchary/suchar_list.html:116
+#: suchar_overflow/templates/suchary/suchar_list.html:119
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Funny"
+msgstr "Διάσκεψη"
+
+#: suchar_overflow/templates/stats/leaderboard.html:56
+#: suchar_overflow/templates/stats/leaderboard.html:242
+#: suchar_overflow/templates/suchary/suchar_list.html:128
+#: suchar_overflow/templates/suchary/suchar_list.html:131
+#: suchar_overflow/templates/users/user_detail.html:302
+msgid "Dry"
+msgstr "Στέγνωμα"
+
+#: suchar_overflow/templates/stats/leaderboard.html:75
+msgid "Most Active Authors"
+msgstr "Οι πιο δραστήριοι συγγραφείς"
+
+#: suchar_overflow/templates/stats/leaderboard.html:88
+#: suchar_overflow/templates/stats/leaderboard.html:166
+#: suchar_overflow/templates/stats/leaderboard.html:239
+msgid "jokes"
+msgstr "αστεία"
+
+#: suchar_overflow/templates/stats/leaderboard.html:99
+msgid "No data."
+msgstr "Δεν υπάρχουν δεδομένα."
+
+#: suchar_overflow/templates/stats/leaderboard.html:133
+#: suchar_overflow/templates/stats/leaderboard.html:206
+#: suchar_overflow/templates/stats/leaderboard.html:279
+msgid "No jokes."
+msgstr "Χωρίς αστεία."
+
+#: suchar_overflow/templates/stats/leaderboard.html:153
+msgid "Comedy Kings"
+msgstr "Comedy Kings"
+
+#: suchar_overflow/templates/stats/leaderboard.html:174
+msgid "No funny data."
+msgstr "Δεν υπάρχουν διαθέσιμα δεδομένα."
+
+#: suchar_overflow/templates/stats/leaderboard.html:185
+msgid "Top Funny Jokes"
+msgstr "Τα πιο αστεία ανέκδοτα"
+
+#: suchar_overflow/templates/stats/leaderboard.html:226
+msgid "Lords of Drought"
+msgstr "Lords of Drought"
+
+#: suchar_overflow/templates/stats/leaderboard.html:247
+msgid "No dry data."
+msgstr "Δεν υπάρχουν διαθέσιμα δεδομένα."
+
+#: suchar_overflow/templates/stats/leaderboard.html:258
+msgid "Top Dry Jokes"
+msgstr "Τα καλύτερα ανέκδοτα για στεγνωτήρια"
+
+#: suchar_overflow/templates/stats/leaderboard.html:307
+msgid "New Jokes"
+msgstr "Νέα ανέκδοτα"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:6
+msgid "Too Late!"
+msgstr "Ήρθε αργά!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:13
+msgid "The ship has sailed!"
+msgstr "Το πλοίο έχει αποπλεύσει!"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:15
+msgid ""
+"This joke has already been published. You can't polish a diamond (or a dry "
+"biscuit) once it's been served."
+msgstr ""
+"Αυτό το ανέκδοτο έχει ήδη δημοσιευτεί. Δεν μπορείτε να βελτιώσετε ένα "
+"διαμάντι (ή ένα ξερό μπισκότο) αφού το έχετε ήδη σερβίρει."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:21
+msgid "Time creates jokes, but it also seals them."
+msgstr "Ο χρόνος δημιουργεί ανέκδοτα, αλλά τα σφραγίζει και αυτά."
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:23
+msgid "Ancient Suchar Proverb"
+msgstr "Αρχαία παροιμία του Σούχαρ"
+
+#: suchar_overflow/templates/suchary/edit_too_late.html:29
+msgid "Back to Jokes"
+msgstr "Επιστροφή στις αστείες φράσεις"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:8
+#: suchar_overflow/templates/suchary/suchar_form.html:29
+msgid "Add Joke"
+msgstr "Προσθήκη ανέκδοτου"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:30
+msgid "Shine with humor."
+msgstr "Φωτίστε με χιούμορ."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:38
+msgid "Joke Content"
+msgstr "Περιεχόμενο ανέκδοτου"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:43
+msgid "Why did the chicken cross the road?"
+msgstr "Γιατί το κοτόπουλο πέρασε το δρόμο;"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:46
+msgid "Remember, the drier the better."
+msgstr "Θυμηθείτε, όσο πιο στεγνό τόσο καλύτερα."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:50
+msgid "Tags"
+msgstr "Ετικέτες"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:55
+msgid "e.g. it, programming, school"
+msgstr "π.χ. πληροφορική, προγραμματισμός, σχολείο"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:62
+msgid "Separate with commas."
+msgstr "Διαχωρίστε με κόμματα."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:70
+msgid "Schedule for later"
+msgstr "Προγραμματισμός για αργότερα"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:79
+msgid "Select date and time..."
+msgstr "Επιλέξτε ημερομηνία και ώρα..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:88
+msgid "Publish"
+msgstr "Δημοσίευση"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:99
+msgid "Live Preview"
+msgstr "Προεπισκόπηση σε πραγματικό χρόνο"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:109
+msgid "Now"
+msgstr "Τώρα"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:116
+msgid "Your joke content will appear here..."
+msgstr "Το περιεχόμενο του ανέκδοτού σας θα εμφανιστεί εδώ..."
+
+#: suchar_overflow/templates/suchary/suchar_form.html:149
+msgid "This is how your joke will look on the main list."
+msgstr ""
+"Αυτός είναι ο τρόπος με τον οποίο θα εμφανίζεται το ανέκδοτό σας στη κύρια "
+"λίστα."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:13
+msgid "The dryest jokes on the internet."
+msgstr "Τα πιο ξερά ανέκια στο διαδίκτυο."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:28
+msgid "Search..."
+msgstr "Αναζήτηση..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:43
+#: suchar_overflow/templates/suchary/suchar_list.html:58
+msgid "Top"
+msgstr "Επάνω"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:45
+#: suchar_overflow/templates/suchary/suchar_list.html:53
+msgid "Newest"
+msgstr "Πιο πρόσφατα"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:85
+msgid "Scheduled"
+msgstr "Προγραμματισμένο"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:95
+#: suchar_overflow/templates/users/user_detail.html:194
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:139
+msgid "So dry here..."
+msgstr "Εδώ είναι πολύ ξηρά..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:140
+msgid "Be the hero we need and add the first joke."
+msgstr "Γίνε ο ήρωας που χρειαζόμαστε και πρόσθεσε το πρώτο ανέκδοτο."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:158
+msgid "Previous"
+msgstr "Προηγούμενο"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:182
+msgid "Next"
+msgstr "Επόμενο"
+
+#: suchar_overflow/templates/users/base_dashboard.html:17
+msgid "Your Account"
+msgstr "Ο λογαριασμός σας"
+
+#: suchar_overflow/templates/users/base_dashboard.html:22
+msgid "Profile"
+msgstr "Προφίλ"
+
+#: suchar_overflow/templates/users/base_dashboard.html:27
+#: suchar_overflow/templates/users/user_form.html:6
+#: suchar_overflow/templates/users/user_form.html:11
+msgid "Edit Profile"
+msgstr "Επεξεργασία προφίλ"
+
+#: suchar_overflow/templates/users/base_dashboard.html:37
+msgid "Security"
+msgstr "Ασφάλεια"
+
+#: suchar_overflow/templates/users/email_change_complete.html:6
+msgid "Email Changed"
+msgstr "Αλλαγή email"
+
+#: suchar_overflow/templates/users/email_change_complete.html:23
+msgid "It worked!"
+msgstr "Έγινε!"
+
+#: suchar_overflow/templates/users/email_change_complete.html:25
+msgid ""
+"Your email address has been changed. You can now sleep peacefully (or not)."
+msgstr ""
+"Η διεύθυνσή σας ηλεκτρονικού ταχυδρομείου έχει αλλάξει. Μπορείτε τώρα να "
+"κοιμηθείτε ήσυχα (ή όχι)."
+
+#: suchar_overflow/templates/users/email_change_complete.html:28
+msgid "Back to settings"
+msgstr "Επιστροφή στις ρυθμίσεις"
+
+#: suchar_overflow/templates/users/email_change_done.html:6
+msgid "Email Sent"
+msgstr "Ελήφθη μήνυμα ηλεκτρονικού ταχυδρομείου"
+
+#: suchar_overflow/templates/users/email_change_done.html:23
+msgid "Check both inboxes!"
+msgstr "Ελέγξτε και τα δύο εισερχόμενα!"
+
+#: suchar_overflow/templates/users/email_change_done.html:25
+msgid ""
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"          <br />\n"
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+msgstr ""
+"Στείλαμε ένα μήνυμα στη νέα σας διεύθυνση με έναν σύνδεσμο ενεργοποίησης.\n"
+"          <br />\n"
+"          Επίσης, στείλαμε μια προειδοποίηση στην παλιά σας διεύθυνση, για να ξέρετε ότι πρόκειται όντως για εσάς."
+
+#: suchar_overflow/templates/users/email_change_done.html:30
+msgid ""
+"If you don't click the link, nothing will change. Your account will remain "
+"as dry as our jokes."
+msgstr ""
+"Εάν δεν κάνετε κλικ στον σύνδεσμο, τίποτα δεν θα αλλάξει. Ο λογαριασμός σας "
+"θα παραμείνει τόσο αστείος όσο και τα ανέκδοτά μας."
+
+#: suchar_overflow/templates/users/email_change_done.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:43
+msgid "Back to profile"
+msgstr "Επιστροφή στο προφίλ"
+
+#: suchar_overflow/templates/users/email_change_failed.html:23
+msgid "Something went wrong"
+msgstr "Κάτι πήγε στραβά."
+
+#: suchar_overflow/templates/users/email_change_failed.html:24
+msgid "The link has expired, is invalid, or has already been used."
+msgstr "Ο σύνδεσμος έχει λήξει, είναι άκυρος ή έχει ήδη χρησιμοποιηθεί."
+
+#: suchar_overflow/templates/users/email_change_failed.html:25
+msgid "Try again if you really must."
+msgstr "Δοκιμάστε ξανά, αν πραγματικά πρέπει."
+
+#: suchar_overflow/templates/users/email_change_failed.html:28
+msgid "Try again"
+msgstr "Δοκιμάστε ξανά"
+
+#: suchar_overflow/templates/users/email_change_form.html:6
+msgid "Update Email"
+msgstr "Ενημέρωση email"
+
+#: suchar_overflow/templates/users/email_change_form.html:12
+msgid "Change email address"
+msgstr "Αλλαγή διεύθυνσης email"
+
+#: suchar_overflow/templates/users/email_change_form.html:14
+msgid ""
+"Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
+"judge."
+msgstr ""
+"Κουράστηκες από την παλιά σου διεύθυνση; Ή μήπως προσπαθείς να αποφύγεις "
+"φόρους; Δεν κρίνουμε."
+
+#: suchar_overflow/templates/users/email_change_form.html:25
+msgid "Send a pigeon with the link"
+msgstr "Στείλτε ένα περιστέρι με τον σύνδεσμο"
+
+#: suchar_overflow/templates/users/email_change_form.html:26
+msgid "Changed my mind (go back)"
+msgstr "Άλλαξα γνώμη (επιστροφή)"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:6
+#: suchar_overflow/users/models.py:70
+msgid "Revoked"
+msgstr "Ανακληθείσα"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:15
+msgid "We've reverted the changes!"
+msgstr "Επαναφέραμε τις αλλαγές!"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:17
+msgid ""
+"Phew, that was close. Your email address has been restored to its previous "
+"state."
+msgstr ""
+"Ουφ, ήταν από τύχη. Η διεύθυνση ηλεκτρονικού ταχυδρομείου σας έχει "
+"επαναφερθεί στην προηγούμενη κατάσταση."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:19
+msgid "You can breathe a sigh of relief. We recommend changing your password."
+msgstr ""
+"Μπορείτε να ανακουφιστείτε. Σας συνιστούμε να αλλάξετε τον κωδικό πρόσβασής "
+"σας."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:32
+msgid "Change cancelled"
+msgstr "Η αλλαγή ακυρώθηκε"
+
+#: suchar_overflow/templates/users/email_change_revoked.html:34
+msgid "All active email change links have been invalidated."
+msgstr "Όλοι οι ενεργοί σύνδεσμοι αλλαγής email έχουν ακυρωθεί."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:36
+msgid ""
+"If it wasn't you who tried to change the email, we recommend changing your "
+"password."
+msgstr ""
+"Εάν δεν ήσαστε εσείς που προσπαθήσατε να αλλάξετε το email, σας συνιστούμε "
+"να αλλάξετε τον κωδικό πρόσβασής σας."
+
+#: suchar_overflow/templates/users/email_change_revoked.html:41
+msgid "Change password (just in case)"
+msgstr "Αλλαγή κωδικού πρόσβασης (για κάθε περίπτωση)"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:5
+#, python-format
+msgid "We just received a request to change your email address to: %(email)s."
+msgstr ""
+"Λάβαμε ένα αίτημα για την αλλαγή της διεύθυνσης ηλεκτρονικού σας "
+"ταχυδρομείου σε: %(email)s."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:7
+msgid ""
+"If it was you - great, you don't need to do anything here (just check that "
+"other inbox)."
+msgstr ""
+"Αν ήσασταν εσείς, τότε όλα είναι εντάξει και δεν χρειάζεται να κάνετε τίποτα"
+" εδώ (απλώς ελέγξτε και το άλλο σας εισερχόμενο)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:9
+msgid "BUT IF IT WASN'T YOU:"
+msgstr "ΑΛΛΑ ΕΑΝ ΔΕΝ ΉΤΑΤΕ ΕΣΕΙΣ:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:10
+msgid ""
+"Someone might be trying to take over your account (or you just have a split "
+"personality)."
+msgstr ""
+"Κάποιος ίσως προσπαθεί να αποκτήσει τον έλεγχο του λογαριασμού σας (ή απλά "
+"έχετε διττή προσωπικότητα)."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:11
+msgid ""
+"Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
+"sent to the new address:"
+msgstr ""
+"Κάντε κλικ σε αυτόν τον σύνδεσμο για να ΑΚΥΡΩΣΕΤΕ ΑΜΕΣΑ αυτή την αίτηση και "
+"να ακυρώσετε τον σύνδεσμο που εστάλη στη νέα διεύθυνση:"
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:15
+msgid "We also recommend changing your password if you suspect a breach."
+msgstr ""
+"Σας συνιστούμε επίσης να αλλάξετε τον κωδικό πρόσβασής σας εάν υποψιάζεστε "
+"κάποια παραβίαση."
+
+#: suchar_overflow/templates/users/email_notify_old_email.txt:17
+#: suchar_overflow/templates/users/email_verify_email.txt:14
+msgid "Suchar Overflow"
+msgstr "Suchar Overflow"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:5
+#, python-format
+msgid ""
+"We received a request to change your email address to this one you're "
+"reading (%(email)s)."
+msgstr ""
+"Λάβαμε ένα αίτημα για την αλλαγή της διεύθυνσης ηλεκτρονικού σας "
+"ταχυδρομείου στην διεύθυνση που διαβάζετε αυτή τη στιγμή (%(email)s)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:7
+msgid "If it's you, click the link below to confirm the change:"
+msgstr ""
+"Εάν είστε εσείς, κάντε κλικ στον παρακάτω σύνδεσμο για να επιβεβαιώσετε την "
+"αλλαγή:"
+
+#: suchar_overflow/templates/users/email_verify_email.txt:10
+msgid "The link is valid for 24 hours (or until it evaporates)."
+msgstr "Ο σύνδεσμος ισχύει για 24 ώρες (ή μέχρι να λήξει)."
+
+#: suchar_overflow/templates/users/email_verify_email.txt:12
+msgid ""
+"If it wasn't you, ignore this message. We sent instructions on how to block "
+"the intruder to your old address."
+msgstr ""
+"Εάν δεν ήσαστε εσείς, αγνοήστε αυτό το μήνυμα. Στείλαμε οδηγίες για το πώς "
+"να αποκλείσετε τον εισβολέα στην παλιά σας διεύθυνση."
+
+#: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
+msgid "User"
+msgstr "Χρήστης"
+
+#: suchar_overflow/templates/users/user_detail.html:23
+msgid "Suchar Overflow User"
+msgstr "Χρήστης με υπερβολικό όγκο δεδομένων Suchar"
+
+#: suchar_overflow/templates/users/user_detail.html:52
+msgid "No achievements yet."
+msgstr "Δεν υπάρχουν ακόμη επιτεύγματα."
+
+#: suchar_overflow/templates/users/user_detail.html:62
+msgid "The Best Of"
+msgstr "Τα καλύτερα"
+
+#: suchar_overflow/templates/users/user_detail.html:76
+msgid "Statistics"
+msgstr "Στατιστικά"
+
+#: suchar_overflow/templates/users/user_detail.html:78
+msgid "Rank"
+msgstr "Κατάταξη"
+
+#: suchar_overflow/templates/users/user_detail.html:86
+msgid "Total Votes"
+msgstr "Συνολικές ψήφοι"
+
+#: suchar_overflow/templates/users/user_detail.html:93
+msgid "Joined"
+msgstr "Συμμετοχή"
+
+#: suchar_overflow/templates/users/user_detail.html:101
+msgid "Dryness Level"
+msgstr "Επίπεδο ξηρότητας"
+
+#: suchar_overflow/templates/users/user_detail.html:109
+msgid "Reception"
+msgstr "Ρεσεψιόν"
+
+#: suchar_overflow/templates/users/user_detail.html:125
+msgid "Drought Map"
+msgstr "Χάρτης ξηρασίας"
+
+#: suchar_overflow/templates/users/user_detail.html:127
+msgid "Less"
+msgstr "Λιγότερα"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "More"
+msgstr "Περισσότερα"
+
+#: suchar_overflow/templates/users/user_detail.html:146
+msgid "Mon"
+msgstr "Δευτ"
+
+#: suchar_overflow/templates/users/user_detail.html:147
+msgid "Wed"
+msgstr "Τετ"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Fri"
+msgstr "Παρ"
+
+#: suchar_overflow/templates/users/user_detail.html:167
+msgid "jokes on"
+msgstr "ανέμελα"
+
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Latest Jokes"
+msgstr "Τα τελευταία ανέκδοτα"
+
+#: suchar_overflow/templates/users/user_detail.html:185
+msgid "Scheduled for Publication"
+msgstr "Προγραμματισμένη για δημοσίευση"
+
+#: suchar_overflow/templates/users/user_detail.html:228
+msgid "See all entries"
+msgstr "Προβολή όλων των εγγραφών"
+
+#: suchar_overflow/templates/users/user_detail.html:232
+msgid "User hasn't added any jokes yet."
+msgstr "Ο χρήστης δεν έχει προσθέσει ακόμα κανένα ανέκδοτο."
+
+#: suchar_overflow/templates/users/user_form.html:12
+msgid "Here you can update your data."
+msgstr "Εδώ μπορείτε να ενημερώσετε τα στοιχεία σας."
+
+#: suchar_overflow/templates/users/user_form.html:16
+msgid "E-mail Address"
+msgstr "Διεύθυνση ηλεκτρονικού ταχυδρομείου"
+
+#: suchar_overflow/templates/users/user_form.html:24
+msgid "Change E-mail"
+msgstr "Αλλαγή email"
+
+#: suchar_overflow/templates/users/user_form.html:26
+msgid "Address change requires confirmation."
+msgstr "Η αλλαγή διεύθυνσης απαιτεί επιβεβαίωση."
+
+#: suchar_overflow/templates/users/user_form.html:36
+msgid "Save Changes"
+msgstr "Αποθήκευση αλλαγών"
+
+#: suchar_overflow/users/admin.py:36
+msgid "Personal info"
+msgstr "Προσωπικά στοιχεία"
+
+#: suchar_overflow/users/admin.py:38
+msgid "Permissions"
+msgstr "Δικαιώματα"
+
+#: suchar_overflow/users/admin.py:49
+msgid "Important dates"
+msgstr "Σημαντικές ημερομηνίες"
+
+#: suchar_overflow/users/apps.py:7
+msgid "Users"
+msgstr "Χρήστες"
+
+#: suchar_overflow/users/forms.py:19
+#: suchar_overflow/users/tests/test_forms.py:36
+msgid "This username has already been taken."
+msgstr "Αυτό το όνομα χρήστη έχει ήδη χρησιμοποιηθεί."
+
+#: suchar_overflow/users/forms.py:32
+msgid "New Email Address"
+msgstr "Νέα διεύθυνση email"
+
+#: suchar_overflow/users/forms.py:37
+msgid "This email is already currently used."
+msgstr "Αυτή η διεύθυνση ηλεκτρονικού ταχυδρομείου χρησιμοποιείται ήδη."
+
+#: suchar_overflow/users/models.py:21
+msgid "Name of User"
+msgstr "Όνομα χρήστη"
+
+#: suchar_overflow/users/models.py:24
+msgid "email address"
+msgstr "διεύθυνση ηλεκτρονικού ταχυδρομείου"
+
+#: suchar_overflow/users/models.py:54
+msgid "Activation Token"
+msgstr "Κωδικός ενεργοποίησης"
+
+#: suchar_overflow/users/models.py:55
+msgid "Activation Tokens"
+msgstr "Κωδικοί ενεργοποίησης"
+
+#: suchar_overflow/users/models.py:68
+msgid "Pending"
+msgstr "Σε εκκρεμότητα"
+
+#: suchar_overflow/users/models.py:69
+msgid "Verified"
+msgstr "Επαληθευμένο"
+
+#: suchar_overflow/users/models.py:89
+msgid "Email Change Request"
+msgstr "Αίτημα αλλαγής email"
+
+#: suchar_overflow/users/models.py:90
+msgid "Email Change Requests"
+msgstr "Αιτήματα αλλαγής email"
+
+#: suchar_overflow/users/tasks.py:11
+msgid "Confirm you have a sense of humor (Account Activation)"
+msgstr "Επιβεβαιώστε ότι έχετε χιούμορ (Ενεργοποίηση λογαριασμού)"
+
+#: suchar_overflow/users/tasks.py:29
+msgid "Confirm it's you (Email Change)"
+msgstr "Επιβεβαιώστε ότι είστε εσείς (Αλλαγή email)"
+
+#: suchar_overflow/users/tasks.py:41
+msgid "Someone wants to change your email address (We hope it's you)"
+msgstr ""
+"Κάποιος θέλει να αλλάξει τη διεύθυνσή σας στο email (Ελπίζουμε ότι είστε "
+"εσείς)."
+
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "Οι πληροφορίες ενημερώθηκαν με επιτυχία."
+
+#: suchar_overflow/users/views.py:334
+msgid "The link has already been used or cancelled."
+msgstr "Ο σύνδεσμος έχει ήδη χρησιμοποιηθεί ή ακυρωθεί."
+
+#: suchar_overflow/users/views.py:344
+msgid "The link has expired (24 hours have passed)."
+msgstr "Ο σύνδεσμος έχει λήξει (έχουν παρέλθει 24 ώρες)."
+
+#: suchar_overflow/users/views.py:352
+msgid "Email already taken."
+msgstr "Το email αυτό χρησιμοποιείται ήδη."
+
+#: suchar_overflow/users/views.py:370
+msgid "The link is invalid."
+msgstr "Ο σύνδεσμος δεν είναι έγκυρος."
