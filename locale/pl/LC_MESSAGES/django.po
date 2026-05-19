@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-17 22:18+0000\n"
+"POT-Creation-Date: 2026-05-19 16:52+0000\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -28,7 +28,7 @@ msgstr "Angielski"
 msgid "Achievements"
 msgstr "Osiągnięcia"
 
-#: suchar_overflow/achievements/middleware.py:24
+#: suchar_overflow/achievements/middleware.py:29
 #, python-format
 msgid "Achievement Unlocked: %(name)s!"
 msgstr "Osiągnięcie odblokowane: %(name)s!"
@@ -94,30 +94,35 @@ msgid "None"
 msgstr "Brak"
 
 #: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/templates/achievements/inbox.html:40
 #: suchar_overflow/templates/achievements/list.html:42
 #: suchar_overflow/templates/achievements/list.html:82
 msgid "Bronze"
 msgstr "Brąz"
 
 #: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/templates/achievements/inbox.html:42
 #: suchar_overflow/templates/achievements/list.html:44
 #: suchar_overflow/templates/achievements/list.html:84
 msgid "Silver"
 msgstr "Srebro"
 
 #: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/templates/achievements/inbox.html:44
 #: suchar_overflow/templates/achievements/list.html:46
 #: suchar_overflow/templates/achievements/list.html:86
 msgid "Gold"
 msgstr "Złoto"
 
 #: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/templates/achievements/inbox.html:46
 #: suchar_overflow/templates/achievements/list.html:48
 #: suchar_overflow/templates/achievements/list.html:88
 msgid "Platinum"
 msgstr "Platyna"
 
 #: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/templates/achievements/inbox.html:48
 #: suchar_overflow/templates/achievements/list.html:50
 #: suchar_overflow/templates/achievements/list.html:90
 msgid "Diamond"
@@ -279,6 +284,41 @@ msgstr ""
 "Automatycznie monitorujemy te błędy, ale jeśli problem będzie się powtarzał,"
 " skontaktuj się z nami. W międzyczasie spróbuj odświeżyć stronę."
 
+#: suchar_overflow/templates/achievements/inbox.html:6
+#: suchar_overflow/templates/achievements/inbox.html:17
+#, fuzzy
+#| msgid "Notification"
+msgid "Notification Inbox"
+msgstr "Powiadomienie"
+
+#: suchar_overflow/templates/achievements/inbox.html:18
+msgid "All achievements you have earned, newest first."
+msgstr "Wszystkie zdobyte osiągnięcia, najnowsze na początku."
+
+#: suchar_overflow/templates/achievements/inbox.html:50
+#: suchar_overflow/templates/achievements/list.html:52
+#: suchar_overflow/templates/achievements/list.html:92
+msgid "Common"
+msgstr "Ogólne"
+
+#: suchar_overflow/templates/achievements/inbox.html:55
+#, fuzzy, python-format
+#| msgid "Achievement Unlocked: %(name)s!"
+msgid "Unlocked: %(date)s"
+msgstr "Osiągnięcie odblokowane: %(name)s!"
+
+#: suchar_overflow/templates/achievements/inbox.html:63
+#, fuzzy
+#| msgid "No achievements yet."
+msgid "No achievements yet — go post some jokes!"
+msgstr "Jeszcze brak osiągnięć."
+
+#: suchar_overflow/templates/achievements/inbox.html:64
+#, fuzzy
+#| msgid "User Achievements"
+msgid "Browse achievements"
+msgstr "Osiągnięcia użytkownika"
+
 #: suchar_overflow/templates/achievements/list.html:6
 msgid "My Achievements"
 msgstr "Moje osiągnięcia"
@@ -291,11 +331,6 @@ msgstr "Sala sławy"
 #: suchar_overflow/templates/achievements/list.html:19
 msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
 msgstr "Twoje odznaki, medale i wstydliwe sekrety z Suchar Overflow."
-
-#: suchar_overflow/templates/achievements/list.html:52
-#: suchar_overflow/templates/achievements/list.html:92
-msgid "Common"
-msgstr "Ogólne"
 
 #: suchar_overflow/templates/achievements/list.html:74
 msgid "Achievement locked. Discover its secret by playing!"
@@ -323,60 +358,70 @@ msgstr "Żarty"
 msgid "Leaderboard"
 msgstr "Ranking"
 
-#: suchar_overflow/templates/base.html:110
+#: suchar_overflow/templates/base.html:109
+msgid "Inbox"
+msgstr "Skrzynka odbiorcza"
+
+#: suchar_overflow/templates/base.html:113
 msgid "About"
 msgstr "O nas"
 
-#: suchar_overflow/templates/base.html:154
-#: suchar_overflow/templates/base.html:228
+#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:239
 msgid "Log Out"
 msgstr "Wyloguj się"
 
-#: suchar_overflow/templates/base.html:156
+#: suchar_overflow/templates/base.html:159
 msgid "Log In"
 msgstr "Zaloguj się"
 
-#: suchar_overflow/templates/base.html:157
+#: suchar_overflow/templates/base.html:160
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Zarejestruj się"
 
-#: suchar_overflow/templates/base.html:167
+#: suchar_overflow/templates/base.html:170
 msgid "Default content."
 msgstr "Domyślna zawartość."
 
-#: suchar_overflow/templates/base.html:176
+#: suchar_overflow/templates/base.html:179
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Wszelkie prawa zastrzeżone (ale żarty skradzione)."
 
-#: suchar_overflow/templates/base.html:185
+#: suchar_overflow/templates/base.html:188
 msgid "Report a Bug"
 msgstr "Zgłoś błąd"
 
-#: suchar_overflow/templates/base.html:201
+#: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Błąd"
 
-#: suchar_overflow/templates/base.html:203
+#: suchar_overflow/templates/base.html:212
+#, fuzzy
+#| msgid "Achievement Unlocked: %(name)s!"
+msgid "Achievement Unlocked"
+msgstr "Osiągnięcie odblokowane: %(name)s!"
+
+#: suchar_overflow/templates/base.html:214
 msgid "Success"
 msgstr "Sukces"
 
-#: suchar_overflow/templates/base.html:205
+#: suchar_overflow/templates/base.html:216
 msgid "Notification"
 msgstr "Powiadomienie"
 
-#: suchar_overflow/templates/base.html:220
+#: suchar_overflow/templates/base.html:231
 msgid "Confirm Logout"
 msgstr "Potwierdź wylogowanie"
 
-#: suchar_overflow/templates/base.html:223
+#: suchar_overflow/templates/base.html:234
 msgid "Are you sure you want to log out?"
 msgstr "Czy na pewno chcesz się wylogować?"
 
-#: suchar_overflow/templates/base.html:225
+#: suchar_overflow/templates/base.html:236
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
@@ -663,11 +708,11 @@ msgstr "Dziękujemy za korzystanie z naszej strony!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
 msgid "The"
-msgstr "Zespół"
+msgstr ""
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
 msgid "team"
-msgstr ""
+msgstr "zespół"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -1022,7 +1067,7 @@ msgid "Changed my mind (go back)"
 msgstr "Zmieniłem zdanie (wstecz)"
 
 #: suchar_overflow/templates/users/email_change_revoked.html:6
-#: suchar_overflow/users/models.py:43
+#: suchar_overflow/users/models.py:70
 msgid "Revoked"
 msgstr "Cofnięte"
 
@@ -1128,6 +1173,7 @@ msgstr ""
 "blokowania intruza na Twój stary adres e-mail."
 
 #: suchar_overflow/templates/users/user_detail.html:6
+#: suchar_overflow/users/models.py:48
 msgid "User"
 msgstr "Użytkownik"
 
@@ -1260,60 +1306,72 @@ msgstr "Nowy adres e-mail"
 msgid "This email is already currently used."
 msgstr "Ten adres e-mail jest już w użyciu."
 
-#: suchar_overflow/users/models.py:19
+#: suchar_overflow/users/models.py:21
 msgid "Name of User"
 msgstr "Imię użytkownika"
 
-#: suchar_overflow/users/models.py:22
+#: suchar_overflow/users/models.py:24
 msgid "email address"
 msgstr "adres e-mail"
 
-#: suchar_overflow/users/models.py:41
+#: suchar_overflow/users/models.py:54
+#, fuzzy
+#| msgid "Activation Complete"
+msgid "Activation Token"
+msgstr "Aktywacja zakończona"
+
+#: suchar_overflow/users/models.py:55
+#, fuzzy
+#| msgid "Activation Complete"
+msgid "Activation Tokens"
+msgstr "Aktywacja zakończona"
+
+#: suchar_overflow/users/models.py:68
 msgid "Pending"
 msgstr "W trakcie realizacji"
 
-#: suchar_overflow/users/models.py:42
+#: suchar_overflow/users/models.py:69
 msgid "Verified"
 msgstr "Zweryfikowano"
 
-#: suchar_overflow/users/models.py:62
+#: suchar_overflow/users/models.py:89
 msgid "Email Change Request"
 msgstr "Wniosek o zmianę adresu e-mail"
 
-#: suchar_overflow/users/models.py:63
+#: suchar_overflow/users/models.py:90
 msgid "Email Change Requests"
 msgstr "Żądania zmiany adresu e-mail"
 
-#: suchar_overflow/users/tests/test_views.py:74
-#: suchar_overflow/users/views.py:208
-msgid "Information successfully updated"
-msgstr "Informacje zostały pomyślnie zaktualizowane"
-
-#: suchar_overflow/users/views.py:248
+#: suchar_overflow/users/tasks.py:11
 msgid "Confirm you have a sense of humor (Account Activation)"
 msgstr "Potwierdź, że masz poczucie humoru (Aktywacja konta)"
 
-#: suchar_overflow/users/views.py:312
+#: suchar_overflow/users/tasks.py:29
 msgid "Confirm it's you (Email Change)"
 msgstr "Potwierdź, że to Ty (zmiana adresu e-mail)"
 
-#: suchar_overflow/users/views.py:336
+#: suchar_overflow/users/tasks.py:41
 msgid "Someone wants to change your email address (We hope it's you)"
 msgstr "Ktoś chce zmienić Twój adres e-mail (Mamy nadzieję, że to Ty)."
 
-#: suchar_overflow/users/views.py:378
+#: suchar_overflow/users/tests/test_views.py:74
+#: suchar_overflow/users/views.py:203
+msgid "Information successfully updated"
+msgstr "Informacje zostały pomyślnie zaktualizowane"
+
+#: suchar_overflow/users/views.py:334
 msgid "The link has already been used or cancelled."
 msgstr "Ten link został już użyty lub anulowany."
 
-#: suchar_overflow/users/views.py:388
+#: suchar_overflow/users/views.py:344
 msgid "The link has expired (24 hours have passed)."
 msgstr "Link wygasł (minęło 24 godziny)."
 
-#: suchar_overflow/users/views.py:396
+#: suchar_overflow/users/views.py:352
 msgid "Email already taken."
 msgstr "Ten adres e-mail jest już zajęty."
 
-#: suchar_overflow/users/views.py:414
+#: suchar_overflow/users/views.py:370
 msgid "The link is invalid."
 msgstr "Ten link jest nieprawidłowy."
 
