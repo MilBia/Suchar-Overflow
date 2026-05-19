@@ -4,4 +4,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+python manage.py register_scheduled_jobs
+python manage.py rqscheduler &
 exec python manage.py rqworker default

@@ -18,8 +18,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg dependencies
   libpq-dev \
   gettext \
-  wait-for-it \
-  cron
+  wait-for-it
 
 # Requirements are installed here to ensure they will be cached.
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -54,10 +53,6 @@ RUN chmod +x /entrypoint
 COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
-
-COPY ./compose/local/django/start-cron /start-cron
-RUN sed -i 's/\r$//g' /start-cron
-RUN chmod +x /start-cron
 
 COPY ./compose/local/django/start-rqworker /start-rqworker
 RUN sed -i 's/\r$//g' /start-rqworker

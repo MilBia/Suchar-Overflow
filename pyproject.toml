@@ -177,4 +177,5 @@ dependencies = [
     "django-rq==3.0.0",
     "openai>=1.0.0",
     "polib>=1.2.0",
+    "rq-scheduler>=0.13",
 ]

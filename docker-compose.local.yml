@@ -46,15 +46,6 @@ services:
     image: docker.io/redis:7
     container_name: suchar_overflow_local_redis
 
-  cron:
-    <<: *django
-    image: suchar_overflow_local_cron
-    container_name: suchar_overflow_local_cron
-    depends_on:
-      - postgres
-    ports: []
-    command: /start-cron
-
   rqworker:
     <<: *django
     image: suchar_overflow_local_rqworker

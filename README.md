@@ -31,8 +31,8 @@ Wchodzisz na własną odpowiedzialność (i z butelką wody).
 
 Suchar Overflow to platforma do dzielenia się żartami (sucharami) – z systemem głosowania,
 rankingiem użytkowników, osiągnięciami i statystykami. Projekt wspiera dwa języki
-(polski i angielski), używa crona do cyklicznych zadań (np. przyznawanie osiągnięć)
-oraz kolejki RQ (Redis Queue) do asynchronicznego wysyłania maili.
+(polski i angielski), używa kolejki RQ (Redis Queue) do asynchronicznego wysyłania maili
+oraz cyklicznych zadań (np. przyznawanie osiągnięć) za pomocą wbudowanego schedulera RQ.
 
 ### Główne funkcje
 
@@ -56,8 +56,7 @@ oraz kolejki RQ (Redis Queue) do asynchronicznego wysyłania maili.
 | **REST API**     | Django Ninja                                       |
 | **Baza danych**  | PostgreSQL 18                                      |
 | **Cache**        | Redis 7 (django-redis)                             |
-| **Kolejka zadań** | django-rq + Redis (asynchroniczne maile)          |
-| **Zadania cykliczne** | cron (kontener Docker)                        |
+| **Kolejka zadań** | django-rq + rq-scheduler + Redis                  |
 | **Serwer WSGI** | Gunicorn                                           |
 | **Reverse Proxy** | Traefik 3 (produkcja)                             |
 | **Media Proxy**  | Nginx (produkcja)                                  |
@@ -136,6 +135,8 @@ just manage createsuperuser
 
 > **RQ worker** uruchamia się automatycznie jako osobny kontener (`rqworker`).
 > Maile (aktywacja konta, zmiana e-maila) są wysyłane asynchronicznie przez ten worker.
+> Cykliczne zadania (np. przyznawanie osiągnięcia „Najlepszy suchar miesiąca") obsługuje
+> wbudowany `rqscheduler`, który działa w tle wewnątrz tego samego kontenera.
 > Mailpit przechwytuje wszystkie maile wychodzące w środowisku lokalnym.
 
 ### 6. Zatrzymaj kontenery
@@ -322,8 +323,8 @@ just manage compilemessages
 ```
 Suchar-Overflow/
 ├── compose/                  # Konfiguracja Docker
-│   ├── local/                #   └─ development (Django, cron, rqworker)
-│   └── production/           #   └─ produkcja (Django, Nginx, Traefik, Postgres, rqworker)
+│   ├── local/                #   └─ development (Django, rqworker+scheduler)
+│   └── production/           #   └─ produkcja (Django, Nginx, Traefik, Postgres, rqworker+scheduler)
 ├── config/                   # Konfiguracja Django
 │   ├── settings/             #   └─ base.py, local.py, production.py, test.py
 │   ├── urls.py               #   └─ główny routing

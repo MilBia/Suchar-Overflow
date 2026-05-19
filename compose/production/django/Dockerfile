@@ -47,7 +47,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   gettext \
   # entrypoint
   wait-for-it \
-  cron \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
@@ -61,10 +60,6 @@ RUN chmod +x /entrypoint
 COPY --chown=django:django ./compose/production/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
-
-COPY --chown=django:django ./compose/production/django/start-cron /start-cron
-RUN sed -i 's/\r$//g' /start-cron
-RUN chmod +x /start-cron
 
 COPY --chown=django:django ./compose/production/django/start-rqworker /start-rqworker
 RUN sed -i 's/\r$//g' /start-rqworker
