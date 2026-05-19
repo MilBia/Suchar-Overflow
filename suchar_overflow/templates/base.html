@@ -121,7 +121,7 @@
               {% csrf_token %}
               <input name="next" type="hidden" value="{{ redirect_to }}" />
 
-              <div class="custom-dropdown" id="languageDropdown">
+              <div class="custom-dropdown language-dropdown" id="languageDropdown">
                 <input type="hidden" name="language" value="{{ LANGUAGE_CODE }}" />
 
                 <button type="button" class="dropdown-trigger">
@@ -130,16 +130,25 @@
                 </button>
 
                 <div class="dropdown-menu">
-                  {% get_current_language as LANGUAGE_CODE %}
-                  {% get_available_languages as LANGUAGES %}
-                  {% get_language_info_list for LANGUAGES as languages %}
-                  {% for language in languages %}
-                    <div class="dropdown-item {% if language.code == LANGUAGE_CODE %}selected{% endif %}"
-                         data-value="{{ language.code }}">
-                      <span>{{ language.code|upper }}</span>
-                      <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
-                    </div>
-                  {% endfor %}
+                  <div class="language-search-wrapper">
+                    <input type="text"
+                           class="language-search"
+                           placeholder="{% trans 'Search…' %}"
+                           autocomplete="off" />
+                  </div>
+                  <div class="language-list">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% get_available_languages as LANGUAGES %}
+                    {% get_language_info_list for LANGUAGES as languages %}
+                    {% for language in languages %}
+                      <div class="dropdown-item {% if language.code == LANGUAGE_CODE %}selected{% endif %}"
+                           data-value="{{ language.code }}">
+                        <span class="lang-name">{{ language.name_local }}</span>
+                        <span class="lang-code">{{ language.code|upper }}</span>
+                        <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
+                      </div>
+                    {% endfor %}
+                  </div>
                 </div>
               </div>
             </form>

@@ -107,6 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const options = dropdown.querySelectorAll('.dropdown-item');
 
         if (trigger && menu) {
+            // Language search filter
+            const searchInput = dropdown.querySelector('.language-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', () => {
+                    const q = searchInput.value.toLowerCase();
+                    dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        item.classList.toggle('hidden', q.length > 0 && !text.includes(q));
+                    });
+                });
+                searchInput.addEventListener('click', e => e.stopPropagation());
+                searchInput.addEventListener('keydown', e => e.stopPropagation());
+            }
+
             // Toggle
             trigger.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -115,6 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (d !== dropdown) d.classList.remove('show');
                 });
                 dropdown.classList.toggle('show');
+                if (dropdown.classList.contains('show') && searchInput) {
+                    setTimeout(() => searchInput.focus(), 50);
+                }
             });
 
             // Select
@@ -139,11 +156,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Outside Click
+    // Outside Click — also clear language search on close
     document.addEventListener('click', (e) => {
         dropdowns.forEach(dropdown => {
             if (!dropdown.contains(e.target)) {
                 dropdown.classList.remove('show');
+                const searchInput = dropdown.querySelector('.language-search');
+                if (searchInput) {
+                    searchInput.value = '';
+                    dropdown.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('hidden'));
+                }
             }
         });
     });
