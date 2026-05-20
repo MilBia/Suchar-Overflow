@@ -154,3 +154,26 @@ a:hover {
 .rank-col {
   width: 40px;
 }
+
+/* Custom Tooltip Styling */
+.custom-tooltip-box {
+  position: absolute;
+  z-index: 1080;
+  display: block;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--bg-app);
+  text-align: center;
+  background-color: var(--text-main);
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.custom-tooltip-box.show {
+  opacity: 0.95;
+}

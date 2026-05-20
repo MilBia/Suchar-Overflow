@@ -161,10 +161,7 @@
                           {% for day in week.days %}
                             <div class="heatmap-day"
                                  data-level="{{ day.level }}"
-                                 data-bs-toggle="tooltip"
-                                 data-bs-custom-class="custom-tooltip"
-                                 data-bs-placement="top"
-                                 title="{{ day.count }} {% trans 'jokes on' %} {{ day.date }}"></div>
+                                 data-tooltip="{{ day.count }} {% trans 'jokes on' %} {{ day.date }}"></div>
                           {% endfor %}
                         </div>
                       {% endfor %}
@@ -245,11 +242,6 @@
     {{ block.super }}
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-          return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
 
         // Activity Chart
         const ctxActivity = document.getElementById('userActivityChart');

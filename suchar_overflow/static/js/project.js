@@ -169,4 +169,76 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Custom Tabs Switcher
+    document.querySelectorAll('[data-toggle="tab"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetSelector = btn.getAttribute('data-target');
+            const targetPane = document.querySelector(targetSelector);
+            if (!targetPane) return;
+
+            // Deactivate other tabs in the same list
+            const parentList = btn.closest('[role="tablist"]');
+            if (parentList) {
+                parentList.querySelectorAll('[data-toggle="tab"]').forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
+            }
+
+            // Deactivate other panes in the same container parent
+            const contentContainer = targetPane.parentElement;
+            if (contentContainer) {
+                contentContainer.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+            }
+
+            // Activate current
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
+            targetPane.classList.add('show', 'active');
+        });
+    });
+
+    // Custom Tooltips Handler
+    let activeTooltip = null;
+
+    document.addEventListener('mouseover', (e) => {
+        const target = e.target.closest('[data-tooltip]');
+        if (!target) return;
+
+        const text = target.getAttribute('data-tooltip');
+        if (!text) return;
+
+        // Create tooltip element
+        const tooltip = document.createElement('div');
+        tooltip.className = 'custom-tooltip-box';
+        tooltip.textContent = text;
+        document.body.appendChild(tooltip);
+
+        // Position tooltip
+        const targetRect = target.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
+
+        const top = targetRect.top + window.scrollY - tooltipRect.height - 8;
+        const left = targetRect.left + window.scrollX + (targetRect.width - tooltipRect.width) / 2;
+
+        tooltip.style.top = `${top}px`;
+        tooltip.style.left = `${left}px`;
+        tooltip.classList.add('show');
+
+        activeTooltip = tooltip;
+
+        const removeTooltip = () => {
+            if (tooltip) {
+                tooltip.classList.remove('show');
+                tooltip.addEventListener('transitionend', () => tooltip.remove(), { once: true });
+                if (activeTooltip === tooltip) activeTooltip = null;
+            }
+            target.removeEventListener('mouseleave', removeTooltip);
+        };
+
+        target.addEventListener('mouseleave', removeTooltip);
+    });
 });

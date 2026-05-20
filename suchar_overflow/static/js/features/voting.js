@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', async (e) => {
             e.preventDefault();
 
+            if (btn.dataset.anonymous === 'true') {
+                window.location.href = '/accounts/login/';
+                return;
+            }
+
             // Get Data
             const sucharId = btn.dataset.sucharId;
             const voteType = btn.dataset.voteType;
