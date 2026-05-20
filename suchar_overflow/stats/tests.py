@@ -157,8 +157,13 @@ def test_top_suchars_overall_excludes_zero_score(client):
 def test_chart_data_is_valid_json(client):
     response = client.get(reverse(LEADERBOARD_URL))
     # These must be JSON-parseable strings
-    json.loads(response.context["chart_labels"])
-    json.loads(response.context["chart_values"])
+    datasets = json.loads(response.context["chart_datasets"])
+    assert "7" in datasets
+    assert "30" in datasets
+    assert "90" in datasets
+    assert "all" in datasets
+    assert "labels" in datasets["30"]
+    assert "values" in datasets["30"]
 
 
 @pytest.mark.django_db
@@ -168,7 +173,8 @@ def test_chart_data_reflects_recent_activity(client):
     # created_at is auto_now_add — this suchar was created "now", within last 30 days
 
     response = client.get(reverse(LEADERBOARD_URL))
-    values = json.loads(response.context["chart_values"])
+    datasets = json.loads(response.context["chart_datasets"])
+    values = datasets["30"]["values"]
     assert sum(values) >= 1
 
 
@@ -178,14 +184,14 @@ def test_chart_labels_and_values_have_same_length(client):
     Suchar.objects.create(text="Joke", author=author)
 
     response = client.get(reverse(LEADERBOARD_URL))
-    labels = json.loads(response.context["chart_labels"])
-    values = json.loads(response.context["chart_values"])
-    assert len(labels) == len(values)
+    datasets = json.loads(response.context["chart_datasets"])
+    for key in datasets:
+        assert len(datasets[key]["labels"]) == len(datasets[key]["values"])
 
 
 @pytest.mark.django_db
 def test_chart_ignores_old_suchars(client):
-    """Suchars older than 30 days must not appear in the activity chart."""
+    """Suchars older than 30 days must not appear in the 30-day activity chart."""
     author = make_user("author")
     old = Suchar.objects.create(text="Old joke", author=author)
     Suchar.objects.filter(pk=old.pk).update(
@@ -193,5 +199,6 @@ def test_chart_ignores_old_suchars(client):
     )
 
     response = client.get(reverse(LEADERBOARD_URL))
-    values = json.loads(response.context["chart_values"])
-    assert sum(values) == 0
+    datasets = json.loads(response.context["chart_datasets"])
+    assert sum(datasets["30"]["values"]) == 0
+    assert sum(datasets["all"]["values"]) >= 1

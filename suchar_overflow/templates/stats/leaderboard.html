@@ -10,13 +10,25 @@
   <div class="container py-5">
     <div class="text-center mb-5">
       <h1 class="display-4 fw-bold text-primary">{% trans "Leaderboard" %}</h1>
-      <p class="lead text-muted">{% trans "Celebreating the best (and the driest) caused by our community." %}</p>
+      <p class="lead text-muted">{% trans "Celebrating the best (and the driest) caused by our community." %}</p>
     </div>
 
     <!-- Global Activity Chart -->
     <div class="card shadow-sm border-0 mb-5">
       <div class="card-body p-4">
-        <h5 class="fw-bold mb-4">{% trans "Activity (Last 30 Days)" %}</h5>
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+          <h5 class="fw-bold mb-0">{% trans "Activity" %}</h5>
+          <div class="btn-group chart-timeframe-selector"
+               role="group"
+               aria-label="Chart timeframe">
+            <button type="button" class="btn btn-outline btn-sm" data-timeframe="7">7d</button>
+            <button type="button"
+                    class="btn btn-outline btn-sm active"
+                    data-timeframe="30">30d</button>
+            <button type="button" class="btn btn-outline btn-sm" data-timeframe="90">90d</button>
+            <button type="button" class="btn btn-outline btn-sm" data-timeframe="all">{% trans "All time" %}</button>
+          </div>
+        </div>
         <div class="chart-container-lg">
           <canvas id="activityChart"></canvas>
         </div>
@@ -296,16 +308,16 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const ctx = document.getElementById('activityChart').getContext('2d');
-      const labels = JSON.parse('{{ chart_labels|safe }}');
-      const data = JSON.parse('{{ chart_values|safe }}');
+      const datasets = JSON.parse('{{ chart_datasets|safe }}');
+      let activeTimeframe = '30';
 
-      new Chart(ctx, {
+      const chart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: labels,
+          labels: datasets[activeTimeframe].labels,
           datasets: [{
             label: '{% trans "New Jokes" %}',
-            data: data,
+            data: datasets[activeTimeframe].values,
             borderColor: '#3b82f6', // Primary Blue
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
             tension: 0.4,
@@ -339,6 +351,22 @@
             }
           }
         }
+      });
+
+      // Bind timeframe buttons
+      document.querySelectorAll('.chart-timeframe-selector button').forEach(button => {
+        button.addEventListener('click', function() {
+          const timeframe = this.getAttribute('data-timeframe');
+
+          document.querySelectorAll('.chart-timeframe-selector button').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          this.classList.add('active');
+
+          chart.data.labels = datasets[timeframe].labels;
+          chart.data.datasets[0].data = datasets[timeframe].values;
+          chart.update();
+        });
       });
     });
   </script>

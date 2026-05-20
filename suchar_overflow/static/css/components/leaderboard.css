@@ -208,3 +208,41 @@
         transform: translateY(0);
     }
 }
+
+/* Timeframe Selector Pill Buttons */
+.chart-timeframe-selector {
+    background-color: rgba(0, 0, 0, 0.03);
+    padding: 2px;
+    border-radius: 30px;
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .chart-timeframe-selector {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.chart-timeframe-selector .btn {
+    border-radius: 30px !important;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    background-color: transparent;
+    transition: all 0.2s ease;
+}
+
+.chart-timeframe-selector .btn:hover {
+    color: var(--text-main);
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .chart-timeframe-selector .btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.chart-timeframe-selector .btn.active {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+    box-shadow: var(--shadow-sm);
+}
