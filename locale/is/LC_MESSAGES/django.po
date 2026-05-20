@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "Arabíska"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "Búlgaríska"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "Bengalski"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "Katalónska"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "Tékkneska"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "Danska"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "Þýska"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "Gríska"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "Enska"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "Spanska"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "Eist"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "Persónuupplýsingar"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "Finnneska"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "Frönsku"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "Hebreska"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "Hindí"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "Króatíska"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "Ungverska"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "Indónesíska"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "Íslenska"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "Ítalska"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "Japanska"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "Kannada"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "Kóreska"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "Litháenska"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "Lettneska"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "Marathi"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "Norska"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "Hollenska"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "Púnjabí"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "Pólski"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "Enska"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "Portugólenska"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "Portúgíska (Brasilía)"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "Rúmenska"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "Rússneska"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "Slóvakía"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "Slóvenía"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "Serbíska"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "Svíþa"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "Svahili"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "Tamíl"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "Telugu"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "Þáíland"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "Tyrkneska"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "Úkraínska"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "Úrdú"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "Víetnamyska"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "Kíníska (einföld)"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "Kíníska (hefðbundin)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -364,60 +558,66 @@ msgstr "Innkassi"
 msgid "About"
 msgstr "Um"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "Leita eftir..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "Útskrift"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "Innskráning"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Skráðu þig"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "Staðalefni."
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Öll réttindi áskilin (en fyndirnir eru stolið)."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "Tilkynna um vandamál"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Villa"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "Náðist árangur"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "Velgengt"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "Tilkynning"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "Staðfesta útlokun"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "Ertu viss um að þú vilt skrá þig út?"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
@@ -798,7 +998,7 @@ msgstr "Engin fyndnir sögur."
 
 #: suchar_overflow/templates/stats/leaderboard.html:153
 msgid "Comedy Kings"
-msgstr ""
+msgstr "<translation placeholder=\"Comedy Kings\">Comedy Kings</translation>"
 
 #: suchar_overflow/templates/stats/leaderboard.html:174
 msgid "No funny data."

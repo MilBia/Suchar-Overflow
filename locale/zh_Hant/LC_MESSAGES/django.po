@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:09+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "العربية"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "保加利亞語"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "孟加拉語"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "加泰蘭語"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "捷克語"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "丹麥語"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "德語"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "希臘語"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "英文"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "西班牙語"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "愛沙尼亞語"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "個人資訊"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "芬蘭語"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "法語"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "希伯來語"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "印地語"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "克羅埃西亞語"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "匈牙利語"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "印度尼西亞語"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "冰島語"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "義大利語"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "日語"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "卡納達語"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "韓文"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "立陶宛語"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "拉脫維亞語"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "馬拉雅拉姆語"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "馬拉地語"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "挪威語"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "荷蘭語"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "旁遮普語"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "波蘭語"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "英文"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "葡萄牙語"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "葡萄牙語 (巴西)"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "羅馬尼亞語"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "俄語"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "斯洛伐克語"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "斯洛維尼亞語"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "塞爾維亞語"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "瑞典語"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "斯瓦希里語"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "泰米爾語"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "เตลูกู"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "泰國語"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "土耳其語"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "烏克蘭語"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "烏爾都語"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "越南語"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "简体中文"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "繁體中文"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -359,60 +553,66 @@ msgstr "收件匣"
 msgid "About"
 msgstr "關於"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "搜尋..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "登出"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "登入"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "註冊"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "預設內容。"
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "版權所有（但笑話已盜用）。"
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "回報錯誤"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "錯誤"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "成就已解鎖"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "成功"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "通知"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "確認登出"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "您確定要登出嗎？"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"

@@ -222,13 +222,19 @@ _FEW_SHOT_FALLBACK = {
 }
 
 # Responses longer than this multiple of the msgid are considered hallucinations.
+# Only applied when msgid is longer than _MIN_MSGID_FOR_RATIO chars to avoid
+# false positives on short strings (e.g. "The" → ratio would allow only 12 chars).
 _MAX_LENGTH_RATIO = 4
+_MIN_MSGID_FOR_RATIO = 20
 _MAX_RESPONSE_CHARS = 500
 
 # Pattern that indicates the model returned slash-separated alternatives.
 _ALTERNATIVES_MARKERS = (" / ", " | ", " OR ", " LUB ", " lub ")
 # Matches unspaced slash between words (e.g. "Ten/Ta/To") in short responses.
 _UNSPACED_SLASH_RE = re.compile(r"\w/\w")
+
+# Matches Python format specifiers: %(name)s, %s, %d, %f, %(key)r, etc.
+_FORMAT_SPECIFIER_RE = re.compile(r"%(?:\(\w+\))?[sdfrx%]")
 
 # Terms that must never be translated — copied verbatim from msgid.
 _PROTECTED_TERMS: frozenset[str] = frozenset({"Suchar Overflow"})
@@ -241,7 +247,8 @@ def _is_translategemma(model: str) -> bool:
 def _looks_like_hallucination(msgid: str, response: str) -> bool:
     """Return True if the response is suspiciously long."""
     return len(response) > _MAX_RESPONSE_CHARS or (
-        len(msgid) > 0 and len(response) > len(msgid) * _MAX_LENGTH_RATIO
+        len(msgid) >= _MIN_MSGID_FOR_RATIO
+        and len(response) > len(msgid) * _MAX_LENGTH_RATIO
     )
 
 
@@ -258,6 +265,18 @@ def _has_markdown_html_corruption(msgid: str, response: str) -> bool:
     if "<strong>" not in msgid and "<em>" not in msgid:
         return False
     return "**" in response and "<strong>" not in response
+
+
+def _has_format_specifier_corruption(msgid: str, response: str) -> bool:
+    """Return True if format specifiers from msgid are missing or corrupted in response.
+
+    Catches cases like %(name)s becoming % (name)s (space injected by model).
+    """
+    expected = _FORMAT_SPECIFIER_RE.findall(msgid)
+    if not expected:
+        return False
+    actual = _FORMAT_SPECIFIER_RE.findall(response)
+    return sorted(expected) != sorted(actual)
 
 
 class Command(BaseCommand):
@@ -588,6 +607,14 @@ class Command(BaseCommand):
                 ),
             )
             return None
+        if _has_format_specifier_corruption(msgid, result):
+            self.stderr.write(
+                self.style.WARNING(
+                    f"  Format specifier corruption for {msgid!r}: {result!r},"
+                    " skipping.",
+                ),
+            )
+            return None
         return result
 
     def _translate_via_httpx(  # noqa: PLR0913
@@ -614,7 +641,7 @@ class Command(BaseCommand):
             msgid=msgid,
         )
         # Scale max_tokens to the source length to limit runaway responses.
-        max_tokens = max(64, min(len(msgid) * 3, 256))
+        max_tokens = max(64, min(len(msgid) * 3, 512))
         payload: dict[str, Any] = {
             "model": model,
             "prompt": prompt,
@@ -656,6 +683,6 @@ class Command(BaseCommand):
                 },
             ],
             temperature=0.1,
-            max_tokens=max(64, min(len(msgid) * 3, 256)),
+            max_tokens=max(64, min(len(msgid) * 3, 512)),
         )
         return response.choices[0].message.content.strip()

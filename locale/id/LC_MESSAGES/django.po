@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "Bahasa Arab"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "Bahasa Bulgaria"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "Bahasa Bengali"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "Katalan"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "Ceko"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "Bahasa Denmark"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "Jerman"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "Bahasa Yunani"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "Bahasa Inggris"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "Spanyol"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "Estonia"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "Informasi pribadi"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "Bahasa Indonesia"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "Bahasa Prancis"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "Ibrani"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "Hindi"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "Kroasia"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "Hongaria"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "Bahasa Indonesia"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "Islandia"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "Italia"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "Jepang"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "Kannada"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "Korea"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "Lituania"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "Latvia"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "Bahasa Malayalam"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "Bahasa Marathi"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "Norwegia"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "Belanda"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "Punjabi"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "Poles"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "Bahasa Inggris"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "Portugis"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "Bahasa Portugis Brasil"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "Rumania"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "Rusia"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "Slowakia"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "Slovenia"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "Serbia"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "Swedia"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "Bahasa Swahili"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "Tamil"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "Teluga"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "Bahasa Indonesia"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "Turki"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "Ukraina"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "Bahasa Urdu"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "Bahasa Vietnam"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "Bahasa Mandarin (Sederhana)"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "Bahasa Mandarin (Tradisional)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -365,60 +559,66 @@ msgstr "Kotak Masuk"
 msgid "About"
 msgstr "Tentang"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "Cari..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "Keluar"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "Masuk"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Daftar"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "Konten default."
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Semua hak dilindungi undang-undang (tapi leluconnya dicuri)."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "Laporkan Masalah"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Kesalahan"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "Pencapaian Telah Dicapai"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "Sukses"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "Notifikasi"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "Konfirmasi Keluar"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "Apakah Anda yakin ingin keluar?"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "Αραβικά"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "Βουλγάρικα"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "Βεγγάλη"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "Καταλανικά"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "Τσεχία"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "Δανέζικα"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "Γερμανικά"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "Ελληνικά"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "Αγγλικά"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "Ισπανικά"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "Εσθονικά"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "Προσωπικά στοιχεία"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "Φινλανδικά"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "Γαλλικά"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "Εβραϊκά"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "Χίντι"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "Κροατικά"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "Ουγγρικά"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "Ινδονησιακά"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "Ισλανδικά"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "Ιταλικά"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "Ιαπωνικά"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "Καννάδα"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "Κορεατικά"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "Λιθουανία"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "Λετονικά"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "Μαλαιάλαμ"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "Μάραθι"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "Νορβηγικά"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "Ολλανδικά"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "Παντζάμπι"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "Βελτίωση"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "Αγγλικά"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "Πορτογαλικά"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "Πορτογαλικά Βραζιλίας"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "Ρουμανικά"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "Ρωσικά"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "Σλοβάκικα"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "Σλοβενικά"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "Σερβικά"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "Σουηδικά"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "Σουαχίλι"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "Ταμίλ"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "Τελούγκου"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "Ταϊλανδικά"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "Τουρκικά"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "Ουκρανικά"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "Ουρντού"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "Βιετνάμ"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "Κινέζικα (Απλοποιημένα)"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "Κινεζικά (Παραδοσιακά)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -371,60 +565,66 @@ msgstr "Εισερχόμενα"
 msgid "About"
 msgstr "Σχετικά με εμάς"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "Αναζήτηση..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "Απόσυνδεση"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "Σύνδεση"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Εγγραφή"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "Προεπιλεγμένο περιεχόμενο."
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Πνευματικά δικαιώματα κατοχυρωμένα (αλλά τα ανέκδοτα κλεμμένα)."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "Αναφορά σφάλματος"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Σφάλμα"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "Επίτευγμα ξεκλείδωσε"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "Επιτυχία"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "Ειδοποίηση"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "Επιβεβαίωση αποσύνδεσης"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "Είστε σίγουροι ότι θέλετε να αποσυνδεθείτε;"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"

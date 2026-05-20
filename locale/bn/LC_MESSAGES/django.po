@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "আরবি"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "বুলগেরিয়ান"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "বাংলা"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "কাতালান"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "চেক"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "ড্যানিশ"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "জার্মান"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "গ্রিক"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "ইংরেজি"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "স্প্যানিশ"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "এস্তোনিয়ান"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "ব্যক্তিগত তথ্য"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "ফিনিশ"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "ফরাসি"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "হিব্রু"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "হিন্দি"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "ক্রোয়েশিয়ান"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "হাঙ্গেরীয়"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "ইন্দোনেশিয়ান"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "আইসল্যান্ডিক"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "ইতালীয়"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "জাপানি"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "কান্নাডা"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "কোরিয়ান"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "লিথুয়ানিয়ান"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "লাটভিয়ান"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "মালায়ালাম"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "মারাঠি"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "নরওয়েজিয়ান"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "ডাচ"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "পাঞ্জাবি"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "পালিশ"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "ইংরেজি"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "পর্তুগিজ"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "ব্রাজিলীয় পর্তুগিজ"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "রোমানীয়"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "রুশ"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "স্লোভাক"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "স্লোভেনিয়ান"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "সার্বিয়ান"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "সুইডিশ"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "সোয়াহিলি"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "তামিল"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "তেলেగు"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "থাই"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "তুর্কি"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "ইউক্রেনীয়"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "উর্দু"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "ভিয়েতনামিজ"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "সরল চীনা"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "চীনা (ঐতিহ্যবাহী)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -365,60 +559,66 @@ msgstr "ইনবক্স"
 msgid "About"
 msgstr "সম্পর্কে"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "অনুসন্ধান..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "লগ আউট"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "লগইন করুন"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "সাইন আপ করুন"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "ডিফল্ট কন্টেন্ট।"
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "সর্বস্বত্ব সংরক্ষিত (তবে কৌতুকগুলো চুরি করা হয়েছে)।"
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "একটি বাগ রিপোর্ট করুন"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "ত্রুটি"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "অর্জন আনলক করা হয়েছে"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "সফল"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "বিজ্ঞপ্তি"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "লগআউট নিশ্চিত করুন"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "আপনি কি লগ আউট করতে চান?"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"

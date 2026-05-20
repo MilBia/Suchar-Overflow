@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "Arabia"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "Bulgaria"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "Bengali"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "Katalaani"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "Tšekki"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "Tanskan kieli"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "Saksa"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "Kreikka"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "Suomi"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "Espanja"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "Viro"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "Henkilötiedot"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "Suomi"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "Ranska"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "Hebraa"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "Hindi"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "Kroatia"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "Unkarin kieli"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "Indonesia"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "Islanti"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "Italia"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "Japani"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "Kannada"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "Korea"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "Liettua"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "Latvia"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "Marathi"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "Norja"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "Hollanti"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "Pendžabi"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "Kiillota"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "Suomi"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "Portugali"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "Brasilian portugali"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "Romania"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "Venäjä"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "Slovakia"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "Slovenia"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "Serbia"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "Ruotsi"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "swahilin kieli"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "Tamili"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "Telugunkieli"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "Thailandia"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "Turkki"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "Ukraina"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "Urdin kieli"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "Vietnamia"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "Kiina (yksinkertaistettu)"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "Kiina (perinteinen)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -362,66 +556,72 @@ msgstr "Tulostaulu"
 
 #: suchar_overflow/templates/base.html:109
 msgid "Inbox"
-msgstr ""
+msgstr "Sisääntulevat viestit"
 
 #: suchar_overflow/templates/base.html:113
 msgid "About"
 msgstr "Tietoja"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "Hae…"
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "Kirjaudu ulos"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "Kirjaudu sisään"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Rekisteröidy"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "Oletussisältö."
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Kaikki oikeudet pidätetään (mutta vitsit on varastettu)."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "Ilmoita virheestä"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Virhe"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "Saavutus avattu"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "Onnistui"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "Ilmoitus"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "Vahvista uloskirjautuminen"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "Oletko varma, että haluat kirjautua ulos?"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"

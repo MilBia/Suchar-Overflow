@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "Tiếng Ả Rập"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "Tiếng Bulgaria"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "Tiếng Bengal"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "Tiếng Catalan"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "Tiếng Séc"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "Tiếng Đan Mạch"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "Tiếng Đức"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "Tiếng Hy Lạp"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "Tiếng Anh"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "Tiếng Tây Ban Nha"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "Tiếng Estonia"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "Thông tin cá nhân"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "Tiếng Phần Lan"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "Tiếng Pháp"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "Tiếng Do Thái"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "Tiếng Hindi"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "Tiếng Croatia"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "Hungary"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "Tiếng Indonesia"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "Iceland"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "Tiếng Ý"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "Tiếng Nhật"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "tiếng Kannada"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "Tiếng Hàn"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "Tiếng Litva"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "Tiếng Latvia"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "Marathi"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "Tiếng Na Uy"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "Hà Lan"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "Tiếng Punjabi"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "Đánh bóng"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "Tiếng Anh"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "Tiếng Bồ Đào Nha"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "Tiếng Bồ Đào Nha Brazil"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "Tiếng Romania"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "Tiếng Nga"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "Tiếng Slovakia"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "Tiếng Slovenia"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "Tiếng Serbia"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "Tiếng Thụy Điển"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "Tiếng Swahili"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "Tiếng Tamil"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "Tiếng Telugu"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "Tiếng Thái"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "Tiếng Thổ Nhĩ Kỳ"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "Tiếng Ukraina"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "Tiếng Urdu"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "Tiếng Việt"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "Tiếng Trung (Đơn giản)"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "Tiếng Trung (Truyền thống)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -139,7 +333,7 @@ msgstr "Tên"
 
 #: suchar_overflow/achievements/models.py:36
 msgid "Slug"
-msgstr ""
+msgstr "Đường dẫn thân thiện (Slug)"
 
 #: suchar_overflow/achievements/models.py:37
 msgid "Description"
@@ -348,7 +542,7 @@ msgstr "Trang chủ"
 #: suchar_overflow/templates/users/user_detail.html:82
 #: suchar_overflow/users/admin.py:68
 msgid "Jokes"
-msgstr ""
+msgstr "Những câu chuyện cười"
 
 #: suchar_overflow/templates/base.html:102
 #: suchar_overflow/templates/stats/leaderboard.html:6
@@ -364,62 +558,68 @@ msgstr "Hộp thư đến"
 msgid "About"
 msgstr "Giới thiệu"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "Tìm kiếm..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "Đăng xuất"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "Đăng nhập"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Đăng ký"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "Nội dung mặc định."
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr ""
 "Bản quyền thuộc về [Tên công ty], mọi quyền được bảo lưu (nhưng những câu "
 "đùa thì có thể lấy đi)."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "Báo cáo lỗi"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Lỗi"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "Đã mở khóa thành tích"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "Thành công"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "Thông báo"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "Xác nhận đăng xuất"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "Bạn có chắc chắn muốn đăng xuất không?"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"

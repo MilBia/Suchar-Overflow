@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n >= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "Arabčina"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "Bulharčina"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "Bengalčina"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "Katalánčina"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "Čeština"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "Dánčina"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "Nemčina"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "Gréčtina"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "Angličtina"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "Španielčina"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "Estónsko"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "Osobné údaje"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "Fínčina"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "Francúzština"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "Hebréjčina"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "Hindský"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "Chorvátsky"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "Maďarsky"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "Indonézska"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "Islandský"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "Taliančina"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "Japončina"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "Kannada"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "Kórejčina"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "Litovský"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "Lotyšsko"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "Marathi"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "Nórska"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "Holandský"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "Pandžábčina"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "Poľsky"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "Angličtina"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "Portugalčina"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "Brazilská portugalčina"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "Rumunčina"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "Ruština"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "Slovenčina"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "Slovinsko"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "Srbský"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "Švédčina"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "Svahilčina"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "Tamilska"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "Telugu"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "Tajský"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "Turecký"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "Ukrajinský"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "Urdu"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "Vietnamčina"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "Čínština (zjednodušená)"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "Čínština (tradičná)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -366,60 +560,66 @@ msgstr "Doručená pošta"
 msgid "About"
 msgstr "O nás"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "Vyhľadávanie..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "Odhlásiť sa"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "Prihlásiť sa"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Registrovať sa"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "Predvolený obsah."
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Všetky práva vyhradené (ale vtipy ukradnuté)."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "Nahlásiť chybu"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Chyba"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "Odomknutý úspech"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "Úspech"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "Notifikácia"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "Potvrdiť odhlásenie"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "Ste si istí, že chcete odhlásiť?"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"

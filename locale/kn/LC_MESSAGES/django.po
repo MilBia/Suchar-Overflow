@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "ಅರಬೀ"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "ಬಲ್ಗೇರಿಯನ್"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "ಬೆಂಗಾಲಿ"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "ಕಟಲನ್"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "ಜೆಕ್"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "ಡ್ಯಾನಿಷ್"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "ಜರ್ಮನ್"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "ಗ್ರೀಕ್"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "ಇಂಗ್ಲಿಷ್"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "ಸ್ಪ್ಯಾನಿಷ್"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "ಎಸ್ಟೋನಿಯನ್"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "ಫಿನ್ನಿಷ್"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "ಫ್ರೆಂಚ್"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "ಹೀಬ್ರೂ"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "ಹಿಂದಿ"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "ಕ್ರೊಯೇಷಿಯನ್"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "ಹಂಗೇರಿಯನ್"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "ಇಂಡೋನೇಷಿಯನ್"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "ಐಸ್ಲ್ಯಾಂಡಿಕ್"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "ಇಟಾಲಿಯನ್"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "ಜಪಾನೀಸ್"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "ಕನ್ನಡ"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "ಕೊರಿಯನ್"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "ಲಿಥುವೇನಿಯನ್"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "ಲಾಟ್ವಿಯನ್"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "ಮಲಯಾಳಂ"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "মারাঠি"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "ನಾರ್ವೇಜಿಯನ್"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "ಡಚ್"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "ಪಂಜಾಬಿ"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "ಪೋಲಿಷ್"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "ಇಂಗ್ಲಿಷ್"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "ಪೋರ್ಚುಗೀಸ್"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "ಬ್ರೆಜಿಲಿಯನ್ ಪೋರ್ಚುಗೀಸ್"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "ರುಮೇನಿಯನ್"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "ರಷ್ಯನ್"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "ಸ್ಲೋವಾಕ್"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "ಸ್ಲೋವೆನಿಯನ್"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "ಸೆರ್ಬಿಯನ್"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "ಸ್ವೀಡನ್ ಭಾಷೆ"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "ಸ್ವಾಹಿಲಿ"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "ತಮಿಳು"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "ತೆಲುಗು"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "ಥಾಯ್"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "ಟರ್ಕಿಷ್"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "ಉಕ್ರೇನಿಯನ್"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "ಉರ್ದು"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "ವಿಯೆಟ್ನಾಮೀಸ್"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "ಚೀನೀ (ಸರಳೀಕೃತ)"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "ಚೀನೀ (ಸಾಂಪ್ರದಾಯಿಕ)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -368,60 +562,66 @@ msgstr "ಇನ್‌ಬಾಕ್ಸ್"
 msgid "About"
 msgstr "ಬಗ್ಗೆ"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "ಹುಡುಕು..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "ಲಾಗ್ ಔಟ್"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "ಲಾಗಿನ್"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "ನೋಂದಾಯಿಸಿ"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "ಡೀಫಾಲ್ಟ್ ವಿಷಯ."
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "ಎಲ್ಲಾ ಹಕ್ಕುಗಳು ಕಾಯ್ದಿಡಲ್ಪಟ್ಟಿವೆ (ಆದರೆ ಹಾಸ್ಯವನ್ನು ಕದ್ದಿದ್ದೇವೆ)."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "ದೋಷವನ್ನು ವರದಿ ಮಾಡಿ"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "ದೋಷ"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "ಸಾಧನೆ ಅನ್ಲಾಕ್ ಆಗಿದೆ"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "ಯಶಸ್ಸು"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "ಸೂಚನೆ"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "ಲಾಗ್ಔಟ್ ಅನ್ನು ಖಚಿತಪಡಿಸಿ"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "ನೀವು ಖಂಡಿತವಾಗಿ ಲಾಗ್ ಔಟ್ ಮಾಡಲು ಬಯಸುತ್ತೀರಾ?"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"

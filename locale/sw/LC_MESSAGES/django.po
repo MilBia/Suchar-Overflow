@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "Kiarabu"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "Kibulgaria"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "Kibengali"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "Katalani"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "Kicheki"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "Kidenmarki"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "Kijerumani"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "Kigiriki"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "Kiingereza"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "Kiswahili"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "Estonia"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "Taarifa za kibinafsi"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "Kifinishi"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "Kifaransa"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "Kiyahudi"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "Kihindi"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "Kijcroatia"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "Kihungari"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "Kiswahili"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "Kijicepeli"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "Kijitaliano"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "Kijapani"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "Kannada"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "Kikorea"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "Lithunia"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "Kilatvia"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "Marathi"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "Kijana"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "Kiholanzi"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "Kipunjabi"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "Angalia"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "Kiingereza"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "Kireno"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "Kireno cha Kibrazili"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "Kirumania"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "Kirusi"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "Kislovakia"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "Kislovenia"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "Kiswahili"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "Kiswahili"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "Kiswahili"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "Kitamil"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "Kitelugu"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "Kitajwa"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "Kituruki"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "Kijukraine"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "Kiarabu"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "Kivietinamu"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "Kichina (Kilichorahisishwa)"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "Kichina (Cha Jadi)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -341,7 +535,7 @@ msgstr "Mkusanyaji wa vichekesho wenye viwango vya unyevu vilivyo chini sana."
 
 #: suchar_overflow/templates/base.html:96
 msgid "Home"
-msgstr ""
+msgstr "Ukurasa wa mwanzo"
 
 #: suchar_overflow/templates/base.html:99
 #: suchar_overflow/templates/suchary/suchar_list.html:12
@@ -364,60 +558,66 @@ msgstr "Kisanduku cha Ujumbe"
 msgid "About"
 msgstr "Kuhusu"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "Tafuta..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "Ondoka"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "Ingia"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Jisajili"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "Yaliyomo chaguo-msingi."
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Hakimiliki zote zimehifadhiwa (lakini vichekesho vilivunjwa)."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "Ripoti Hitilafu"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Kosa"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "Mafanikio Yamefikiwa"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "Mafanikio"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "Arifa"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "Thibitisha Kutoka"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "Je, unataka kutoka kwenye akaunti yako?"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"

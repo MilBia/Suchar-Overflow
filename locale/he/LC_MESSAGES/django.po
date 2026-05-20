@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 17:07+0000\n"
+"POT-Creation-Date: 2026-05-19 22:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,206 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
 
 #: config/settings/base.py:34
+msgid "Arabic"
+msgstr "ערבית"
+
+#: config/settings/base.py:35
+msgid "Bulgarian"
+msgstr "בולגרית"
+
+#: config/settings/base.py:36
+msgid "Bengali"
+msgstr "בנגלית"
+
+#: config/settings/base.py:37
+msgid "Catalan"
+msgstr "קטלאנית"
+
+#: config/settings/base.py:38
+msgid "Czech"
+msgstr "צ'כית"
+
+#: config/settings/base.py:39
+msgid "Danish"
+msgstr "דנית"
+
+#: config/settings/base.py:40
+msgid "German"
+msgstr "גרמנית"
+
+#: config/settings/base.py:41
+msgid "Greek"
+msgstr "יוונית"
+
+#: config/settings/base.py:42
+msgid "English"
+msgstr "אנגלית"
+
+#: config/settings/base.py:43
+msgid "Spanish"
+msgstr "ספרדית"
+
+#: config/settings/base.py:44
+msgid "Estonian"
+msgstr "אסטונית"
+
+#: config/settings/base.py:45
+#, fuzzy
+#| msgid "Personal info"
+msgid "Persian"
+msgstr "פרטים אישיים"
+
+#: config/settings/base.py:46
+msgid "Finnish"
+msgstr "פינית"
+
+#: config/settings/base.py:47
+msgid "French"
+msgstr "צרפתית"
+
+#: config/settings/base.py:48
+msgid "Hebrew"
+msgstr "עברית"
+
+#: config/settings/base.py:49
+msgid "Hindi"
+msgstr "הינדי"
+
+#: config/settings/base.py:50
+msgid "Croatian"
+msgstr "קרואטית"
+
+#: config/settings/base.py:51
+msgid "Hungarian"
+msgstr "הונגרית"
+
+#: config/settings/base.py:52
+msgid "Indonesian"
+msgstr "אינדונזיה"
+
+#: config/settings/base.py:53
+msgid "Icelandic"
+msgstr "איסלנדית"
+
+#: config/settings/base.py:54
+msgid "Italian"
+msgstr "איטלקי"
+
+#: config/settings/base.py:55
+msgid "Japanese"
+msgstr "יפנית"
+
+#: config/settings/base.py:56
+msgid "Kannada"
+msgstr "קנאדה"
+
+#: config/settings/base.py:57
+msgid "Korean"
+msgstr "קוריאנית"
+
+#: config/settings/base.py:58
+msgid "Lithuanian"
+msgstr "ליטאית"
+
+#: config/settings/base.py:59
+msgid "Latvian"
+msgstr "לטבית"
+
+#: config/settings/base.py:60
+msgid "Malayalam"
+msgstr "מלל"
+
+#: config/settings/base.py:61
+msgid "Marathi"
+msgstr "מראטי"
+
+#: config/settings/base.py:62
+msgid "Norwegian"
+msgstr "נורווגית"
+
+#: config/settings/base.py:63
+msgid "Dutch"
+msgstr "הולנדית"
+
+#: config/settings/base.py:64
+msgid "Punjabi"
+msgstr "פנג'אבי"
+
+#: config/settings/base.py:65
 msgid "Polish"
 msgstr "ליטש"
 
-#: config/settings/base.py:35
-msgid "English"
-msgstr "אנגלית"
+#: config/settings/base.py:66
+msgid "Portuguese"
+msgstr "פורטוגזית"
+
+#: config/settings/base.py:67
+msgid "Brazilian Portuguese"
+msgstr "פורטוגזית ברזילאית"
+
+#: config/settings/base.py:68
+msgid "Romanian"
+msgstr "רומנית"
+
+#: config/settings/base.py:69
+msgid "Russian"
+msgstr "רוסית"
+
+#: config/settings/base.py:70
+msgid "Slovak"
+msgstr "סלובקית"
+
+#: config/settings/base.py:71
+msgid "Slovenian"
+msgstr "סלובנית"
+
+#: config/settings/base.py:72
+msgid "Serbian"
+msgstr "סרבית"
+
+#: config/settings/base.py:73
+msgid "Swedish"
+msgstr "שוודית"
+
+#: config/settings/base.py:74
+msgid "Swahili"
+msgstr "סווהילי"
+
+#: config/settings/base.py:75
+msgid "Tamil"
+msgstr "טמילית"
+
+#: config/settings/base.py:76
+msgid "Telugu"
+msgstr "טלוגו"
+
+#: config/settings/base.py:77
+msgid "Thai"
+msgstr "תאילנדית"
+
+#: config/settings/base.py:78
+msgid "Turkish"
+msgstr "טורקית"
+
+#: config/settings/base.py:79
+msgid "Ukrainian"
+msgstr "אוקראינית"
+
+#: config/settings/base.py:80
+msgid "Urdu"
+msgstr "אורדו"
+
+#: config/settings/base.py:81
+msgid "Vietnamese"
+msgstr "וייטנאמית"
+
+#: config/settings/base.py:82
+msgid "Chinese (Simplified)"
+msgstr "סינית (פשוטה)"
+
+#: config/settings/base.py:83
+msgid "Chinese (Traditional)"
+msgstr "סינית (מסורתית)"
 
 #: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:84
@@ -361,60 +555,66 @@ msgstr "תיבת דואר נכנסת"
 msgid "About"
 msgstr "אודות"
 
-#: suchar_overflow/templates/base.html:157
-#: suchar_overflow/templates/base.html:239
+#: suchar_overflow/templates/base.html:136
+#, fuzzy
+#| msgid "Search..."
+msgid "Search…"
+msgstr "חיפוש..."
+
+#: suchar_overflow/templates/base.html:166
+#: suchar_overflow/templates/base.html:248
 msgid "Log Out"
 msgstr "התנתק"
 
-#: suchar_overflow/templates/base.html:159
+#: suchar_overflow/templates/base.html:168
 msgid "Log In"
 msgstr "התחבר"
 
-#: suchar_overflow/templates/base.html:160
+#: suchar_overflow/templates/base.html:169
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "הרשמה"
 
-#: suchar_overflow/templates/base.html:170
+#: suchar_overflow/templates/base.html:179
 msgid "Default content."
 msgstr "תוכן ברירת מחדל."
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:188
 msgid "All rights reserved (but jokes stolen)."
 msgstr "כל הזכויות שמורות (אבל הבדיחות נגנבו)."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:197
 msgid "Report a Bug"
 msgstr "דווח על באג"
 
-#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:219
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "שגיאה"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:221
 msgid "Achievement Unlocked"
 msgstr "השגת הישג"
 
-#: suchar_overflow/templates/base.html:214
+#: suchar_overflow/templates/base.html:223
 msgid "Success"
 msgstr "הצלחה"
 
-#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:225
 msgid "Notification"
 msgstr "התראה"
 
-#: suchar_overflow/templates/base.html:231
+#: suchar_overflow/templates/base.html:240
 msgid "Confirm Logout"
 msgstr "אישור יציאה"
 
-#: suchar_overflow/templates/base.html:234
+#: suchar_overflow/templates/base.html:243
 msgid "Are you sure you want to log out?"
 msgstr "האם אתה בטוח שברצונך להתנתק?"
 
-#: suchar_overflow/templates/base.html:236
+#: suchar_overflow/templates/base.html:245
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
