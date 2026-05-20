@@ -12,6 +12,9 @@ class AchievementNotificationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if request.path.startswith("/api/"):
+            return self.get_response(request)
+
         if request.user.is_authenticated:
             cache_key = _CACHE_KEY.format(user_pk=request.user.pk)
             if cache.get(cache_key):

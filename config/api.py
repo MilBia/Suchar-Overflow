@@ -8,3 +8,4 @@ api = NinjaAPI(
 )
 
 api.add_router("/suchary/", "suchar_overflow.suchary.api.router")
+api.add_router("/achievements/", "suchar_overflow.achievements.api.router")

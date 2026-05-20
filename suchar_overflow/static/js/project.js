@@ -241,4 +241,103 @@ document.addEventListener('DOMContentLoaded', () => {
 
         target.addEventListener('mouseleave', removeTooltip);
     });
+
+    // Custom Toast Helper
+    function showToast(messageHtml, titleText = 'Success', type = 'success', isPersistent = false) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.role = 'alert';
+        if (isPersistent) {
+            toast.setAttribute('data-persistent', 'true');
+        }
+
+        const header = document.createElement('div');
+        header.className = 'toast-header';
+
+        const strong = document.createElement('strong');
+        strong.className = 'me-auto';
+        strong.textContent = titleText;
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'btn-close';
+        closeBtn.setAttribute('aria-label', 'Close');
+
+        header.appendChild(strong);
+        header.appendChild(closeBtn);
+
+        const body = document.createElement('div');
+        body.className = 'toast-body';
+        body.innerHTML = messageHtml;
+
+        toast.appendChild(header);
+        toast.appendChild(body);
+
+        container.appendChild(toast);
+
+        // Setup dismiss behavior
+        const dismiss = () => {
+            toast.classList.add('hiding');
+            toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+        };
+
+        if (!isPersistent) {
+            setTimeout(dismiss, 5000);
+        }
+
+        closeBtn.addEventListener('click', dismiss);
+    }
+
+    window.showToast = showToast;
+
+    // Achievements Polling
+    const userLink = document.querySelector('.user-link');
+    if (userLink) {
+        let pollingActive = true;
+
+        const pollAchievements = async () => {
+            if (!pollingActive) return;
+
+            try {
+                const response = await fetch('/api/achievements/unseen');
+                if (response.status === 401 || response.status === 403) {
+                    pollingActive = false;
+                    return;
+                }
+
+                if (response.ok) {
+                    const achievements = await response.json();
+                    if (achievements && achievements.length > 0) {
+                        const lang = document.documentElement.lang || 'pl';
+                        const titleText = lang.startsWith('pl') ? 'Odblokowano osiągnięcie!' : 'Achievement Unlocked!';
+
+                        achievements.forEach(ach => {
+                            const messageHtml = `
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="achievement-icon-wrapper text-warning" style="flex-shrink: 0;">
+                                        ${ach.icon_content || '🏆'}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">${ach.name}</h6>
+                                        <p class="mb-0 text-muted small">${ach.description}</p>
+                                    </div>
+                                </div>
+                            `;
+                            showToast(messageHtml, titleText, 'success', true);
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error('Error polling achievements:', err);
+            }
+        };
+
+        // Poll every 10 seconds
+        setInterval(pollAchievements, 10000);
+        // Initial check after 1 second
+        setTimeout(pollAchievements, 1000);
+    }
 });
