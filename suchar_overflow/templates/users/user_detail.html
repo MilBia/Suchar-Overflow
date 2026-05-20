@@ -195,7 +195,10 @@
                         </div>
                         <p class="mb-0 text-muted">{{ suchar.text|linebreaksbr }}</p>
                         <div class="mt-2 small text-muted">
-                          {% for tag in suchar.tags.all %}<span class="me-1 opacity-75">#{{ tag.name }}</span>{% endfor %}
+                          {% for tag in suchar.tags.all %}
+                            <a href="{% url 'suchary:list' %}?tag={{ tag.slug }}"
+                               class="badge text-secondary border me-1 text-decoration-none bg-light">#{{ tag.name }}</a>
+                          {% endfor %}
                         </div>
                       </div>
                     {% endfor %}

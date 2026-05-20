@@ -133,7 +133,8 @@
                     </div>
                     <p class="mb-2 fst-italic">{{ suchar.text|truncatechars:100|linebreaksbr }}</p>
                     <div class="d-flex justify-content-between align-items-center">
-                      <span class="badge bg-light text-secondary border">#{{ suchar.tags.first.name|default:"general" }}</span>
+                      <a href="{% url 'suchary:list' %}?tag={{ suchar.tags.first.slug|default:'general' }}"
+                         class="badge bg-light text-secondary border text-decoration-none">#{{ suchar.tags.first.name|default:"general" }}</a>
                       <div class="d-flex align-items-center gap-2">
                         <span class="badge bg-success bg-opacity-10 text-success border border-success">{{ suchar.score }} {% trans "Votes" %}</span>
                         <span class="badge bg-warning text-dark">{{ suchar.funny_count }} F</span>
@@ -208,7 +209,8 @@
                     </div>
                     <p class="mb-2 fst-italic">{{ suchar.text|truncatechars:100|linebreaksbr }}</p>
                     <div class="d-flex justify-content-between align-items-center">
-                      <span class="badge bg-light text-secondary border">#{{ suchar.tags.first.name|default:"general" }}</span>
+                      <a href="{% url 'suchary:list' %}?tag={{ suchar.tags.first.slug|default:'general' }}"
+                         class="badge bg-light text-secondary border text-decoration-none">#{{ suchar.tags.first.name|default:"general" }}</a>
                       <div class="d-flex align-items-center gap-2">
                         <span class="badge bg-warning text-dark">{{ suchar.funny_count }} F</span>
                       </div>
@@ -281,7 +283,8 @@
                     </div>
                     <p class="mb-2 fst-italic">{{ suchar.text|truncatechars:100|linebreaksbr }}</p>
                     <div class="d-flex justify-content-between align-items-center">
-                      <span class="badge bg-light text-secondary border">#{{ suchar.tags.first.name|default:"general" }}</span>
+                      <a href="{% url 'suchary:list' %}?tag={{ suchar.tags.first.slug|default:'general' }}"
+                         class="badge bg-light text-secondary border text-decoration-none">#{{ suchar.tags.first.name|default:"general" }}</a>
                       <div class="d-flex align-items-center gap-2">
                         <span class="badge bg-info text-white">{{ suchar.dry_count }} D</span>
                       </div>

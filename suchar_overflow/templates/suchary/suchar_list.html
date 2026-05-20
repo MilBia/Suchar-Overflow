@@ -72,6 +72,38 @@
     </div>
     <div class="row justify-content-center">
       <div class="col-lg-8">
+        {% if request.GET.tag or request.GET.q or request.GET.author %}
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-4 p-3 bg-light rounded border">
+            <span class="text-muted small">{% trans "Active filters:" %}</span>
+
+            {% if request.GET.tag %}
+              <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
+                <span>#{{ request.GET.tag }}</span>
+                <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.author %}author={{ request.GET.author }}{% endif %}"
+                   class="text-muted text-decoration-none fw-bold">×</a>
+              </div>
+            {% endif %}
+
+            {% if request.GET.q %}
+              <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
+                <span>{% trans "Search:" %} "{{ request.GET.q }}"</span>
+                <a href="?{% if request.GET.tag %}tag={{ request.GET.tag }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.author %}author={{ request.GET.author }}{% endif %}"
+                   class="text-muted text-decoration-none fw-bold">×</a>
+              </div>
+            {% endif %}
+
+            {% if request.GET.author %}
+              <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
+                <span>{% trans "Author:" %} {{ request.GET.author }}</span>
+                <a href="?{% if request.GET.tag %}tag={{ request.GET.tag }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.q %}q={{ request.GET.q }}{% endif %}"
+                   class="text-muted text-decoration-none fw-bold">×</a>
+              </div>
+            {% endif %}
+
+            <a href="?"
+               class="btn btn-link btn-sm text-decoration-none ms-auto py-0 text-muted hover-primary">{% trans "Clear all" %}</a>
+          </div>
+        {% endif %}
         {% for suchar in suchary %}
           <div class="card suchar-card">
             <div class="card-body">
@@ -100,7 +132,7 @@
               {% if suchar.tags.all %}
                 <div class="mb-3">
                   {% for tag in suchar.tags.all %}
-                    <a href="?tag={{ tag.slug }}"
+                    <a href="?tag={{ tag.slug }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}"
                        class="badge text-secondary border me-1 text-decoration-none bg-light">#{{ tag.name }}</a>
                   {% endfor %}
                 </div>
