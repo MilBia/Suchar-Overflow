@@ -9,7 +9,7 @@ ARG APP_HOME=/app
 WORKDIR ${APP_HOME}
 
 # we need to move the virtualenv outside of the $APP_HOME directory because it will be overriden by the docker compose mount
-ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=0
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=0 UV_HTTP_TIMEOUT=120
 
 # Install apt packages
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -45,6 +45,10 @@ RUN groupadd --gid 1000 dev-user \
 
 ENV PATH="/${APP_HOME}/.venv/bin:$PATH"
 ENV PYTHONPATH="${APP_HOME}/.venv/lib/python3.13/site-packages"
+
+# Install Playwright Chromium binary for E2E tests.
+# --with-deps installs the required system libraries (libnss, libatk, etc.)
+RUN uv run playwright install --with-deps chromium
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint

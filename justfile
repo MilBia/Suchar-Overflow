@@ -41,6 +41,19 @@ manage +args:
 test *args:
     @docker compose run --rm django pytest {{args}}
 
+# test-e2e: Run Playwright E2E tests inside the Django container.
+# Requires the DB to be up (`just up` first).
+test-e2e *args:
+    @docker compose run --rm django pytest \
+        --override-ini="addopts=--ds=config.settings.e2e --import-mode=importlib" \
+        -m e2e \
+        tests/e2e/ {{args}}
+
+# test-all: Run unit tests then E2E tests sequentially.
+test-all:
+    @just test
+    @just test-e2e
+
 # fill-translations: Fill empty .po translation strings using a local AI model.
 # Example: just fill-translations --url http://localhost:11434/v1 --model translategemma --language pl
 fill-translations *args:
