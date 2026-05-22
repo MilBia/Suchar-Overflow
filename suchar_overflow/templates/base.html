@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n compress %}
 
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
@@ -33,11 +33,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
           rel="stylesheet" />
     {% block css %}
-      <link href="{% static 'css/base.css' %}" rel="stylesheet" />
-      <link href="{% static 'css/project.css' %}" rel="stylesheet" />
+      {% compress css %}
+        <link href="{% static 'css/base.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/project.css' %}" rel="stylesheet" />
+      {% endcompress %}
     {% endblock css %}
     {% block javascript %}
-      <script defer src="{% static 'js/project.js' %}"></script>
+      {% compress js %}
+        <script defer src="{% static 'js/project.js' %}"></script>
+      {% endcompress %}
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {% endblock javascript %}
     <script>
@@ -201,7 +205,10 @@
     </footer>
 
     <!-- Toasts Container -->
-    <div class="toast-container" id="toast-container">
+    <div class="toast-container"
+         id="toast-container"
+         aria-live="assertive"
+         aria-atomic="false">
       {% if messages %}
         {% for message in messages %}
           {% if "Achievement" in message.message %}

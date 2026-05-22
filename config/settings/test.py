@@ -44,6 +44,10 @@ CACHES = {
     },
 }
 
+# COMPRESSOR
+# ------------------------------------------------------------------------------
+COMPRESS_ENABLED = False
+
 # RQ
 # ------------------------------------------------------------------------------
 # Re-declare queues without USE_REDIS_CACHE so tests don't need Redis.

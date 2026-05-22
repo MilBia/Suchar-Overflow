@@ -63,12 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Update States
                 if (funnyBtn) {
-                    if (data.user_is_funny) funnyBtn.classList.add('active');
-                    else funnyBtn.classList.remove('active');
+                    funnyBtn.classList.toggle('active', data.user_is_funny);
+                    funnyBtn.setAttribute('aria-pressed', String(data.user_is_funny));
                 }
                 if (dryBtn) {
-                    if (data.user_is_dry) dryBtn.classList.add('active');
-                    else dryBtn.classList.remove('active');
+                    dryBtn.classList.toggle('active', data.user_is_dry);
+                    dryBtn.setAttribute('aria-pressed', String(data.user_is_dry));
                 }
 
             } catch (error) {

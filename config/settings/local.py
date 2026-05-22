@@ -67,5 +67,9 @@ if env("USE_DOCKER") == "yes":
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
 INSTALLED_APPS += ["django_extensions"]
 
+# COMPRESSOR
+# ------------------------------------------------------------------------------
+COMPRESS_ENABLED = False
+
 # Your stuff...
 # ------------------------------------------------------------------------------

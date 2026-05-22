@@ -138,5 +138,7 @@ LOGGING = {
 }
 
 
-# Your stuff...
+# COMPRESSOR
 # ------------------------------------------------------------------------------
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True

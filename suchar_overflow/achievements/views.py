@@ -1,8 +1,33 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
+from django.http import StreamingHttpResponse
 from django.views.generic import ListView
 
 from .models import Achievement
 from .models import UserAchievement
+
+
+@login_required
+def achievement_stream(request):
+    """SSE endpoint: checks once for pending achievements, sets retry interval, closes.
+    The browser auto-reconnects after the retry interval, replacing JS polling.
+    """
+
+    def event_stream(user_pk):
+        cache_key = f"achievements_pending:{user_pk}"
+        if cache.get(cache_key):
+            yield "data: new\n\n"
+        else:
+            yield "retry: 10000\n\n"
+
+    response = StreamingHttpResponse(
+        event_stream(request.user.pk),
+        content_type="text/event-stream",
+    )
+    response["Cache-Control"] = "no-cache"
+    response["X-Accel-Buffering"] = "no"
+    return response
 
 
 class NotificationInboxView(LoginRequiredMixin, ListView):

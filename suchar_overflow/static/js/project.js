@@ -134,8 +134,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            // Keyboard: open/close with Enter/Space/Escape on trigger
+            trigger.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    trigger.click();
+                } else if (e.key === 'Escape') {
+                    dropdown.classList.remove('show');
+                    trigger.focus();
+                } else if (e.key === 'ArrowDown' && dropdown.classList.contains('show')) {
+                    e.preventDefault();
+                    const visibleOptions = [...dropdown.querySelectorAll('.dropdown-item:not(.hidden)')];
+                    if (visibleOptions.length) visibleOptions[0].focus();
+                }
+            });
+
             // Select
             options.forEach(option => {
+                option.setAttribute('tabindex', '0');
+
                 option.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const value = option.dataset.value;
@@ -151,6 +168,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     dropdown.classList.remove('show');
+                });
+
+                // Keyboard navigation within dropdown items
+                option.addEventListener('keydown', (e) => {
+                    const visibleOptions = [...dropdown.querySelectorAll('.dropdown-item:not(.hidden)')];
+                    const idx = visibleOptions.indexOf(option);
+
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (idx < visibleOptions.length - 1) visibleOptions[idx + 1].focus();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (idx > 0) visibleOptions[idx - 1].focus();
+                        else (searchInput || trigger).focus();
+                    } else if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        option.click();
+                    } else if (e.key === 'Escape') {
+                        dropdown.classList.remove('show');
+                        trigger.focus();
+                    }
                 });
             });
         }
@@ -171,33 +209,61 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Custom Tabs Switcher
+    function activateTab(btn) {
+        const targetSelector = btn.getAttribute('data-target');
+        const targetPane = document.querySelector(targetSelector);
+        if (!targetPane) return;
+
+        const parentList = btn.closest('[role="tablist"]');
+        if (parentList) {
+            parentList.querySelectorAll('[data-toggle="tab"]').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
+                b.setAttribute('tabindex', '-1');
+            });
+        }
+
+        const contentContainer = targetPane.parentElement;
+        if (contentContainer) {
+            contentContainer.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('show', 'active');
+            });
+        }
+
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        btn.setAttribute('tabindex', '0');
+        targetPane.classList.add('show', 'active');
+    }
+
     document.querySelectorAll('[data-toggle="tab"]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetSelector = btn.getAttribute('data-target');
-            const targetPane = document.querySelector(targetSelector);
-            if (!targetPane) return;
+        btn.addEventListener('click', () => activateTab(btn));
 
-            // Deactivate other tabs in the same list
+        btn.addEventListener('keydown', (e) => {
             const parentList = btn.closest('[role="tablist"]');
-            if (parentList) {
-                parentList.querySelectorAll('[data-toggle="tab"]').forEach(b => {
-                    b.classList.remove('active');
-                    b.setAttribute('aria-selected', 'false');
-                });
-            }
+            if (!parentList) return;
+            const tabs = [...parentList.querySelectorAll('[data-toggle="tab"]')];
+            const idx = tabs.indexOf(btn);
 
-            // Deactivate other panes in the same container parent
-            const contentContainer = targetPane.parentElement;
-            if (contentContainer) {
-                contentContainer.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('show', 'active');
-                });
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                const next = tabs[(idx + 1) % tabs.length];
+                activateTab(next);
+                next.focus();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+                activateTab(prev);
+                prev.focus();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                activateTab(tabs[0]);
+                tabs[0].focus();
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                activateTab(tabs[tabs.length - 1]);
+                tabs[tabs.length - 1].focus();
             }
-
-            // Activate current
-            btn.classList.add('active');
-            btn.setAttribute('aria-selected', 'true');
-            targetPane.classList.add('show', 'active');
         });
     });
 
@@ -271,7 +337,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const body = document.createElement('div');
         body.className = 'toast-body';
-        body.innerHTML = messageHtml;
+        if (messageHtml instanceof Node) {
+            body.appendChild(messageHtml);
+        } else {
+            body.textContent = messageHtml;
+        }
 
         toast.appendChild(header);
         toast.appendChild(body);
@@ -293,51 +363,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.showToast = showToast;
 
-    // Achievements Polling
+    // Achievements via SSE — browser auto-reconnects after server closes connection
     const userLink = document.querySelector('.user-link');
-    if (userLink) {
-        let pollingActive = true;
+    if (userLink && window.EventSource) {
+        const es = new EventSource('/achievements/stream/');
 
-        const pollAchievements = async () => {
-            if (!pollingActive) return;
-
+        es.onmessage = async () => {
             try {
                 const response = await fetch('/api/achievements/unseen');
                 if (response.status === 401 || response.status === 403) {
-                    pollingActive = false;
+                    es.close();
                     return;
                 }
+                if (!response.ok) return;
 
-                if (response.ok) {
-                    const achievements = await response.json();
-                    if (achievements && achievements.length > 0) {
-                        const lang = document.documentElement.lang || 'pl';
-                        const titleText = lang.startsWith('pl') ? 'Odblokowano osiągnięcie!' : 'Achievement Unlocked!';
+                const achievements = await response.json();
+                if (!achievements || achievements.length === 0) return;
 
-                        achievements.forEach(ach => {
-                            const messageHtml = `
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="achievement-icon-wrapper text-warning" style="flex-shrink: 0;">
-                                        ${ach.icon_content || '🏆'}
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">${ach.name}</h6>
-                                        <p class="mb-0 text-muted small">${ach.description}</p>
-                                    </div>
-                                </div>
-                            `;
-                            showToast(messageHtml, titleText, 'success', true);
-                        });
-                    }
-                }
+                const lang = document.documentElement.lang || 'pl';
+                const titleText = lang.startsWith('pl') ? 'Odblokowano osiągnięcie!' : 'Achievement Unlocked!';
+
+                achievements.forEach(ach => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'd-flex align-items-center gap-3';
+
+                    const iconWrapper = document.createElement('div');
+                    iconWrapper.className = 'achievement-icon-wrapper text-warning';
+                    iconWrapper.style.flexShrink = '0';
+                    iconWrapper.textContent = ach.icon_content || '🏆';
+
+                    const textWrapper = document.createElement('div');
+
+                    const title = document.createElement('h6');
+                    title.className = 'mb-1 fw-bold';
+                    title.textContent = ach.name;
+
+                    const desc = document.createElement('p');
+                    desc.className = 'mb-0 text-muted small';
+                    desc.textContent = ach.description;
+
+                    textWrapper.appendChild(title);
+                    textWrapper.appendChild(desc);
+                    wrapper.appendChild(iconWrapper);
+                    wrapper.appendChild(textWrapper);
+
+                    showToast(wrapper, titleText, 'success', true);
+                });
             } catch (err) {
-                console.error('Error polling achievements:', err);
+                console.error('Error fetching achievements:', err);
             }
         };
-
-        // Poll every 10 seconds
-        setInterval(pollAchievements, 10000);
-        // Initial check after 1 second
-        setTimeout(pollAchievements, 1000);
     }
 });

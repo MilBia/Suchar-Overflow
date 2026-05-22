@@ -120,6 +120,7 @@ DJANGO_APPS = [
 ]
 THIRD_PARTY_APPS = [
     "django_rq",
+    "compressor",
 ]
 
 LOCAL_APPS = [
@@ -201,7 +202,21 @@ STATICFILES_DIRS = [str(APPS_DIR / "static")]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",
 ]
+
+# COMPRESSOR
+# ------------------------------------------------------------------------------
+COMPRESS_ENABLED = False  # Enabled per-environment (production.py)
+COMPRESS_CSS_FILTERS = [
+    "compressor.filters.css_default.CssAbsoluteFilter",
+    "compressor.filters.rcssmin.RCSSMinFilter",
+]
+COMPRESS_JS_FILTERS = [
+    "compressor.filters.jsmin.RJSMinFilter",
+]
+COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
+COMPRESS_OFFLINE = False  # Enabled per-environment in production.py
 
 # MEDIA
 # ------------------------------------------------------------------------------

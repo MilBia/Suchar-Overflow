@@ -62,6 +62,7 @@ oraz cyklicznych zadań (np. przyznawanie osiągnięć) za pomocą wbudowanego s
 | **Media Proxy**  | Nginx (produkcja)                                  |
 | **Konteneryzacja** | Docker & Docker Compose                          |
 | **Zarządzanie zależnościami** | [uv](https://docs.astral.sh/uv/)     |
+| **Minifikacja CSS/JS** | django-compressor + rcssmin + rjsmin          |
 | **Linting**      | Ruff, djLint                                       |
 | **Type checking** | mypy + django-stubs                               |
 | **Testy**        | pytest, pytest-django, factory-boy                 |
@@ -198,7 +199,7 @@ just prod-build
 just prod-up
 ```
 
-> Migracje bazy danych i `collectstatic` wykonują się automatycznie przy starcie kontenera Django.
+> Migracje bazy danych, `collectstatic` i `compress` (minifikacja CSS/JS) wykonują się automatycznie przy starcie kontenera Django.
 
 ### 4. Stwórz superusera (pierwsze uruchomienie)
 

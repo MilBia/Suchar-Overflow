@@ -87,6 +87,7 @@
     --radius-xl: 1.5rem;
     /* 24px */
 
+    --container-width: 1200px;
     --header-height: 80px;
     /* Taller, airier navbar */
 

@@ -31,6 +31,12 @@
     box-shadow: 0 2px 4px rgba(229, 142, 38, 0.4);
 }
 
+/* Active-only: ring + bold for non-color indicator (WCAG 1.4.1) */
+.btn-vote[data-vote-type="funny"].active {
+    font-weight: 700;
+    box-shadow: 0 0 0 3px #E58E26, 0 2px 4px rgba(229, 142, 38, 0.4);
+}
+
 /* Downvote (Water) -> Dry */
 .btn-vote[data-vote-type="dry"]:hover,
 .btn-vote[data-vote-type="dry"].active {
@@ -38,6 +44,12 @@
     background-color: #0ea5e9 !important;
     border-color: #0ea5e9 !important;
     box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
+}
+
+/* Active-only: ring + bold for non-color indicator (WCAG 1.4.1) */
+.btn-vote[data-vote-type="dry"].active {
+    font-weight: 700;
+    box-shadow: 0 0 0 3px #0ea5e9, 0 2px 4px rgba(14, 165, 233, 0.4);
 }
 
 /* Make inactive buttons slightly more visible in dark mode */

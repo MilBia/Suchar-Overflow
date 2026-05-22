@@ -144,6 +144,7 @@
                         data-suchar-id="{{ suchar.pk }}"
                         data-vote-type="funny"
                         class="btn btn-vote btn-sm d-flex align-items-center gap-2 {% if suchar.user_is_funny %}active{% endif %}"
+                        aria-pressed="{% if suchar.user_is_funny %}true{% else %}false{% endif %}"
                         {% if not user.is_authenticated %}data-anonymous="true" data-tooltip="{% trans 'Log in to vote' %}"{% endif %}
                         title="{% trans 'Funny' %}">
                   {% include "svgs/icon-vote-up.svg" %}
@@ -156,6 +157,7 @@
                         data-suchar-id="{{ suchar.pk }}"
                         data-vote-type="dry"
                         class="btn btn-vote btn-sm d-flex align-items-center gap-2 {% if suchar.user_is_dry %}active{% endif %}"
+                        aria-pressed="{% if suchar.user_is_dry %}true{% else %}false{% endif %}"
                         {% if not user.is_authenticated %}data-anonymous="true" data-tooltip="{% trans 'Log in to vote' %}"{% endif %}
                         title="{% trans 'Dry' %}">
                   {% include "svgs/icon-vote-down.svg" %}
