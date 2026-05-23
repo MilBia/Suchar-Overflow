@@ -13,6 +13,7 @@ class Achievement(models.Model):
         SUCHAR_POSTED = "SUCHAR_POSTED", _("Suchar Posted")
         VOTE_RECEIVED = "VOTE_RECEIVED", _("Vote Received")
         VOTE_CAST = "VOTE_CAST", _("Vote Cast")
+        FRONTEND = "FRONTEND", _("Frontend")
 
     class Metric(models.TextChoices):
         COUNT_SUCHAR = "COUNT_SUCHAR", _("Suchar Count")
@@ -23,6 +24,7 @@ class Achievement(models.Model):
         NIGHT_OWL = "NIGHT_OWL", _("Night Owl")
         STREAK_LOGIN = "STREAK_LOGIN", _("Login Streak")
         POLARIZER = "POLARIZER", _("Polarizer")
+        FRONTEND_EVENT = "FRONTEND_EVENT", _("Frontend Event")
 
     class Tier(models.IntegerChoices):
         NONE = 0, _("None")

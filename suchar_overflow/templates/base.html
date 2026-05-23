@@ -42,6 +42,11 @@
       {% compress js %}
         <script defer src="{% static 'js/project.js' %}"></script>
       {% endcompress %}
+      {% if request.user.is_authenticated %}
+        {% compress js %}
+          <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
+        {% endcompress %}
+      {% endif %}
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {% endblock javascript %}
     <script>
@@ -77,7 +82,7 @@
     </style>
   </head>
 
-  <body>
+  <body data-user-is-authenticated="{% if request.user.is_authenticated %}true{% else %}false{% endif %}">
     <!-- Navbar -->
     <nav class="navbar">
       <div class="container navbar-container">

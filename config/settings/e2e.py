@@ -16,6 +16,11 @@ ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
 # Playwright sends Origin: http://127.0.0.1:<port> on every POST.
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", "http://localhost"]
 
+# hidden_achievements.js reads the CSRF token from document.cookie via
+# getCsrfToken().  HttpOnly cookies are invisible to JS, so we disable
+# the flag for E2E tests so the JS can read the token and POST awards.
+CSRF_COOKIE_HTTPONLY = False
+
 # Playwright runs tests inside an async event loop. Django's ORM normally
 # blocks sync DB access from async contexts; this flag disables that guard
 # so that pytest-django fixtures (db, live_server) can set up the database.
