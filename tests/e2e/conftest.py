@@ -47,6 +47,18 @@ def published_suchar(db, e2e_user):
     )
 
 
+@pytest.fixture(autouse=True)
+def block_sse_stream(page):
+    """Abort SSE connections so the live_server thread never gets a BrokenPipe.
+
+    project.js opens /achievements/stream/ for authenticated pages.  When the
+    browser closes at test-end the live_server thread tries to clean up DB
+    connections and hits pytest-django's DB-access guard.  Aborting the route
+    before any navigation prevents that race entirely.
+    """
+    page.route("**/achievements/stream/", lambda route: route.abort())
+
+
 @pytest.fixture
 def login(page, live_server, e2e_user):
     """Log in via the login form and return the page."""

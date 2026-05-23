@@ -65,7 +65,7 @@ oraz cyklicznych zadań (np. przyznawanie osiągnięć) za pomocą wbudowanego s
 | **Minifikacja CSS/JS** | django-compressor + rcssmin + rjsmin          |
 | **Linting**      | Ruff, djLint                                       |
 | **Type checking** | mypy + django-stubs                               |
-| **Testy**        | pytest, pytest-django, factory-boy                 |
+| **Testy**        | pytest, pytest-django, factory-boy, pytest-playwright |
 
 ---
 
@@ -259,7 +259,9 @@ Projekt udostępnia skróty poprzez [just](https://github.com/casey/just):
 | `just prune`         | Zatrzymanie + usunięcie wolumenów     |
 | `just logs [serwis]` | Podgląd logów                         |
 | `just manage <cmd>`  | Wykonanie komendy `manage.py`         |
-| `just test [args]`   | Uruchomienie testów (pytest)          |
+| `just test [args]`      | Uruchomienie testów jednostkowych (pytest)    |
+| `just test-e2e [args]`  | Uruchomienie testów E2E (Playwright)          |
+| `just test-all`         | Testy jednostkowe, a następnie E2E            |
 | `just fill-translations [args]` | Uzupełnianie tłumaczeń przez lokalny model AI |
 
 ### Produkcyjne
@@ -327,7 +329,7 @@ Suchar-Overflow/
 │   ├── local/                #   └─ development (Django, rqworker+scheduler)
 │   └── production/           #   └─ produkcja (Django, Nginx, Traefik, Postgres, rqworker+scheduler)
 ├── config/                   # Konfiguracja Django
-│   ├── settings/             #   └─ base.py, local.py, production.py, test.py
+│   ├── settings/             #   └─ base.py, local.py, production.py, test.py, e2e.py
 │   ├── urls.py               #   └─ główny routing
 │   ├── api.py                #   └─ Django Ninja – rejestracja routerów API
 │   └── wsgi.py
@@ -341,6 +343,7 @@ Suchar-Overflow/
 │   └── templates/            #   └─ szablony Django (HTML)
 ├── locale/                   # Tłumaczenia (PL, EN)
 ├── tests/                    # Testy narzędziowe (root-level)
+│   └── e2e/                  #   └─ testy Playwright (E2E)
 ├── .devcontainer/            # Konfiguracja VS Code Dev Container
 ├── .github/                  # GitHub Actions CI + Dependabot
 ├── docker-compose.local.yml  # Compose – development
@@ -354,7 +357,14 @@ Suchar-Overflow/
 
 ## Testy
 
-Testy uruchamiane są wewnątrz kontenera Docker:
+Projekt posiada dwa oddzielne zestawy testów, które **muszą być uruchamiane osobno**:
+
+| Zestaw | Marker | Komenda |
+| ------ | ------ | ------- |
+| Testy jednostkowe / integracyjne | *(brak markera)* | `just test` |
+| Testy E2E (Playwright) | `@pytest.mark.e2e` | `just test-e2e` |
+
+### Testy jednostkowe
 
 ```bash
 just test
@@ -373,7 +383,25 @@ docker compose -f docker-compose.local.yml run --rm django coverage run -m pytes
 docker compose -f docker-compose.local.yml run --rm django coverage report
 ```
 
-Konfiguracja pytest (w `pyproject.toml`) używa `--reuse-db` dla szybszych przebiegów oraz `factory-boy` do tworzenia danych testowych. Wyniki testów w formacie JUnit XML są generowane w CI automatycznie.
+Konfiguracja pytest (w `pyproject.toml`) używa `--reuse-db` dla szybszych przebiegów oraz `factory-boy` do tworzenia danych testowych.
+
+### Testy E2E (Playwright)
+
+Testy E2E uruchamiają prawdziwą przeglądarkę Chromium wewnątrz kontenera Docker i testują zachowania frontendowe (formularze, dropdowny, modale, motywy, głosowanie itd.).
+
+```bash
+just test-e2e
+```
+
+Aby uruchomić oba zestawy sekwencyjnie:
+
+```bash
+just test-all
+```
+
+Testy E2E używają osobnych ustawień Django (`config.settings.e2e`), które rozszerzają `config.settings.test` o `ALLOWED_HOSTS` i `CSRF_TRUSTED_ORIGINS` dla `127.0.0.1`/`localhost` – wymaganych przy POSTach przez `live_server` Playwright.
+
+Wyniki testów w formacie JUnit XML są generowane w CI automatycznie.
 
 ---
 
