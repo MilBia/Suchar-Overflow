@@ -175,6 +175,26 @@ just build
 - Never use `innerHTML` with untrusted data. Use `createElement`/`textContent` or
   `appendChild` for dynamic DOM construction.
 
+## Workflow — mandatory steps after every task
+
+After completing **any** task (feature, fix, refactor):
+
+1. Run `pre-commit run --all-files` (in the local `.venv`, **not** inside the container).
+   Pre-commit auto-fixes some issues on first run — always run a **second time** to confirm
+   all hooks pass cleanly.
+2. Run `just test` (inside the Docker container). Fix all failures before considering the
+   task done. Do not skip or comment out failing tests.
+
+Both steps are **blocking** — do not propose a commit or mark a task complete until they
+both pass with no errors.
+
+## Tests for new functionality
+
+Whenever you add a new feature, view, model method, signal handler, or any non-trivial
+logic, you **must** write tests for it in the same PR/commit. Tests go in the `tests/`
+directory of the relevant app (e.g. `suchar_overflow/achievements/tests/`). Follow the
+existing patterns in those files.
+
 ## Pull requests and git
 
 - Branch from `main`; target `main` for PRs.
