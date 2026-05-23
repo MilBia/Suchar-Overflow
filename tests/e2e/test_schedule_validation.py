@@ -19,13 +19,19 @@ def test_past_date_shows_polish_error_message(page, live_server, login):
     page.check("#scheduleCheck")
     page.wait_for_selector("#scheduleContainer:not(.d-none)")
 
-    # Inject a past date directly (flatpickr intercepts normal fill)
-    page.evaluate(
-        "document.getElementById('id_published_at').value = '2020-01-01 12:00'",
-    )
-    page.evaluate("document.getElementById('id_published_at').disabled = false")
-
-    page.click("button[type='submit']")
+    # Dispatch the submit event programmatically so we control the exact state
+    # when the JS submit listener fires — bypasses Flatpickr's minDate guard
+    # and the browser's native form-submit HTTP round-trip.
+    page.evaluate("""
+        const scheduleCheck = document.getElementById('scheduleCheck');
+        const publishedAtInput = document.getElementById('id_published_at');
+        scheduleCheck.checked = true;
+        publishedAtInput.disabled = false;
+        publishedAtInput.value = '2020-01-01 12:00';
+        document.querySelector('form').dispatchEvent(
+            new Event('submit', { bubbles: true, cancelable: true })
+        );
+    """)
 
     date_error = page.locator("#dateError")
     date_error.wait_for(state="visible")

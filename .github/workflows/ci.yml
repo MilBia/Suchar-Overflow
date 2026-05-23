@@ -64,14 +64,24 @@ jobs:
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
 
       - name: Run Django Tests
-        run: docker compose -f docker-compose.local.yml run django pytest -vv --junitxml=root_junit.xml
+        run: docker compose -f docker-compose.local.yml run django pytest -vv -m "not e2e" --junitxml=root_junit.xml
+
+      - name: Run E2E Tests
+        run: |
+          docker compose -f docker-compose.local.yml run django pytest -vv \
+            --override-ini="addopts=--ds=config.settings.e2e --import-mode=importlib" \
+            -m e2e \
+            tests/e2e/ \
+            --junitxml=e2e_junit.xml
 
       - name: Upload Test Report
         uses: actions/upload-artifact@v7
         if: always() # always run even if the previous step failed
         with:
           name: junit-test-results
-          path: root_junit.xml
+          path: |
+            root_junit.xml
+            e2e_junit.xml
 
       - name: Tear down the Stack
         run: docker compose -f docker-compose.local.yml down

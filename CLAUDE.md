@@ -14,7 +14,9 @@ Always use the Docker container:
 
 ```bash
 # Preferred — use justfile shortcuts
-just test                        # run full pytest suite
+just test                        # run unit tests (excludes E2E)
+just test-e2e                    # run Playwright E2E tests only
+just test-all                    # unit tests then E2E sequentially
 just test suchar_overflow/achievements/tests/test_engine.py  # targeted
 
 # Direct docker-compose equivalent (when DATABASE_URL must be explicit)
@@ -24,6 +26,22 @@ docker-compose -f docker-compose.local.yml exec -T django bash -c \
 ```
 
 Credentials are in `.envs/.local/.postgres`. The compose service is named `django`.
+
+### Unit tests vs E2E tests — critical distinction
+
+There are two separate test suites that **must never be run together with the same settings**:
+
+| Suite | Marker | Settings | Command |
+|-------|--------|----------|---------|
+| Unit/integration | *(no marker)* | `config.settings.test` | `just test` |
+| Playwright E2E | `@pytest.mark.e2e` | `config.settings.e2e` | `just test-e2e` |
+
+`config.settings.e2e` extends `test` but adds `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
+for `127.0.0.1`/`localhost` (needed because Playwright POSTs trigger CSRF Origin checks).
+
+The CI workflow runs them as separate steps with `-m "not e2e"` and `-m e2e` respectively.
+**Never** run plain `pytest` (no `-m` filter) — it will collect E2E tests under the wrong
+settings and fail with CSRF errors or missing browser fixtures.
 
 ## Running pre-commit
 

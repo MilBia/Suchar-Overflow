@@ -26,6 +26,12 @@ def test_typing_shows_matching_tag_suggestions(page, live_server, login):
         timeout=2000,
     )
 
+    # Wait for the specific text to appear — avoids a race between the dropdown
+    # becoming visible and the async API response populating item text.
+    page.wait_for_selector(
+        "#tags-suggestions .dropdown-item",
+        state="visible",
+    )
     items = page.locator("#tags-suggestions .dropdown-item")
     assert items.count() >= 1
     assert items.first.inner_text() == "programowanie"

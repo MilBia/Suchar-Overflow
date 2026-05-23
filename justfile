@@ -37,9 +37,9 @@ logs *args:
 manage +args:
     @docker compose run --rm django python ./manage.py {{args}}
 
-# test: Run pytest inside the Django container.
+# test: Run unit/integration tests (excludes E2E). Use `just test-e2e` for Playwright tests.
 test *args:
-    @docker compose run --rm django pytest {{args}}
+    @docker compose run --rm django pytest -m "not e2e" {{args}}
 
 # test-e2e: Run Playwright E2E tests inside the Django container.
 # Requires the DB to be up (`just up` first).
