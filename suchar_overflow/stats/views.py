@@ -64,10 +64,11 @@ def get_daily_activity_data(start_of_today, now, days):
 def get_all_time_activity_data(start_of_today, now):
     earliest = Suchar.objects.aggregate(min_date=Min("created_at"))
     min_date = earliest.get("min_date")
+    twelve_months_ago = (start_of_today - timedelta(days=365)).date().replace(day=1)
     if min_date:
-        start_date = min_date.date().replace(day=1)
+        start_date = min(min_date.date().replace(day=1), twelve_months_ago)
     else:
-        start_date = (start_of_today - timedelta(days=365)).date().replace(day=1)
+        start_date = twelve_months_ago
     end_date = now.date().replace(day=1)
 
     db_data = (
