@@ -100,24 +100,28 @@
         <div class="navbar-menu" id="navbar-menu">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'home' %}">{% trans "Home" %}</a>
+              <a class="nav-link{% if request.resolver_match.namespace == 'suchary' %} active{% endif %}"
+                 href="{% url 'suchary:list' %}">{% trans "Jokes" %}</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'suchary:list' %}">{% trans "Jokes" %}</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'stats:leaderboard' %}">{% trans "Leaderboard" %}</a>
+              <a class="nav-link{% if request.resolver_match.namespace == 'stats' %} active{% endif %}"
+                 href="{% url 'stats:leaderboard' %}">{% trans "Leaderboard" %}</a>
             </li>
             {% if request.user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'achievements:list' %}">{% trans "Achievements" %}</a>
+                <a class="nav-link{% if request.resolver_match.namespace == 'achievements' %} active{% endif %}"
+                   href="{% url 'achievements:list' %}">{% trans "Achievements" %}</a>
               </li>
             {% endif %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'about' %}">{% trans "About" %}</a>
-            </li>
           </ul>
           <div class="navbar-actions">
+            {% if request.user.is_authenticated %}
+              <a class="btn btn-primary btn-sm navbar-post-btn"
+                 href="{% url 'suchary:add' %}">
+                {% include "svgs/icon-plus.svg" %}
+                <span>{% trans "Post" %}</span>
+              </a>
+            {% endif %}
             <!-- Language Switcher -->
             <form action="{% url 'set_language' %}"
                   method="post"
@@ -227,8 +231,13 @@
           © {% now "Y" %} Suchar Overflow.
           <span class="d-block d-sm-inline mt-1 mt-sm-0">{% trans "All rights reserved (but jokes stolen)." %}</span>
         </p>
-        {% if FEEDBACK_URL %}
-          <p class="text-muted mt-1 mb-0 footer-feedback">
+        <p class="text-muted mt-1 mb-0 footer-feedback">
+          <a href="{% url 'about' %}" class="footer-feedback-link">
+            {% include "svgs/icon-info.svg" %}
+            {% trans "About" %}
+          </a>
+          {% if FEEDBACK_URL %}
+            <span class="footer-feedback-sep">·</span>
             <a href="{{ FEEDBACK_URL }}"
                target="_blank"
                rel="noopener noreferrer"
@@ -236,8 +245,8 @@
               {% include "svgs/icon-bug.svg" %}
               {% trans "Report a Bug" %}
             </a>
-          </p>
-        {% endif %}
+          {% endif %}
+        </p>
         {% if APP_VERSION %}<p class="text-muted mt-1 mb-0 footer-version">v{{ APP_VERSION }}</p>{% endif %}
       </div>
     </footer>
