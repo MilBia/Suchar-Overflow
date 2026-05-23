@@ -95,7 +95,6 @@ a:hover {
 .badge:hover {
   background-color: var(--color-primary) !important;
   color: white !important;
-  transform: translateY(-2px);
   cursor: pointer;
   box-shadow: var(--shadow-sm);
 }
@@ -121,7 +120,6 @@ a:hover {
 }
 
 .suchar-card:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
