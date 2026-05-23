@@ -277,6 +277,7 @@ class EmailChangeInitiateView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         new_email = form.cleaned_data["email"]
         user = self.request.user
+        assert isinstance(user, User)
 
         # Create EmailChangeRequest
         email_request = EmailChangeRequest.objects.create(
@@ -385,7 +386,7 @@ class EmailChangeRevokeView(LoginRequiredMixin, View):
                 # Only undo if the current email is indeed the one we changed it to
                 # (prevents undoing a LATER change by an OLDER token)
                 if user.email == email_request.new_email:
-                    user.email = email_request.old_email
+                    user.email = email_request.old_email or ""
                     user.save()
                     email_request.status = EmailChangeRequest.Status.REVOKED
                     email_request.save()

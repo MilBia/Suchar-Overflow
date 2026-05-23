@@ -32,7 +32,7 @@ class Command(BaseCommand):
         date_str = options.get("date")
 
         if date_str:
-            reference_date = timezone.datetime.fromisoformat(date_str).date()
+            reference_date = datetime.fromisoformat(date_str).date()
         else:
             # Default to yesterday to capture the previous period.
             reference_date = timezone.now().date() - timedelta(days=1)
@@ -75,6 +75,9 @@ class Command(BaseCommand):
 
         # For now let's assume we sort by most 'funny' votes as simple "Best".
         # Or better: Total Votes.
+
+        assert start_date is not None
+        assert end_date is not None
 
         # Convert date objects to timezone-aware datetimes
         current_tz = timezone.get_current_timezone()

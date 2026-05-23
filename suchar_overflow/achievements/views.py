@@ -37,7 +37,7 @@ class NotificationInboxView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return (
-            UserAchievement.objects.filter(user=self.request.user)
+            UserAchievement.objects.filter(user=self.request.user)  # type: ignore[misc]
             .select_related("achievement")
             .order_by("-awarded_at")
         )
@@ -65,7 +65,7 @@ class AchievementListView(LoginRequiredMixin, ListView):
         # Grupowanie i filtrowanie tierów
         all_achs = self.get_queryset()
         visible_achs = []
-        grouped = {}
+        grouped: dict[tuple[str, str], list[Achievement]] = {}
 
         for ach in all_achs:
             if ach.theme and ach.tier != Achievement.Tier.NONE:

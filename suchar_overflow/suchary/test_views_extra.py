@@ -1,5 +1,6 @@
 """Extra view tests: SucharListView filtering and SucharUpdateView permissions."""
 
+from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
@@ -33,7 +34,7 @@ ADD_URL = "suchary:add"
 @pytest.mark.django_db
 def test_list_hides_scheduled_suchar(client):
     user = make_user("author")
-    future = timezone.now() + timezone.timedelta(days=1)
+    future = timezone.now() + timedelta(days=1)
     Suchar.objects.create(text="Future joke", author=user, published_at=future)
 
     response = client.get(reverse(LIST_URL))
@@ -209,7 +210,7 @@ def test_update_non_author_forbidden(client, django_user_model):
         email="uo@example.com",
         password="pw",  # noqa: S106
     )
-    future = timezone.now() + timezone.timedelta(days=1)
+    future = timezone.now() + timedelta(days=1)
     suchar = Suchar.objects.create(
         text="Protected joke",
         author=author,
@@ -229,7 +230,7 @@ def test_update_author_can_edit_unpublished(client, django_user_model):
         email="ua2@example.com",
         password="pw",  # noqa: S106
     )
-    future = timezone.now() + timezone.timedelta(days=1)
+    future = timezone.now() + timedelta(days=1)
     suchar = Suchar.objects.create(
         text="Future joke",
         author=author,
@@ -248,7 +249,7 @@ def test_update_author_gets_too_late_page_for_published(client, django_user_mode
         email="ua3@example.com",
         password="pw",  # noqa: S106
     )
-    past = timezone.now() - timezone.timedelta(seconds=1)
+    past = timezone.now() - timedelta(seconds=1)
     suchar = Suchar.objects.create(text="Old joke", author=author, published_at=past)
 
     client.force_login(author)

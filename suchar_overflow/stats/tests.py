@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
@@ -195,7 +196,7 @@ def test_chart_ignores_old_suchars(client):
     author = make_user("author")
     old = Suchar.objects.create(text="Old joke", author=author)
     Suchar.objects.filter(pk=old.pk).update(
-        created_at=timezone.now() - timezone.timedelta(days=60),
+        created_at=timezone.now() - timedelta(days=60),
     )
 
     response = client.get(reverse(LEADERBOARD_URL))

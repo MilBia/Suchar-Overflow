@@ -1,3 +1,4 @@
+from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
@@ -29,7 +30,9 @@ def test_create_suchar(client, django_user_model):
 
     assert response.status_code == HTTPStatus.FOUND
     assert Suchar.objects.count() == 1
-    assert Suchar.objects.first().text == "A dry joke"
+    first_suchar = Suchar.objects.first()
+    assert first_suchar is not None
+    assert first_suchar.text == "A dry joke"
 
 
 @pytest.mark.django_db
@@ -91,7 +94,7 @@ def test_suchar_list_sorting(client, django_user_model):
     s2 = Suchar.objects.create(text="Newer joke", author=user)
     # Force deterministic ordering by pinning created_at directly
     Suchar.objects.filter(pk=s1.pk).update(
-        created_at=timezone.now() - timezone.timedelta(seconds=10),
+        created_at=timezone.now() - timedelta(seconds=10),
     )
     Suchar.objects.filter(pk=s2.pk).update(created_at=timezone.now())
 
@@ -158,6 +161,7 @@ def test_create_suchar_with_tags(client, django_user_model):
 
     assert response.status_code == HTTPStatus.FOUND
     suchar = Suchar.objects.first()
+    assert suchar is not None
     assert suchar.tags.count() == 3  # noqa: PLR2004
     assert suchar.tags.filter(slug="it").exists()
     assert suchar.tags.filter(slug="programming").exists()

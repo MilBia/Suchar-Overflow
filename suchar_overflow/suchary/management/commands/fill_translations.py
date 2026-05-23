@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-import polib
+import polib  # type: ignore[import-untyped]
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from openai import OpenAI
@@ -563,7 +563,8 @@ class Command(BaseCommand):
                     lang_name,
                 )
             else:
-                result = self._translate_via_openai(  # type: ignore[arg-type]
+                assert openai_client is not None
+                result = self._translate_via_openai(
                     openai_client,
                     model,
                     msgid,
@@ -685,4 +686,5 @@ class Command(BaseCommand):
             temperature=0.1,
             max_tokens=max(64, min(len(msgid) * 3, 512)),
         )
-        return response.choices[0].message.content.strip()
+        content = response.choices[0].message.content
+        return content.strip() if content is not None else None

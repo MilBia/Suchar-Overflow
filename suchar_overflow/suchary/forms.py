@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django import forms
 from django.utils import timezone
 from django.utils.text import slugify
@@ -52,7 +54,7 @@ class SucharForm(forms.ModelForm):
             return timezone.now()
 
         # Allow a small buffer for clock skew; reject dates more than 5 min in the past.
-        if published_at < timezone.now() - timezone.timedelta(minutes=5):
+        if published_at < timezone.now() - timedelta(minutes=5):
             raise forms.ValidationError(
                 _("Publication date cannot be in the past."),
             )

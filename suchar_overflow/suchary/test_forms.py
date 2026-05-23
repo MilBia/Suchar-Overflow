@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -40,7 +42,7 @@ def test_published_at_empty_defaults_to_now():
 @pytest.mark.django_db
 def test_published_at_future_date_is_valid():
     user = make_user()
-    future = timezone.now() + timezone.timedelta(days=3)
+    future = timezone.now() + timedelta(days=3)
     form = SucharForm(data=form_data(published_at=future.strftime("%Y-%m-%dT%H:%M")))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -50,7 +52,7 @@ def test_published_at_future_date_is_valid():
 def test_published_at_recent_past_within_buffer_is_valid():
     """Dates up to 5 minutes in the past should be accepted (network/clock drift)."""
     user = make_user()
-    slight_past = timezone.now() - timezone.timedelta(minutes=3)
+    slight_past = timezone.now() - timedelta(minutes=3)
     form = SucharForm(
         data=form_data(published_at=slight_past.strftime("%Y-%m-%dT%H:%M")),
     )
@@ -61,7 +63,7 @@ def test_published_at_recent_past_within_buffer_is_valid():
 @pytest.mark.django_db
 def test_published_at_old_past_date_is_rejected():
     user = make_user()
-    old_past = timezone.now() - timezone.timedelta(minutes=10)
+    old_past = timezone.now() - timedelta(minutes=10)
     form = SucharForm(data=form_data(published_at=old_past.strftime("%Y-%m-%dT%H:%M")))
     form.instance.author = user
     assert not form.is_valid()

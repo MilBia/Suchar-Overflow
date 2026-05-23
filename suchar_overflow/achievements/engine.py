@@ -16,7 +16,7 @@ from .models import UserAchievement
 
 
 class AchievementRule:
-    metric = None
+    metric: "Achievement.Metric | None" = None
 
     @classmethod
     def evaluate(cls, user, threshold, instance=None):
@@ -135,7 +135,7 @@ class StreakLoginRule(AchievementRule):
 
 
 class AchievementEngine:
-    _rules = {}
+    _rules: "dict[str, type[AchievementRule]]" = {}
 
     @classmethod
     def register_rules(cls):
