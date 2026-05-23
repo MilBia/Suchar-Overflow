@@ -2,27 +2,28 @@
    Heatmap Component
    ========================================= */
 
-/* Wrapper to allow horizontal scroll if needed */
 .heatmap-wrapper {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: thin;
+    overflow: hidden;
 }
 
 .heatmap-grid {
     display: flex;
     gap: 4px;
+    flex: 1;
+    min-width: 0;
 }
 
 .heatmap-week {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
+    min-width: 0;
 }
 
 .heatmap-day {
-    width: 12px;
-    height: 12px;
+    width: 100%;
+    aspect-ratio: 1;
     background-color: var(--heatmap-level-0);
     border-radius: 2px;
     transition: transform 0.1s ease, background-color 0.2s ease;
@@ -109,20 +110,31 @@
 
 /* Heatmap Layout Utilities */
 .heatmap-days-col {
-    height: 128px;
+    align-self: stretch;
     font-size: 10px;
     width: 16px;
 }
 
 .heatmap-days-spacer {
     height: 20px;
+    flex-shrink: 0;
 }
 
 .heatmap-days-labels {
-    height: 108px;
-    padding-top: 18px;
-    padding-bottom: 14px;
+    position: relative;
+    flex: 1;
 }
+
+.heatmap-days-labels span {
+    position: absolute;
+    left: 0;
+    transform: translateY(-50%);
+    line-height: 1;
+}
+
+.heatmap-days-labels span:nth-child(1) { top: 5.5%; }
+.heatmap-days-labels span:nth-child(2) { top: 35%; }
+.heatmap-days-labels span:nth-child(3) { top: 65%; }
 
 .heatmap-month-label-wrapper {
     height: 20px;

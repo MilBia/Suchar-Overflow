@@ -26,6 +26,61 @@
         </div>
 
         <div class="row g-4">
+          <!-- Contribution Heatmap — full width -->
+          <div class="col-12">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="fw-bold mb-0">{% trans "Drought Map" %}</h5>
+                  <div class="heatmap-legend">
+                    <span>{% trans "Less" %}</span>
+                    <div class="legend-item heatmap-bg-0" title="0"></div>
+                    <div class="legend-item heatmap-bg-1" title="1"></div>
+                    <div class="legend-item heatmap-bg-2" title="2"></div>
+                    <div class="legend-item heatmap-bg-3" title="3-4"></div>
+                    <div class="legend-item heatmap-bg-4" title="5+"></div>
+                    <span>{% trans "More" %}</span>
+                  </div>
+                </div>
+
+                <div class="heatmap-wrapper pb-3">
+                  <div class="d-flex w-100">
+                    <!-- Days Axis -->
+                    <div class="heatmap-days d-flex flex-column me-1 text-muted small heatmap-days-col">
+                      <!-- Spacer for month label row -->
+                      <div class="heatmap-days-spacer"></div>
+
+                      <!-- Day labels aligned with grid -->
+                      <div class="heatmap-days-labels">
+                        <span>{% trans "Mon" %}</span>
+                        <span>{% trans "Wed" %}</span>
+                        <span>{% trans "Fri" %}</span>
+                      </div>
+                    </div>
+
+                    <!-- Grid -->
+                    <div class="heatmap-grid d-flex gap-1">
+                      {% for week in heatmap_weeks %}
+                        <div class="heatmap-week d-flex flex-column gap-1">
+                          <!-- Month Label (inside column for perfect alignment) -->
+                          <div class="heatmap-month-label-wrapper">
+                            {% if week.month_label %}<span class="text-muted small heatmap-month-label">{{ week.month_label }}</span>{% endif %}
+                          </div>
+
+                          {% for day in week.days %}
+                            <div class="heatmap-day"
+                                 data-level="{{ day.level }}"
+                                 data-tooltip="{{ day.count }} {% trans 'jokes on' %} {{ day.date }}"></div>
+                          {% endfor %}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Stats Column -->
           <div class="col-md-4 col-xl-3">
             <!-- Achievements -->
@@ -117,59 +172,6 @@
 
           <!-- Feed Column -->
           <div class="col-md-8 col-xl-9">
-
-            <!-- Contribution Heatmap -->
-            <div class="card border-0 shadow-sm mb-4">
-              <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h5 class="fw-bold mb-0">{% trans "Drought Map" %}</h5>
-                  <div class="heatmap-legend">
-                    <span>{% trans "Less" %}</span>
-                    <div class="legend-item heatmap-bg-0" title="0"></div>
-                    <div class="legend-item heatmap-bg-1" title="1"></div>
-                    <div class="legend-item heatmap-bg-2" title="2"></div>
-                    <div class="legend-item heatmap-bg-3" title="3-4"></div>
-                    <div class="legend-item heatmap-bg-4" title="5+"></div>
-                    <span>{% trans "More" %}</span>
-                  </div>
-                </div>
-
-                <div class="heatmap-wrapper overflow-auto pb-3">
-                  <div class="d-flex">
-                    <!-- Days Axis -->
-                    <div class="heatmap-days d-flex flex-column justify-content-between me-1 text-muted small heatmap-days-col">
-                      <!-- Spacer for month label row -->
-                      <div class="heatmap-days-spacer"></div>
-
-                      <!-- Day labels aligned with grid -->
-                      <div class="d-flex flex-column justify-content-between heatmap-days-labels">
-                        <span>{% trans "Mon" %}</span>
-                        <span>{% trans "Wed" %}</span>
-                        <span>{% trans "Fri" %}</span>
-                      </div>
-                    </div>
-
-                    <!-- Grid -->
-                    <div class="heatmap-grid d-flex gap-1">
-                      {% for week in heatmap_weeks %}
-                        <div class="heatmap-week d-flex flex-column gap-1">
-                          <!-- Month Label (inside column for perfect alignment) -->
-                          <div class="heatmap-month-label-wrapper">
-                            {% if week.month_label %}<span class="text-muted small heatmap-month-label">{{ week.month_label }}</span>{% endif %}
-                          </div>
-
-                          {% for day in week.days %}
-                            <div class="heatmap-day"
-                                 data-level="{{ day.level }}"
-                                 data-tooltip="{{ day.count }} {% trans 'jokes on' %} {{ day.date }}"></div>
-                          {% endfor %}
-                        </div>
-                      {% endfor %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             <h4 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
               <span class="text-primary">{% include "svgs/icon-edit.svg" %}</span>
