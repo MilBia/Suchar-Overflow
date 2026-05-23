@@ -1,4 +1,4 @@
-"""Tests for the achievement notification inbox view."""
+"""Tests for the My Achievements view (/achievements/mine/)."""
 
 from http import HTTPStatus
 
@@ -42,17 +42,26 @@ def make_achievement(slug, name="Achievement"):
 
 
 @pytest.mark.django_db
-def test_inbox_requires_login(client):
-    response = client.get(reverse("achievements:inbox"))
+def test_mine_requires_login(client):
+    response = client.get(reverse("achievements:mine"))
     assert response.status_code == HTTPStatus.FOUND
     assert "/accounts/login/" in response["Location"]
 
 
 @pytest.mark.django_db
-def test_inbox_authenticated_returns_200(client):
-    user = make_user("alice")
+def test_inbox_redirects_to_mine(client):
+    user = make_user("redirect_user")
     client.force_login(user)
     response = client.get(reverse("achievements:inbox"))
+    assert response.status_code == HTTPStatus.MOVED_PERMANENTLY
+    assert "/achievements/mine/" in response["Location"]
+
+
+@pytest.mark.django_db
+def test_mine_authenticated_returns_200(client):
+    user = make_user("alice")
+    client.force_login(user)
+    response = client.get(reverse("achievements:mine"))
     assert response.status_code == HTTPStatus.OK
 
 
@@ -62,13 +71,13 @@ def test_inbox_authenticated_returns_200(client):
 
 
 @pytest.mark.django_db
-def test_inbox_shows_users_achievements(client):
+def test_mine_shows_users_achievements(client):
     user = make_user("alice")
     ach = make_achievement("first-suchar", "First Suchar")
     UserAchievement.objects.create(user=user, achievement=ach)
 
     client.force_login(user)
-    response = client.get(reverse("achievements:inbox"))
+    response = client.get(reverse("achievements:mine"))
 
     ua_list = list(response.context["user_achievements"])
     assert len(ua_list) == 1
@@ -76,29 +85,29 @@ def test_inbox_shows_users_achievements(client):
 
 
 @pytest.mark.django_db
-def test_inbox_empty_for_user_without_achievements(client):
+def test_mine_empty_for_user_without_achievements(client):
     user = make_user("alice")
     client.force_login(user)
-    response = client.get(reverse("achievements:inbox"))
+    response = client.get(reverse("achievements:mine"))
 
     assert list(response.context["user_achievements"]) == []
 
 
 @pytest.mark.django_db
-def test_inbox_does_not_show_other_users_achievements(client):
+def test_mine_does_not_show_other_users_achievements(client):
     alice = make_user("alice")
     bob = make_user("bob")
     ach = make_achievement("first-vote")
     UserAchievement.objects.create(user=bob, achievement=ach)
 
     client.force_login(alice)
-    response = client.get(reverse("achievements:inbox"))
+    response = client.get(reverse("achievements:mine"))
 
     assert list(response.context["user_achievements"]) == []
 
 
 @pytest.mark.django_db
-def test_inbox_ordered_newest_first(client):
+def test_mine_ordered_newest_first(client):
     user = make_user("alice")
     ach1 = make_achievement("ach-one", "First")
     ach2 = make_achievement("ach-two", "Second")
@@ -106,9 +115,39 @@ def test_inbox_ordered_newest_first(client):
     ua2 = UserAchievement.objects.create(user=user, achievement=ach2)
 
     client.force_login(user)
-    response = client.get(reverse("achievements:inbox"))
+    response = client.get(reverse("achievements:mine"))
 
     ua_list = list(response.context["user_achievements"])
-    # Newer record (ua2) should come first.
     assert ua_list[0].pk == ua2.pk
     assert ua_list[1].pk == ua1.pk
+
+
+# ---------------------------------------------------------------------------
+# Mark as seen on page load
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_mine_marks_unseen_achievements_as_seen(client):
+    user = make_user("alice")
+    ach = make_achievement("unseen-ach", "Unseen Achievement")
+    ua = UserAchievement.objects.create(user=user, achievement=ach, is_seen=False)
+
+    client.force_login(user)
+    client.get(reverse("achievements:mine"))
+
+    ua.refresh_from_db()
+    assert ua.is_seen is True
+
+
+@pytest.mark.django_db
+def test_mine_leaves_already_seen_achievements_untouched(client):
+    user = make_user("alice")
+    ach = make_achievement("seen-ach", "Seen Achievement")
+    ua = UserAchievement.objects.create(user=user, achievement=ach, is_seen=True)
+
+    client.force_login(user)
+    client.get(reverse("achievements:mine"))
+
+    ua.refresh_from_db()
+    assert ua.is_seen is True

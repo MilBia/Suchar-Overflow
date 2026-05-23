@@ -112,9 +112,6 @@
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'achievements:list' %}">{% trans "Achievements" %}</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'achievements:inbox' %}">{% trans "Inbox" %}</a>
-              </li>
             {% endif %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'about' %}">{% trans "About" %}</a>
@@ -165,6 +162,42 @@
               {% include "svgs/icon-sun.svg" %}
             </button>
             {% if request.user.is_authenticated %}
+              <div class="bell-wrapper" id="bell-wrapper">
+                <button class="btn btn-icon bell-btn"
+                        id="bell-btn"
+                        aria-label="{% trans 'Notifications' %}"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                  {% include "svgs/icon-bell.svg" %}
+                  {% if unseen_achievements_count > 0 %}
+                    <span class="bell-badge" id="bell-badge">{{ unseen_achievements_count }}</span>
+                  {% endif %}
+                </button>
+                <div class="bell-dropdown" id="bell-dropdown" hidden>
+                  {% if unseen_achievements_preview %}
+                    <div class="bell-header">{% trans "New achievements" %}</div>
+                    {% for ua in unseen_achievements_preview %}
+                      <a class="bell-item" href="{% url 'achievements:mine' %}">
+                        <div class="bell-item-icon">
+                          {% if ua.achievement.icon_content %}
+                            {{ ua.achievement.icon_content|safe }}
+                          {% else %}
+                            🏆
+                          {% endif %}
+                        </div>
+                        <div class="bell-item-text">
+                          <span class="bell-item-name">{{ ua.achievement.name }}</span>
+                        </div>
+                      </a>
+                    {% endfor %}
+                  {% else %}
+                    <div class="bell-empty">{% trans "No new achievements" %}</div>
+                  {% endif %}
+                  <div class="bell-footer">
+                    <a href="{% url 'achievements:mine' %}">{% trans "View all my achievements" %}</a>
+                  </div>
+                </div>
+              </div>
               <a class="nav-link user-link d-flex align-items-center gap-2"
                  href="{% url 'users:detail' request.user.username %}">
                 {% include "svgs/icon-user.svg" %}

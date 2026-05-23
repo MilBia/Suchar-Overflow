@@ -62,7 +62,7 @@ def test_unseen_achievement_produces_message(client):
 
 
 @pytest.mark.django_db
-def test_unseen_achievement_marked_as_seen_after_request(client):
+def test_middleware_does_not_mark_achievement_as_seen(client):
     user = make_user("winner")
     achievement = make_achievement()
     ua = UserAchievement.objects.create(
@@ -76,7 +76,7 @@ def test_unseen_achievement_marked_as_seen_after_request(client):
     client.get(reverse("suchary:list"))
 
     ua.refresh_from_db()
-    assert ua.is_seen is True
+    assert ua.is_seen is False
 
 
 @pytest.mark.django_db

@@ -30,10 +30,17 @@ def achievement_stream(request):
     return response
 
 
-class NotificationInboxView(LoginRequiredMixin, ListView):
+class MyAchievementsView(LoginRequiredMixin, ListView):
     model = UserAchievement
-    template_name = "achievements/inbox.html"
+    template_name = "achievements/mine.html"
     context_object_name = "user_achievements"
+
+    def get(self, request, *args, **kwargs):
+        UserAchievement.objects.filter(
+            user=request.user,
+            is_seen=False,
+        ).update(is_seen=True)
+        return super().get(request, *args, **kwargs)
 
     def get_queryset(self):
         return (

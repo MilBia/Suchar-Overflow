@@ -27,15 +27,12 @@ class AchievementNotificationMiddleware:
                     ).select_related("achievement"),
                 )
 
-                if new_achievements:
-                    for user_ach in new_achievements:
-                        messages.success(
-                            request,
-                            _("Achievement Unlocked: %(name)s!")
-                            % {"name": user_ach.achievement.name},
-                        )
-                        user_ach.is_seen = True
-                    UserAchievement.objects.bulk_update(new_achievements, ["is_seen"])
+                for user_ach in new_achievements:
+                    messages.success(
+                        request,
+                        _("Achievement Unlocked: %(name)s!")
+                        % {"name": user_ach.achievement.name},
+                    )
 
                 cache.delete(cache_key)
 

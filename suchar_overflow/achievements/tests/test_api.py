@@ -10,6 +10,7 @@ from suchar_overflow.achievements.models import UserAchievement
 User = get_user_model()
 
 UNSEEN_ACHIEVEMENTS_URL = "/api/achievements/unseen"
+MARK_SEEN_URL = "/api/achievements/mark-seen"
 FRONTEND_OWNED_URL = "/api/achievements/frontend-owned"
 FRONTEND_EVENT_URL = "/api/achievements/frontend-event"
 
@@ -88,15 +89,61 @@ def test_unseen_achievements_returns_awarded(client):
     assert data[0]["icon_content"] == "<svg></svg>"
     assert data[0]["tier"] == Achievement.Tier.NONE
 
-    # Subsequent request should return empty
+    # Subsequent request should return empty (cache key cleared)
     response_again = client.get(UNSEEN_ACHIEVEMENTS_URL)
     assert response_again.status_code == HTTPStatus.OK
     assert response_again.json() == []
 
-    # Check database and cache state
+    # Cache is cleared; is_seen stays False (bell/mine page marks it)
     user_ach = UserAchievement.objects.get(user=user, achievement=ach)
-    assert user_ach.is_seen is True
+    assert user_ach.is_seen is False
     assert cache.get(f"achievements_pending:{user.pk}") is None
+
+
+# ---------------------------------------------------------------------------
+# POST /api/achievements/mark-seen
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_mark_seen_requires_login(client):
+    response = client.post(MARK_SEEN_URL)
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+
+@pytest.mark.django_db
+def test_mark_seen_marks_all_unseen_as_seen(client):
+    user = make_user("user_ms")
+    client.force_login(user)
+
+    ach1 = make_achievement("ms-ach-1", name="One")
+    ach2 = make_achievement("ms-ach-2", name="Two")
+    ua1 = UserAchievement.objects.create(user=user, achievement=ach1, is_seen=False)
+    ua2 = UserAchievement.objects.create(user=user, achievement=ach2, is_seen=False)
+
+    response = client.post(MARK_SEEN_URL)
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {"ok": True}
+
+    ua1.refresh_from_db()
+    ua2.refresh_from_db()
+    assert ua1.is_seen is True
+    assert ua2.is_seen is True
+
+
+@pytest.mark.django_db
+def test_mark_seen_idempotent(client):
+    user = make_user("user_ms_idem")
+    client.force_login(user)
+
+    ach = make_achievement("ms-idem-ach")
+    ua = UserAchievement.objects.create(user=user, achievement=ach, is_seen=True)
+
+    response = client.post(MARK_SEEN_URL)
+    assert response.status_code == HTTPStatus.OK
+
+    ua.refresh_from_db()
+    assert ua.is_seen is True
 
 
 # ---------------------------------------------------------------------------

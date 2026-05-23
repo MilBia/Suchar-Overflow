@@ -248,6 +248,7 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "suchar_overflow.context_processors.site_settings",
+                "suchar_overflow.achievements.context_processors.achievements_bell",
             ],
         },
     },

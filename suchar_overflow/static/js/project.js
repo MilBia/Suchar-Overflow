@@ -363,6 +363,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.showToast = showToast;
 
+    // Bell notification dropdown
+    const bellWrapper = document.getElementById('bell-wrapper');
+    const bellBtn = document.getElementById('bell-btn');
+    const bellDropdown = document.getElementById('bell-dropdown');
+
+    if (bellBtn && bellDropdown) {
+        bellBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const opening = bellDropdown.hidden;
+            bellDropdown.hidden = !opening;
+            bellBtn.setAttribute('aria-expanded', String(opening));
+
+            if (opening) {
+                const badge = document.getElementById('bell-badge');
+                if (badge) {
+                    const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+                    fetch('/api/achievements/mark-seen', {
+                        method: 'POST',
+                        headers: { 'X-CSRFToken': csrfToken },
+                    }).then(() => badge.remove()).catch(() => {});
+                }
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (bellWrapper && !bellWrapper.contains(e.target)) {
+                bellDropdown.hidden = true;
+                bellBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !bellDropdown.hidden) {
+                bellDropdown.hidden = true;
+                bellBtn.setAttribute('aria-expanded', 'false');
+                bellBtn.focus();
+            }
+        });
+    }
+
     // Achievements via SSE — browser auto-reconnects after server closes connection
     const userLink = document.querySelector('.user-link');
     if (userLink && window.EventSource) {

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% load static i18n %}
+
+{% block title %}
+  {% trans "My Achievements" %} | Suchar Overflow
+{% endblock title %}
+
+{% block css %}
+  {{ block.super }}
+  <link href="{% static 'css/achievements.css' %}" rel="stylesheet" />
+{% endblock css %}
+
+{% block content %}
+  <div class="achievements-container fade-in-up">
+    <header class="achievements-header text-center pb-4 mb-5 border-bottom border-secondary">
+      <h1 class="achievements-title gradient-text fw-bold">{% trans "My Achievements" %}</h1>
+      <p class="achievements-subtitle text-muted fs-5">{% trans "All achievements you have earned, newest first." %}</p>
+      <a href="{% url 'achievements:list' %}"
+         class="btn btn-outline btn-sm mt-2">{% trans "Browse all achievements" %}</a>
+    </header>
+
+    {% if user_achievements %}
+      <div class="achievements-grid">
+        {% for ua in user_achievements %}
+          <div class="achievement-card unlocked tier-{{ ua.achievement.tier }}">
+            <div class="achievement-glow"></div>
+            <div class="achievement-icon-wrapper tier-icon-{{ ua.achievement.tier }}">
+              {% if ua.achievement.icon_content %}
+                {{ ua.achievement.icon_content|safe }}
+              {% else %}
+                <div class="default-icon">🏆</div>
+              {% endif %}
+            </div>
+            <div class="achievement-info">
+              <h3 class="achievement-name">{{ ua.achievement.name }}</h3>
+              <p class="achievement-desc">{{ ua.achievement.description }}</p>
+              <div class="achievement-tags mt-2">
+                {% if ua.achievement.theme %}<span class="badge theme-badge">{{ ua.achievement.theme }}</span>{% endif %}
+                <span class="badge tier-badge tier-color-{{ ua.achievement.tier }}">
+                  {% if ua.achievement.tier == 1 %}
+                    {% trans "Bronze" %}
+                  {% elif ua.achievement.tier == 2 %}
+                    {% trans "Silver" %}
+                  {% elif ua.achievement.tier == 3 %}
+                    {% trans "Gold" %}
+                  {% elif ua.achievement.tier == 4 %}
+                    {% trans "Platinum" %}
+                  {% elif ua.achievement.tier == 5 %}
+                    {% trans "Diamond" %}
+                  {% else %}
+                    {% trans "Common" %}
+                  {% endif %}
+                </span>
+              </div>
+              <p class="text-muted mt-2 mb-0 fs-sm">
+                {% blocktrans with date=ua.awarded_at|date:"j N Y, H:i" %}Unlocked: {{ date }}{% endblocktrans %}
+              </p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center text-muted py-5">
+        <p class="fs-5">{% trans "No achievements yet — go post some jokes!" %}</p>
+        <a href="{% url 'achievements:list' %}" class="btn btn-primary mt-2">{% trans "Browse achievements" %}</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock content %}

@@ -51,24 +51,27 @@ def list_unseen_achievements(request):
         cache.delete(cache_key)
         return []
 
-    response_data = []
-    for user_ach in unseen_achievements:
-        # Wrap translatable strings in _() to ensure
-        # evaluation in current language context
-        response_data.append(
-            {
-                "name": _(user_ach.achievement.name),
-                "description": _(user_ach.achievement.description),
-                "icon_content": user_ach.achievement.icon_content,
-                "tier": user_ach.achievement.tier,
-            },
-        )
-        user_ach.is_seen = True
+    response_data = [
+        {
+            "name": _(user_ach.achievement.name),
+            "description": _(user_ach.achievement.description),
+            "icon_content": user_ach.achievement.icon_content,
+            "tier": user_ach.achievement.tier,
+        }
+        for user_ach in unseen_achievements
+    ]
 
-    UserAchievement.objects.bulk_update(unseen_achievements, ["is_seen"])
     cache.delete(cache_key)
-
     return response_data
+
+
+@router.post("/mark-seen", auth=django_auth)
+def mark_achievements_seen(request):
+    UserAchievement.objects.filter(
+        user=request.user,
+        is_seen=False,
+    ).update(is_seen=True)
+    return {"ok": True}
 
 
 @router.get("/frontend-owned", response=list[str], auth=django_auth)
