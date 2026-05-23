@@ -12,6 +12,15 @@ TEST_PASSWORD = "e2e-test-password-123"  # noqa: S105
 
 
 @pytest.fixture(scope="session")
+def browser_type_launch_args(browser_type_launch_args):
+    # Required in Docker/CI where kernel namespaces for sandboxing are restricted.
+    return {
+        **browser_type_launch_args,
+        "args": ["--no-sandbox", "--disable-setuid-sandbox"],
+    }
+
+
+@pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
     return {
         **browser_context_args,

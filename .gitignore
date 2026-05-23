@@ -43,6 +43,8 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+# pytest JUnit XML reports (written inside Docker as root)
+*_junit.xml
 *.cover
 .hypothesis/
 
