@@ -83,7 +83,7 @@ def test_signup_creates_activation_token(client):
     assert ActivationToken.objects.filter(user=user).exists()
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_signup_sends_activation_email(client):
     client.post(
         reverse("users:signup"),
@@ -227,7 +227,7 @@ def test_email_change_initiate_get_renders_form(client):
     assert response.status_code == HTTPStatus.OK
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_email_change_creates_request_and_sends_emails(client):
     user = make_user("user1", email="old@example.com")
     client.force_login(user)

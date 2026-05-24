@@ -421,38 +421,79 @@ document.addEventListener('DOMContentLoaded', () => {
                 const achievements = await response.json();
                 if (!achievements || achievements.length === 0) return;
 
-                const lang = document.documentElement.lang || 'pl';
-                const titleText = lang.startsWith('pl') ? 'Odblokowano osiągnięcie!' : 'Achievement Unlocked!';
-
-                achievements.forEach(ach => {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'd-flex align-items-center gap-3';
-
-                    const iconWrapper = document.createElement('div');
-                    iconWrapper.className = 'achievement-icon-wrapper text-warning';
-                    iconWrapper.style.flexShrink = '0';
-                    iconWrapper.textContent = ach.icon_content || '🏆';
-
-                    const textWrapper = document.createElement('div');
-
-                    const title = document.createElement('h6');
-                    title.className = 'mb-1 fw-bold';
-                    title.textContent = ach.name;
-
-                    const desc = document.createElement('p');
-                    desc.className = 'mb-0 text-muted small';
-                    desc.textContent = ach.description;
-
-                    textWrapper.appendChild(title);
-                    textWrapper.appendChild(desc);
-                    wrapper.appendChild(iconWrapper);
-                    wrapper.appendChild(textWrapper);
-
-                    showToast(wrapper, titleText, 'success', true);
-                });
+                updateBell(achievements);
             } catch (err) {
                 console.error('Error fetching achievements:', err);
             }
         };
+    }
+
+    function updateBell(achievements) {
+        const wrapper = document.getElementById('bell-wrapper');
+        if (!wrapper) return;
+
+        // Update or create the badge
+        let badge = document.getElementById('bell-badge');
+        if (achievements.length > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'bell-badge';
+                badge.id = 'bell-badge';
+                const btn = document.getElementById('bell-btn');
+                if (btn) btn.after(badge);
+            }
+            badge.textContent = achievements.length;
+        }
+
+        // Rebuild dropdown content, preserving the footer
+        const dropdown = document.getElementById('bell-dropdown');
+        if (!dropdown) return;
+
+        const footer = dropdown.querySelector('.bell-footer');
+        [...dropdown.children].forEach(child => {
+            if (child !== footer) child.remove();
+        });
+
+        const lang = document.documentElement.lang || 'pl';
+        const mineUrl = footer?.querySelector('a')?.href || '/achievements/mine/';
+
+        if (achievements.length > 0) {
+            const header = document.createElement('div');
+            header.className = 'bell-header';
+            header.textContent = lang.startsWith('pl') ? 'Nowe osiągnięcia' : 'New achievements';
+            dropdown.insertBefore(header, footer);
+
+            achievements.forEach(ach => {
+                const item = document.createElement('a');
+                item.className = 'bell-item';
+                item.href = mineUrl;
+
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'bell-item-icon';
+                // icon_content is server-generated SVG, safe to render as HTML
+                if (ach.icon_content) {
+                    iconDiv.innerHTML = ach.icon_content;
+                } else {
+                    iconDiv.textContent = '🏆';
+                }
+
+                const textDiv = document.createElement('div');
+                textDiv.className = 'bell-item-text';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'bell-item-name';
+                nameSpan.textContent = ach.name;
+
+                textDiv.appendChild(nameSpan);
+                item.appendChild(iconDiv);
+                item.appendChild(textDiv);
+                dropdown.insertBefore(item, footer);
+            });
+        } else {
+            const empty = document.createElement('div');
+            empty.className = 'bell-empty';
+            empty.textContent = lang.startsWith('pl') ? 'Brak nowych osiągnięć' : 'No new achievements';
+            dropdown.insertBefore(empty, footer);
+        }
     }
 });

@@ -241,7 +241,7 @@ def test_reception_data_is_list_of_two(client):
 # ===========================================================================
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_signup_enqueues_activation_email(client):
     with patch("suchar_overflow.users.views.django_rq.enqueue") as mock_enqueue:
         client.post(
@@ -259,7 +259,7 @@ def test_signup_enqueues_activation_email(client):
     assert args[0].__name__ == "send_activation_email"
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_signup_uses_http_protocol_when_not_secure(client):
     with patch("suchar_overflow.users.views.django_rq.enqueue") as mock_enqueue:
         client.post(
@@ -278,7 +278,7 @@ def test_signup_uses_http_protocol_when_not_secure(client):
     assert protocol == "http"
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_signup_uses_https_protocol_when_secure(client):
     with patch("suchar_overflow.users.views.django_rq.enqueue") as mock_enqueue:
         client.post(
