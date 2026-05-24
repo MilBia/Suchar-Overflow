@@ -92,10 +92,10 @@ a:hover {
   border-radius: 6px;
 }
 
-.badge:hover {
+a.badge:hover,
+button.badge:hover {
   background-color: var(--color-primary) !important;
   color: white !important;
-  cursor: pointer;
   box-shadow: var(--shadow-sm);
 }
 

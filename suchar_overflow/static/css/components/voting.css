@@ -3,10 +3,10 @@
    ========================================= */
 
 .btn-vote {
+    position: relative;
     transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Vote Icons Dark Mode Visibility */
 [data-theme="dark"] .btn-vote {
     color: var(--text-muted);
 }
@@ -15,49 +15,106 @@
     fill: currentColor;
 }
 
-.btn-vote:hover {
-    background-color: hsla(var(--hue-primary), 80%, 60%, 0.1);
+/* ---- Separator ---- */
+
+.voting-controls {
+    border-top: 1px solid var(--border-color);
+    margin-top: 0.75rem;
+    padding-top: 0.875rem;
+}
+
+/* ---- Funny (orange) ---- */
+
+/* Inactive hover: light tint preview */
+.btn-vote[data-vote-type="funny"]:not(.active):hover {
+    color: #E58E26;
+    background-color: rgba(229, 142, 38, 0.12);
+    border-color: #E58E26;
     transform: scale(1.05);
     z-index: 10;
-    position: relative;
 }
 
-/* Upvote (Baguette) -> Funny */
-.btn-vote[data-vote-type="funny"]:hover,
+/* Active: solid fill — you've voted (WCAG 1.4.1: ring + bold) */
 .btn-vote[data-vote-type="funny"].active {
-    color: #fff !important;
-    background-color: #E58E26 !important;
-    border-color: #E58E26 !important;
-    box-shadow: 0 2px 4px rgba(229, 142, 38, 0.4);
-}
-
-/* Active-only: ring + bold for non-color indicator (WCAG 1.4.1) */
-.btn-vote[data-vote-type="funny"].active {
+    color: #fff;
+    background-color: #E58E26;
+    border-color: #E58E26;
     font-weight: 700;
     box-shadow: 0 0 0 3px #E58E26, 0 2px 4px rgba(229, 142, 38, 0.4);
 }
 
-/* Downvote (Water) -> Dry */
-.btn-vote[data-vote-type="dry"]:hover,
-.btn-vote[data-vote-type="dry"].active {
-    color: #fff !important;
-    background-color: #0ea5e9 !important;
-    border-color: #0ea5e9 !important;
-    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
+/* Active + hover: dimmed → "click to undo" signal */
+.btn-vote[data-vote-type="funny"].active:hover {
+    background-color: rgba(229, 142, 38, 0.6);
+    border-color: rgba(229, 142, 38, 0.6);
+    box-shadow: 0 0 0 3px rgba(229, 142, 38, 0.35);
 }
 
-/* Active-only: ring + bold for non-color indicator (WCAG 1.4.1) */
+/* ---- Dry (cyan) ---- */
+
+.btn-vote[data-vote-type="dry"]:not(.active):hover {
+    color: #0ea5e9;
+    background-color: rgba(14, 165, 233, 0.12);
+    border-color: #0ea5e9;
+    transform: scale(1.05);
+    z-index: 10;
+}
+
 .btn-vote[data-vote-type="dry"].active {
+    color: #fff;
+    background-color: #0ea5e9;
+    border-color: #0ea5e9;
     font-weight: 700;
     box-shadow: 0 0 0 3px #0ea5e9, 0 2px 4px rgba(14, 165, 233, 0.4);
 }
 
-/* Make inactive buttons slightly more visible in dark mode */
+.btn-vote[data-vote-type="dry"].active:hover {
+    background-color: rgba(14, 165, 233, 0.6);
+    border-color: rgba(14, 165, 233, 0.6);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.35);
+}
+
+/* ---- Anonymous tooltip ---- */
+
+.btn-vote[data-tooltip]:after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: rgba(30, 30, 30, 0.92);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    font-weight: 400;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 100;
+}
+
+.btn-vote[data-tooltip]:hover:after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ---- Loading state ---- */
+
+@keyframes vote-pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.35; }
+}
+
+.voting-controls.loading .btn-vote {
+    animation: vote-pulse 0.7s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* ---- Dark mode inactive ---- */
+
 [data-theme="dark"] .btn-vote:not(.active) {
     background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .btn-vote:not(.active):hover {
-    background-color: rgba(255, 255, 255, 0.1);
 }

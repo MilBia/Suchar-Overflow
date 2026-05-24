@@ -112,7 +112,7 @@
                   <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
                   <div>
                     <h6 class="mb-0 fw-bold">
-                      {{ suchar.author.display_name }}
+                      <a href="?author={{ suchar.author.username }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}">{{ suchar.author.display_name }}</a>
                       {% if not suchar.is_published %}
                         <span class="badge bg-warning text-dark ms-2">{% trans "Scheduled" %}</span>
                       {% endif %}
@@ -137,7 +137,7 @@
                   {% endfor %}
                 </div>
               {% endif %}
-              <div class="voting-controls d-flex align-items-center justify-content-end gap-3 border-top pt-3">
+              <div class="voting-controls d-flex align-items-center justify-content-end gap-3">
                 {% csrf_token %}
                 <!-- Funny Button -->
                 <button type="button"
