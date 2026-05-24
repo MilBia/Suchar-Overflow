@@ -76,7 +76,7 @@ def test_middleware_runs_on_non_api_routes(client):
     response = client.get("/suchary/", follow=True)
     assert response.status_code == HTTPStatus.OK
 
-    # Middleware delivers the toast but no longer marks is_seen — bell/mine page does.
+    # Middleware clears the cache key but does not send toasts or mark is_seen.
     ua.refresh_from_db()
     assert ua.is_seen is False
     assert cache.get(f"achievements_pending:{user.pk}") is None

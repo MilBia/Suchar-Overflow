@@ -42,12 +42,12 @@ def _set_pending_flag(user):
 
 
 # ---------------------------------------------------------------------------
-# Notification messages
+# Notification messages — middleware no longer sends toasts; bell handles it
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.django_db
-def test_unseen_achievement_produces_message(client):
+def test_unseen_achievement_produces_no_toast(client):
     user = make_user("winner")
     achievement = make_achievement()
     UserAchievement.objects.create(user=user, achievement=achievement, is_seen=False)
@@ -56,9 +56,8 @@ def test_unseen_achievement_produces_message(client):
     client.force_login(user)
     response = client.get(reverse("suchary:list"), follow=True)
 
-    messages = list(get_messages(response.wsgi_request))
-    texts = [str(m) for m in messages]
-    assert any("Test Achievement" in t for t in texts)
+    texts = [str(m) for m in get_messages(response.wsgi_request)]
+    assert not any("Test Achievement" in t for t in texts)
 
 
 @pytest.mark.django_db
@@ -95,7 +94,7 @@ def test_seen_achievement_produces_no_message(client):
 
 
 @pytest.mark.django_db
-def test_multiple_unseen_achievements_all_notified(client):
+def test_multiple_unseen_achievements_produce_no_toasts(client):
     user = make_user("winner")
     ach1 = make_achievement(slug="ach-1", name="Achievement One")
     ach2 = make_achievement(slug="ach-2", name="Achievement Two")
@@ -107,8 +106,8 @@ def test_multiple_unseen_achievements_all_notified(client):
     response = client.get(reverse("suchary:list"), follow=True)
 
     texts = [str(m) for m in get_messages(response.wsgi_request)]
-    assert any("Achievement One" in t for t in texts)
-    assert any("Achievement Two" in t for t in texts)
+    assert not any("Achievement One" in t for t in texts)
+    assert not any("Achievement Two" in t for t in texts)
 
 
 @pytest.mark.django_db
@@ -122,7 +121,7 @@ def test_unauthenticated_user_gets_no_messages(client):
 
 @pytest.mark.django_db
 def test_cache_flag_cleared_after_middleware_runs(client):
-    """Cache key must be deleted after middleware delivers notifications."""
+    """Cache key must be deleted after middleware runs."""
     user = make_user("winner")
     achievement = make_achievement()
     UserAchievement.objects.create(user=user, achievement=achievement, is_seen=False)
