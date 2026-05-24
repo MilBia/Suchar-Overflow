@@ -204,8 +204,9 @@
 
 .bell-badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: 0;
+    right: 0;
+    transform: translate(40%, -40%);
     background: var(--color-primary);
     color: #fff;
     font-size: 0.6rem;
@@ -219,6 +220,7 @@
     padding: 0 3px;
     line-height: 1;
     pointer-events: none;
+    z-index: 1;
 }
 
 .bell-dropdown {

@@ -171,12 +171,10 @@
                         id="bell-btn"
                         aria-label="{% trans 'Notifications' %}"
                         aria-haspopup="true"
-                        aria-expanded="false">
-                  {% include "svgs/icon-bell.svg" %}
-                  {% if unseen_achievements_count > 0 %}
-                    <span class="bell-badge" id="bell-badge">{{ unseen_achievements_count }}</span>
-                  {% endif %}
-                </button>
+                        aria-expanded="false">{% include "svgs/icon-bell.svg" %}</button>
+                {% if unseen_achievements_count > 0 %}
+                  <span class="bell-badge" id="bell-badge">{{ unseen_achievements_count }}</span>
+                {% endif %}
                 <div class="bell-dropdown" id="bell-dropdown" hidden>
                   {% if unseen_achievements_preview %}
                     <div class="bell-header">{% trans "New achievements" %}</div>
