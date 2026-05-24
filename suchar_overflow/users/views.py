@@ -4,6 +4,7 @@ import json
 import django_rq
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db import transaction
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models import QuerySet
@@ -235,12 +236,18 @@ class SignupView(CreateView):
         user.save()
 
         activation = ActivationToken.objects.create(user=user)
-        django_rq.enqueue(
-            send_activation_email,
-            user.pk,
-            self.request.get_host(),
-            str(activation.token),
-            "https" if self.request.is_secure() else "http",
+        user_pk = user.pk
+        host = self.request.get_host()
+        token = str(activation.token)
+        protocol = "https" if self.request.is_secure() else "http"
+        transaction.on_commit(
+            lambda: django_rq.enqueue(
+                send_activation_email,
+                user_pk,
+                host,
+                token,
+                protocol,
+            ),
         )
         return redirect(self.success_url)
 
@@ -298,13 +305,19 @@ class EmailChangeInitiateView(LoginRequiredMixin, FormView):
             kwargs={"token": str(email_request.revocation_token)},
         )
 
-        django_rq.enqueue(
-            send_email_change_emails,
-            user.pk,
-            user.email,
-            new_email,
-            f"{protocol}://{current_site}{verify_url}",
-            f"{protocol}://{current_site}{revoke_url}",
+        user_pk = user.pk
+        old_email = user.email
+        verify_full = f"{protocol}://{current_site}{verify_url}"
+        revoke_full = f"{protocol}://{current_site}{revoke_url}"
+        transaction.on_commit(
+            lambda: django_rq.enqueue(
+                send_email_change_emails,
+                user_pk,
+                old_email,
+                new_email,
+                verify_full,
+                revoke_full,
+            ),
         )
 
         return super().form_valid(form)
