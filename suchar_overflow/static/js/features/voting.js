@@ -79,7 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 funnyBtn.querySelector('.vote-count').textContent = snapshot.funnyCount;
                 dryBtn.querySelector('.vote-count').textContent = snapshot.dryCount;
 
-                alert('Nie udało się zagłosować. Spróbuj ponownie.');
+                if (window.showToast) {
+                    window.showToast('Nie udało się zagłosować. Spróbuj ponownie.', 'Błąd', 'error');
+                }
             } finally {
                 container.classList.remove('loading');
             }

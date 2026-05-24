@@ -15,9 +15,9 @@
 .page-link {
     position: relative;
     display: block;
-    color: var(--primary-color);
+    color: var(--color-primary);
     text-decoration: none;
-    background-color: var(--card-bg);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
     padding: 0.5rem 0.75rem;
     border-radius: var(--radius-md);
@@ -27,39 +27,39 @@
 
 .page-link:hover {
     z-index: 2;
-    color: var(--primary-hover);
-    background-color: var(--bg-secondary);
+    color: var(--color-primary);
+    background-color: var(--bg-app);
     border-color: var(--border-color);
 }
 
 .page-item.active .page-link {
     z-index: 3;
     color: #fff;
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .page-item.disabled .page-link {
     color: var(--text-light);
     pointer-events: none;
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-app);
     border-color: var(--border-color);
 }
 
 /* Dark Theme Adjustments */
 [data-theme='dark'] .page-link {
-    background-color: var(--card-bg);
+    background-color: var(--bg-surface);
     border-color: var(--border-color);
-    color: var(--text-secondary);
+    color: var(--text-muted);
 }
 
 [data-theme='dark'] .page-link:hover {
     background-color: rgba(255, 255, 255, 0.05);
-    color: var(--primary-color);
+    color: var(--color-primary);
 }
 
 [data-theme='dark'] .page-item.active .page-link {
-    background-color: var(--primary-color);
+    background-color: var(--color-primary);
     color: white;
 }
 

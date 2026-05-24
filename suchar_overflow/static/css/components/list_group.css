@@ -23,9 +23,9 @@
     position: relative;
     display: block;
     padding: 0.75rem 1.25rem;
-    color: var(--text-primary);
+    color: var(--text-main);
     text-decoration: none;
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
 }
 
@@ -41,21 +41,21 @@
 
 .list-group-item-action {
     width: 100%;
-    color: var(--text-primary);
+    color: var(--text-main);
     text-align: inherit;
 }
 
 .list-group-item-action:hover,
 .list-group-item-action:focus {
     z-index: 1;
-    color: var(--text-primary);
+    color: var(--text-main);
     text-decoration: none;
-    background-color: var(--bg-primary);
+    background-color: var(--bg-app);
 }
 
 .list-group-item.active {
     z-index: 2;
     color: #fff;
-    background-color: var(--accent-primary);
-    border-color: var(--accent-primary);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
 }
