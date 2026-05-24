@@ -185,4 +185,5 @@ dependencies = [
     "openai>=1.0.0",
     "polib>=1.2.0",
     "rq-scheduler>=0.13",
+    "django-modeltranslation>=0.20.3",
 ]

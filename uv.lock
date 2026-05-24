@@ -344,6 +344,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-modeltranslation"
+version = "0.20.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d1/db/a0c18e3053c97176a195ee05891ad2e673c531eba612c8aa09b51333d634/django_modeltranslation-0.20.3.tar.gz", hash = "sha256:53f5e33927b99e184f3100c965c45f306f370b7086c6b34e35468800be0916ea", size = 82061, upload-time = "2026-04-14T05:20:06.561Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c0/40/addb85c32031945ebed0545842fffbd9a5604fdc16bd684583e538137cbd/django_modeltranslation-0.20.3-py3-none-any.whl", hash = "sha256:0e1aaf77ce3dcf80c7ec67a6d67821635d07f4849c90363bc0afedb237b014f0", size = 98703, upload-time = "2026-04-14T05:20:04.394Z" },
+]
+
+[[package]]
 name = "django-ninja"
 version = "1.5.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1394,6 +1407,7 @@ dependencies = [
     { name = "django" },
     { name = "django-compressor" },
     { name = "django-environ" },
+    { name = "django-modeltranslation" },
     { name = "django-ninja" },
     { name = "django-redis" },
     { name = "django-rq" },
@@ -1438,6 +1452,7 @@ requires-dist = [
     { name = "django", specifier = "==5.2.10" },
     { name = "django-compressor", specifier = "==4.5.1" },
     { name = "django-environ", specifier = "==0.12.0" },
+    { name = "django-modeltranslation", specifier = ">=0.20.3" },
     { name = "django-ninja", specifier = "==1.5.3" },
     { name = "django-redis", specifier = "==6.0.0" },
     { name = "django-rq", specifier = "==3.0.0" },

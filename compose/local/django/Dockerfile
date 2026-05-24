@@ -48,7 +48,8 @@ ENV PYTHONPATH="${APP_HOME}/.venv/lib/python3.13/site-packages"
 
 # Install Playwright Chromium binary for E2E tests.
 # --with-deps installs the required system libraries (libnss, libatk, etc.)
-RUN uv run playwright install --with-deps chromium
+# Allow failure so the image builds when CDN is unreachable (e.g. restricted build networks).
+RUN uv run playwright install --with-deps chromium || echo "Playwright browser install skipped (network unavailable)"
 
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint

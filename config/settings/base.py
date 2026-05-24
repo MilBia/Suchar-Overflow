@@ -131,7 +131,14 @@ LOCAL_APPS = [
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+# modeltranslation must precede django.contrib.admin
+INSTALLED_APPS = ["modeltranslation", *DJANGO_APPS, *THIRD_PARTY_APPS, *LOCAL_APPS]
+
+# MODELTRANSLATION
+# ------------------------------------------------------------------------------
+MODELTRANSLATION_DEFAULT_LANGUAGE = "pl"
+MODELTRANSLATION_LANGUAGES = ("pl", "en")
+MODELTRANSLATION_FALLBACK_LANGUAGES = ("pl",)
 
 # MIGRATIONS
 # ------------------------------------------------------------------------------

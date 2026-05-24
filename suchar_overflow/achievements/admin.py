@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
+from modeltranslation.admin import TabbedTranslationAdmin
 
 from .models import Achievement
 from .models import UserAchievement
@@ -37,7 +38,7 @@ class AchievementAdminForm(forms.ModelForm):
 
 
 @admin.register(Achievement)
-class AchievementAdmin(admin.ModelAdmin):
+class AchievementAdmin(TabbedTranslationAdmin):
     form = AchievementAdminForm
     list_display = (
         "name",
