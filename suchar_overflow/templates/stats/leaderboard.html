@@ -371,6 +371,41 @@
           chart.update();
         });
       });
+
+      // Sliding tab indicator
+      const tabList = document.getElementById('leaderboardTabs');
+      if (tabList) {
+        const tabColorMap = {
+          'overall-tab': 'overall',
+          'funny-tab': 'funny',
+          'dry-tab': 'dry'
+        };
+        const slider = document.createElement('span');
+        slider.className = 'leaderboard-tab-slider';
+        slider.setAttribute('aria-hidden', 'true');
+        tabList.appendChild(slider);
+
+        function positionSlider(btn, animate) {
+          if (!animate) slider.style.transition = 'none';
+          const containerRect = tabList.getBoundingClientRect();
+          const btnRect = btn.getBoundingClientRect();
+          slider.style.left = (btnRect.left - containerRect.left) + 'px';
+          slider.style.top = (btnRect.top - containerRect.top) + 'px';
+          slider.style.width = btnRect.width + 'px';
+          slider.style.height = btnRect.height + 'px';
+          tabList.dataset.activeTab = tabColorMap[btn.id] || 'overall';
+          if (!animate) requestAnimationFrame(() => {
+            slider.style.transition = '';
+          });
+        }
+
+        const initialActive = tabList.querySelector('.nav-link.active');
+        if (initialActive) positionSlider(initialActive, false);
+
+        tabList.querySelectorAll('[data-toggle="tab"]').forEach(btn => {
+          btn.addEventListener('click', () => positionSlider(btn, true));
+        });
+      }
     });
   </script>
 {% endblock javascript %}

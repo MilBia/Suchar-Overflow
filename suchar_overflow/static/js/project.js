@@ -210,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Custom Tabs Switcher
     function activateTab(btn) {
+        if (btn.classList.contains('active')) return;
         const targetSelector = btn.getAttribute('data-target');
         const targetPane = document.querySelector(targetSelector);
         if (!targetPane) return;

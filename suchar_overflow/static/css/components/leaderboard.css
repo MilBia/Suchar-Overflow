@@ -117,16 +117,34 @@
     max-width: 500px;
     margin-left: auto;
     margin-right: auto;
+    position: relative;
 }
 
 [data-theme="dark"] #leaderboardTabs {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
+/* Sliding active pill — animated background shared across tabs */
+.leaderboard-tab-slider {
+    position: absolute;
+    border-radius: 50px;
+    pointer-events: none;
+    z-index: 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition:
+        left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        background-color 0.3s ease;
+}
+
 #leaderboardTabs .nav-item {
     flex: 1 1 0px;
     text-align: center;
     min-width: 0;
+    position: relative;
+    z-index: 1;
 }
 
 #leaderboardTabs .nav-link {
@@ -134,7 +152,8 @@
     border-radius: 50px;
     padding: 0.75rem 0;
     font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+    transition: color 0.2s ease;
     border: none;
     display: flex;
     align-items: center;
@@ -145,44 +164,23 @@
 }
 
 #leaderboardTabs .nav-link:hover {
-    background-color: rgba(0, 0, 0, 0.03);
     color: var(--text-main);
-}
-
-[data-theme="dark"] #leaderboardTabs .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.05);
 }
 
 [data-theme="dark"] #leaderboardTabs .nav-link:not(.active) {
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* Active State Base */
+/* Active tab — slider provides the background, button just needs white text */
 #leaderboardTabs .nav-link.active {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
-    transform: scale(1.05);
-}
-
-/* Tab Colors */
-#overall-tab.active {
-    background-color: #f59e0b !important;
     color: #fff !important;
+    background-color: transparent !important;
 }
 
-#funny-tab.active {
-    background-color: #E58E26 !important;
-    color: #fff !important;
-}
-
-#dry-tab.active {
-    background-color: #0ea5e9 !important;
-    color: #fff !important;
-}
-
-/* Animation for active click */
-#leaderboardTabs .nav-link:active {
-    transform: scale(0.95);
-}
+/* Tab Colors (applied to the slider via JS data attributes) */
+#leaderboardTabs[data-active-tab="overall"] .leaderboard-tab-slider { background-color: #f59e0b; }
+#leaderboardTabs[data-active-tab="funny"]   .leaderboard-tab-slider { background-color: #E58E26; }
+#leaderboardTabs[data-active-tab="dry"]     .leaderboard-tab-slider { background-color: #0ea5e9; }
 
 /* Tab Animations & Visibility Fixes */
 .tab-content>.tab-pane {
