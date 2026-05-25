@@ -47,16 +47,3 @@ CACHES = {
 # COMPRESSOR
 # ------------------------------------------------------------------------------
 COMPRESS_ENABLED = False
-
-# RQ
-# ------------------------------------------------------------------------------
-# Re-declare queues without USE_REDIS_CACHE so tests don't need Redis.
-# django_rq.enqueue is patched to run synchronously in tests that need it.
-RQ_QUEUES = {
-    "default": {
-        "HOST": "localhost",
-        "PORT": 6379,
-        "DB": 0,
-        "ASYNC": False,
-    },
-}
