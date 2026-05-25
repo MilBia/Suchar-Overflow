@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import json
 
@@ -37,15 +36,15 @@ class UserDetailView(AsyncLoginRequiredMixin, View):
             current_user = await request.auser()
         else:
             current_user = request.user
-        context = await self._build_context(user, current_user == user)
+        context = await sync_to_async(self._build_context)(user, current_user == user)
         context["object"] = user
         return await sync_to_async(render)(request, self.template_name, context)
 
-    async def _build_context(self, user, is_owner):
+    def _build_context(self, user, is_owner):
         context = {}
 
-        # 1. QuerySets
-        latest_suchary_qs = (
+        # 1. Latest Suchary
+        context["latest_suchary"] = (
             user.suchary.filter(published_at__lte=timezone.now())
             .annotate(
                 score=Count("votes"),
@@ -55,28 +54,44 @@ class UserDetailView(AsyncLoginRequiredMixin, View):
             .order_by("-created_at")[:5]
         )
 
+        # 1.5 Scheduled Suchary (Owner Only)
         if is_owner:
-            scheduled_suchary_qs = user.suchary.filter(
+            context["scheduled_suchary"] = user.suchary.filter(
                 published_at__gt=timezone.now(),
             ).order_by("published_at")
-        else:
-            scheduled_suchary_qs = None
 
-        stats_fut = user.suchary.aaggregate(
+        # 2. Total Score & Count
+        stats = user.suchary.aggregate(
             total_score=Count("votes"),
             funny_score=Count("votes", filter=Q(votes__is_funny=True)),
             dry_score=Count("votes", filter=Q(votes__is_dry=True)),
             total_count=Count("id", distinct=True),
         )
+        user.total_score = stats["total_score"] or 0
+        context["total_funny_score"] = stats["funny_score"] or 0
+        context["total_dry_score"] = stats["dry_score"] or 0
+        context["suchar_count"] = stats["total_count"] or 0
 
-        best_joke_fut = (
+        # Global Rank — count users with more funny votes than this user
+        higher_ranking_users = (
+            User.objects.annotate(
+                score=Count("suchary__votes", filter=Q(suchary__votes__is_funny=True)),
+            )
+            .filter(score__gt=user.total_score)
+            .count()
+        )
+        context["global_rank"] = higher_ranking_users + 1
+
+        # Best Joke (highest funny count)
+        context["best_joke"] = (
             user.suchary.annotate(score=Count("votes", filter=Q(votes__is_funny=True)))
             .order_by("-score", "-created_at")
-            .afirst()
+            .first()
         )
 
+        # 3. Dryness Chart (Activity over last 30 days)
         last_30_days = timezone.now() - datetime.timedelta(days=30)
-        activity_data_qs = (
+        activity_data = (
             user.suchary.filter(created_at__gte=last_30_days)
             .annotate(date=TruncDay("created_at"))
             .values("date")
@@ -84,61 +99,21 @@ class UserDetailView(AsyncLoginRequiredMixin, View):
             .order_by("date")
         )
 
-        async def fetch_list(qs):
-            return [x async for x in qs]
-
-        tasks = [
-            fetch_list(latest_suchary_qs),
-            stats_fut,
-            best_joke_fut,
-            fetch_list(activity_data_qs),
-            self._get_heatmap_weeks(user),
-        ]
-        if is_owner:
-            tasks.append(fetch_list(scheduled_suchary_qs))
-
-        results = await asyncio.gather(*tasks)
-
-        latest_suchary = results[0]
-        stats = results[1]
-        best_joke = results[2]
-        activity_data = results[3]
-        heatmap_weeks = results[4]
-        scheduled_suchary = results[5] if is_owner else []
-
-        context["latest_suchary"] = latest_suchary
-        if is_owner:
-            context["scheduled_suchary"] = scheduled_suchary
-
-        user.total_score = stats["total_score"] or 0
-        context["total_funny_score"] = stats["funny_score"] or 0
-        context["total_dry_score"] = stats["dry_score"] or 0
-        context["suchar_count"] = stats["total_count"] or 0
-
-        # Global Rank — count users with more funny votes than this user
-        higher_ranking_users = await (
-            User.objects.annotate(
-                score=Count("suchary__votes", filter=Q(suchary__votes__is_funny=True)),
-            )
-            .filter(score__gt=user.total_score)
-            .acount()
-        )
-        context["global_rank"] = higher_ranking_users + 1
-        context["best_joke"] = best_joke
-
         chart_labels = [entry["date"].strftime("%Y-%m-%d") for entry in activity_data]
         chart_values = [entry["count"] for entry in activity_data]
         context["activity_labels"] = json.dumps(chart_labels)
         context["activity_values"] = json.dumps(chart_values)
 
+        # 4. Reception Chart (Funny vs Dry received) — reuse already-computed stats
         context["reception_data"] = json.dumps(
             [stats["funny_score"] or 0, stats["dry_score"] or 0],
         )
 
-        context["heatmap_weeks"] = heatmap_weeks
+        # 5. Contribution Heatmap (Last ~1 year, aligned to weeks)
+        context["heatmap_weeks"] = self._get_heatmap_weeks(user)
         return context
 
-    async def _get_heatmap_weeks(self, user):
+    def _get_heatmap_weeks(self, user):
         today = timezone.now().date()
         # Go back approx 1 year
         start_date = today - datetime.timedelta(days=365)
@@ -148,14 +123,13 @@ class UserDetailView(AsyncLoginRequiredMixin, View):
         start_date -= datetime.timedelta(days=days_to_subtract)
 
         # Get counts per day
-        daily_counts_qs = (
+        daily_counts = (
             user.suchary.filter(created_at__date__gte=start_date)
             .annotate(date=TruncDay("created_at"))
             .values("date")
             .annotate(count=Count("id"))
             .order_by("date")
         )
-        daily_counts = [x async for x in daily_counts_qs]
 
         # Convert to dictionary for easy lookup
         counts_dict = {entry["date"].date(): entry["count"] for entry in daily_counts}

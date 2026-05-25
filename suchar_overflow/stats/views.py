@@ -1,4 +1,3 @@
-import asyncio
 import json
 from datetime import timedelta
 
@@ -18,10 +17,10 @@ from suchar_overflow.suchary.models import Suchar
 User = get_user_model()
 
 
-async def get_daily_activity_data(start_of_today, now, days):
+def get_daily_activity_data(start_of_today, now, days):
     start_date = (start_of_today - timedelta(days=days)).date()
     end_date = now.date()
-    db_data_qs = (
+    db_data = (
         Suchar.objects.filter(
             created_at__date__gte=start_date,
             created_at__date__lte=end_date,
@@ -30,7 +29,6 @@ async def get_daily_activity_data(start_of_today, now, days):
         .values("date")
         .annotate(count=Count("id"))
     )
-    db_data = [entry async for entry in db_data_qs]
     counts_map = {}
     for entry in db_data:
         d = entry["date"].date() if hasattr(entry["date"], "date") else entry["date"]
@@ -65,8 +63,8 @@ async def get_daily_activity_data(start_of_today, now, days):
     return {"labels": labels, "values": values}
 
 
-async def get_all_time_activity_data(start_of_today, now):
-    earliest = await Suchar.objects.aaggregate(min_date=Min("created_at"))
+def get_all_time_activity_data(start_of_today, now):
+    earliest = Suchar.objects.aggregate(min_date=Min("created_at"))
     min_date = earliest.get("min_date")
     twelve_months_ago = (start_of_today - timedelta(days=365)).date().replace(day=1)
     if min_date:
@@ -75,12 +73,11 @@ async def get_all_time_activity_data(start_of_today, now):
         start_date = twelve_months_ago
     end_date = now.date().replace(day=1)
 
-    db_data_qs = (
+    db_data = (
         Suchar.objects.annotate(month=TruncMonth("created_at"))
         .values("month")
         .annotate(count=Count("id"))
     )
-    db_data = [entry async for entry in db_data_qs]
     counts_map = {}
     for entry in db_data:
         m = entry["month"].date() if hasattr(entry["month"], "date") else entry["month"]
@@ -119,14 +116,14 @@ class LeaderboardView(View):
     template_name = "stats/leaderboard.html"
 
     async def get(self, request, *args, **kwargs):
-        context = await self._build_context()
+        context = await sync_to_async(self._build_context)()
         return await sync_to_async(render)(request, self.template_name, context)
 
-    async def _build_context(self):
+    def _build_context(self):
         now = timezone.now()
         start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-        top_authors_overall_qs = (
+        top_authors_overall = list(
             User.objects.annotate(
                 total_score=Count("suchary__votes"),
                 funny_score=Count(
@@ -140,10 +137,10 @@ class LeaderboardView(View):
                 suchar_count=Count("suchary", distinct=True),
             )
             .exclude(total_score=0)
-            .order_by("-total_score")[:10]
+            .order_by("-total_score")[:10],
         )
 
-        top_authors_funny_qs = (
+        top_authors_funny = list(
             User.objects.annotate(
                 funny_score=Count(
                     "suchary__votes",
@@ -152,10 +149,10 @@ class LeaderboardView(View):
                 suchar_count=Count("suchary", distinct=True),
             )
             .exclude(funny_score=0)
-            .order_by("-funny_score")[:10]
+            .order_by("-funny_score")[:10],
         )
 
-        top_authors_dry_qs = (
+        top_authors_dry = list(
             User.objects.annotate(
                 dry_score=Count(
                     "suchary__votes",
@@ -164,10 +161,10 @@ class LeaderboardView(View):
                 suchar_count=Count("suchary", distinct=True),
             )
             .exclude(dry_score=0)
-            .order_by("-dry_score")[:10]
+            .order_by("-dry_score")[:10],
         )
 
-        top_suchars_overall_qs = (
+        top_suchars_overall = list(
             Suchar.objects.select_related("author")
             .prefetch_related("tags")
             .annotate(
@@ -176,10 +173,10 @@ class LeaderboardView(View):
                 dry_count=Count("votes", filter=Q(votes__is_dry=True)),
             )
             .exclude(score=0)
-            .order_by("-score")[:10]
+            .order_by("-score")[:10],
         )
 
-        top_suchars_funny_qs = (
+        top_suchars_funny = list(
             Suchar.objects.select_related("author")
             .prefetch_related("tags")
             .annotate(
@@ -187,10 +184,10 @@ class LeaderboardView(View):
                 score=Count("votes"),
             )
             .exclude(funny_count=0)
-            .order_by("-funny_count")[:10]
+            .order_by("-funny_count")[:10],
         )
 
-        top_suchars_dry_qs = (
+        top_suchars_dry = list(
             Suchar.objects.select_related("author")
             .prefetch_related("tags")
             .annotate(
@@ -198,41 +195,14 @@ class LeaderboardView(View):
                 score=Count("votes"),
             )
             .exclude(dry_count=0)
-            .order_by("-dry_count")[:10]
-        )
-
-        async def fetch_list(qs):
-            return [x async for x in qs]
-
-        (
-            top_authors_overall,
-            top_authors_funny,
-            top_authors_dry,
-            top_suchars_overall,
-            top_suchars_funny,
-            top_suchars_dry,
-            chart_7,
-            chart_30,
-            chart_90,
-            chart_all,
-        ) = await asyncio.gather(
-            fetch_list(top_authors_overall_qs),
-            fetch_list(top_authors_funny_qs),
-            fetch_list(top_authors_dry_qs),
-            fetch_list(top_suchars_overall_qs),
-            fetch_list(top_suchars_funny_qs),
-            fetch_list(top_suchars_dry_qs),
-            get_daily_activity_data(start_of_today, now, 7),
-            get_daily_activity_data(start_of_today, now, 30),
-            get_daily_activity_data(start_of_today, now, 90),
-            get_all_time_activity_data(start_of_today, now),
+            .order_by("-dry_count")[:10],
         )
 
         chart_datasets = {
-            "7": chart_7,
-            "30": chart_30,
-            "90": chart_90,
-            "all": chart_all,
+            "7": get_daily_activity_data(start_of_today, now, 7),
+            "30": get_daily_activity_data(start_of_today, now, 30),
+            "90": get_daily_activity_data(start_of_today, now, 90),
+            "all": get_all_time_activity_data(start_of_today, now),
         }
 
         return {
