@@ -4,7 +4,6 @@ import json
 from asgiref.sync import sync_to_async
 from django.db.models import Count
 from django.db.models import Q
-from django.db.models import QuerySet
 from django.db.models.functions import TruncDay
 from django.forms import modelform_factory
 from django.shortcuts import get_object_or_404
@@ -204,35 +203,29 @@ class UserUpdateView(AsyncLoginRequiredMixin, View):
     fields = ["name"]
     template_name = "users/user_form.html"
 
-    def get_success_url(self) -> str:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user.get_absolute_url()
-
-    def get_object(self, queryset: QuerySet | None = None) -> User:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user
-
     def _form_class(self):
         return modelform_factory(self.model, fields=self.fields)
 
     async def get(self, request, *args, **kwargs):
-        form = self._form_class()(instance=request.user)
-        return render(
+        user = await request.auser()
+        form = self._form_class()(instance=user)
+        return await sync_to_async(render)(
             request,
             self.template_name,
-            {"form": form, "object": request.user},
+            {"form": form, "object": user},
         )
 
     async def post(self, request, *args, **kwargs):
-        form = self._form_class()(request.POST, instance=request.user)
-        if not form.is_valid():
-            return render(
+        user = await request.auser()
+        form = self._form_class()(request.POST, instance=user)
+        if not await sync_to_async(form.is_valid)():
+            return await sync_to_async(render)(
                 request,
                 self.template_name,
-                {"form": form, "object": request.user},
+                {"form": form, "object": user},
             )
         await sync_to_async(form.save)()
-        return redirect(self.get_success_url())
+        return redirect(user.get_absolute_url())
 
 
 user_update_view = UserUpdateView.as_view()
@@ -240,8 +233,9 @@ user_update_view = UserUpdateView.as_view()
 
 class UserRedirectView(AsyncLoginRequiredMixin, View):
     async def get(self, request, *args, **kwargs):
+        user = await request.auser()
         return redirect(
-            reverse("users:detail", kwargs={"username": request.user.username}),
+            reverse("users:detail", kwargs={"username": user.username}),
         )
 
 

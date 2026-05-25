@@ -3,31 +3,30 @@ from http import HTTPStatus
 import pytest
 from asgiref.sync import sync_to_async
 from django.conf import settings
-from django.test import RequestFactory
 from django.urls import reverse
 
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
-from suchar_overflow.users.models import User
 from suchar_overflow.users.tests.factories import UserFactory
-from suchar_overflow.users.views import UserUpdateView
 
 
-@pytest.mark.django_db
-class TestUserUpdateView:
-    def test_get_success_url(self, user: User, rf: RequestFactory):
-        view = UserUpdateView()
-        request = rf.get("/fake-url/")
-        request.user = user
-        view.request = request
-        assert view.get_success_url() == f"/users/{user.username}/"
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_user_update_get(async_client):
+    user = await sync_to_async(UserFactory)()
+    await async_client.aforce_login(user)
+    response = await async_client.get(reverse("users:update"))
+    assert response.status_code == HTTPStatus.OK
 
-    def test_get_object(self, user: User, rf: RequestFactory):
-        view = UserUpdateView()
-        request = rf.get("/fake-url/")
-        request.user = user
-        view.request = request
-        assert view.get_object() == user
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_user_update_post_redirects_to_profile(async_client):
+    user = await sync_to_async(UserFactory)()
+    await async_client.aforce_login(user)
+    response = await async_client.post(reverse("users:update"), {"name": "New Name"})
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url == f"/users/{user.username}/"
 
 
 @pytest.mark.anyio

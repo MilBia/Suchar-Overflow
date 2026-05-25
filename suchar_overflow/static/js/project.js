@@ -13,6 +13,7 @@ function setTheme(theme, withTransition = false) {
     }
     htmlElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+    document.cookie = `theme=${theme}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
 function getCurrentTheme() {

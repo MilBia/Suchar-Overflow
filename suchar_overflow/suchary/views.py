@@ -38,18 +38,19 @@ class SucharListView(View):
             )
         )
 
-        if request.user.is_authenticated:
+        user = await request.auser()
+        if user.is_authenticated:
             qs = qs.annotate(
                 user_is_funny=Subquery(
                     Vote.objects.filter(
                         suchar=OuterRef("pk"),
-                        user=request.user,
+                        user=user,
                     ).values("is_funny")[:1],
                 ),
                 user_is_dry=Subquery(
                     Vote.objects.filter(
                         suchar=OuterRef("pk"),
-                        user=request.user,
+                        user=user,
                     ).values("is_dry")[:1],
                 ),
             )
@@ -184,7 +185,8 @@ async def vote_suchar(request, pk):
     if vote_type not in ["funny", "dry"]:
         return JsonResponse({"error": "Invalid vote type"}, status=400)
 
-    vote, _ = await Vote.objects.aget_or_create(user=request.user, suchar=suchar)
+    user = await request.auser()
+    vote, _ = await Vote.objects.aget_or_create(user=user, suchar=suchar)
 
     if vote_type == "funny":
         vote.is_funny = not vote.is_funny

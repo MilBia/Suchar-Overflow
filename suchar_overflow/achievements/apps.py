@@ -1,4 +1,5 @@
 import sys
+import threading
 
 from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
@@ -29,7 +30,9 @@ class AchievementsConfig(AppConfig):
         if len(sys.argv) > 1 and sys.argv[1] in _NO_SCHEDULER:
             return
 
-        self._start_scheduler()
+        # DjangoJobStore uses sync ORM; run in a plain thread so there is
+        # no running asyncio loop (uvicorn sets one up before importing asgi.py).
+        threading.Thread(target=self._start_scheduler, daemon=True).start()
 
     @staticmethod
     def _start_scheduler():
