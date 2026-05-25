@@ -49,7 +49,7 @@
       {% endif %}
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {% endblock javascript %}
-    <script>
+    <script nonce="{{ csp_nonce }}">
       (function() {
         var stored = localStorage.getItem('theme');
         var theme = stored ||

@@ -258,6 +258,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.csp",
                 "suchar_overflow.context_processors.site_settings",
                 "suchar_overflow.achievements.context_processors.achievements_bell",
             ],
@@ -351,15 +352,16 @@ from django.utils.csp import CSP  # noqa: E402
 
 SECURE_CSP = {
     "default-src": [CSP.SELF],
-    "script-src": [CSP.SELF, "cdn.jsdelivr.net"],
+    "script-src": [CSP.SELF, "cdn.jsdelivr.net", CSP.NONCE],
     "style-src": [
         CSP.SELF,
         CSP.UNSAFE_INLINE,
         "cdn.jsdelivr.net",
-    ],  # CSS custom properties + flatpickr CDN
+        "fonts.googleapis.com",
+    ],  # CSS custom properties + flatpickr CDN + Google Fonts
     "img-src": [CSP.SELF, "data:"],
     "connect-src": [CSP.SELF],  # covers the SSE endpoint
-    "font-src": [CSP.SELF],
+    "font-src": [CSP.SELF, "fonts.gstatic.com"],  # Google Fonts files
 }
 
 # Your stuff...

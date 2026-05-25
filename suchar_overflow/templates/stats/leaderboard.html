@@ -307,8 +307,7 @@
 
 {% block javascript %}
   {{ block.super }}
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
+  <script nonce="{{ csp_nonce }}">
     document.addEventListener('DOMContentLoaded', function() {
       const ctx = document.getElementById('activityChart').getContext('2d');
       const datasets = JSON.parse('{{ chart_datasets|safe }}');
@@ -343,8 +342,8 @@
               ticks: {
                 stepSize: 1
               },
-              grid: {
-                borderDash: [2, 4]
+              border: {
+                dash: [2, 4]
               }
             },
             x: {
