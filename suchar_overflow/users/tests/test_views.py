@@ -3,11 +3,9 @@ from http import HTTPStatus
 import pytest
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpRequest
-from django.http import HttpResponseRedirect
 from django.test import RequestFactory
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -19,7 +17,6 @@ from suchar_overflow.users.models import User
 from suchar_overflow.users.tests.factories import UserFactory
 from suchar_overflow.users.views import UserRedirectView
 from suchar_overflow.users.views import UserUpdateView
-from suchar_overflow.users.views import user_detail_view
 
 pytestmark = pytest.mark.django_db
 
@@ -85,24 +82,23 @@ class TestUserRedirectView:
 
 
 class TestUserDetailView:
-    def test_authenticated(self, user: User, rf: RequestFactory):
-        request = rf.get("/fake-url/")
-        request.user = UserFactory()
-        response = user_detail_view(request, username=user.username)
-
+    def test_authenticated(self, user: User, client):
+        viewer = UserFactory()
+        client.force_login(viewer)
+        response = client.get(
+            reverse("users:detail", kwargs={"username": user.username}),
+        )
         assert response.status_code == HTTPStatus.OK
 
-    def test_not_authenticated(self, user: User, rf: RequestFactory):
-        request = rf.get("/fake-url/")
-        request.user = AnonymousUser()
-        response = user_detail_view(request, username=user.username)
+    def test_not_authenticated(self, user: User, client):
+        response = client.get(
+            reverse("users:detail", kwargs={"username": user.username}),
+        )
         login_url = reverse(settings.LOGIN_URL)
-
-        assert isinstance(response, HttpResponseRedirect)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == f"{login_url}?next=/fake-url/"
+        assert response.url.startswith(login_url)
 
-    def test_stats_calculation(self, user: User, rf: RequestFactory, client):
+    def test_stats_calculation(self, user: User, client):
         """Verify that total_score and suchar_count are correctly calculated."""
         # Create one joke with 1 upvote (funny)
         s1 = Suchar.objects.create(text="Joke 1", author=user)

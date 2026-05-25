@@ -8,6 +8,7 @@ from django.db.models import Count
 from django.db.models import Q
 from django.db.models import QuerySet
 from django.db.models.functions import TruncDay
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -16,7 +17,6 @@ from django.utils import timezone
 from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import DetailView
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
 
@@ -31,14 +31,21 @@ from .tasks import send_activation_email
 from .tasks import send_email_change_emails
 
 
-class UserDetailView(LoginRequiredMixin, DetailView):
-    model = User
-    slug_field = "username"
-    slug_url_kwarg = "username"
+class UserDetailView(AsyncLoginRequiredMixin, View):
+    template_name = "users/user_detail.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.object
+    async def get(self, request, username, *args, **kwargs):
+        user = await sync_to_async(get_object_or_404)(User, username=username)
+        if callable(getattr(request, "auser", None)):
+            current_user = await request.auser()
+        else:
+            current_user = request.user
+        context = await sync_to_async(self._build_context)(user, current_user == user)
+        context["object"] = user
+        return await sync_to_async(render)(request, self.template_name, context)
+
+    def _build_context(self, user, is_owner):
+        context = {}
 
         # 1. Latest Suchary
         context["latest_suchary"] = (
@@ -52,7 +59,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         )
 
         # 1.5 Scheduled Suchary (Owner Only)
-        if self.request.user == user:
+        if is_owner:
             context["scheduled_suchary"] = user.suchary.filter(
                 published_at__gt=timezone.now(),
             ).order_by("published_at")
@@ -65,7 +72,6 @@ class UserDetailView(LoginRequiredMixin, DetailView):
             total_count=Count("id", distinct=True),
         )
         user.total_score = stats["total_score"] or 0
-        # Add to context directly to avoid object reference issues in template
         context["total_funny_score"] = stats["funny_score"] or 0
         context["total_dry_score"] = stats["dry_score"] or 0
         context["suchar_count"] = stats["total_count"] or 0
