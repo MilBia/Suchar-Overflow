@@ -181,7 +181,7 @@ dependencies = [
     "rcssmin==1.1.2",
     "rjsmin==1.2.2",
     "redis==5.2.1",
-    "django-rq==3.0.0",
+    "django-rq==4.1.0",
     "openai>=1.0.0",
     "polib>=1.2.0",
     "rq-scheduler>=0.13",
