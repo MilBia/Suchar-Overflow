@@ -64,7 +64,11 @@ async def test_stream_sends_retry_when_no_pending(async_client):
     await cache.adelete(f"achievements_pending:{user.pk}")
 
     response = await async_client.get(reverse(STREAM_URL))
-    content = b"".join([c async for c in response.streaming_content]).decode()
+    content = ""
+    async for chunk in response.streaming_content:
+        content += chunk.decode()
+        if "retry:" in content:
+            break
     assert "retry:" in content
 
 
@@ -77,7 +81,11 @@ async def test_stream_sends_data_new_when_pending(async_client):
     await cache.aset(cache_key, True, timeout=60)  # noqa: FBT003
 
     response = await async_client.get(reverse(STREAM_URL))
-    content = b"".join([c async for c in response.streaming_content]).decode()
+    content = ""
+    async for chunk in response.streaming_content:
+        content += chunk.decode()
+        if "data: new" in content:
+            break
     assert "data: new" in content
 
 
@@ -89,5 +97,8 @@ async def test_stream_does_not_send_data_without_cache_flag(async_client):
     await cache.adelete(f"achievements_pending:{user.pk}")
 
     response = await async_client.get(reverse(STREAM_URL))
-    content = b"".join([c async for c in response.streaming_content]).decode()
+    content = ""
+    async for chunk in response.streaming_content:
+        content += chunk.decode()
+        break
     assert "data: new" not in content

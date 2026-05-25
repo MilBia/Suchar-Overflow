@@ -15,16 +15,19 @@ from .models import UserAchievement
 
 @login_required
 async def achievement_stream(request):
-    """SSE: check once for pending achievements, yield event, close."""
+    """SSE: check for pending achievements in a loop, keeping connection open."""
     user = await request.auser()
 
     async def event_stream():
         cache_key = f"achievements_pending:{user.pk}"
-        if await cache.aget(cache_key):
-            yield "data: new\n\n"
-        else:
-            yield "retry: 10000\n\n"
-        await asyncio.sleep(0)
+        yield "retry: 5000\n\n"
+        while True:
+            try:
+                if await cache.aget(cache_key):
+                    yield "data: new\n\n"
+                await asyncio.sleep(2)
+            except asyncio.CancelledError:
+                break
 
     response = StreamingHttpResponse(
         event_stream(),
