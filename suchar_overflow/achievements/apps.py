@@ -1,8 +1,19 @@
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
+import sys
+
 from django.apps import AppConfig
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+
+_NO_SCHEDULER = frozenset(
+    {
+        "migrate",
+        "makemigrations",
+        "collectstatic",
+        "compress",
+        "check",
+        "shell",
+        "createsuperuser",
+    },
+)
 
 
 class AchievementsConfig(AppConfig):
@@ -13,18 +24,31 @@ class AchievementsConfig(AppConfig):
     def ready(self):
         import suchar_overflow.achievements.signals  # noqa: F401
 
-        if getattr(settings, "SCHEDULER_AUTOSTART", False):
-            self._start_scheduler()
+        if "pytest" in sys.modules:
+            return
+        if len(sys.argv) > 1 and sys.argv[1] in _NO_SCHEDULER:
+            return
 
-    def _start_scheduler(self):
+        self._start_scheduler()
+
+    @staticmethod
+    def _start_scheduler():
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from django_apscheduler.jobstores import DjangoJobStore
+
         from suchar_overflow.achievements.tasks import award_best_suchar
 
-        scheduler = BackgroundScheduler()
+        scheduler = BackgroundScheduler(timezone="UTC")
+        scheduler.add_jobstore(DjangoJobStore(), "default")
         scheduler.add_job(
             award_best_suchar,
-            CronTrigger.from_crontab("5 0 1 * *"),
+            "cron",
             args=["month"],
+            day=1,
+            hour=0,
+            minute=5,
             id="award-best-suchar-month",
             replace_existing=True,
+            jobstore="default",
         )
         scheduler.start()
