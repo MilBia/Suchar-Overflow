@@ -1,3 +1,5 @@
+import asyncio
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import redirect
@@ -14,6 +16,17 @@ class AsyncLoginRequiredMixin(LoginRequiredMixin):
             user = request.user
         if not user.is_authenticated:
             return self.handle_no_permission()
+        # Skip sync LoginRequiredMixin.dispatch. If another async mixin (e.g.
+        # AsyncUserPassesTestMixin) follows in the MRO, call it; otherwise go
+        # straight to View.dispatch which will call the method handler.
+        mro = type(self).__mro__
+        idx = mro.index(AsyncLoginRequiredMixin)
+        for cls in mro[idx + 1 :]:
+            if cls is View:
+                break
+            cls_dispatch = cls.__dict__.get("dispatch")
+            if cls_dispatch and asyncio.iscoroutinefunction(cls_dispatch):
+                return await cls_dispatch(self, request, *args, **kwargs)
         return await View.dispatch(self, request, *args, **kwargs)
 
 

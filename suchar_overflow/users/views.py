@@ -2,12 +2,11 @@ import datetime
 import json
 
 from asgiref.sync import sync_to_async
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models import QuerySet
 from django.db.models.functions import TruncDay
+from django.forms import modelform_factory
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -17,8 +16,6 @@ from django.utils import timezone
 from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import RedirectView
-from django.views.generic import UpdateView
 
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 from suchar_overflow.users.models import User
@@ -202,10 +199,10 @@ class UserDetailView(AsyncLoginRequiredMixin, View):
 user_detail_view = UserDetailView.as_view()
 
 
-class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class UserUpdateView(AsyncLoginRequiredMixin, View):
     model = User
     fields = ["name"]
-    success_message = _("Information successfully updated")
+    template_name = "users/user_form.html"
 
     def get_success_url(self) -> str:
         assert self.request.user.is_authenticated  # type guard
@@ -215,15 +212,37 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         assert self.request.user.is_authenticated  # type guard
         return self.request.user
 
+    def _form_class(self):
+        return modelform_factory(self.model, fields=self.fields)
+
+    async def get(self, request, *args, **kwargs):
+        form = self._form_class()(instance=request.user)
+        return render(
+            request,
+            self.template_name,
+            {"form": form, "object": request.user},
+        )
+
+    async def post(self, request, *args, **kwargs):
+        form = self._form_class()(request.POST, instance=request.user)
+        if not form.is_valid():
+            return render(
+                request,
+                self.template_name,
+                {"form": form, "object": request.user},
+            )
+        await sync_to_async(form.save)()
+        return redirect(self.get_success_url())
+
 
 user_update_view = UserUpdateView.as_view()
 
 
-class UserRedirectView(LoginRequiredMixin, RedirectView):
-    permanent = False
-
-    def get_redirect_url(self) -> str:
-        return reverse("users:detail", kwargs={"username": self.request.user.username})
+class UserRedirectView(AsyncLoginRequiredMixin, View):
+    async def get(self, request, *args, **kwargs):
+        return redirect(
+            reverse("users:detail", kwargs={"username": request.user.username}),
+        )
 
 
 user_redirect_view = UserRedirectView.as_view()
