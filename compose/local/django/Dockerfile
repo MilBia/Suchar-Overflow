@@ -59,8 +59,4 @@ COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
-COPY ./compose/local/django/start-rqworker /start-rqworker
-RUN sed -i 's/\r$//g' /start-rqworker
-RUN chmod +x /start-rqworker
-
 ENTRYPOINT ["/entrypoint"]

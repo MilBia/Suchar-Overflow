@@ -117,9 +117,7 @@ def test_schedule_checkbox_hides_date_container(page, live_server, login):
     page.uncheck("#scheduleCheck")
 
     container = page.locator("#scheduleContainer")
-    page.wait_for_function(
-        "document.getElementById('scheduleContainer').classList.contains('d-none')",
-    )
+    container.wait_for(state="hidden")
     assert "d-none" in (container.get_attribute("class") or "")
 
 
@@ -159,9 +157,7 @@ def test_schedule_error_clears_when_date_input_is_changed(page, live_server, log
     """)
 
     date_error = page.locator("#dateError")
-    page.wait_for_function(
-        "document.getElementById('dateError').classList.contains('d-none')",
-    )
+    date_error.wait_for(state="hidden")
     assert "d-none" in (date_error.get_attribute("class") or "")
     assert "is-invalid" not in (
         page.locator("#id_published_at").get_attribute("class") or ""
