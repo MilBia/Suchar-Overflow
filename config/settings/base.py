@@ -338,12 +338,6 @@ CACHES = {
     },
 }
 
-_rq_queue: dict = {"URL": REDIS_URL}
-if REDIS_SSL:
-    _rq_queue["SSL_CERT_REQS"] = None
-
-RQ_QUEUES = {"default": _rq_queue}
-
 # SCHEDULER
 # ------------------------------------------------------------------------------
 # Set True in environment-specific settings to start APScheduler in-process.
