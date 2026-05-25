@@ -8,4 +8,7 @@ python /app/manage.py migrate --noinput
 python /app/manage.py collectstatic --noinput
 python /app/manage.py compress --force
 
-exec gunicorn config.wsgi --bind 0.0.0.0:5000 --chdir=/app
+exec gunicorn config.asgi:application \
+  -k uvicorn.workers.UvicornWorker \
+  --bind 0.0.0.0:5000 \
+  --chdir /app
