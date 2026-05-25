@@ -3,10 +3,10 @@
 import datetime
 import json
 from http import HTTPStatus
-from unittest.mock import patch
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
 
@@ -242,72 +242,47 @@ def test_reception_data_is_list_of_two(client):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_signup_enqueues_activation_email(client):
-    with patch("suchar_overflow.users.views.django_rq.enqueue") as mock_enqueue:
-        client.post(
-            reverse("users:signup"),
-            {
-                "username": "newuser",
-                "email": "newuser@example.com",
-                "password1": "S3cur3P@ss!",
-                "password2": "S3cur3P@ss!",
-            },
-        )
-    assert mock_enqueue.called
-    args = mock_enqueue.call_args[0]
-    # First arg is the task function, rest are its arguments
-    assert args[0].__name__ == "send_activation_email"
-
-
-@pytest.mark.django_db(transaction=True)
 def test_signup_uses_http_protocol_when_not_secure(client):
-    with patch("suchar_overflow.users.views.django_rq.enqueue") as mock_enqueue:
-        client.post(
-            reverse("users:signup"),
-            {
-                "username": "httpuser",
-                "email": "httpuser@example.com",
-                "password1": "S3cur3P@ss!",
-                "password2": "S3cur3P@ss!",
-            },
-        )
-    # enqueue args: (send_activation_email, user.pk, host, token, protocol)
-    # protocol is the 5th positional arg (index 4)
-    args = mock_enqueue.call_args[0]
-    protocol = args[4]
-    assert protocol == "http"
+    client.post(
+        reverse("users:signup"),
+        {
+            "username": "httpuser",
+            "email": "httpuser@example.com",
+            "password1": "S3cur3P@ss!",
+            "password2": "S3cur3P@ss!",
+        },
+    )
+    assert len(mail.outbox) == 1
+    assert "http://" in mail.outbox[0].body
+    assert "https://" not in mail.outbox[0].body
 
 
 @pytest.mark.django_db(transaction=True)
 def test_signup_uses_https_protocol_when_secure(client):
-    with patch("suchar_overflow.users.views.django_rq.enqueue") as mock_enqueue:
-        client.post(
-            reverse("users:signup"),
-            {
-                "username": "httpsuser",
-                "email": "httpsuser@example.com",
-                "password1": "S3cur3P@ss!",
-                "password2": "S3cur3P@ss!",
-            },
-            secure=True,
-        )
-    # enqueue args: (send_activation_email, user.pk, host, token, protocol)
-    args = mock_enqueue.call_args[0]
-    protocol = args[4]
-    assert protocol == "https"
+    client.post(
+        reverse("users:signup"),
+        {
+            "username": "httpsuser",
+            "email": "httpsuser@example.com",
+            "password1": "S3cur3P@ss!",
+            "password2": "S3cur3P@ss!",
+        },
+        secure=True,
+    )
+    assert len(mail.outbox) == 1
+    assert "https://" in mail.outbox[0].body
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_signup_creates_inactive_user(client):
-    with patch("suchar_overflow.users.views.django_rq.enqueue"):
-        client.post(
-            reverse("users:signup"),
-            {
-                "username": "inactive_test",
-                "email": "inactive@example.com",
-                "password1": "S3cur3P@ss!",
-                "password2": "S3cur3P@ss!",
-            },
-        )
+    client.post(
+        reverse("users:signup"),
+        {
+            "username": "inactive_test",
+            "email": "inactive@example.com",
+            "password1": "S3cur3P@ss!",
+            "password2": "S3cur3P@ss!",
+        },
+    )
     user = User.objects.get(username="inactive_test")
     assert user.is_active is False

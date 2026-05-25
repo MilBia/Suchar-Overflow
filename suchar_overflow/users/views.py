@@ -1,11 +1,9 @@
 import datetime
 import json
 
-import django_rq
 from asgiref.sync import sync_to_async
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db import transaction
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models import QuerySet
@@ -19,10 +17,8 @@ from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import DetailView
-from django.views.generic import FormView
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
-from django.views.generic.edit import CreateView
 
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 from suchar_overflow.users.models import User
@@ -227,31 +223,37 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 user_redirect_view = UserRedirectView.as_view()
 
 
-class SignupView(CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy("users:signup_done")
+class SignupView(View):
     template_name = "registration/signup.html"
 
-    def form_valid(self, form):
+    async def get(self, request, *args, **kwargs):
+        form = UserCreationForm()
+        return await sync_to_async(render)(request, self.template_name, {"form": form})
+
+    async def post(self, request, *args, **kwargs):
+        form = UserCreationForm(request.POST)
+        valid = await sync_to_async(form.is_valid)()
+        if not valid:
+            return await sync_to_async(render)(
+                request,
+                self.template_name,
+                {"form": form},
+            )
+
         user = form.save(commit=False)
         user.is_active = False
-        user.save()
+        await user.asave()
 
-        activation = ActivationToken.objects.create(user=user)
-        user_pk = user.pk
-        host = self.request.get_host()
-        token = str(activation.token)
-        protocol = "https" if self.request.is_secure() else "http"
-        transaction.on_commit(
-            lambda: django_rq.enqueue(
-                send_activation_email,
-                user_pk,
-                host,
-                token,
-                protocol,
-            ),
+        activation = await ActivationToken.objects.acreate(user=user)
+        host = request.get_host()
+        protocol = "https" if request.is_secure() else "http"
+        await sync_to_async(send_activation_email)(
+            user.pk,
+            host,
+            str(activation.token),
+            protocol,
         )
-        return redirect(self.success_url)
+        return redirect(reverse_lazy("users:signup_done"))
 
 
 signup_view = SignupView.as_view()
@@ -289,26 +291,35 @@ class ActivateAccountView(View):
 activate_view = ActivateAccountView.as_view()
 
 
-class EmailChangeInitiateView(LoginRequiredMixin, FormView):
-    form_class = EmailChangeForm
+class EmailChangeInitiateView(AsyncLoginRequiredMixin, View):
     template_name = "users/email_change_form.html"
-    success_url = reverse_lazy("users:email_change_done")
 
-    def form_valid(self, form):
+    async def get(self, request, *args, **kwargs):
+        form = EmailChangeForm()
+        return await sync_to_async(render)(request, self.template_name, {"form": form})
+
+    async def post(self, request, *args, **kwargs):
+        form = EmailChangeForm(request.POST)
+        valid = await sync_to_async(form.is_valid)()
+        if not valid:
+            return await sync_to_async(render)(
+                request,
+                self.template_name,
+                {"form": form},
+            )
+
+        user = await request.auser()
         new_email = form.cleaned_data["email"]
-        user = self.request.user
-        assert isinstance(user, User)
+        old_email = user.email
 
-        # Create EmailChangeRequest
-        email_request = EmailChangeRequest.objects.create(
+        email_request = await EmailChangeRequest.objects.acreate(
             user=user,
             new_email=new_email,
-            old_email=user.email,
+            old_email=old_email,
         )
 
-        current_site = self.request.get_host()
-        protocol = "https" if self.request.is_secure() else "http"
-
+        host = request.get_host()
+        protocol = "https" if request.is_secure() else "http"
         verify_url = reverse(
             "users:email_change_verify",
             kwargs={"token": str(email_request.verification_token)},
@@ -317,23 +328,17 @@ class EmailChangeInitiateView(LoginRequiredMixin, FormView):
             "users:email_change_revoke",
             kwargs={"token": str(email_request.revocation_token)},
         )
+        verify_full = f"{protocol}://{host}{verify_url}"
+        revoke_full = f"{protocol}://{host}{revoke_url}"
 
-        user_pk = user.pk
-        old_email = user.email
-        verify_full = f"{protocol}://{current_site}{verify_url}"
-        revoke_full = f"{protocol}://{current_site}{revoke_url}"
-        transaction.on_commit(
-            lambda: django_rq.enqueue(
-                send_email_change_emails,
-                user_pk,
-                old_email,
-                new_email,
-                verify_full,
-                revoke_full,
-            ),
+        await sync_to_async(send_email_change_emails)(
+            user.pk,
+            old_email,
+            new_email,
+            verify_full,
+            revoke_full,
         )
-
-        return super().form_valid(form)
+        return redirect(reverse_lazy("users:email_change_done"))
 
 
 email_change_initiate_view = EmailChangeInitiateView.as_view()

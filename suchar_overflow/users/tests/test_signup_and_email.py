@@ -32,15 +32,6 @@ def make_user(username, email=None, password="password", *, is_active=True):  # 
     )
 
 
-@pytest.fixture(autouse=True)
-def sync_rq(monkeypatch):
-    """Run RQ jobs synchronously so emails land in mail.outbox during tests."""
-    monkeypatch.setattr(
-        "django_rq.enqueue",
-        lambda func, *args, **kwargs: func(*args, **kwargs),
-    )
-
-
 # ---------------------------------------------------------------------------
 # SignupView
 # ---------------------------------------------------------------------------
