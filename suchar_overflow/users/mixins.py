@@ -18,16 +18,5 @@ class AsyncUserPassesTestMixin(UserPassesTestMixin):
 
     async def dispatch(self, request, *args, **kwargs):
         if not await self.test_func():
-            return self.handle_no_permission()
+            return redirect(self.get_login_url())
         return await View.dispatch(self, request, *args, **kwargs)
-
-    def handle_no_permission(self):
-        # Always redirect to login_url instead of raising PermissionDenied
-        # This follows the behavior of LoginRequiredMixin
-        if self.login_url is None:
-            msg = (
-                f"{self.__class__.__name__}.login_url is required. "
-                "Define login_url or override handle_no_permission()."
-            )
-            raise ValueError(msg)
-        return redirect(self.login_url)

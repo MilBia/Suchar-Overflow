@@ -3,7 +3,6 @@
 from http import HTTPStatus
 
 import pytest
-from asgiref.sync import async_to_sync
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.test import AsyncRequestFactory
@@ -16,15 +15,11 @@ User = get_user_model()
 
 
 class _SimpleAsyncView(AsyncLoginRequiredMixin, View):
-    login_url = "/accounts/login/"
-
     async def get(self, request, *args, **kwargs):
         return HttpResponse("ok")
 
 
 class _PassesTestView(AsyncUserPassesTestMixin, View):
-    login_url = "/accounts/login/"
-
     async def test_func(self):
         return self.request.user.username == "allowed"
 
@@ -32,19 +27,21 @@ class _PassesTestView(AsyncUserPassesTestMixin, View):
         return HttpResponse("ok")
 
 
+@pytest.mark.anyio
 @pytest.mark.django_db
-def test_async_login_required_redirects_anonymous():
+async def test_async_login_required_redirects_anonymous():
     arf = AsyncRequestFactory()
     request = arf.get("/fake-path/")
     request.user = type("Anon", (), {"is_authenticated": False})()
     view = _SimpleAsyncView.as_view()
-    response = async_to_sync(view)(request)
+    response = await view(request)
     assert response.status_code == HTTPStatus.FOUND
 
 
-@pytest.mark.django_db
-def test_async_login_required_allows_authenticated(django_user_model):
-    user = User.objects.create_user(
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_async_login_required_allows_authenticated(django_user_model):
+    user = await django_user_model.objects.acreate_user(
         username="u",
         password="pw",  # noqa: S106
     )
@@ -52,13 +49,14 @@ def test_async_login_required_allows_authenticated(django_user_model):
     request = arf.get("/fake-path/")
     request.user = user
     view = _SimpleAsyncView.as_view()
-    response = async_to_sync(view)(request)
+    response = await view(request)
     assert response.status_code == HTTPStatus.OK
 
 
-@pytest.mark.django_db
-def test_async_user_passes_test_blocks_failing_user(django_user_model):
-    user = User.objects.create_user(
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_async_user_passes_test_blocks_failing_user(django_user_model):
+    user = await django_user_model.objects.acreate_user(
         username="blocked",
         password="pw",  # noqa: S106
     )
@@ -66,13 +64,14 @@ def test_async_user_passes_test_blocks_failing_user(django_user_model):
     request = arf.get("/fake-path/")
     request.user = user
     view = _PassesTestView.as_view()
-    response = async_to_sync(view)(request)
-    assert response.status_code == HTTPStatus.FOUND  # redirect to login
+    response = await view(request)
+    assert response.status_code == HTTPStatus.FOUND
 
 
-@pytest.mark.django_db
-def test_async_user_passes_test_allows_passing_user(django_user_model):
-    user = User.objects.create_user(
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_async_user_passes_test_allows_passing_user(django_user_model):
+    user = await django_user_model.objects.acreate_user(
         username="allowed",
         password="pw",  # noqa: S106
     )
@@ -80,5 +79,5 @@ def test_async_user_passes_test_allows_passing_user(django_user_model):
     request = arf.get("/fake-path/")
     request.user = user
     view = _PassesTestView.as_view()
-    response = async_to_sync(view)(request)
+    response = await view(request)
     assert response.status_code == HTTPStatus.OK
