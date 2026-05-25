@@ -8,9 +8,13 @@ class AsyncLoginRequiredMixin(LoginRequiredMixin):
     """LoginRequiredMixin that works with async view handlers."""
 
     async def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
+        if callable(getattr(request, "auser", None)):
+            user = await request.auser()
+        else:
+            user = request.user
+        if not user.is_authenticated:
             return self.handle_no_permission()
-        return await super().dispatch(request, *args, **kwargs)
+        return await View.dispatch(self, request, *args, **kwargs)
 
 
 class AsyncUserPassesTestMixin(UserPassesTestMixin):

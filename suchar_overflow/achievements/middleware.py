@@ -29,7 +29,8 @@ class AchievementNotificationMiddleware:
 
     async def __acall__(self, request):
         if not any(request.path.startswith(p) for p in self._BYPASS_PATHS):
-            if request.user.is_authenticated:
-                await cache.adelete(_CACHE_KEY.format(user_pk=request.user.pk))
+            user = await request.auser()
+            if user.is_authenticated:
+                await cache.adelete(_CACHE_KEY.format(user_pk=user.pk))
 
         return await self.get_response(request)

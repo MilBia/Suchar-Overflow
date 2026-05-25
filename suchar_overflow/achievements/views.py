@@ -1,28 +1,33 @@
+import asyncio
+
+from asgiref.sync import sync_to_async
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.http import StreamingHttpResponse
-from django.views.generic import ListView
+from django.shortcuts import render
+from django.views import View
+
+from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 
 from .models import Achievement
 from .models import UserAchievement
 
 
 @login_required
-def achievement_stream(request):
-    """SSE endpoint: checks once for pending achievements, sets retry interval, closes.
-    The browser auto-reconnects after the retry interval, replacing JS polling.
-    """
+async def achievement_stream(request):
+    """SSE: check once for pending achievements, yield event, close."""
+    user = await request.auser()
 
-    def event_stream(user_pk):
-        cache_key = f"achievements_pending:{user_pk}"
-        if cache.get(cache_key):
+    async def event_stream():
+        cache_key = f"achievements_pending:{user.pk}"
+        if await cache.aget(cache_key):
             yield "data: new\n\n"
         else:
             yield "retry: 10000\n\n"
+        await asyncio.sleep(0)
 
     response = StreamingHttpResponse(
-        event_stream(request.user.pk),
+        event_stream(),
         content_type="text/event-stream",
     )
     response["Cache-Control"] = "no-cache"
@@ -30,47 +35,44 @@ def achievement_stream(request):
     return response
 
 
-class MyAchievementsView(LoginRequiredMixin, ListView):
-    model = UserAchievement
+class MyAchievementsView(AsyncLoginRequiredMixin, View):
     template_name = "achievements/mine.html"
-    context_object_name = "user_achievements"
 
-    def get(self, request, *args, **kwargs):
-        UserAchievement.objects.filter(
-            user=request.user,
+    async def get(self, request, *args, **kwargs):
+        user = await request.auser()
+        await UserAchievement.objects.filter(
+            user=user,
             is_seen=False,
-        ).update(is_seen=True)
-        return super().get(request, *args, **kwargs)
+        ).aupdate(is_seen=True)
 
-    def get_queryset(self):
-        return (
-            UserAchievement.objects.filter(user=self.request.user)  # type: ignore[misc]
+        user_achievements = [
+            ua
+            async for ua in UserAchievement.objects.filter(user=user)
             .select_related("achievement")
             .order_by("-awarded_at")
+        ]
+        return await sync_to_async(render)(
+            request,
+            self.template_name,
+            {"user_achievements": user_achievements},
         )
 
 
-class AchievementListView(LoginRequiredMixin, ListView):
-    model = Achievement
+class AchievementListView(AsyncLoginRequiredMixin, View):
     template_name = "achievements/list.html"
-    context_object_name = "achievements"
 
-    def get_queryset(self):
-        return Achievement.objects.all().order_by("theme", "tier", "id")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user_achievements = set()
-        if self.request.user.is_authenticated:
-            user_achs = UserAchievement.objects.filter(
-                user=self.request.user,
+    async def get(self, request, *args, **kwargs):
+        user = await request.auser()
+        user_achs = {
+            pk
+            async for pk in UserAchievement.objects.filter(
+                user=user,
             ).values_list("achievement_id", flat=True)
-            user_achievements = set(user_achs)
+        }
 
-        context["user_achievements"] = user_achievements
-
-        # Grupowanie i filtrowanie tierów
-        all_achs = self.get_queryset()
+        all_achs = [
+            a async for a in Achievement.objects.all().order_by("theme", "tier", "id")
+        ]
         visible_achs = []
         grouped: dict[tuple[str, str], list[Achievement]] = {}
 
@@ -86,12 +88,13 @@ class AchievementListView(LoginRequiredMixin, ListView):
         for series in grouped.values():
             for ach in series:
                 visible_achs.append(ach)
-                if ach.id not in user_achievements:
-                    # found first locked achievement in series, stop revealing
+                if ach.id not in user_achs:
                     break
 
-        # Wymuszamy domyślne sortowanie zgodnie z widokiem bazy
         visible_achs.sort(key=lambda x: (x.theme or "", x.tier, x.id))
-        context["achievements"] = visible_achs
 
-        return context
+        return await sync_to_async(render)(
+            request,
+            self.template_name,
+            {"achievements": visible_achs, "user_achievements": user_achs},
+        )
