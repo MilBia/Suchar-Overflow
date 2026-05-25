@@ -130,6 +130,11 @@ ignore = [
     # https://github.com/astral-sh/ruff/issues/7871
 ]
 
+[tool.ruff.lint.per-file-ignores]
+# AppConfig.ready() intentionally defers imports to avoid circular-import issues
+# at module load time; these inside-function imports are unavoidable in Django.
+"*/apps.py" = ["PLC0415"]
+
 [tool.ruff.lint.isort]
 force-single-line = true
 

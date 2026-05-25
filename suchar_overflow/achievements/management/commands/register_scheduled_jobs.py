@@ -1,4 +1,5 @@
-import django_rq
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 from django.core.management.base import BaseCommand
 
 from suchar_overflow.achievements.tasks import award_best_suchar
@@ -14,25 +15,27 @@ _SCHEDULED_JOBS = [
 
 
 class Command(BaseCommand):
-    help = "Registers recurring scheduled jobs with rq-scheduler (idempotent)"
+    help = "Lists APScheduler jobs registered on server startup (for diagnostics)"
 
     def handle(self, *args, **options):
-        scheduler = django_rq.get_scheduler("default")
-
-        existing_ids = {job.id for job in scheduler.get_jobs()}
+        scheduler = BackgroundScheduler()
 
         for spec in _SCHEDULED_JOBS:
-            if spec["id"] in existing_ids:
-                scheduler.cancel(spec["id"])
-                self.stdout.write(f"Replaced existing job: {spec['id']}")
-
-            scheduler.cron(
-                spec["cron"],
-                func=spec["func"],
+            scheduler.add_job(
+                spec["func"],
+                CronTrigger.from_crontab(spec["cron"]),
                 args=spec["args"],
                 id=spec["id"],
-                use_local_timezone=False,
+                replace_existing=True,
             )
             self.stdout.write(
-                self.style.SUCCESS(f"Registered: {spec['id']} ({spec['cron']})"),
+                self.style.SUCCESS(
+                    f"Would register: {spec['id']} ({spec['cron']})",
+                ),
             )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Jobs listed above start automatically on server startup.",
+            ),
+        )

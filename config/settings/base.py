@@ -344,6 +344,12 @@ if REDIS_SSL:
 
 RQ_QUEUES = {"default": _rq_queue}
 
+# SCHEDULER
+# ------------------------------------------------------------------------------
+# Set True in environment-specific settings to start APScheduler in-process.
+# Defaults to False so management commands and tests do not spin up a scheduler.
+SCHEDULER_AUTOSTART = False
+
 # Your stuff...
 # ------------------------------------------------------------------------------
 
