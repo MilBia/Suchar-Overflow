@@ -189,6 +189,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -343,6 +344,19 @@ CACHES = {
 # Set True in environment-specific settings to start APScheduler in-process.
 # Defaults to False so management commands and tests do not spin up a scheduler.
 SCHEDULER_AUTOSTART = False
+
+# CSP
+# ------------------------------------------------------------------------------
+from django.utils.csp import CSP  # noqa: E402
+
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "script-src": [CSP.SELF],
+    "style-src": [CSP.SELF, CSP.UNSAFE_INLINE],  # CSS custom properties require this
+    "img-src": [CSP.SELF, "data:"],
+    "connect-src": [CSP.SELF],  # covers the SSE endpoint
+    "font-src": [CSP.SELF],
+}
 
 # Your stuff...
 # ------------------------------------------------------------------------------
