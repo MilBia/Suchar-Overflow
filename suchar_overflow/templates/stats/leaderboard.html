@@ -355,21 +355,58 @@
         }
       });
 
-      // Bind timeframe buttons
-      document.querySelectorAll('.chart-timeframe-selector button').forEach(button => {
-        button.addEventListener('click', function() {
-          const timeframe = this.getAttribute('data-timeframe');
+      // Sliding timeframe selector indicator
+      const timeframeSelector = document.querySelector('.chart-timeframe-selector');
+      if (timeframeSelector) {
+        const slider = document.createElement('span');
+        slider.className = 'chart-timeframe-slider';
+        slider.setAttribute('aria-hidden', 'true');
+        timeframeSelector.appendChild(slider);
 
-          document.querySelectorAll('.chart-timeframe-selector button').forEach(btn => {
-            btn.classList.remove('active');
+        function positionTimeframeSlider(btn, animate) {
+          if (!animate) slider.style.transition = 'none';
+          const containerRect = timeframeSelector.getBoundingClientRect();
+          const btnRect = btn.getBoundingClientRect();
+          slider.style.left = (btnRect.left - containerRect.left) + 'px';
+          slider.style.top = (btnRect.top - containerRect.top) + 'px';
+          slider.style.width = btnRect.width + 'px';
+          slider.style.height = btnRect.height + 'px';
+          if (!animate) requestAnimationFrame(() => {
+            slider.style.transition = '';
           });
-          this.classList.add('active');
+        }
 
-          chart.data.labels = datasets[timeframe].labels;
-          chart.data.datasets[0].data = datasets[timeframe].values;
-          chart.update();
+        const initialActive = timeframeSelector.querySelector('button.active');
+        if (initialActive) {
+          setTimeout(() => positionTimeframeSlider(initialActive, false), 50);
+        }
+
+        // Bind timeframe buttons
+        timeframeSelector.querySelectorAll('button').forEach(button => {
+          button.addEventListener('click', function() {
+            const timeframe = this.getAttribute('data-timeframe');
+
+            timeframeSelector.querySelectorAll('button').forEach(btn => {
+              btn.classList.remove('active');
+            });
+            this.classList.add('active');
+
+            chart.data.labels = datasets[timeframe].labels;
+            chart.data.datasets[0].data = datasets[timeframe].values;
+            chart.update();
+
+            positionTimeframeSlider(this, true);
+          });
         });
-      });
+
+        // Reposition on window resize
+        window.addEventListener('resize', () => {
+          const activeBtn = timeframeSelector.querySelector('button.active');
+          if (activeBtn) {
+            positionTimeframeSlider(activeBtn, false);
+          }
+        });
+      }
 
       // Sliding tab indicator
       const tabList = document.getElementById('leaderboardTabs');
@@ -399,10 +436,20 @@
         }
 
         const initialActive = tabList.querySelector('.nav-link.active');
-        if (initialActive) positionSlider(initialActive, false);
+        if (initialActive) {
+          setTimeout(() => positionSlider(initialActive, false), 50);
+        }
 
         tabList.querySelectorAll('[data-toggle="tab"]').forEach(btn => {
           btn.addEventListener('click', () => positionSlider(btn, true));
+        });
+
+        // Reposition tabs on window resize
+        window.addEventListener('resize', () => {
+          const activeBtn = tabList.querySelector('.nav-link.active');
+          if (activeBtn) {
+            positionSlider(activeBtn, false);
+          }
         });
       }
     });
