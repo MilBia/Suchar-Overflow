@@ -87,7 +87,7 @@
   <body data-user-is-authenticated="{% if request.user.is_authenticated %}true{% else %}false{% endif %}">
     <!-- Navbar -->
     <nav class="navbar">
-      <div class="container navbar-container">
+      <div class="container-fluid navbar-container">
         <a class="navbar-brand d-flex align-items-center gap-2"
            href="{% url 'home' %}">{% include "svgs/logo.svg" %}</a>
 
@@ -226,7 +226,7 @@
     </main>
     <!-- Footer -->
     <footer class="footer">
-      <div class="container text-center">
+      <div class="container-fluid text-center">
         <p class="text-muted mb-0">
           © {% now "Y" %} Suchar Overflow.
           <span class="d-block d-sm-inline mt-1 mt-sm-0">{% trans "All rights reserved (but jokes stolen)." %}</span>
