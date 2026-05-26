@@ -12,6 +12,7 @@ class AsyncLoginRequiredMixin(LoginRequiredMixin):
     async def dispatch(self, request, *args, **kwargs):
         if callable(getattr(request, "auser", None)):
             user = await request.auser()
+            request.user = user
         else:
             user = request.user
         if not user.is_authenticated:
@@ -34,6 +35,8 @@ class AsyncUserPassesTestMixin(UserPassesTestMixin):
     """UserPassesTestMixin that works with async view handlers and async test_func."""
 
     async def dispatch(self, request, *args, **kwargs):
+        if callable(getattr(request, "auser", None)):
+            request.user = await request.auser()
         if not await self.test_func():
             return redirect(self.get_login_url())
         return await View.dispatch(self, request, *args, **kwargs)

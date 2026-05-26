@@ -44,8 +44,10 @@ _POLL_JS = """
 
 _DIRECT_AWARD_JS = """
     new Promise((resolve, reject) => {{
-        const match = document.cookie.match(/csrftoken=([^;]+)/);
-        const token = match ? decodeURIComponent(match[1]) : '';
+        const token = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+                      document.querySelector('meta[name="csrf-token"]')
+                        ?.getAttribute('content') ||
+                      '';
         fetch('/api/achievements/frontend-event', {{
             method: 'POST',
             headers: {{

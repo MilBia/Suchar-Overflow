@@ -28,7 +28,12 @@ class Suchar(models.Model):
     tags = models.ManyToManyField(Tag, related_name="suchary", blank=True)
 
     def __str__(self):
-        return f"Suchar by {self.author} at {self.published_at}"
+        author_name = (
+            self.author.username
+            if "author" in self._state.fields_cache
+            else f"User #{self.author_id}"
+        )
+        return f"Suchar by {author_name} at {self.published_at}"
 
     @property
     def is_published(self):
@@ -49,7 +54,12 @@ class Vote(models.Model):
         unique_together = ("suchar", "user")
 
     def __str__(self):
+        user_name = (
+            self.user.username
+            if "user" in self._state.fields_cache
+            else f"User #{self.user_id}"
+        )
         return (
-            f"{self.user} voted on Suchar #{self.suchar.pk} "
+            f"{user_name} voted on Suchar #{self.suchar_id} "
             f"(Funny: {self.is_funny}, Dry: {self.is_dry})"
         )
