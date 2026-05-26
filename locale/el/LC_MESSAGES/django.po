@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 22:56+0000\n"
+"POT-Creation-Date: 2026-05-26 16:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -220,17 +220,12 @@ msgstr "Κινέζικα (Απλοποιημένα)"
 msgid "Chinese (Traditional)"
 msgstr "Κινεζικά (Παραδοσιακά)"
 
-#: suchar_overflow/achievements/apps.py:8
-#: suchar_overflow/achievements/models.py:84
-#: suchar_overflow/templates/base.html:106
-#: suchar_overflow/templates/users/user_detail.html:34
+#: suchar_overflow/achievements/apps.py:23
+#: suchar_overflow/achievements/models.py:86
+#: suchar_overflow/templates/base.html:115
+#: suchar_overflow/templates/users/user_detail.html:89
 msgid "Achievements"
 msgstr "Επιτεύγματα"
-
-#: suchar_overflow/achievements/middleware.py:29
-#, python-format
-msgid "Achievement Unlocked: %(name)s!"
-msgstr "Επίτευγμα ξεκλείδωσε: %(name)s!"
 
 #: suchar_overflow/achievements/models.py:8
 msgid "Lifetime"
@@ -256,154 +251,167 @@ msgstr "Λήφθηκε η ψήφος σας"
 msgid "Vote Cast"
 msgstr "Ψήφος κατατεθειμένη"
 
-#: suchar_overflow/achievements/models.py:18
+#: suchar_overflow/achievements/models.py:16
+msgid "Frontend"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
 msgstr "Αριθμός προϊόντων Suchar"
 
-#: suchar_overflow/achievements/models.py:19
+#: suchar_overflow/achievements/models.py:20
 msgid "Funny Vote Count"
 msgstr "Αστεία καταμέτρηση ψήφων"
 
-#: suchar_overflow/achievements/models.py:20
+#: suchar_overflow/achievements/models.py:21
 msgid "Dry Vote Count"
 msgstr "Συνολικός αριθμός ψήφων (χωρίς προσαρμογές)"
 
-#: suchar_overflow/achievements/models.py:21
+#: suchar_overflow/achievements/models.py:22
 msgid "Vote Cast Count"
 msgstr "Συνολικός αριθμός ψήφων"
 
-#: suchar_overflow/achievements/models.py:22
+#: suchar_overflow/achievements/models.py:23
 msgid "Total Score"
 msgstr "Συνολική βαθμολογία"
 
-#: suchar_overflow/achievements/models.py:23
+#: suchar_overflow/achievements/models.py:24
 msgid "Night Owl"
 msgstr "Νυχτερίδα"
 
-#: suchar_overflow/achievements/models.py:24
+#: suchar_overflow/achievements/models.py:25
 msgid "Login Streak"
 msgstr "Σειρά συνεχόμενων συνδέσεων"
 
-#: suchar_overflow/achievements/models.py:25
+#: suchar_overflow/achievements/models.py:26
 msgid "Polarizer"
 msgstr "Πολωτής"
 
-#: suchar_overflow/achievements/models.py:28
+#: suchar_overflow/achievements/models.py:27
+msgid "Frontend Event"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:30
 msgid "None"
 msgstr "Κανένα"
 
-#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/achievements/models.py:31
 #: suchar_overflow/templates/achievements/inbox.html:40
 #: suchar_overflow/templates/achievements/list.html:42
 #: suchar_overflow/templates/achievements/list.html:82
+#: suchar_overflow/templates/achievements/mine.html:42
 msgid "Bronze"
 msgstr "Χάλκινο"
 
-#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/achievements/models.py:32
 #: suchar_overflow/templates/achievements/inbox.html:42
 #: suchar_overflow/templates/achievements/list.html:44
 #: suchar_overflow/templates/achievements/list.html:84
+#: suchar_overflow/templates/achievements/mine.html:44
 msgid "Silver"
 msgstr "Ασήμι"
 
-#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/achievements/models.py:33
 #: suchar_overflow/templates/achievements/inbox.html:44
 #: suchar_overflow/templates/achievements/list.html:46
 #: suchar_overflow/templates/achievements/list.html:86
+#: suchar_overflow/templates/achievements/mine.html:46
 msgid "Gold"
 msgstr "Χρυσός"
 
-#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/achievements/models.py:34
 #: suchar_overflow/templates/achievements/inbox.html:46
 #: suchar_overflow/templates/achievements/list.html:48
 #: suchar_overflow/templates/achievements/list.html:88
+#: suchar_overflow/templates/achievements/mine.html:48
 msgid "Platinum"
 msgstr "Platinum"
 
-#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/achievements/models.py:35
 #: suchar_overflow/templates/achievements/inbox.html:48
 #: suchar_overflow/templates/achievements/list.html:50
 #: suchar_overflow/templates/achievements/list.html:90
+#: suchar_overflow/templates/achievements/mine.html:50
 msgid "Diamond"
 msgstr "Διαμάντι"
 
-#: suchar_overflow/achievements/models.py:35
+#: suchar_overflow/achievements/models.py:37
 msgid "Name"
 msgstr "Όνομα"
 
-#: suchar_overflow/achievements/models.py:36
+#: suchar_overflow/achievements/models.py:38
 msgid "Slug"
 msgstr "URL slug"
 
-#: suchar_overflow/achievements/models.py:37
+#: suchar_overflow/achievements/models.py:39
 msgid "Description"
 msgstr "Περιγραφή"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Icon Content"
 msgstr "Περιεχόμενο εικονιδίου"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Raw SVG XML"
 msgstr "Πρωτότυπο XML SVG"
 
-#: suchar_overflow/achievements/models.py:44
+#: suchar_overflow/achievements/models.py:46
 msgid "Category"
 msgstr "Κατηγορία"
 
-#: suchar_overflow/achievements/models.py:50
+#: suchar_overflow/achievements/models.py:52
 msgid "Event Type"
 msgstr "Τύπος εκδήλωσης"
 
-#: suchar_overflow/achievements/models.py:56
+#: suchar_overflow/achievements/models.py:58
 msgid "Metric"
 msgstr "Μετρικό"
 
-#: suchar_overflow/achievements/models.py:61
+#: suchar_overflow/achievements/models.py:63
 msgid "Threshold"
 msgstr "Όριο"
 
-#: suchar_overflow/achievements/models.py:65
+#: suchar_overflow/achievements/models.py:67
 msgid "Theme"
 msgstr "Θέμα"
 
-#: suchar_overflow/achievements/models.py:68
+#: suchar_overflow/achievements/models.py:70
 msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
 msgstr ""
 "Π.χ. «Χριστούγεννα», «Προγραμματισμός». Αφήστε το κενό για γενικές "
 "αναζητήσεις."
 
-#: suchar_overflow/achievements/models.py:71
+#: suchar_overflow/achievements/models.py:73
 msgid "Tier"
 msgstr "Επίπεδο"
 
-#: suchar_overflow/achievements/models.py:74
+#: suchar_overflow/achievements/models.py:76
 msgid "Difficulty/Rarity tier of the achievement"
 msgstr ""
 
-#: suchar_overflow/achievements/models.py:77
+#: suchar_overflow/achievements/models.py:79
 msgid "Secret Achievement"
 msgstr "Κρυφό επίτευγμα"
 
-#: suchar_overflow/achievements/models.py:79
+#: suchar_overflow/achievements/models.py:81
 msgid "If checked, name and description are hidden until unlocked."
 msgstr ""
 "Εάν είναι επιλεγμένο, το όνομα και η περιγραφή παραμένουν κρυφά μέχρι να "
 "ξεκλειδωθούν."
 
-#: suchar_overflow/achievements/models.py:83
+#: suchar_overflow/achievements/models.py:85
 msgid "Achievement"
 msgstr "Επίτευγμα"
 
-#: suchar_overflow/achievements/models.py:102
+#: suchar_overflow/achievements/models.py:104
 msgid "Seen by user"
 msgstr "Εμφανίζεται στον χρήστη"
 
-#: suchar_overflow/achievements/models.py:105
+#: suchar_overflow/achievements/models.py:107
 msgid "User Achievement"
 msgstr "Επίτευγμα χρήστη"
 
-#: suchar_overflow/achievements/models.py:106
+#: suchar_overflow/achievements/models.py:108
 msgid "User Achievements"
 msgstr "Επιτεύγματα χρήστη"
 
@@ -412,10 +420,10 @@ msgid "Text"
 msgstr "Κείμενο"
 
 #: suchar_overflow/suchary/admin.py:45
-#: suchar_overflow/templates/stats/leaderboard.html:91
-#: suchar_overflow/templates/stats/leaderboard.html:126
-#: suchar_overflow/templates/users/user_detail.html:65
-#: suchar_overflow/templates/users/user_detail.html:217
+#: suchar_overflow/templates/stats/leaderboard.html:103
+#: suchar_overflow/templates/stats/leaderboard.html:139
+#: suchar_overflow/templates/users/user_detail.html:120
+#: suchar_overflow/templates/users/user_detail.html:219
 msgid "Votes"
 msgstr "Ψήφοι"
 
@@ -423,7 +431,7 @@ msgstr "Ψήφοι"
 msgid "Suchary"
 msgstr "Σουχαρί"
 
-#: suchar_overflow/suchary/forms.py:15
+#: suchar_overflow/suchary/forms.py:17
 msgid ""
 "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
 "programowanie)."
@@ -431,15 +439,15 @@ msgstr ""
 "Εισάγετε ετικέτες χωρισμένες με κενό ή κόμμα (π.χ. μπισκότο, τεχνολογία, "
 "προγραμματισμός)."
 
-#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+#: suchar_overflow/suchary/forms.py:34 suchar_overflow/suchary/models.py:24
 msgid "Publication Date"
 msgstr "Ημερομηνία δημοσίευσης"
 
-#: suchar_overflow/suchary/forms.py:35
+#: suchar_overflow/suchary/forms.py:37
 msgid "Leave empty to publish immediately."
 msgstr "Αφήστε το κενό για να δημοσιευτεί άμεσα."
 
-#: suchar_overflow/suchary/forms.py:57
+#: suchar_overflow/suchary/forms.py:59
 msgid "Publication date cannot be in the past."
 msgstr "Η ημερομηνία δημοσίευσης δεν μπορεί να είναι στο παρελθόν."
 
@@ -493,35 +501,42 @@ msgid "Notification Inbox"
 msgstr "Εισερχόμενα ειδοποιήσεων"
 
 #: suchar_overflow/templates/achievements/inbox.html:18
+#: suchar_overflow/templates/achievements/mine.html:18
 msgid "All achievements you have earned, newest first."
 msgstr "Όλα τα επιτεύγματα που έχετε κερδίσει, με τα πιο πρόσφατα πρώτα."
 
 #: suchar_overflow/templates/achievements/inbox.html:50
 #: suchar_overflow/templates/achievements/list.html:52
 #: suchar_overflow/templates/achievements/list.html:92
+#: suchar_overflow/templates/achievements/mine.html:52
 msgid "Common"
 msgstr "Κοινά"
 
 #: suchar_overflow/templates/achievements/inbox.html:55
+#: suchar_overflow/templates/achievements/mine.html:57
 #, python-format
 msgid "Unlocked: %(date)s"
 msgstr "Ξεκλείδωσε στις: %(date)s"
 
 #: suchar_overflow/templates/achievements/inbox.html:63
+#: suchar_overflow/templates/achievements/mine.html:65
 msgid "No achievements yet — go post some jokes!"
 msgstr ""
 "Δεν υπάρχουν ακόμα επιτεύγματα - πηγαίνετε να δημοσιεύσετε κάποια ανέκδοτα!"
 
 #: suchar_overflow/templates/achievements/inbox.html:64
+#: suchar_overflow/templates/achievements/mine.html:66
 msgid "Browse achievements"
 msgstr "Περιήγηση στα επιτεύγματα"
 
 #: suchar_overflow/templates/achievements/list.html:6
+#: suchar_overflow/templates/achievements/mine.html:6
+#: suchar_overflow/templates/achievements/mine.html:17
 msgid "My Achievements"
 msgstr "Τα επιτεύγματά μου"
 
 #: suchar_overflow/templates/achievements/list.html:17
-#: suchar_overflow/templates/stats/leaderboard.html:110
+#: suchar_overflow/templates/stats/leaderboard.html:122
 msgid "Hall of Fame"
 msgstr "Κορυφαίοι Παίκτες"
 
@@ -535,96 +550,118 @@ msgstr ""
 msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Το επίτευγμα είναι κλειδωμένο. Ανακαλύψτε το μυστικό του παίζοντας!"
 
+#: suchar_overflow/templates/achievements/mine.html:20
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "Browse all achievements"
+msgstr "Περιήγηση στα επιτεύγματα"
+
 #: suchar_overflow/templates/base.html:17
-#: suchar_overflow/templates/base.html:24
+#: suchar_overflow/templates/base.html:25
 msgid "Joke aggregator with critically low humidity levels."
 msgstr "Συγκεντρωτής αστείων με εξαιρετικά χαμηλά επίπεδα υγρασίας."
 
-#: suchar_overflow/templates/base.html:96
-msgid "Home"
-msgstr "Αρχική σελίδα"
-
-#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/base.html:106
 #: suchar_overflow/templates/suchary/suchar_list.html:12
-#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/templates/users/user_detail.html:137
 #: suchar_overflow/users/admin.py:68
 msgid "Jokes"
 msgstr "Αστεία"
 
-#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/base.html:110
 #: suchar_overflow/templates/stats/leaderboard.html:6
 #: suchar_overflow/templates/stats/leaderboard.html:12
 msgid "Leaderboard"
 msgstr "Κατάταξη"
 
-#: suchar_overflow/templates/base.html:109
-msgid "Inbox"
-msgstr "Εισερχόμενα"
+#: suchar_overflow/templates/base.html:124
+msgid "Post"
+msgstr ""
 
-#: suchar_overflow/templates/base.html:113
-msgid "About"
-msgstr "Σχετικά με εμάς"
-
-#: suchar_overflow/templates/base.html:136
+#: suchar_overflow/templates/base.html:146
 #, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "Αναζήτηση..."
 
-#: suchar_overflow/templates/base.html:166
-#: suchar_overflow/templates/base.html:248
+#: suchar_overflow/templates/base.html:174
+#, fuzzy
+#| msgid "Notification"
+msgid "Notifications"
+msgstr "Ειδοποίηση"
+
+#: suchar_overflow/templates/base.html:182
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "New achievements"
+msgstr "Περιήγηση στα επιτεύγματα"
+
+#: suchar_overflow/templates/base.html:198
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "No new achievements"
+msgstr "Περιήγηση στα επιτεύγματα"
+
+#: suchar_overflow/templates/base.html:201
+#, fuzzy
+#| msgid "My Achievements"
+msgid "View all my achievements"
+msgstr "Τα επιτεύγματά μου"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:294
 msgid "Log Out"
 msgstr "Απόσυνδεση"
 
-#: suchar_overflow/templates/base.html:168
+#: suchar_overflow/templates/base.html:212
 msgid "Log In"
 msgstr "Σύνδεση"
 
-#: suchar_overflow/templates/base.html:169
+#: suchar_overflow/templates/base.html:213
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Εγγραφή"
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:223
 msgid "Default content."
 msgstr "Προεπιλεγμένο περιεχόμενο."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:232
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Πνευματικά δικαιώματα κατοχυρωμένα (αλλά τα ανέκδοτα κλεμμένα)."
 
-#: suchar_overflow/templates/base.html:197
+#: suchar_overflow/templates/base.html:237
+msgid "About"
+msgstr "Σχετικά με εμάς"
+
+#: suchar_overflow/templates/base.html:246
 msgid "Report a Bug"
 msgstr "Αναφορά σφάλματος"
 
-#: suchar_overflow/templates/base.html:219
+#: suchar_overflow/templates/base.html:266
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Σφάλμα"
 
-#: suchar_overflow/templates/base.html:221
-msgid "Achievement Unlocked"
-msgstr "Επίτευγμα ξεκλείδωσε"
-
-#: suchar_overflow/templates/base.html:223
+#: suchar_overflow/templates/base.html:268
 msgid "Success"
 msgstr "Επιτυχία"
 
-#: suchar_overflow/templates/base.html:225
+#: suchar_overflow/templates/base.html:270
 msgid "Notification"
 msgstr "Ειδοποίηση"
 
-#: suchar_overflow/templates/base.html:240
+#: suchar_overflow/templates/base.html:286
 msgid "Confirm Logout"
 msgstr "Επιβεβαίωση αποσύνδεσης"
 
-#: suchar_overflow/templates/base.html:243
+#: suchar_overflow/templates/base.html:289
 msgid "Are you sure you want to log out?"
 msgstr "Είστε σίγουροι ότι θέλετε να αποσυνδεθείτε;"
 
-#: suchar_overflow/templates/base.html:245
+#: suchar_overflow/templates/base.html:291
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
@@ -649,8 +686,8 @@ msgstr "Αποστολή"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one"
-" followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one "
+"followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Στόχος του Suchar Overflow είναι να συγκεντρώσει τη μεγαλύτερη συλλογή "
 "αστείων που προκαλούν σωματικό πόνο στον αποδέκτη. Πιστεύουμε ότι ένα καλό, "
@@ -663,8 +700,8 @@ msgstr "Τεχνολογία"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure"
-" fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure "
+"fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Η ιστοσελίδα έχει δημιουργηθεί με τις πιο πρόσφατες τεχνολογίες (Django + "
 "Προσαρμοσμένο CSS) για να διασφαλιστεί η γρήγορη και αξιόπιστη παράδοση "
@@ -701,8 +738,7 @@ msgid "Vote"
 msgstr "Ψήφος"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid ""
-"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Βαθμολογήστε τα ανέκδοτα των άλλων. Αποφασίστε τι είναι αστείο (και τι "
 "λυπητερό)."
@@ -901,8 +937,8 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
 msgstr ""
-"Λαμβάνετε αυτό το μήνυμα ηλεκτρονικού ταχυδρομείου επειδή ζητήσατε επαναφορά"
-" κωδικού πρόσβασης για τον λογαριασμό σας στην"
+"Λαμβάνετε αυτό το μήνυμα ηλεκτρονικού ταχυδρομείου επειδή ζητήσατε επαναφορά "
+"κωδικού πρόσβασης για τον λογαριασμό σας στην"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -919,12 +955,10 @@ msgid "Thanks for using our site!"
 msgstr "Σας ευχαριστούμε που χρησιμοποιείτε την ιστοσελίδα μας!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-msgid "The"
-msgstr ""
-
-#: suchar_overflow/templates/registration/password_reset_email.html:13
-msgid "team"
-msgstr "ομάδα"
+#, fuzzy
+#| msgid "The Suchar Overflow Team"
+msgid "The Suchar Overflow team"
+msgstr "Η ομάδα Suchar Overflow"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -962,80 +996,86 @@ msgstr ""
 "ενεργοποιήσετε τον λογαριασμό σας."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-msgid "Celebreating the best (and the driest) caused by our community."
+#, fuzzy
+#| msgid "Celebreating the best (and the driest) caused by our community."
+msgid "Celebrating the best (and the driest) caused by our community."
 msgstr ""
 "Γιορτάζοντας τα καλύτερα (και τα πιο αστεία) που δημιουργήθηκαν από την "
 "κοινότητά μας."
 
-#: suchar_overflow/templates/stats/leaderboard.html:19
-msgid "Activity (Last 30 Days)"
-msgstr "Δραστηριότητα (Τελευταίες 30 ημέρες)"
+#: suchar_overflow/templates/stats/leaderboard.html:20
+msgid "Activity"
+msgstr ""
 
-#: suchar_overflow/templates/stats/leaderboard.html:36
+#: suchar_overflow/templates/stats/leaderboard.html:29
+msgid "All time"
+msgstr ""
+
+#: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
 msgstr "Συνολικά"
 
-#: suchar_overflow/templates/stats/leaderboard.html:46
-#: suchar_overflow/templates/stats/leaderboard.html:169
-#: suchar_overflow/templates/suchary/suchar_list.html:116
-#: suchar_overflow/templates/suchary/suchar_list.html:119
-#: suchar_overflow/templates/users/user_detail.html:302
+#: suchar_overflow/templates/stats/leaderboard.html:58
+#: suchar_overflow/templates/stats/leaderboard.html:182
+#: suchar_overflow/templates/suchary/suchar_list.html:149
+#: suchar_overflow/templates/suchary/suchar_list.html:152
+#: suchar_overflow/templates/users/user_detail.html:299
 msgid "Funny"
 msgstr "Διάσκεψη"
 
-#: suchar_overflow/templates/stats/leaderboard.html:56
-#: suchar_overflow/templates/stats/leaderboard.html:242
-#: suchar_overflow/templates/suchary/suchar_list.html:128
-#: suchar_overflow/templates/suchary/suchar_list.html:131
-#: suchar_overflow/templates/users/user_detail.html:302
+#: suchar_overflow/templates/stats/leaderboard.html:68
+#: suchar_overflow/templates/stats/leaderboard.html:256
+#: suchar_overflow/templates/suchary/suchar_list.html:162
+#: suchar_overflow/templates/suchary/suchar_list.html:165
+#: suchar_overflow/templates/users/user_detail.html:299
 msgid "Dry"
 msgstr "Στέγνωμα"
 
-#: suchar_overflow/templates/stats/leaderboard.html:75
+#: suchar_overflow/templates/stats/leaderboard.html:87
 msgid "Most Active Authors"
 msgstr "Οι πιο δραστήριοι συγγραφείς"
 
-#: suchar_overflow/templates/stats/leaderboard.html:88
-#: suchar_overflow/templates/stats/leaderboard.html:166
-#: suchar_overflow/templates/stats/leaderboard.html:239
+#: suchar_overflow/templates/stats/leaderboard.html:100
+#: suchar_overflow/templates/stats/leaderboard.html:179
+#: suchar_overflow/templates/stats/leaderboard.html:253
 msgid "jokes"
 msgstr "αστεία"
 
-#: suchar_overflow/templates/stats/leaderboard.html:99
+#: suchar_overflow/templates/stats/leaderboard.html:111
 msgid "No data."
 msgstr "Δεν υπάρχουν δεδομένα."
 
-#: suchar_overflow/templates/stats/leaderboard.html:133
-#: suchar_overflow/templates/stats/leaderboard.html:206
-#: suchar_overflow/templates/stats/leaderboard.html:279
+#: suchar_overflow/templates/stats/leaderboard.html:146
+#: suchar_overflow/templates/stats/leaderboard.html:220
+#: suchar_overflow/templates/stats/leaderboard.html:294
 msgid "No jokes."
 msgstr "Χωρίς αστεία."
 
-#: suchar_overflow/templates/stats/leaderboard.html:153
+#: suchar_overflow/templates/stats/leaderboard.html:166
 msgid "Comedy Kings"
 msgstr "Comedy Kings"
 
-#: suchar_overflow/templates/stats/leaderboard.html:174
+#: suchar_overflow/templates/stats/leaderboard.html:187
 msgid "No funny data."
 msgstr "Δεν υπάρχουν διαθέσιμα δεδομένα."
 
-#: suchar_overflow/templates/stats/leaderboard.html:185
+#: suchar_overflow/templates/stats/leaderboard.html:198
 msgid "Top Funny Jokes"
 msgstr "Τα πιο αστεία ανέκδοτα"
 
-#: suchar_overflow/templates/stats/leaderboard.html:226
+#: suchar_overflow/templates/stats/leaderboard.html:240
 msgid "Lords of Drought"
 msgstr "Lords of Drought"
 
-#: suchar_overflow/templates/stats/leaderboard.html:247
+#: suchar_overflow/templates/stats/leaderboard.html:261
 msgid "No dry data."
 msgstr "Δεν υπάρχουν διαθέσιμα δεδομένα."
 
-#: suchar_overflow/templates/stats/leaderboard.html:258
+#: suchar_overflow/templates/stats/leaderboard.html:272
 msgid "Top Dry Jokes"
 msgstr "Τα καλύτερα ανέκδοτα για στεγνωτήρια"
 
-#: suchar_overflow/templates/stats/leaderboard.html:307
+#: suchar_overflow/templates/stats/leaderboard.html:321
 msgid "New Jokes"
 msgstr "Νέα ανέκδοτα"
 
@@ -1148,30 +1188,55 @@ msgstr "Επάνω"
 msgid "Newest"
 msgstr "Πιο πρόσφατα"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:85
+#: suchar_overflow/templates/suchary/suchar_list.html:77
+msgid "Active filters:"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:89
+#, fuzzy
+#| msgid "Search..."
+msgid "Search:"
+msgstr "Αναζήτηση..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:97
+msgid "Author:"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:104
+msgid "Clear all"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
 msgstr "Προγραμματισμένο"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:95
-#: suchar_overflow/templates/users/user_detail.html:194
+#: suchar_overflow/templates/suchary/suchar_list.html:127
+#: suchar_overflow/templates/users/user_detail.html:193
 msgid "Edit"
 msgstr "Επεξεργασία"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:139
+#: suchar_overflow/templates/suchary/suchar_list.html:148
+#: suchar_overflow/templates/suchary/suchar_list.html:161
+#, fuzzy
+#| msgid "Log in"
+msgid "Log in to vote"
+msgstr "Σύνδεση"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
 msgstr "Εδώ είναι πολύ ξηρά..."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:140
+#: suchar_overflow/templates/suchary/suchar_list.html:174
 msgid "Be the hero we need and add the first joke."
 msgstr "Γίνε ο ήρωας που χρειαζόμαστε και πρόσθεσε το πρώτο ανέκδοτο."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:154
-#: suchar_overflow/templates/suchary/suchar_list.html:158
+#: suchar_overflow/templates/suchary/suchar_list.html:188
+#: suchar_overflow/templates/suchary/suchar_list.html:192
 msgid "Previous"
 msgstr "Προηγούμενο"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:178
-#: suchar_overflow/templates/suchary/suchar_list.html:182
+#: suchar_overflow/templates/suchary/suchar_list.html:212
+#: suchar_overflow/templates/suchary/suchar_list.html:216
 msgid "Next"
 msgstr "Επόμενο"
 
@@ -1222,13 +1287,16 @@ msgstr "Ελέγξτε και τα δύο εισερχόμενα!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation "
+"link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, "
+"so you know it's really you."
 msgstr ""
 "Στείλαμε ένα μήνυμα στη νέα σας διεύθυνση με έναν σύνδεσμο ενεργοποίησης.\n"
 "          <br />\n"
-"          Επίσης, στείλαμε μια προειδοποίηση στην παλιά σας διεύθυνση, για να ξέρετε ότι πρόκειται όντως για εσάς."
+"          Επίσης, στείλαμε μια προειδοποίηση στην παλιά σας διεύθυνση, για "
+"να ξέρετε ότι πρόκειται όντως για εσάς."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1284,7 +1352,7 @@ msgid "Changed my mind (go back)"
 msgstr "Άλλαξα γνώμη (επιστροφή)"
 
 #: suchar_overflow/templates/users/email_change_revoked.html:6
-#: suchar_overflow/users/models.py:70
+#: suchar_overflow/users/models.py:75
 msgid "Revoked"
 msgstr "Ανακληθείσα"
 
@@ -1338,8 +1406,8 @@ msgid ""
 "If it was you - great, you don't need to do anything here (just check that "
 "other inbox)."
 msgstr ""
-"Αν ήσασταν εσείς, τότε όλα είναι εντάξει και δεν χρειάζεται να κάνετε τίποτα"
-" εδώ (απλώς ελέγξτε και το άλλο σας εισερχόμενο)."
+"Αν ήσασταν εσείς, τότε όλα είναι εντάξει και δεν χρειάζεται να κάνετε τίποτα "
+"εδώ (απλώς ελέγξτε και το άλλο σας εισερχόμενο)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:9
 msgid "BUT IF IT WASN'T YOU:"
@@ -1408,79 +1476,79 @@ msgstr "Χρήστης"
 msgid "Suchar Overflow User"
 msgstr "Χρήστης με υπερβολικό όγκο δεδομένων Suchar"
 
-#: suchar_overflow/templates/users/user_detail.html:52
-msgid "No achievements yet."
-msgstr "Δεν υπάρχουν ακόμη επιτεύγματα."
-
-#: suchar_overflow/templates/users/user_detail.html:62
-msgid "The Best Of"
-msgstr "Τα καλύτερα"
-
-#: suchar_overflow/templates/users/user_detail.html:76
-msgid "Statistics"
-msgstr "Στατιστικά"
-
-#: suchar_overflow/templates/users/user_detail.html:78
-msgid "Rank"
-msgstr "Κατάταξη"
-
-#: suchar_overflow/templates/users/user_detail.html:86
-msgid "Total Votes"
-msgstr "Συνολικές ψήφοι"
-
-#: suchar_overflow/templates/users/user_detail.html:93
-msgid "Joined"
-msgstr "Συμμετοχή"
-
-#: suchar_overflow/templates/users/user_detail.html:101
-msgid "Dryness Level"
-msgstr "Επίπεδο ξηρότητας"
-
-#: suchar_overflow/templates/users/user_detail.html:109
-msgid "Reception"
-msgstr "Ρεσεψιόν"
-
-#: suchar_overflow/templates/users/user_detail.html:125
+#: suchar_overflow/templates/users/user_detail.html:34
 msgid "Drought Map"
 msgstr "Χάρτης ξηρασίας"
 
-#: suchar_overflow/templates/users/user_detail.html:127
+#: suchar_overflow/templates/users/user_detail.html:36
 msgid "Less"
 msgstr "Λιγότερα"
 
-#: suchar_overflow/templates/users/user_detail.html:133
+#: suchar_overflow/templates/users/user_detail.html:42
 msgid "More"
 msgstr "Περισσότερα"
 
-#: suchar_overflow/templates/users/user_detail.html:146
+#: suchar_overflow/templates/users/user_detail.html:55
 msgid "Mon"
 msgstr "Δευτ"
 
-#: suchar_overflow/templates/users/user_detail.html:147
+#: suchar_overflow/templates/users/user_detail.html:56
 msgid "Wed"
 msgstr "Τετ"
 
-#: suchar_overflow/templates/users/user_detail.html:148
+#: suchar_overflow/templates/users/user_detail.html:57
 msgid "Fri"
 msgstr "Παρ"
 
-#: suchar_overflow/templates/users/user_detail.html:167
+#: suchar_overflow/templates/users/user_detail.html:73
 msgid "jokes on"
 msgstr "ανέμελα"
 
-#: suchar_overflow/templates/users/user_detail.html:179
+#: suchar_overflow/templates/users/user_detail.html:107
+msgid "No achievements yet."
+msgstr "Δεν υπάρχουν ακόμη επιτεύγματα."
+
+#: suchar_overflow/templates/users/user_detail.html:117
+msgid "The Best Of"
+msgstr "Τα καλύτερα"
+
+#: suchar_overflow/templates/users/user_detail.html:131
+msgid "Statistics"
+msgstr "Στατιστικά"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "Rank"
+msgstr "Κατάταξη"
+
+#: suchar_overflow/templates/users/user_detail.html:141
+msgid "Total Votes"
+msgstr "Συνολικές ψήφοι"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Joined"
+msgstr "Συμμετοχή"
+
+#: suchar_overflow/templates/users/user_detail.html:156
+msgid "Dryness Level"
+msgstr "Επίπεδο ξηρότητας"
+
+#: suchar_overflow/templates/users/user_detail.html:164
+msgid "Reception"
+msgstr "Ρεσεψιόν"
+
+#: suchar_overflow/templates/users/user_detail.html:178
 msgid "Latest Jokes"
 msgstr "Τα τελευταία ανέκδοτα"
 
-#: suchar_overflow/templates/users/user_detail.html:185
+#: suchar_overflow/templates/users/user_detail.html:184
 msgid "Scheduled for Publication"
 msgstr "Προγραμματισμένη για δημοσίευση"
 
-#: suchar_overflow/templates/users/user_detail.html:228
+#: suchar_overflow/templates/users/user_detail.html:230
 msgid "See all entries"
 msgstr "Προβολή όλων των εγγραφών"
 
-#: suchar_overflow/templates/users/user_detail.html:232
+#: suchar_overflow/templates/users/user_detail.html:234
 msgid "User hasn't added any jokes yet."
 msgstr "Ο χρήστης δεν έχει προσθέσει ακόμα κανένα ανέκδοτο."
 
@@ -1549,19 +1617,19 @@ msgstr "Κωδικός ενεργοποίησης"
 msgid "Activation Tokens"
 msgstr "Κωδικοί ενεργοποίησης"
 
-#: suchar_overflow/users/models.py:68
+#: suchar_overflow/users/models.py:73
 msgid "Pending"
 msgstr "Σε εκκρεμότητα"
 
-#: suchar_overflow/users/models.py:69
+#: suchar_overflow/users/models.py:74
 msgid "Verified"
 msgstr "Επαληθευμένο"
 
-#: suchar_overflow/users/models.py:89
+#: suchar_overflow/users/models.py:94
 msgid "Email Change Request"
 msgstr "Αίτημα αλλαγής email"
 
-#: suchar_overflow/users/models.py:90
+#: suchar_overflow/users/models.py:95
 msgid "Email Change Requests"
 msgstr "Αιτήματα αλλαγής email"
 
@@ -1579,23 +1647,40 @@ msgstr ""
 "Κάποιος θέλει να αλλάξει τη διεύθυνσή σας στο email (Ελπίζουμε ότι είστε "
 "εσείς)."
 
-#: suchar_overflow/users/tests/test_views.py:74
-#: suchar_overflow/users/views.py:203
-msgid "Information successfully updated"
-msgstr "Οι πληροφορίες ενημερώθηκαν με επιτυχία."
-
-#: suchar_overflow/users/views.py:334
+#: suchar_overflow/users/views.py:386
 msgid "The link has already been used or cancelled."
 msgstr "Ο σύνδεσμος έχει ήδη χρησιμοποιηθεί ή ακυρωθεί."
 
-#: suchar_overflow/users/views.py:344
+#: suchar_overflow/users/views.py:395
 msgid "The link has expired (24 hours have passed)."
 msgstr "Ο σύνδεσμος έχει λήξει (έχουν παρέλθει 24 ώρες)."
 
-#: suchar_overflow/users/views.py:352
+#: suchar_overflow/users/views.py:402
 msgid "Email already taken."
 msgstr "Το email αυτό χρησιμοποιείται ήδη."
 
-#: suchar_overflow/users/views.py:370
+#: suchar_overflow/users/views.py:421
 msgid "The link is invalid."
 msgstr "Ο σύνδεσμος δεν είναι έγκυρος."
+
+#, python-format
+#~ msgid "Achievement Unlocked: %(name)s!"
+#~ msgstr "Επίτευγμα ξεκλείδωσε: %(name)s!"
+
+#~ msgid "Home"
+#~ msgstr "Αρχική σελίδα"
+
+#~ msgid "Inbox"
+#~ msgstr "Εισερχόμενα"
+
+#~ msgid "Achievement Unlocked"
+#~ msgstr "Επίτευγμα ξεκλείδωσε"
+
+#~ msgid "team"
+#~ msgstr "ομάδα"
+
+#~ msgid "Activity (Last 30 Days)"
+#~ msgstr "Δραστηριότητα (Τελευταίες 30 ημέρες)"
+
+#~ msgid "Information successfully updated"
+#~ msgstr "Οι πληροφορίες ενημερώθηκαν με επιτυχία."

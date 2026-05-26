@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 22:56+0000\n"
+"POT-Creation-Date: 2026-05-26 16:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -220,17 +220,12 @@ msgstr "Bahasa Mandarin (Sederhana)"
 msgid "Chinese (Traditional)"
 msgstr "Bahasa Mandarin (Tradisional)"
 
-#: suchar_overflow/achievements/apps.py:8
-#: suchar_overflow/achievements/models.py:84
-#: suchar_overflow/templates/base.html:106
-#: suchar_overflow/templates/users/user_detail.html:34
+#: suchar_overflow/achievements/apps.py:23
+#: suchar_overflow/achievements/models.py:86
+#: suchar_overflow/templates/base.html:115
+#: suchar_overflow/templates/users/user_detail.html:89
 msgid "Achievements"
 msgstr "Pencapaian"
-
-#: suchar_overflow/achievements/middleware.py:29
-#, python-format
-msgid "Achievement Unlocked: %(name)s!"
-msgstr "Pencapaian Terbuka: %(name)s!"
 
 #: suchar_overflow/achievements/models.py:8
 msgid "Lifetime"
@@ -256,152 +251,164 @@ msgstr "Suara Diterima"
 msgid "Vote Cast"
 msgstr "Suara Telah Diberikan"
 
-#: suchar_overflow/achievements/models.py:18
+#: suchar_overflow/achievements/models.py:16
+msgid "Frontend"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
 msgstr "Jumlah Suchar"
 
-#: suchar_overflow/achievements/models.py:19
+#: suchar_overflow/achievements/models.py:20
 msgid "Funny Vote Count"
 msgstr "Jumlah Suara Lucu"
 
-#: suchar_overflow/achievements/models.py:20
+#: suchar_overflow/achievements/models.py:21
 msgid "Dry Vote Count"
 msgstr "Jumlah Suara Valid"
 
-#: suchar_overflow/achievements/models.py:21
+#: suchar_overflow/achievements/models.py:22
 msgid "Vote Cast Count"
 msgstr "Jumlah Suara yang Diberikan"
 
-#: suchar_overflow/achievements/models.py:22
+#: suchar_overflow/achievements/models.py:23
 msgid "Total Score"
 msgstr "Skor Total"
 
-#: suchar_overflow/achievements/models.py:23
+#: suchar_overflow/achievements/models.py:24
 msgid "Night Owl"
 msgstr "Pecinta Malam"
 
-#: suchar_overflow/achievements/models.py:24
+#: suchar_overflow/achievements/models.py:25
 msgid "Login Streak"
 msgstr "Rangkaian Login"
 
-#: suchar_overflow/achievements/models.py:25
+#: suchar_overflow/achievements/models.py:26
 msgid "Polarizer"
 msgstr "Polarisasi"
 
-#: suchar_overflow/achievements/models.py:28
+#: suchar_overflow/achievements/models.py:27
+msgid "Frontend Event"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:30
 msgid "None"
 msgstr "Tidak Ada"
 
-#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/achievements/models.py:31
 #: suchar_overflow/templates/achievements/inbox.html:40
 #: suchar_overflow/templates/achievements/list.html:42
 #: suchar_overflow/templates/achievements/list.html:82
+#: suchar_overflow/templates/achievements/mine.html:42
 msgid "Bronze"
 msgstr "Perunggu"
 
-#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/achievements/models.py:32
 #: suchar_overflow/templates/achievements/inbox.html:42
 #: suchar_overflow/templates/achievements/list.html:44
 #: suchar_overflow/templates/achievements/list.html:84
+#: suchar_overflow/templates/achievements/mine.html:44
 msgid "Silver"
 msgstr "Perak"
 
-#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/achievements/models.py:33
 #: suchar_overflow/templates/achievements/inbox.html:44
 #: suchar_overflow/templates/achievements/list.html:46
 #: suchar_overflow/templates/achievements/list.html:86
+#: suchar_overflow/templates/achievements/mine.html:46
 msgid "Gold"
 msgstr "Emas"
 
-#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/achievements/models.py:34
 #: suchar_overflow/templates/achievements/inbox.html:46
 #: suchar_overflow/templates/achievements/list.html:48
 #: suchar_overflow/templates/achievements/list.html:88
+#: suchar_overflow/templates/achievements/mine.html:48
 msgid "Platinum"
 msgstr "Platinum"
 
-#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/achievements/models.py:35
 #: suchar_overflow/templates/achievements/inbox.html:48
 #: suchar_overflow/templates/achievements/list.html:50
 #: suchar_overflow/templates/achievements/list.html:90
+#: suchar_overflow/templates/achievements/mine.html:50
 msgid "Diamond"
 msgstr "Berlian"
 
-#: suchar_overflow/achievements/models.py:35
+#: suchar_overflow/achievements/models.py:37
 msgid "Name"
 msgstr "Nama"
 
-#: suchar_overflow/achievements/models.py:36
+#: suchar_overflow/achievements/models.py:38
 msgid "Slug"
 msgstr "Slug"
 
-#: suchar_overflow/achievements/models.py:37
+#: suchar_overflow/achievements/models.py:39
 msgid "Description"
 msgstr "Deskripsi"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Icon Content"
 msgstr "Konten Ikon"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Raw SVG XML"
 msgstr "Kode XML SVG Asli"
 
-#: suchar_overflow/achievements/models.py:44
+#: suchar_overflow/achievements/models.py:46
 msgid "Category"
 msgstr "Kategori"
 
-#: suchar_overflow/achievements/models.py:50
+#: suchar_overflow/achievements/models.py:52
 msgid "Event Type"
 msgstr "Jenis Acara"
 
-#: suchar_overflow/achievements/models.py:56
+#: suchar_overflow/achievements/models.py:58
 msgid "Metric"
 msgstr "Metrik"
 
-#: suchar_overflow/achievements/models.py:61
+#: suchar_overflow/achievements/models.py:63
 msgid "Threshold"
 msgstr "Batas"
 
-#: suchar_overflow/achievements/models.py:65
+#: suchar_overflow/achievements/models.py:67
 msgid "Theme"
 msgstr "Tema"
 
-#: suchar_overflow/achievements/models.py:68
+#: suchar_overflow/achievements/models.py:70
 msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
 msgstr "Contoh: 'Natal', 'Pemrograman'. Biarkan kosong untuk kategori umum."
 
-#: suchar_overflow/achievements/models.py:71
+#: suchar_overflow/achievements/models.py:73
 msgid "Tier"
 msgstr "Tingkat"
 
-#: suchar_overflow/achievements/models.py:74
+#: suchar_overflow/achievements/models.py:76
 msgid "Difficulty/Rarity tier of the achievement"
 msgstr ""
 
-#: suchar_overflow/achievements/models.py:77
+#: suchar_overflow/achievements/models.py:79
 msgid "Secret Achievement"
 msgstr "Pencapaian Tersembunyi"
 
-#: suchar_overflow/achievements/models.py:79
+#: suchar_overflow/achievements/models.py:81
 msgid "If checked, name and description are hidden until unlocked."
 msgstr ""
-"Jika dicentang, nama dan deskripsi akan disembunyikan hingga dibuka "
-"kuncinya."
+"Jika dicentang, nama dan deskripsi akan disembunyikan hingga dibuka kuncinya."
 
-#: suchar_overflow/achievements/models.py:83
+#: suchar_overflow/achievements/models.py:85
 msgid "Achievement"
 msgstr "Pencapaian"
 
-#: suchar_overflow/achievements/models.py:102
+#: suchar_overflow/achievements/models.py:104
 msgid "Seen by user"
 msgstr "Dilihat oleh pengguna"
 
-#: suchar_overflow/achievements/models.py:105
+#: suchar_overflow/achievements/models.py:107
 msgid "User Achievement"
 msgstr "Pencapaian Pengguna"
 
-#: suchar_overflow/achievements/models.py:106
+#: suchar_overflow/achievements/models.py:108
 msgid "User Achievements"
 msgstr "Pencapaian Pengguna"
 
@@ -410,10 +417,10 @@ msgid "Text"
 msgstr "Teks"
 
 #: suchar_overflow/suchary/admin.py:45
-#: suchar_overflow/templates/stats/leaderboard.html:91
-#: suchar_overflow/templates/stats/leaderboard.html:126
-#: suchar_overflow/templates/users/user_detail.html:65
-#: suchar_overflow/templates/users/user_detail.html:217
+#: suchar_overflow/templates/stats/leaderboard.html:103
+#: suchar_overflow/templates/stats/leaderboard.html:139
+#: suchar_overflow/templates/users/user_detail.html:120
+#: suchar_overflow/templates/users/user_detail.html:219
 msgid "Votes"
 msgstr "Suara"
 
@@ -421,7 +428,7 @@ msgstr "Suara"
 msgid "Suchary"
 msgstr "Suchary"
 
-#: suchar_overflow/suchary/forms.py:15
+#: suchar_overflow/suchary/forms.py:17
 msgid ""
 "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
 "programowanie)."
@@ -429,15 +436,15 @@ msgstr ""
 "Masukkan tag yang dipisahkan oleh spasi atau koma (misalnya, biskuit, IT, "
 "pemrograman)."
 
-#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+#: suchar_overflow/suchary/forms.py:34 suchar_overflow/suchary/models.py:24
 msgid "Publication Date"
 msgstr "Tanggal Publikasi"
 
-#: suchar_overflow/suchary/forms.py:35
+#: suchar_overflow/suchary/forms.py:37
 msgid "Leave empty to publish immediately."
 msgstr "Biarkan kosong untuk mempublikasikan segera."
 
-#: suchar_overflow/suchary/forms.py:57
+#: suchar_overflow/suchary/forms.py:59
 msgid "Publication date cannot be in the past."
 msgstr "Tanggal publikasi tidak boleh di masa lalu."
 
@@ -490,34 +497,41 @@ msgid "Notification Inbox"
 msgstr "Kotak Masuk Notifikasi"
 
 #: suchar_overflow/templates/achievements/inbox.html:18
+#: suchar_overflow/templates/achievements/mine.html:18
 msgid "All achievements you have earned, newest first."
 msgstr "Semua pencapaian yang telah Anda peroleh, dimulai dari yang terbaru."
 
 #: suchar_overflow/templates/achievements/inbox.html:50
 #: suchar_overflow/templates/achievements/list.html:52
 #: suchar_overflow/templates/achievements/list.html:92
+#: suchar_overflow/templates/achievements/mine.html:52
 msgid "Common"
 msgstr "Umum"
 
 #: suchar_overflow/templates/achievements/inbox.html:55
+#: suchar_overflow/templates/achievements/mine.html:57
 #, python-format
 msgid "Unlocked: %(date)s"
 msgstr "Dibuka: %(date)s"
 
 #: suchar_overflow/templates/achievements/inbox.html:63
+#: suchar_overflow/templates/achievements/mine.html:65
 msgid "No achievements yet — go post some jokes!"
 msgstr "Belum ada pencapaian — coba posting beberapa lelucon!"
 
 #: suchar_overflow/templates/achievements/inbox.html:64
+#: suchar_overflow/templates/achievements/mine.html:66
 msgid "Browse achievements"
 msgstr "Jelajahi pencapaian"
 
 #: suchar_overflow/templates/achievements/list.html:6
+#: suchar_overflow/templates/achievements/mine.html:6
+#: suchar_overflow/templates/achievements/mine.html:17
 msgid "My Achievements"
 msgstr "Pencapaian Saya"
 
 #: suchar_overflow/templates/achievements/list.html:17
-#: suchar_overflow/templates/stats/leaderboard.html:110
+#: suchar_overflow/templates/stats/leaderboard.html:122
 msgid "Hall of Fame"
 msgstr "Penghargaan"
 
@@ -529,96 +543,118 @@ msgstr "Lencana, medali, dan rahasia memalukan Anda dari Suchar Overflow."
 msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Pencapaian terkunci. Temukan rahasianya dengan bermain!"
 
+#: suchar_overflow/templates/achievements/mine.html:20
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "Browse all achievements"
+msgstr "Jelajahi pencapaian"
+
 #: suchar_overflow/templates/base.html:17
-#: suchar_overflow/templates/base.html:24
+#: suchar_overflow/templates/base.html:25
 msgid "Joke aggregator with critically low humidity levels."
 msgstr "Agregator lelucon dengan tingkat kelembapan yang sangat rendah."
 
-#: suchar_overflow/templates/base.html:96
-msgid "Home"
-msgstr "Beranda"
-
-#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/base.html:106
 #: suchar_overflow/templates/suchary/suchar_list.html:12
-#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/templates/users/user_detail.html:137
 #: suchar_overflow/users/admin.py:68
 msgid "Jokes"
 msgstr "Lelucon"
 
-#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/base.html:110
 #: suchar_overflow/templates/stats/leaderboard.html:6
 #: suchar_overflow/templates/stats/leaderboard.html:12
 msgid "Leaderboard"
 msgstr "Papan Peringkat"
 
-#: suchar_overflow/templates/base.html:109
-msgid "Inbox"
-msgstr "Kotak Masuk"
+#: suchar_overflow/templates/base.html:124
+msgid "Post"
+msgstr ""
 
-#: suchar_overflow/templates/base.html:113
-msgid "About"
-msgstr "Tentang"
-
-#: suchar_overflow/templates/base.html:136
+#: suchar_overflow/templates/base.html:146
 #, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "Cari..."
 
-#: suchar_overflow/templates/base.html:166
-#: suchar_overflow/templates/base.html:248
+#: suchar_overflow/templates/base.html:174
+#, fuzzy
+#| msgid "Notification"
+msgid "Notifications"
+msgstr "Notifikasi"
+
+#: suchar_overflow/templates/base.html:182
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "New achievements"
+msgstr "Jelajahi pencapaian"
+
+#: suchar_overflow/templates/base.html:198
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "No new achievements"
+msgstr "Jelajahi pencapaian"
+
+#: suchar_overflow/templates/base.html:201
+#, fuzzy
+#| msgid "My Achievements"
+msgid "View all my achievements"
+msgstr "Pencapaian Saya"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:294
 msgid "Log Out"
 msgstr "Keluar"
 
-#: suchar_overflow/templates/base.html:168
+#: suchar_overflow/templates/base.html:212
 msgid "Log In"
 msgstr "Masuk"
 
-#: suchar_overflow/templates/base.html:169
+#: suchar_overflow/templates/base.html:213
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Daftar"
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:223
 msgid "Default content."
 msgstr "Konten default."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:232
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Semua hak dilindungi undang-undang (tapi leluconnya dicuri)."
 
-#: suchar_overflow/templates/base.html:197
+#: suchar_overflow/templates/base.html:237
+msgid "About"
+msgstr "Tentang"
+
+#: suchar_overflow/templates/base.html:246
 msgid "Report a Bug"
 msgstr "Laporkan Masalah"
 
-#: suchar_overflow/templates/base.html:219
+#: suchar_overflow/templates/base.html:266
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Kesalahan"
 
-#: suchar_overflow/templates/base.html:221
-msgid "Achievement Unlocked"
-msgstr "Pencapaian Telah Dicapai"
-
-#: suchar_overflow/templates/base.html:223
+#: suchar_overflow/templates/base.html:268
 msgid "Success"
 msgstr "Sukses"
 
-#: suchar_overflow/templates/base.html:225
+#: suchar_overflow/templates/base.html:270
 msgid "Notification"
 msgstr "Notifikasi"
 
-#: suchar_overflow/templates/base.html:240
+#: suchar_overflow/templates/base.html:286
 msgid "Confirm Logout"
 msgstr "Konfirmasi Keluar"
 
-#: suchar_overflow/templates/base.html:243
+#: suchar_overflow/templates/base.html:289
 msgid "Are you sure you want to log out?"
 msgstr "Apakah Anda yakin ingin keluar?"
 
-#: suchar_overflow/templates/base.html:245
+#: suchar_overflow/templates/base.html:291
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
@@ -643,8 +679,8 @@ msgstr "Misi"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one"
-" followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one "
+"followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Tujuan dari Suchar Overflow adalah untuk mengumpulkan koleksi lelucon "
 "terbesar yang menyebabkan rasa sakit fisik pada penerimanya. Kami percaya "
@@ -657,8 +693,8 @@ msgstr "Teknologi"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure"
-" fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure "
+"fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Situs ini dibangun dengan teknologi terbaru (Django + CSS Kustom) untuk "
 "memastikan pengiriman konten lucu yang cepat dan andal langsung ke layar "
@@ -695,8 +731,7 @@ msgid "Vote"
 msgstr "Pilih"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid ""
-"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Nilai lelucon orang lain. Tentukan apa yang lucu (dan apa yang menyedihkan)."
 
@@ -750,8 +785,8 @@ msgstr "Halo, %(username)s!"
 msgid ""
 "Welcome to Suchar Overflow - a place where air humidity drops below zero."
 msgstr ""
-"Selamat datang di Suchar Overflow - tempat di mana kelembapan udara turun di"
-" bawah nol."
+"Selamat datang di Suchar Overflow - tempat di mana kelembapan udara turun di "
+"bawah nol."
 
 #: suchar_overflow/templates/registration/activation_email.txt:6
 msgid ""
@@ -875,8 +910,8 @@ msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
-"Kami telah mengirimkan instruksi pengaturan kata sandi ke alamat email Anda,"
-" jika ada akun yang terdaftar dengan alamat email yang Anda masukkan. Anda "
+"Kami telah mengirimkan instruksi pengaturan kata sandi ke alamat email Anda, "
+"jika ada akun yang terdaftar dengan alamat email yang Anda masukkan. Anda "
 "akan segera menerimanya."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
@@ -908,12 +943,10 @@ msgid "Thanks for using our site!"
 msgstr "Terima kasih telah menggunakan situs kami!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-msgid "The"
-msgstr "Itu"
-
-#: suchar_overflow/templates/registration/password_reset_email.html:13
-msgid "team"
-msgstr "tim"
+#, fuzzy
+#| msgid "The Suchar Overflow Team"
+msgid "The Suchar Overflow team"
+msgstr "Tim Suchar Overflow"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -925,8 +958,8 @@ msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
 msgstr ""
-"Lupa kata sandi Anda? Masukkan alamat email Anda di bawah ini, dan kami akan"
-" mengirimkan instruksi untuk mengatur kata sandi baru."
+"Lupa kata sandi Anda? Masukkan alamat email Anda di bawah ini, dan kami akan "
+"mengirimkan instruksi untuk mengatur kata sandi baru."
 
 #: suchar_overflow/templates/registration/password_reset_form.html:22
 msgid "Reset my password"
@@ -949,80 +982,86 @@ msgstr ""
 "periksa kotak masuk Anda dan klik tautan untuk mengaktifkan akun Anda."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-msgid "Celebreating the best (and the driest) caused by our community."
+#, fuzzy
+#| msgid "Celebreating the best (and the driest) caused by our community."
+msgid "Celebrating the best (and the driest) caused by our community."
 msgstr ""
-"Merayakan hal-hal terbaik (dan momen terlucu) yang disebabkan oleh komunitas"
-" kami."
+"Merayakan hal-hal terbaik (dan momen terlucu) yang disebabkan oleh komunitas "
+"kami."
 
-#: suchar_overflow/templates/stats/leaderboard.html:19
-msgid "Activity (Last 30 Days)"
-msgstr "Aktivitas (30 Hari Terakhir)"
+#: suchar_overflow/templates/stats/leaderboard.html:20
+msgid "Activity"
+msgstr ""
 
-#: suchar_overflow/templates/stats/leaderboard.html:36
+#: suchar_overflow/templates/stats/leaderboard.html:29
+msgid "All time"
+msgstr ""
+
+#: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
 msgstr "Keseluruhan"
 
-#: suchar_overflow/templates/stats/leaderboard.html:46
-#: suchar_overflow/templates/stats/leaderboard.html:169
-#: suchar_overflow/templates/suchary/suchar_list.html:116
-#: suchar_overflow/templates/suchary/suchar_list.html:119
-#: suchar_overflow/templates/users/user_detail.html:302
+#: suchar_overflow/templates/stats/leaderboard.html:58
+#: suchar_overflow/templates/stats/leaderboard.html:182
+#: suchar_overflow/templates/suchary/suchar_list.html:149
+#: suchar_overflow/templates/suchary/suchar_list.html:152
+#: suchar_overflow/templates/users/user_detail.html:299
 msgid "Funny"
 msgstr "Lucu"
 
-#: suchar_overflow/templates/stats/leaderboard.html:56
-#: suchar_overflow/templates/stats/leaderboard.html:242
-#: suchar_overflow/templates/suchary/suchar_list.html:128
-#: suchar_overflow/templates/suchary/suchar_list.html:131
-#: suchar_overflow/templates/users/user_detail.html:302
+#: suchar_overflow/templates/stats/leaderboard.html:68
+#: suchar_overflow/templates/stats/leaderboard.html:256
+#: suchar_overflow/templates/suchary/suchar_list.html:162
+#: suchar_overflow/templates/suchary/suchar_list.html:165
+#: suchar_overflow/templates/users/user_detail.html:299
 msgid "Dry"
 msgstr "Kering"
 
-#: suchar_overflow/templates/stats/leaderboard.html:75
+#: suchar_overflow/templates/stats/leaderboard.html:87
 msgid "Most Active Authors"
 msgstr "Penulis Teraktif"
 
-#: suchar_overflow/templates/stats/leaderboard.html:88
-#: suchar_overflow/templates/stats/leaderboard.html:166
-#: suchar_overflow/templates/stats/leaderboard.html:239
+#: suchar_overflow/templates/stats/leaderboard.html:100
+#: suchar_overflow/templates/stats/leaderboard.html:179
+#: suchar_overflow/templates/stats/leaderboard.html:253
 msgid "jokes"
 msgstr "lelucon"
 
-#: suchar_overflow/templates/stats/leaderboard.html:99
+#: suchar_overflow/templates/stats/leaderboard.html:111
 msgid "No data."
 msgstr "Tidak ada data."
 
-#: suchar_overflow/templates/stats/leaderboard.html:133
-#: suchar_overflow/templates/stats/leaderboard.html:206
-#: suchar_overflow/templates/stats/leaderboard.html:279
+#: suchar_overflow/templates/stats/leaderboard.html:146
+#: suchar_overflow/templates/stats/leaderboard.html:220
+#: suchar_overflow/templates/stats/leaderboard.html:294
 msgid "No jokes."
 msgstr "Tanpa lelucon."
 
-#: suchar_overflow/templates/stats/leaderboard.html:153
+#: suchar_overflow/templates/stats/leaderboard.html:166
 msgid "Comedy Kings"
 msgstr "Raja Komedi"
 
-#: suchar_overflow/templates/stats/leaderboard.html:174
+#: suchar_overflow/templates/stats/leaderboard.html:187
 msgid "No funny data."
 msgstr "Tidak ada data yang menarik."
 
-#: suchar_overflow/templates/stats/leaderboard.html:185
+#: suchar_overflow/templates/stats/leaderboard.html:198
 msgid "Top Funny Jokes"
 msgstr "Lelucon Lucu Terbaik"
 
-#: suchar_overflow/templates/stats/leaderboard.html:226
+#: suchar_overflow/templates/stats/leaderboard.html:240
 msgid "Lords of Drought"
 msgstr "Lords of Drought"
 
-#: suchar_overflow/templates/stats/leaderboard.html:247
+#: suchar_overflow/templates/stats/leaderboard.html:261
 msgid "No dry data."
 msgstr "Tidak ada data kering."
 
-#: suchar_overflow/templates/stats/leaderboard.html:258
+#: suchar_overflow/templates/stats/leaderboard.html:272
 msgid "Top Dry Jokes"
 msgstr "Lelucon Kering Terbaik"
 
-#: suchar_overflow/templates/stats/leaderboard.html:307
+#: suchar_overflow/templates/stats/leaderboard.html:321
 msgid "New Jokes"
 msgstr "Lelucon Baru"
 
@@ -1133,30 +1172,55 @@ msgstr "Atas"
 msgid "Newest"
 msgstr "Terbaru"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:85
+#: suchar_overflow/templates/suchary/suchar_list.html:77
+msgid "Active filters:"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:89
+#, fuzzy
+#| msgid "Search..."
+msgid "Search:"
+msgstr "Cari..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:97
+msgid "Author:"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:104
+msgid "Clear all"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
 msgstr "Dijadwalkan"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:95
-#: suchar_overflow/templates/users/user_detail.html:194
+#: suchar_overflow/templates/suchary/suchar_list.html:127
+#: suchar_overflow/templates/users/user_detail.html:193
 msgid "Edit"
 msgstr "Sunting"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:139
+#: suchar_overflow/templates/suchary/suchar_list.html:148
+#: suchar_overflow/templates/suchary/suchar_list.html:161
+#, fuzzy
+#| msgid "Log in"
+msgid "Log in to vote"
+msgstr "Masuk"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
 msgstr "Sangat kering di sini..."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:140
+#: suchar_overflow/templates/suchary/suchar_list.html:174
 msgid "Be the hero we need and add the first joke."
 msgstr "Jadilah pahlawan yang kita butuhkan dan tambahkan lelucon pertama."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:154
-#: suchar_overflow/templates/suchary/suchar_list.html:158
+#: suchar_overflow/templates/suchary/suchar_list.html:188
+#: suchar_overflow/templates/suchary/suchar_list.html:192
 msgid "Previous"
 msgstr "Sebelumnya"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:178
-#: suchar_overflow/templates/suchary/suchar_list.html:182
+#: suchar_overflow/templates/suchary/suchar_list.html:212
+#: suchar_overflow/templates/suchary/suchar_list.html:216
 msgid "Next"
 msgstr "Selanjutnya"
 
@@ -1207,13 +1271,17 @@ msgstr "Periksa kedua kotak masuk!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation "
+"link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, "
+"so you know it's really you."
 msgstr ""
-"Kami telah mengirim pesan ke alamat <strong>BARU</strong> Anda dengan tautan aktivasi.\n"
+"Kami telah mengirim pesan ke alamat <strong>BARU</strong> Anda dengan tautan "
+"aktivasi.\n"
 "          <br />\n"
-"          Namun, kami juga mengirim peringatan ke alamat <strong>LAMA</strong> Anda, sehingga Anda tahu bahwa ini benar-benar Anda."
+"          Namun, kami juga mengirim peringatan ke alamat <strong>LAMA</"
+"strong> Anda, sehingga Anda tahu bahwa ini benar-benar Anda."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1269,7 +1337,7 @@ msgid "Changed my mind (go back)"
 msgstr "Saya berubah pikiran (kembali)"
 
 #: suchar_overflow/templates/users/email_change_revoked.html:6
-#: suchar_overflow/users/models.py:70
+#: suchar_overflow/users/models.py:75
 msgid "Revoked"
 msgstr "Dicabut"
 
@@ -1315,8 +1383,8 @@ msgstr "Ubah kata sandi (sebagai tindakan pencegahan)"
 #, python-format
 msgid "We just received a request to change your email address to: %(email)s."
 msgstr ""
-"Kami baru saja menerima permintaan untuk mengubah alamat email Anda menjadi:"
-" %(email)s."
+"Kami baru saja menerima permintaan untuk mengubah alamat email Anda menjadi: "
+"%(email)s."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:7
 msgid ""
@@ -1335,8 +1403,8 @@ msgid ""
 "Someone might be trying to take over your account (or you just have a split "
 "personality)."
 msgstr ""
-"Seseorang mungkin sedang mencoba mengambil alih akun Anda (atau Anda mungkin"
-" memiliki kepribadian ganda)."
+"Seseorang mungkin sedang mencoba mengambil alih akun Anda (atau Anda mungkin "
+"memiliki kepribadian ganda)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:11
 msgid ""
@@ -1391,79 +1459,79 @@ msgstr "Pengguna"
 msgid "Suchar Overflow User"
 msgstr "Pengguna Luapan Suchar"
 
-#: suchar_overflow/templates/users/user_detail.html:52
-msgid "No achievements yet."
-msgstr "Belum ada pencapaian."
-
-#: suchar_overflow/templates/users/user_detail.html:62
-msgid "The Best Of"
-msgstr "Yang Terbaik"
-
-#: suchar_overflow/templates/users/user_detail.html:76
-msgid "Statistics"
-msgstr "Statistik"
-
-#: suchar_overflow/templates/users/user_detail.html:78
-msgid "Rank"
-msgstr "Peringkat"
-
-#: suchar_overflow/templates/users/user_detail.html:86
-msgid "Total Votes"
-msgstr "Jumlah Suara"
-
-#: suchar_overflow/templates/users/user_detail.html:93
-msgid "Joined"
-msgstr "Bergabung"
-
-#: suchar_overflow/templates/users/user_detail.html:101
-msgid "Dryness Level"
-msgstr "Tingkat Kekeringan"
-
-#: suchar_overflow/templates/users/user_detail.html:109
-msgid "Reception"
-msgstr "Resepsionis"
-
-#: suchar_overflow/templates/users/user_detail.html:125
+#: suchar_overflow/templates/users/user_detail.html:34
 msgid "Drought Map"
 msgstr "Peta Kekeringan"
 
-#: suchar_overflow/templates/users/user_detail.html:127
+#: suchar_overflow/templates/users/user_detail.html:36
 msgid "Less"
 msgstr "Kurang"
 
-#: suchar_overflow/templates/users/user_detail.html:133
+#: suchar_overflow/templates/users/user_detail.html:42
 msgid "More"
 msgstr "Lainnya"
 
-#: suchar_overflow/templates/users/user_detail.html:146
+#: suchar_overflow/templates/users/user_detail.html:55
 msgid "Mon"
 msgstr "Sen"
 
-#: suchar_overflow/templates/users/user_detail.html:147
+#: suchar_overflow/templates/users/user_detail.html:56
 msgid "Wed"
 msgstr "Rab"
 
-#: suchar_overflow/templates/users/user_detail.html:148
+#: suchar_overflow/templates/users/user_detail.html:57
 msgid "Fri"
 msgstr "Jum'at"
 
-#: suchar_overflow/templates/users/user_detail.html:167
+#: suchar_overflow/templates/users/user_detail.html:73
 msgid "jokes on"
 msgstr "sedang berlangsung"
 
-#: suchar_overflow/templates/users/user_detail.html:179
+#: suchar_overflow/templates/users/user_detail.html:107
+msgid "No achievements yet."
+msgstr "Belum ada pencapaian."
+
+#: suchar_overflow/templates/users/user_detail.html:117
+msgid "The Best Of"
+msgstr "Yang Terbaik"
+
+#: suchar_overflow/templates/users/user_detail.html:131
+msgid "Statistics"
+msgstr "Statistik"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "Rank"
+msgstr "Peringkat"
+
+#: suchar_overflow/templates/users/user_detail.html:141
+msgid "Total Votes"
+msgstr "Jumlah Suara"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Joined"
+msgstr "Bergabung"
+
+#: suchar_overflow/templates/users/user_detail.html:156
+msgid "Dryness Level"
+msgstr "Tingkat Kekeringan"
+
+#: suchar_overflow/templates/users/user_detail.html:164
+msgid "Reception"
+msgstr "Resepsionis"
+
+#: suchar_overflow/templates/users/user_detail.html:178
 msgid "Latest Jokes"
 msgstr "Lelucon Terbaru"
 
-#: suchar_overflow/templates/users/user_detail.html:185
+#: suchar_overflow/templates/users/user_detail.html:184
 msgid "Scheduled for Publication"
 msgstr "Dijadwalkan untuk Diterbitkan"
 
-#: suchar_overflow/templates/users/user_detail.html:228
+#: suchar_overflow/templates/users/user_detail.html:230
 msgid "See all entries"
 msgstr "Lihat semua entri"
 
-#: suchar_overflow/templates/users/user_detail.html:232
+#: suchar_overflow/templates/users/user_detail.html:234
 msgid "User hasn't added any jokes yet."
 msgstr "Pengguna belum menambahkan lelucon apa pun."
 
@@ -1532,19 +1600,19 @@ msgstr "Kode Aktivasi"
 msgid "Activation Tokens"
 msgstr "Token Aktivasi"
 
-#: suchar_overflow/users/models.py:68
+#: suchar_overflow/users/models.py:73
 msgid "Pending"
 msgstr "Sedang Diproses"
 
-#: suchar_overflow/users/models.py:69
+#: suchar_overflow/users/models.py:74
 msgid "Verified"
 msgstr "Terverifikasi"
 
-#: suchar_overflow/users/models.py:89
+#: suchar_overflow/users/models.py:94
 msgid "Email Change Request"
 msgstr "Permintaan Perubahan Email"
 
-#: suchar_overflow/users/models.py:90
+#: suchar_overflow/users/models.py:95
 msgid "Email Change Requests"
 msgstr "Permintaan Perubahan Email"
 
@@ -1560,23 +1628,43 @@ msgstr "Konfirmasi bahwa ini Anda (Perubahan Email)"
 msgid "Someone wants to change your email address (We hope it's you)"
 msgstr "Seseorang ingin mengubah alamat email Anda (Kami harap itu Anda)."
 
-#: suchar_overflow/users/tests/test_views.py:74
-#: suchar_overflow/users/views.py:203
-msgid "Information successfully updated"
-msgstr "Informasi berhasil diperbarui"
-
-#: suchar_overflow/users/views.py:334
+#: suchar_overflow/users/views.py:386
 msgid "The link has already been used or cancelled."
 msgstr "Tautan sudah digunakan atau dibatalkan."
 
-#: suchar_overflow/users/views.py:344
+#: suchar_overflow/users/views.py:395
 msgid "The link has expired (24 hours have passed)."
 msgstr "Tautan telah kedaluwarsa (24 jam telah berlalu)."
 
-#: suchar_overflow/users/views.py:352
+#: suchar_overflow/users/views.py:402
 msgid "Email already taken."
 msgstr "Alamat email sudah digunakan."
 
-#: suchar_overflow/users/views.py:370
+#: suchar_overflow/users/views.py:421
 msgid "The link is invalid."
 msgstr "Tautan tidak valid."
+
+#, python-format
+#~ msgid "Achievement Unlocked: %(name)s!"
+#~ msgstr "Pencapaian Terbuka: %(name)s!"
+
+#~ msgid "Home"
+#~ msgstr "Beranda"
+
+#~ msgid "Inbox"
+#~ msgstr "Kotak Masuk"
+
+#~ msgid "Achievement Unlocked"
+#~ msgstr "Pencapaian Telah Dicapai"
+
+#~ msgid "The"
+#~ msgstr "Itu"
+
+#~ msgid "team"
+#~ msgstr "tim"
+
+#~ msgid "Activity (Last 30 Days)"
+#~ msgstr "Aktivitas (30 Hari Terakhir)"
+
+#~ msgid "Information successfully updated"
+#~ msgstr "Informasi berhasil diperbarui"

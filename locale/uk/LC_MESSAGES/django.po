@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 22:56+0000\n"
+"POT-Creation-Date: 2026-05-26 16:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != "
+"11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % "
+"100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
+"(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
 #: config/settings/base.py:34
 msgid "Arabic"
@@ -220,17 +223,12 @@ msgstr "Китайська (спрощена)"
 msgid "Chinese (Traditional)"
 msgstr "Китайська (традиційний)"
 
-#: suchar_overflow/achievements/apps.py:8
-#: suchar_overflow/achievements/models.py:84
-#: suchar_overflow/templates/base.html:106
-#: suchar_overflow/templates/users/user_detail.html:34
+#: suchar_overflow/achievements/apps.py:23
+#: suchar_overflow/achievements/models.py:86
+#: suchar_overflow/templates/base.html:115
+#: suchar_overflow/templates/users/user_detail.html:89
 msgid "Achievements"
 msgstr "Досягнення"
-
-#: suchar_overflow/achievements/middleware.py:29
-#, python-format
-msgid "Achievement Unlocked: %(name)s!"
-msgstr "Досягнення відкрито: %(name)s!"
 
 #: suchar_overflow/achievements/models.py:8
 msgid "Lifetime"
@@ -256,153 +254,166 @@ msgstr "Отримано голос"
 msgid "Vote Cast"
 msgstr "Голос віддано"
 
-#: suchar_overflow/achievements/models.py:18
+#: suchar_overflow/achievements/models.py:16
+msgid "Frontend"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
 msgstr "Кількість Сухарів"
 
-#: suchar_overflow/achievements/models.py:19
+#: suchar_overflow/achievements/models.py:20
 msgid "Funny Vote Count"
 msgstr "Кількість смішних голосів"
 
-#: suchar_overflow/achievements/models.py:20
+#: suchar_overflow/achievements/models.py:21
 msgid "Dry Vote Count"
 msgstr "Кількість голосів за"
 
-#: suchar_overflow/achievements/models.py:21
+#: suchar_overflow/achievements/models.py:22
 msgid "Vote Cast Count"
 msgstr "Кількість голосів"
 
-#: suchar_overflow/achievements/models.py:22
+#: suchar_overflow/achievements/models.py:23
 msgid "Total Score"
 msgstr "Загальний бал"
 
-#: suchar_overflow/achievements/models.py:23
+#: suchar_overflow/achievements/models.py:24
 msgid "Night Owl"
 msgstr "Нічний птах"
 
-#: suchar_overflow/achievements/models.py:24
+#: suchar_overflow/achievements/models.py:25
 msgid "Login Streak"
 msgstr "Серія входів"
 
-#: suchar_overflow/achievements/models.py:25
+#: suchar_overflow/achievements/models.py:26
 msgid "Polarizer"
 msgstr "Поляризатор"
 
-#: suchar_overflow/achievements/models.py:28
+#: suchar_overflow/achievements/models.py:27
+msgid "Frontend Event"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:30
 msgid "None"
 msgstr "Нічого"
 
-#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/achievements/models.py:31
 #: suchar_overflow/templates/achievements/inbox.html:40
 #: suchar_overflow/templates/achievements/list.html:42
 #: suchar_overflow/templates/achievements/list.html:82
+#: suchar_overflow/templates/achievements/mine.html:42
 msgid "Bronze"
 msgstr "Бронзовий"
 
-#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/achievements/models.py:32
 #: suchar_overflow/templates/achievements/inbox.html:42
 #: suchar_overflow/templates/achievements/list.html:44
 #: suchar_overflow/templates/achievements/list.html:84
+#: suchar_overflow/templates/achievements/mine.html:44
 msgid "Silver"
 msgstr "Срібло"
 
-#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/achievements/models.py:33
 #: suchar_overflow/templates/achievements/inbox.html:44
 #: suchar_overflow/templates/achievements/list.html:46
 #: suchar_overflow/templates/achievements/list.html:86
+#: suchar_overflow/templates/achievements/mine.html:46
 msgid "Gold"
 msgstr "Золото"
 
-#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/achievements/models.py:34
 #: suchar_overflow/templates/achievements/inbox.html:46
 #: suchar_overflow/templates/achievements/list.html:48
 #: suchar_overflow/templates/achievements/list.html:88
+#: suchar_overflow/templates/achievements/mine.html:48
 msgid "Platinum"
 msgstr "Платина"
 
-#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/achievements/models.py:35
 #: suchar_overflow/templates/achievements/inbox.html:48
 #: suchar_overflow/templates/achievements/list.html:50
 #: suchar_overflow/templates/achievements/list.html:90
+#: suchar_overflow/templates/achievements/mine.html:50
 msgid "Diamond"
 msgstr "Діамант"
 
-#: suchar_overflow/achievements/models.py:35
+#: suchar_overflow/achievements/models.py:37
 msgid "Name"
 msgstr "Ім'я"
 
-#: suchar_overflow/achievements/models.py:36
+#: suchar_overflow/achievements/models.py:38
 msgid "Slug"
 msgstr "Слайд"
 
-#: suchar_overflow/achievements/models.py:37
+#: suchar_overflow/achievements/models.py:39
 msgid "Description"
 msgstr "Опис"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Icon Content"
 msgstr "Іконка"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Raw SVG XML"
 msgstr "Вихідний XML-код SVG"
 
-#: suchar_overflow/achievements/models.py:44
+#: suchar_overflow/achievements/models.py:46
 msgid "Category"
 msgstr "Категорія"
 
-#: suchar_overflow/achievements/models.py:50
+#: suchar_overflow/achievements/models.py:52
 msgid "Event Type"
 msgstr "Тип події"
 
-#: suchar_overflow/achievements/models.py:56
+#: suchar_overflow/achievements/models.py:58
 msgid "Metric"
 msgstr "Метрика"
 
-#: suchar_overflow/achievements/models.py:61
+#: suchar_overflow/achievements/models.py:63
 msgid "Threshold"
 msgstr "Порогове значення"
 
-#: suchar_overflow/achievements/models.py:65
+#: suchar_overflow/achievements/models.py:67
 msgid "Theme"
 msgstr "Тема"
 
-#: suchar_overflow/achievements/models.py:68
+#: suchar_overflow/achievements/models.py:70
 msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
 msgstr ""
 "Наприклад, \"Різдво\", \"Програмування\". Залиште поле порожнім для "
 "загальних запитів."
 
-#: suchar_overflow/achievements/models.py:71
+#: suchar_overflow/achievements/models.py:73
 msgid "Tier"
 msgstr "Рівень"
 
-#: suchar_overflow/achievements/models.py:74
+#: suchar_overflow/achievements/models.py:76
 msgid "Difficulty/Rarity tier of the achievement"
 msgstr ""
 
-#: suchar_overflow/achievements/models.py:77
+#: suchar_overflow/achievements/models.py:79
 msgid "Secret Achievement"
 msgstr "Приховане досягнення"
 
-#: suchar_overflow/achievements/models.py:79
+#: suchar_overflow/achievements/models.py:81
 msgid "If checked, name and description are hidden until unlocked."
 msgstr ""
 "Якщо встановлено прапорець, назва та опис будуть приховані до розблокування."
 
-#: suchar_overflow/achievements/models.py:83
+#: suchar_overflow/achievements/models.py:85
 msgid "Achievement"
 msgstr "Досягнення"
 
-#: suchar_overflow/achievements/models.py:102
+#: suchar_overflow/achievements/models.py:104
 msgid "Seen by user"
 msgstr "Переглянуто користувачем"
 
-#: suchar_overflow/achievements/models.py:105
+#: suchar_overflow/achievements/models.py:107
 msgid "User Achievement"
 msgstr "Досягнення користувача"
 
-#: suchar_overflow/achievements/models.py:106
+#: suchar_overflow/achievements/models.py:108
 msgid "User Achievements"
 msgstr "Досягнення користувача"
 
@@ -411,10 +422,10 @@ msgid "Text"
 msgstr "Текст"
 
 #: suchar_overflow/suchary/admin.py:45
-#: suchar_overflow/templates/stats/leaderboard.html:91
-#: suchar_overflow/templates/stats/leaderboard.html:126
-#: suchar_overflow/templates/users/user_detail.html:65
-#: suchar_overflow/templates/users/user_detail.html:217
+#: suchar_overflow/templates/stats/leaderboard.html:103
+#: suchar_overflow/templates/stats/leaderboard.html:139
+#: suchar_overflow/templates/users/user_detail.html:120
+#: suchar_overflow/templates/users/user_detail.html:219
 msgid "Votes"
 msgstr "Голоси"
 
@@ -422,7 +433,7 @@ msgstr "Голоси"
 msgid "Suchary"
 msgstr "Сухарі"
 
-#: suchar_overflow/suchary/forms.py:15
+#: suchar_overflow/suchary/forms.py:17
 msgid ""
 "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
 "programowanie)."
@@ -430,15 +441,15 @@ msgstr ""
 "Введіть теги, розділені пробілами або комами (наприклад, сухарик, IT, "
 "програмування)."
 
-#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+#: suchar_overflow/suchary/forms.py:34 suchar_overflow/suchary/models.py:24
 msgid "Publication Date"
 msgstr "Дата публікації"
 
-#: suchar_overflow/suchary/forms.py:35
+#: suchar_overflow/suchary/forms.py:37
 msgid "Leave empty to publish immediately."
 msgstr "Залиште поле порожнім, щоб опублікувати одразу."
 
-#: suchar_overflow/suchary/forms.py:57
+#: suchar_overflow/suchary/forms.py:59
 msgid "Publication date cannot be in the past."
 msgstr "Дата публікації не може бути в минулому."
 
@@ -491,6 +502,7 @@ msgid "Notification Inbox"
 msgstr "Вхідні повідомлення"
 
 #: suchar_overflow/templates/achievements/inbox.html:18
+#: suchar_overflow/templates/achievements/mine.html:18
 msgid "All achievements you have earned, newest first."
 msgstr ""
 "Усі досягнення, які ви отримали, відсортовані за датою (найновіші першими)."
@@ -498,28 +510,34 @@ msgstr ""
 #: suchar_overflow/templates/achievements/inbox.html:50
 #: suchar_overflow/templates/achievements/list.html:52
 #: suchar_overflow/templates/achievements/list.html:92
+#: suchar_overflow/templates/achievements/mine.html:52
 msgid "Common"
 msgstr "Загальні"
 
 #: suchar_overflow/templates/achievements/inbox.html:55
+#: suchar_overflow/templates/achievements/mine.html:57
 #, python-format
 msgid "Unlocked: %(date)s"
 msgstr "Розблоковано: %(date)s"
 
 #: suchar_overflow/templates/achievements/inbox.html:63
+#: suchar_overflow/templates/achievements/mine.html:65
 msgid "No achievements yet — go post some jokes!"
 msgstr "Ще немає досягнень — поділіться жартами!"
 
 #: suchar_overflow/templates/achievements/inbox.html:64
+#: suchar_overflow/templates/achievements/mine.html:66
 msgid "Browse achievements"
 msgstr "Переглянути досягнення"
 
 #: suchar_overflow/templates/achievements/list.html:6
+#: suchar_overflow/templates/achievements/mine.html:6
+#: suchar_overflow/templates/achievements/mine.html:17
 msgid "My Achievements"
 msgstr "Мої досягнення"
 
 #: suchar_overflow/templates/achievements/list.html:17
-#: suchar_overflow/templates/stats/leaderboard.html:110
+#: suchar_overflow/templates/stats/leaderboard.html:122
 msgid "Hall of Fame"
 msgstr "Зала слави"
 
@@ -531,96 +549,118 @@ msgstr "Ваші значки, медалі та ганебні секрети �
 msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Досягнення заблоковано. Дізнайтеся його секрет, граючи!"
 
+#: suchar_overflow/templates/achievements/mine.html:20
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "Browse all achievements"
+msgstr "Переглянути досягнення"
+
 #: suchar_overflow/templates/base.html:17
-#: suchar_overflow/templates/base.html:24
+#: suchar_overflow/templates/base.html:25
 msgid "Joke aggregator with critically low humidity levels."
 msgstr "Агрегатор жартів із критично низьким рівнем вологості."
 
-#: suchar_overflow/templates/base.html:96
-msgid "Home"
-msgstr "Головна"
-
-#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/base.html:106
 #: suchar_overflow/templates/suchary/suchar_list.html:12
-#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/templates/users/user_detail.html:137
 #: suchar_overflow/users/admin.py:68
 msgid "Jokes"
 msgstr "Жартівники"
 
-#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/base.html:110
 #: suchar_overflow/templates/stats/leaderboard.html:6
 #: suchar_overflow/templates/stats/leaderboard.html:12
 msgid "Leaderboard"
 msgstr "Таблиця лідерів"
 
-#: suchar_overflow/templates/base.html:109
-msgid "Inbox"
-msgstr "Вхідні"
+#: suchar_overflow/templates/base.html:124
+msgid "Post"
+msgstr ""
 
-#: suchar_overflow/templates/base.html:113
-msgid "About"
-msgstr "Про нас"
-
-#: suchar_overflow/templates/base.html:136
+#: suchar_overflow/templates/base.html:146
 #, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "Пошук..."
 
-#: suchar_overflow/templates/base.html:166
-#: suchar_overflow/templates/base.html:248
+#: suchar_overflow/templates/base.html:174
+#, fuzzy
+#| msgid "Notification"
+msgid "Notifications"
+msgstr "Повідомлення"
+
+#: suchar_overflow/templates/base.html:182
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "New achievements"
+msgstr "Переглянути досягнення"
+
+#: suchar_overflow/templates/base.html:198
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "No new achievements"
+msgstr "Переглянути досягнення"
+
+#: suchar_overflow/templates/base.html:201
+#, fuzzy
+#| msgid "My Achievements"
+msgid "View all my achievements"
+msgstr "Мої досягнення"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:294
 msgid "Log Out"
 msgstr "Вийти"
 
-#: suchar_overflow/templates/base.html:168
+#: suchar_overflow/templates/base.html:212
 msgid "Log In"
 msgstr "Увійти"
 
-#: suchar_overflow/templates/base.html:169
+#: suchar_overflow/templates/base.html:213
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Зареєструватися"
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:223
 msgid "Default content."
 msgstr "Типовий контент."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:232
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Усі права захищені (але жарти вкрадено)."
 
-#: suchar_overflow/templates/base.html:197
+#: suchar_overflow/templates/base.html:237
+msgid "About"
+msgstr "Про нас"
+
+#: suchar_overflow/templates/base.html:246
 msgid "Report a Bug"
 msgstr "Повідомити про помилку"
 
-#: suchar_overflow/templates/base.html:219
+#: suchar_overflow/templates/base.html:266
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Помилка"
 
-#: suchar_overflow/templates/base.html:221
-msgid "Achievement Unlocked"
-msgstr "Досягнення відкрито"
-
-#: suchar_overflow/templates/base.html:223
+#: suchar_overflow/templates/base.html:268
 msgid "Success"
 msgstr "Успішно"
 
-#: suchar_overflow/templates/base.html:225
+#: suchar_overflow/templates/base.html:270
 msgid "Notification"
 msgstr "Повідомлення"
 
-#: suchar_overflow/templates/base.html:240
+#: suchar_overflow/templates/base.html:286
 msgid "Confirm Logout"
 msgstr "Підтвердити вихід"
 
-#: suchar_overflow/templates/base.html:243
+#: suchar_overflow/templates/base.html:289
 msgid "Are you sure you want to log out?"
 msgstr "Ви впевнені, що хочете вийти з облікового запису?"
 
-#: suchar_overflow/templates/base.html:245
+#: suchar_overflow/templates/base.html:291
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
@@ -645,8 +685,8 @@ msgstr "Місія"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one"
-" followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one "
+"followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Мета проєкту \"Suchar Overflow\" – зібрати найбільшу колекцію жартів, які "
 "викликають фізичний біль у того, хто їх слухає. Ми вважаємо, що хороший "
@@ -659,8 +699,8 @@ msgstr "Технології"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure"
-" fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure "
+"fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Цей сайт створений з використанням найновіших технологій (Django + власний "
 "CSS), щоб забезпечити швидку та надійну доставку \"кринджу\" прямо на ваш "
@@ -680,8 +720,7 @@ msgstr ""
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."
-msgstr ""
-"Голосуйте за найкращі жарти, додавайте свої та станьте легендою офісу."
+msgstr "Голосуйте за найкращі жарти, додавайте свої та станьте легендою офісу."
 
 #: suchar_overflow/templates/pages/home.html:15
 msgid "Browse Jokes"
@@ -696,8 +735,7 @@ msgid "Vote"
 msgstr "Проголосувати"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid ""
-"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr "Оцінюйте жарти інших користувачів. Вирішуйте, що смішно (а що – ні)."
 
 #: suchar_overflow/templates/pages/home.html:39
@@ -750,16 +788,16 @@ msgstr "Привіт, %(username)s!"
 msgid ""
 "Welcome to Suchar Overflow - a place where air humidity drops below zero."
 msgstr ""
-"Ласкаво просимо до Suchar Overflow – місця, де вологість повітря опускається"
-" нижче нуля."
+"Ласкаво просимо до Suchar Overflow – місця, де вологість повітря опускається "
+"нижче нуля."
 
 #: suchar_overflow/templates/registration/activation_email.txt:6
 msgid ""
 "To make sure you're not a bot (or a person without a sense of humor), you "
 "need to activate your account."
 msgstr ""
-"Щоб переконатися, що ви не бот (або людина без почуття гумору), вам потрібно"
-" активувати свій обліковий запис."
+"Щоб переконатися, що ви не бот (або людина без почуття гумору), вам потрібно "
+"активувати свій обліковий запис."
 
 #: suchar_overflow/templates/registration/activation_email.txt:8
 msgid "Click this link before it dries out:"
@@ -875,25 +913,25 @@ msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
-"Ми надіслали вам інструкції для встановлення пароля електронною поштою, якщо"
-" існує обліковий запис з вказаною вами адресою електронної пошти. Ви повинні"
-" отримати їх найближчим часом."
+"Ми надіслали вам інструкції для встановлення пароля електронною поштою, якщо "
+"існує обліковий запис з вказаною вами адресою електронної пошти. Ви повинні "
+"отримати їх найближчим часом."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
 msgstr ""
-"Якщо ви не отримали електронного листа, переконайтеся, що ви вказали адресу,"
-" на яку зареєструвалися, і перевірте папку зі спамом."
+"Якщо ви не отримали електронного листа, переконайтеся, що ви вказали адресу, "
+"на яку зареєструвалися, і перевірте папку зі спамом."
 
 #: suchar_overflow/templates/registration/password_reset_email.html:4
 msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
 msgstr ""
-"Ви отримуєте цей електронний лист, оскільки ви запросили скидання пароля для"
-" вашого облікового запису на сайті."
+"Ви отримуєте цей електронний лист, оскільки ви запросили скидання пароля для "
+"вашого облікового запису на сайті."
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -908,12 +946,10 @@ msgid "Thanks for using our site!"
 msgstr "Дякуємо за відвідування нашого сайту!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-msgid "The"
-msgstr "Цей"
-
-#: suchar_overflow/templates/registration/password_reset_email.html:13
-msgid "team"
-msgstr "команда"
+#, fuzzy
+#| msgid "The Suchar Overflow Team"
+msgid "The Suchar Overflow team"
+msgstr "Команда Suchar Overflow"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -950,78 +986,84 @@ msgstr ""
 "обліковий запис."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-msgid "Celebreating the best (and the driest) caused by our community."
+#, fuzzy
+#| msgid "Celebreating the best (and the driest) caused by our community."
+msgid "Celebrating the best (and the driest) caused by our community."
 msgstr "Відзначаємо найкраще (і найсмішніше), що створила наша спільнота."
 
-#: suchar_overflow/templates/stats/leaderboard.html:19
-msgid "Activity (Last 30 Days)"
-msgstr "Активність (останні 30 днів)"
+#: suchar_overflow/templates/stats/leaderboard.html:20
+msgid "Activity"
+msgstr ""
 
-#: suchar_overflow/templates/stats/leaderboard.html:36
+#: suchar_overflow/templates/stats/leaderboard.html:29
+msgid "All time"
+msgstr ""
+
+#: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
 msgstr "Загалом"
 
-#: suchar_overflow/templates/stats/leaderboard.html:46
-#: suchar_overflow/templates/stats/leaderboard.html:169
-#: suchar_overflow/templates/suchary/suchar_list.html:116
-#: suchar_overflow/templates/suchary/suchar_list.html:119
-#: suchar_overflow/templates/users/user_detail.html:302
+#: suchar_overflow/templates/stats/leaderboard.html:58
+#: suchar_overflow/templates/stats/leaderboard.html:182
+#: suchar_overflow/templates/suchary/suchar_list.html:149
+#: suchar_overflow/templates/suchary/suchar_list.html:152
+#: suchar_overflow/templates/users/user_detail.html:299
 msgid "Funny"
 msgstr "Смішний"
 
-#: suchar_overflow/templates/stats/leaderboard.html:56
-#: suchar_overflow/templates/stats/leaderboard.html:242
-#: suchar_overflow/templates/suchary/suchar_list.html:128
-#: suchar_overflow/templates/suchary/suchar_list.html:131
-#: suchar_overflow/templates/users/user_detail.html:302
+#: suchar_overflow/templates/stats/leaderboard.html:68
+#: suchar_overflow/templates/stats/leaderboard.html:256
+#: suchar_overflow/templates/suchary/suchar_list.html:162
+#: suchar_overflow/templates/suchary/suchar_list.html:165
+#: suchar_overflow/templates/users/user_detail.html:299
 msgid "Dry"
 msgstr "Сухий"
 
-#: suchar_overflow/templates/stats/leaderboard.html:75
+#: suchar_overflow/templates/stats/leaderboard.html:87
 msgid "Most Active Authors"
 msgstr "Найактивніші автори"
 
-#: suchar_overflow/templates/stats/leaderboard.html:88
-#: suchar_overflow/templates/stats/leaderboard.html:166
-#: suchar_overflow/templates/stats/leaderboard.html:239
+#: suchar_overflow/templates/stats/leaderboard.html:100
+#: suchar_overflow/templates/stats/leaderboard.html:179
+#: suchar_overflow/templates/stats/leaderboard.html:253
 msgid "jokes"
 msgstr "жарти"
 
-#: suchar_overflow/templates/stats/leaderboard.html:99
+#: suchar_overflow/templates/stats/leaderboard.html:111
 msgid "No data."
 msgstr "Даних немає."
 
-#: suchar_overflow/templates/stats/leaderboard.html:133
-#: suchar_overflow/templates/stats/leaderboard.html:206
-#: suchar_overflow/templates/stats/leaderboard.html:279
+#: suchar_overflow/templates/stats/leaderboard.html:146
+#: suchar_overflow/templates/stats/leaderboard.html:220
+#: suchar_overflow/templates/stats/leaderboard.html:294
 msgid "No jokes."
 msgstr "Без жартів."
 
-#: suchar_overflow/templates/stats/leaderboard.html:153
+#: suchar_overflow/templates/stats/leaderboard.html:166
 msgid "Comedy Kings"
 msgstr "Королі комедії"
 
-#: suchar_overflow/templates/stats/leaderboard.html:174
+#: suchar_overflow/templates/stats/leaderboard.html:187
 msgid "No funny data."
 msgstr "Немає даних для відображення."
 
-#: suchar_overflow/templates/stats/leaderboard.html:185
+#: suchar_overflow/templates/stats/leaderboard.html:198
 msgid "Top Funny Jokes"
 msgstr "Найкращі жарти"
 
-#: suchar_overflow/templates/stats/leaderboard.html:226
+#: suchar_overflow/templates/stats/leaderboard.html:240
 msgid "Lords of Drought"
 msgstr "Lords of Drought"
 
-#: suchar_overflow/templates/stats/leaderboard.html:247
+#: suchar_overflow/templates/stats/leaderboard.html:261
 msgid "No dry data."
 msgstr "Відсутні дані."
 
-#: suchar_overflow/templates/stats/leaderboard.html:258
+#: suchar_overflow/templates/stats/leaderboard.html:272
 msgid "Top Dry Jokes"
 msgstr "Найкращі сухі жарти"
 
-#: suchar_overflow/templates/stats/leaderboard.html:307
+#: suchar_overflow/templates/stats/leaderboard.html:321
 msgid "New Jokes"
 msgstr "Нові жарти"
 
@@ -1132,30 +1174,55 @@ msgstr "Угорі"
 msgid "Newest"
 msgstr "Останні"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:85
+#: suchar_overflow/templates/suchary/suchar_list.html:77
+msgid "Active filters:"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:89
+#, fuzzy
+#| msgid "Search..."
+msgid "Search:"
+msgstr "Пошук..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:97
+msgid "Author:"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:104
+msgid "Clear all"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
 msgstr "Заплановано"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:95
-#: suchar_overflow/templates/users/user_detail.html:194
+#: suchar_overflow/templates/suchary/suchar_list.html:127
+#: suchar_overflow/templates/users/user_detail.html:193
 msgid "Edit"
 msgstr "Редагувати"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:139
+#: suchar_overflow/templates/suchary/suchar_list.html:148
+#: suchar_overflow/templates/suchary/suchar_list.html:161
+#, fuzzy
+#| msgid "Log in"
+msgid "Log in to vote"
+msgstr "Увійти"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
 msgstr "Тут так сухо..."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:140
+#: suchar_overflow/templates/suchary/suchar_list.html:174
 msgid "Be the hero we need and add the first joke."
 msgstr "Станьте героєм, якого ми потребуємо, і додайте перший жарт."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:154
-#: suchar_overflow/templates/suchary/suchar_list.html:158
+#: suchar_overflow/templates/suchary/suchar_list.html:188
+#: suchar_overflow/templates/suchary/suchar_list.html:192
 msgid "Previous"
 msgstr "Попередній"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:178
-#: suchar_overflow/templates/suchary/suchar_list.html:182
+#: suchar_overflow/templates/suchary/suchar_list.html:212
+#: suchar_overflow/templates/suchary/suchar_list.html:216
 msgid "Next"
 msgstr "Далі"
 
@@ -1189,8 +1256,7 @@ msgstr "Все працює!"
 msgid ""
 "Your email address has been changed. You can now sleep peacefully (or not)."
 msgstr ""
-"Ваша електронна адреса була змінена. Тепер ви можете спокійно спати (або "
-"ні)."
+"Ваша електронна адреса була змінена. Тепер ви можете спокійно спати (або ні)."
 
 #: suchar_overflow/templates/users/email_change_complete.html:28
 msgid "Back to settings"
@@ -1206,13 +1272,17 @@ msgstr "Перевірте обидві поштові скриньки!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation "
+"link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, "
+"so you know it's really you."
 msgstr ""
-"Ми надіслали повідомлення на вашу <strong>НОВУ</strong> адресу з посиланням для активації.\n"
+"Ми надіслали повідомлення на вашу <strong>НОВУ</strong> адресу з посиланням "
+"для активації.\n"
 "          <br />\n"
-"          Але ми також надіслали попередження на вашу <strong>СТАРУ</strong> адресу, щоб ви знали, що це саме ви."
+"          Але ми також надіслали попередження на вашу <strong>СТАРУ</strong> "
+"адресу, щоб ви знали, що це саме ви."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1256,8 +1326,8 @@ msgid ""
 "Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
 "judge."
 msgstr ""
-"Вам набридла ваша стара адреса? Або, можливо, ви намагаєтеся уникнути сплати"
-" податків? Ми не судимо."
+"Вам набридла ваша стара адреса? Або, можливо, ви намагаєтеся уникнути сплати "
+"податків? Ми не судимо."
 
 #: suchar_overflow/templates/users/email_change_form.html:25
 msgid "Send a pigeon with the link"
@@ -1268,7 +1338,7 @@ msgid "Changed my mind (go back)"
 msgstr "Передумав (повернутися назад)"
 
 #: suchar_overflow/templates/users/email_change_revoked.html:6
-#: suchar_overflow/users/models.py:70
+#: suchar_overflow/users/models.py:75
 msgid "Revoked"
 msgstr "Анульовано"
 
@@ -1281,8 +1351,8 @@ msgid ""
 "Phew, that was close. Your email address has been restored to its previous "
 "state."
 msgstr ""
-"Фух, це було близько. Ваша електронна адреса була відновлена до попереднього"
-" стану."
+"Фух, це було близько. Ваша електронна адреса була відновлена до попереднього "
+"стану."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:19
 msgid "You can breathe a sigh of relief. We recommend changing your password."
@@ -1331,8 +1401,8 @@ msgid ""
 "Someone might be trying to take over your account (or you just have a split "
 "personality)."
 msgstr ""
-"Хтось може намагатися отримати доступ до вашого облікового запису (або у вас"
-" просто подвійне життя)."
+"Хтось може намагатися отримати доступ до вашого облікового запису (або у вас "
+"просто подвійне життя)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:11
 msgid ""
@@ -1389,79 +1459,79 @@ msgstr "Користувач"
 msgid "Suchar Overflow User"
 msgstr "Користувач \"Suchar Overflow\""
 
-#: suchar_overflow/templates/users/user_detail.html:52
-msgid "No achievements yet."
-msgstr "Поки що немає досягнень."
-
-#: suchar_overflow/templates/users/user_detail.html:62
-msgid "The Best Of"
-msgstr "Найкраще"
-
-#: suchar_overflow/templates/users/user_detail.html:76
-msgid "Statistics"
-msgstr "Статистика"
-
-#: suchar_overflow/templates/users/user_detail.html:78
-msgid "Rank"
-msgstr "Ранг"
-
-#: suchar_overflow/templates/users/user_detail.html:86
-msgid "Total Votes"
-msgstr "Загальна кількість голосів"
-
-#: suchar_overflow/templates/users/user_detail.html:93
-msgid "Joined"
-msgstr "Приєднався"
-
-#: suchar_overflow/templates/users/user_detail.html:101
-msgid "Dryness Level"
-msgstr "Рівень сухості"
-
-#: suchar_overflow/templates/users/user_detail.html:109
-msgid "Reception"
-msgstr "Ресепшн"
-
-#: suchar_overflow/templates/users/user_detail.html:125
+#: suchar_overflow/templates/users/user_detail.html:34
 msgid "Drought Map"
 msgstr "Карта засухи"
 
-#: suchar_overflow/templates/users/user_detail.html:127
+#: suchar_overflow/templates/users/user_detail.html:36
 msgid "Less"
 msgstr "Менше"
 
-#: suchar_overflow/templates/users/user_detail.html:133
+#: suchar_overflow/templates/users/user_detail.html:42
 msgid "More"
 msgstr "Більше"
 
-#: suchar_overflow/templates/users/user_detail.html:146
+#: suchar_overflow/templates/users/user_detail.html:55
 msgid "Mon"
 msgstr "Пн"
 
-#: suchar_overflow/templates/users/user_detail.html:147
+#: suchar_overflow/templates/users/user_detail.html:56
 msgid "Wed"
 msgstr "Ср"
 
-#: suchar_overflow/templates/users/user_detail.html:148
+#: suchar_overflow/templates/users/user_detail.html:57
 msgid "Fri"
 msgstr "Пт"
 
-#: suchar_overflow/templates/users/user_detail.html:167
+#: suchar_overflow/templates/users/user_detail.html:73
 msgid "jokes on"
 msgstr "жарти увімкнено"
 
-#: suchar_overflow/templates/users/user_detail.html:179
+#: suchar_overflow/templates/users/user_detail.html:107
+msgid "No achievements yet."
+msgstr "Поки що немає досягнень."
+
+#: suchar_overflow/templates/users/user_detail.html:117
+msgid "The Best Of"
+msgstr "Найкраще"
+
+#: suchar_overflow/templates/users/user_detail.html:131
+msgid "Statistics"
+msgstr "Статистика"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "Rank"
+msgstr "Ранг"
+
+#: suchar_overflow/templates/users/user_detail.html:141
+msgid "Total Votes"
+msgstr "Загальна кількість голосів"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Joined"
+msgstr "Приєднався"
+
+#: suchar_overflow/templates/users/user_detail.html:156
+msgid "Dryness Level"
+msgstr "Рівень сухості"
+
+#: suchar_overflow/templates/users/user_detail.html:164
+msgid "Reception"
+msgstr "Ресепшн"
+
+#: suchar_overflow/templates/users/user_detail.html:178
 msgid "Latest Jokes"
 msgstr "Останні жарти"
 
-#: suchar_overflow/templates/users/user_detail.html:185
+#: suchar_overflow/templates/users/user_detail.html:184
 msgid "Scheduled for Publication"
 msgstr "Заплановано для публікації"
 
-#: suchar_overflow/templates/users/user_detail.html:228
+#: suchar_overflow/templates/users/user_detail.html:230
 msgid "See all entries"
 msgstr "Переглянути всі записи"
 
-#: suchar_overflow/templates/users/user_detail.html:232
+#: suchar_overflow/templates/users/user_detail.html:234
 msgid "User hasn't added any jokes yet."
 msgstr "Користувач ще не додав жодного жарту."
 
@@ -1530,19 +1600,19 @@ msgstr "Токен активації"
 msgid "Activation Tokens"
 msgstr "Токени активації"
 
-#: suchar_overflow/users/models.py:68
+#: suchar_overflow/users/models.py:73
 msgid "Pending"
 msgstr "В очікуванні"
 
-#: suchar_overflow/users/models.py:69
+#: suchar_overflow/users/models.py:74
 msgid "Verified"
 msgstr "Підтверджено"
 
-#: suchar_overflow/users/models.py:89
+#: suchar_overflow/users/models.py:94
 msgid "Email Change Request"
 msgstr "Запит на зміну електронної пошти"
 
-#: suchar_overflow/users/models.py:90
+#: suchar_overflow/users/models.py:95
 msgid "Email Change Requests"
 msgstr "Запити на зміну електронної пошти"
 
@@ -1556,26 +1626,45 @@ msgstr "Підтвердіть, що це ви (Зміна електронно�
 
 #: suchar_overflow/users/tasks.py:41
 msgid "Someone wants to change your email address (We hope it's you)"
-msgstr ""
-"Хтось хоче змінити вашу електронну адресу (Ми сподіваємося, що це ви)."
+msgstr "Хтось хоче змінити вашу електронну адресу (Ми сподіваємося, що це ви)."
 
-#: suchar_overflow/users/tests/test_views.py:74
-#: suchar_overflow/users/views.py:203
-msgid "Information successfully updated"
-msgstr "Інформація успішно оновлена"
-
-#: suchar_overflow/users/views.py:334
+#: suchar_overflow/users/views.py:386
 msgid "The link has already been used or cancelled."
 msgstr "Цей посилання вже було використано або скасовано."
 
-#: suchar_overflow/users/views.py:344
+#: suchar_overflow/users/views.py:395
 msgid "The link has expired (24 hours have passed)."
 msgstr "Посилання закінчило термін дії (минуло 24 години)."
 
-#: suchar_overflow/users/views.py:352
+#: suchar_overflow/users/views.py:402
 msgid "Email already taken."
 msgstr "Ця електронна адреса вже використовується."
 
-#: suchar_overflow/users/views.py:370
+#: suchar_overflow/users/views.py:421
 msgid "The link is invalid."
 msgstr "Посилання недійсне."
+
+#, python-format
+#~ msgid "Achievement Unlocked: %(name)s!"
+#~ msgstr "Досягнення відкрито: %(name)s!"
+
+#~ msgid "Home"
+#~ msgstr "Головна"
+
+#~ msgid "Inbox"
+#~ msgstr "Вхідні"
+
+#~ msgid "Achievement Unlocked"
+#~ msgstr "Досягнення відкрито"
+
+#~ msgid "The"
+#~ msgstr "Цей"
+
+#~ msgid "team"
+#~ msgstr "команда"
+
+#~ msgid "Activity (Last 30 Days)"
+#~ msgstr "Активність (останні 30 днів)"
+
+#~ msgid "Information successfully updated"
+#~ msgstr "Інформація успішно оновлена"

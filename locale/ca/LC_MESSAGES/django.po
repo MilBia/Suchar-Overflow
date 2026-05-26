@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-19 22:56+0000\n"
+"POT-Creation-Date: 2026-05-26 16:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -220,17 +220,12 @@ msgstr "Xinès (simplificat)"
 msgid "Chinese (Traditional)"
 msgstr "Xinès (tradicional)"
 
-#: suchar_overflow/achievements/apps.py:8
-#: suchar_overflow/achievements/models.py:84
-#: suchar_overflow/templates/base.html:106
-#: suchar_overflow/templates/users/user_detail.html:34
+#: suchar_overflow/achievements/apps.py:23
+#: suchar_overflow/achievements/models.py:86
+#: suchar_overflow/templates/base.html:115
+#: suchar_overflow/templates/users/user_detail.html:89
 msgid "Achievements"
 msgstr "Assoliments"
-
-#: suchar_overflow/achievements/middleware.py:29
-#, python-format
-msgid "Achievement Unlocked: %(name)s!"
-msgstr "Assoliment desbloquejat: %(name)s!"
 
 #: suchar_overflow/achievements/models.py:8
 msgid "Lifetime"
@@ -256,154 +251,167 @@ msgstr "Vot rebut"
 msgid "Vote Cast"
 msgstr "Vot emès"
 
-#: suchar_overflow/achievements/models.py:18
+#: suchar_overflow/achievements/models.py:16
+msgid "Frontend"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
 msgstr "Nombre de resultats"
 
-#: suchar_overflow/achievements/models.py:19
+#: suchar_overflow/achievements/models.py:20
 msgid "Funny Vote Count"
 msgstr "Nombre de vots divertits"
 
-#: suchar_overflow/achievements/models.py:20
+#: suchar_overflow/achievements/models.py:21
 msgid "Dry Vote Count"
 msgstr "Nombre de vots secs"
 
-#: suchar_overflow/achievements/models.py:21
+#: suchar_overflow/achievements/models.py:22
 msgid "Vote Cast Count"
 msgstr "Nombre de vots emesos"
 
-#: suchar_overflow/achievements/models.py:22
+#: suchar_overflow/achievements/models.py:23
 msgid "Total Score"
 msgstr "Puntuació total"
 
-#: suchar_overflow/achievements/models.py:23
+#: suchar_overflow/achievements/models.py:24
 msgid "Night Owl"
 msgstr "Noctàmbul"
 
-#: suchar_overflow/achievements/models.py:24
+#: suchar_overflow/achievements/models.py:25
 msgid "Login Streak"
 msgstr "Ratxa de connexions"
 
-#: suchar_overflow/achievements/models.py:25
+#: suchar_overflow/achievements/models.py:26
 msgid "Polarizer"
 msgstr "Polaritzador"
 
-#: suchar_overflow/achievements/models.py:28
+#: suchar_overflow/achievements/models.py:27
+msgid "Frontend Event"
+msgstr ""
+
+#: suchar_overflow/achievements/models.py:30
 msgid "None"
 msgstr "Cap"
 
-#: suchar_overflow/achievements/models.py:29
+#: suchar_overflow/achievements/models.py:31
 #: suchar_overflow/templates/achievements/inbox.html:40
 #: suchar_overflow/templates/achievements/list.html:42
 #: suchar_overflow/templates/achievements/list.html:82
+#: suchar_overflow/templates/achievements/mine.html:42
 msgid "Bronze"
 msgstr "Bronze"
 
-#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/achievements/models.py:32
 #: suchar_overflow/templates/achievements/inbox.html:42
 #: suchar_overflow/templates/achievements/list.html:44
 #: suchar_overflow/templates/achievements/list.html:84
+#: suchar_overflow/templates/achievements/mine.html:44
 msgid "Silver"
 msgstr "Plata"
 
-#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/achievements/models.py:33
 #: suchar_overflow/templates/achievements/inbox.html:44
 #: suchar_overflow/templates/achievements/list.html:46
 #: suchar_overflow/templates/achievements/list.html:86
+#: suchar_overflow/templates/achievements/mine.html:46
 msgid "Gold"
 msgstr "Or"
 
-#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/achievements/models.py:34
 #: suchar_overflow/templates/achievements/inbox.html:46
 #: suchar_overflow/templates/achievements/list.html:48
 #: suchar_overflow/templates/achievements/list.html:88
+#: suchar_overflow/templates/achievements/mine.html:48
 msgid "Platinum"
 msgstr "Platí"
 
-#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/achievements/models.py:35
 #: suchar_overflow/templates/achievements/inbox.html:48
 #: suchar_overflow/templates/achievements/list.html:50
 #: suchar_overflow/templates/achievements/list.html:90
+#: suchar_overflow/templates/achievements/mine.html:50
 msgid "Diamond"
 msgstr "Diamant"
 
-#: suchar_overflow/achievements/models.py:35
+#: suchar_overflow/achievements/models.py:37
 msgid "Name"
 msgstr "Nom"
 
-#: suchar_overflow/achievements/models.py:36
+#: suchar_overflow/achievements/models.py:38
 msgid "Slug"
 msgstr "Títol amigable per a l'URL"
 
-#: suchar_overflow/achievements/models.py:37
+#: suchar_overflow/achievements/models.py:39
 msgid "Description"
 msgstr "Descripció"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Icon Content"
 msgstr "Contingut de la icona"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Raw SVG XML"
 msgstr "XML SVG brut"
 
-#: suchar_overflow/achievements/models.py:44
+#: suchar_overflow/achievements/models.py:46
 msgid "Category"
 msgstr "Categoria"
 
-#: suchar_overflow/achievements/models.py:50
+#: suchar_overflow/achievements/models.py:52
 msgid "Event Type"
 msgstr "Tipus d'esdeveniment"
 
-#: suchar_overflow/achievements/models.py:56
+#: suchar_overflow/achievements/models.py:58
 msgid "Metric"
 msgstr "Mètrica"
 
-#: suchar_overflow/achievements/models.py:61
+#: suchar_overflow/achievements/models.py:63
 msgid "Threshold"
 msgstr "Límits"
 
-#: suchar_overflow/achievements/models.py:65
+#: suchar_overflow/achievements/models.py:67
 msgid "Theme"
 msgstr "Tema"
 
-#: suchar_overflow/achievements/models.py:68
+#: suchar_overflow/achievements/models.py:70
 msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
 msgstr ""
 "Per exemple, \"Natal\", \"Programació\". Deixa-ho en blanc per a categories "
 "generals."
 
-#: suchar_overflow/achievements/models.py:71
+#: suchar_overflow/achievements/models.py:73
 msgid "Tier"
 msgstr "Categoria"
 
-#: suchar_overflow/achievements/models.py:74
+#: suchar_overflow/achievements/models.py:76
 msgid "Difficulty/Rarity tier of the achievement"
 msgstr ""
 
-#: suchar_overflow/achievements/models.py:77
+#: suchar_overflow/achievements/models.py:79
 msgid "Secret Achievement"
 msgstr "Assoliment secret"
 
-#: suchar_overflow/achievements/models.py:79
+#: suchar_overflow/achievements/models.py:81
 msgid "If checked, name and description are hidden until unlocked."
 msgstr ""
 "Si està seleccionat, el nom i la descripció es mostren només després de "
 "desbloquejar-se."
 
-#: suchar_overflow/achievements/models.py:83
+#: suchar_overflow/achievements/models.py:85
 msgid "Achievement"
 msgstr "Assoliment"
 
-#: suchar_overflow/achievements/models.py:102
+#: suchar_overflow/achievements/models.py:104
 msgid "Seen by user"
 msgstr "Vist per l'usuari"
 
-#: suchar_overflow/achievements/models.py:105
+#: suchar_overflow/achievements/models.py:107
 msgid "User Achievement"
 msgstr "Assoliments de l'usuari"
 
-#: suchar_overflow/achievements/models.py:106
+#: suchar_overflow/achievements/models.py:108
 msgid "User Achievements"
 msgstr "Assoliments de l'usuari"
 
@@ -412,10 +420,10 @@ msgid "Text"
 msgstr "Text"
 
 #: suchar_overflow/suchary/admin.py:45
-#: suchar_overflow/templates/stats/leaderboard.html:91
-#: suchar_overflow/templates/stats/leaderboard.html:126
-#: suchar_overflow/templates/users/user_detail.html:65
-#: suchar_overflow/templates/users/user_detail.html:217
+#: suchar_overflow/templates/stats/leaderboard.html:103
+#: suchar_overflow/templates/stats/leaderboard.html:139
+#: suchar_overflow/templates/users/user_detail.html:120
+#: suchar_overflow/templates/users/user_detail.html:219
 msgid "Votes"
 msgstr "Vots"
 
@@ -423,23 +431,23 @@ msgstr "Vots"
 msgid "Suchary"
 msgstr "Suchary"
 
-#: suchar_overflow/suchary/forms.py:15
+#: suchar_overflow/suchary/forms.py:17
 msgid ""
 "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
 "programowanie)."
 msgstr ""
-"Introdueix etiquetes separades per espais o comes (per exemple, galleta, IT,"
-" programació)."
+"Introdueix etiquetes separades per espais o comes (per exemple, galleta, IT, "
+"programació)."
 
-#: suchar_overflow/suchary/forms.py:32 suchar_overflow/suchary/models.py:24
+#: suchar_overflow/suchary/forms.py:34 suchar_overflow/suchary/models.py:24
 msgid "Publication Date"
 msgstr "Data de publicació"
 
-#: suchar_overflow/suchary/forms.py:35
+#: suchar_overflow/suchary/forms.py:37
 msgid "Leave empty to publish immediately."
 msgstr "Deixa-ho en blanc per publicar immediatament."
 
-#: suchar_overflow/suchary/forms.py:57
+#: suchar_overflow/suchary/forms.py:59
 msgid "Publication date cannot be in the past."
 msgstr "La data de publicació no pot ser en el passat."
 
@@ -484,8 +492,8 @@ msgid ""
 "to contact us. In the meantime, try refreshing."
 msgstr ""
 "Seguim automàticament aquests errors, però si el problema persisteix, no "
-"dubtis a posar-te en contacte amb nosaltres. Mentrestant, prova de refrescar"
-" la pàgina."
+"dubtis a posar-te en contacte amb nosaltres. Mentrestant, prova de refrescar "
+"la pàgina."
 
 #: suchar_overflow/templates/achievements/inbox.html:6
 #: suchar_overflow/templates/achievements/inbox.html:17
@@ -493,6 +501,7 @@ msgid "Notification Inbox"
 msgstr "Safata d'entrada de notificacions"
 
 #: suchar_overflow/templates/achievements/inbox.html:18
+#: suchar_overflow/templates/achievements/mine.html:18
 msgid "All achievements you have earned, newest first."
 msgstr ""
 "Tots els assoliments que has obtingut, ordenats del més recent al més antic."
@@ -500,130 +509,157 @@ msgstr ""
 #: suchar_overflow/templates/achievements/inbox.html:50
 #: suchar_overflow/templates/achievements/list.html:52
 #: suchar_overflow/templates/achievements/list.html:92
+#: suchar_overflow/templates/achievements/mine.html:52
 msgid "Common"
 msgstr "Comú"
 
 #: suchar_overflow/templates/achievements/inbox.html:55
+#: suchar_overflow/templates/achievements/mine.html:57
 #, python-format
 msgid "Unlocked: %(date)s"
 msgstr "Desbloquejat el: %(date)s"
 
 #: suchar_overflow/templates/achievements/inbox.html:63
+#: suchar_overflow/templates/achievements/mine.html:65
 msgid "No achievements yet — go post some jokes!"
 msgstr "Encara no hi ha cap èxit — vés a publicar algunes brometes!"
 
 #: suchar_overflow/templates/achievements/inbox.html:64
+#: suchar_overflow/templates/achievements/mine.html:66
 msgid "Browse achievements"
 msgstr "Explora els assoliments"
 
 #: suchar_overflow/templates/achievements/list.html:6
+#: suchar_overflow/templates/achievements/mine.html:6
+#: suchar_overflow/templates/achievements/mine.html:17
 msgid "My Achievements"
 msgstr "Els meus èxits"
 
 #: suchar_overflow/templates/achievements/list.html:17
-#: suchar_overflow/templates/stats/leaderboard.html:110
+#: suchar_overflow/templates/stats/leaderboard.html:122
 msgid "Hall of Fame"
 msgstr "Saló de la Fama"
 
 #: suchar_overflow/templates/achievements/list.html:19
 msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
-msgstr ""
-"Les teves insígnes, medalles i secrets vergonyosos de Suchar Overflow."
+msgstr "Les teves insígnes, medalles i secrets vergonyosos de Suchar Overflow."
 
 #: suchar_overflow/templates/achievements/list.html:74
 msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Assoliment bloquejat. Descobreix-ne el secret jugant!"
 
+#: suchar_overflow/templates/achievements/mine.html:20
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "Browse all achievements"
+msgstr "Explora els assoliments"
+
 #: suchar_overflow/templates/base.html:17
-#: suchar_overflow/templates/base.html:24
+#: suchar_overflow/templates/base.html:25
 msgid "Joke aggregator with critically low humidity levels."
 msgstr "Agregador de jocs amb nivells d'humitat críticament baixos."
 
-#: suchar_overflow/templates/base.html:96
-msgid "Home"
-msgstr "Inici"
-
-#: suchar_overflow/templates/base.html:99
+#: suchar_overflow/templates/base.html:106
 #: suchar_overflow/templates/suchary/suchar_list.html:12
-#: suchar_overflow/templates/users/user_detail.html:82
+#: suchar_overflow/templates/users/user_detail.html:137
 #: suchar_overflow/users/admin.py:68
 msgid "Jokes"
 msgstr "Acudits"
 
-#: suchar_overflow/templates/base.html:102
+#: suchar_overflow/templates/base.html:110
 #: suchar_overflow/templates/stats/leaderboard.html:6
 #: suchar_overflow/templates/stats/leaderboard.html:12
 msgid "Leaderboard"
 msgstr "Classificació"
 
-#: suchar_overflow/templates/base.html:109
-msgid "Inbox"
-msgstr "Safata d'entrada"
+#: suchar_overflow/templates/base.html:124
+msgid "Post"
+msgstr ""
 
-#: suchar_overflow/templates/base.html:113
-msgid "About"
-msgstr "Sobre"
-
-#: suchar_overflow/templates/base.html:136
+#: suchar_overflow/templates/base.html:146
 #, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "Cerca..."
 
-#: suchar_overflow/templates/base.html:166
-#: suchar_overflow/templates/base.html:248
+#: suchar_overflow/templates/base.html:174
+#, fuzzy
+#| msgid "Notification"
+msgid "Notifications"
+msgstr "Notificació"
+
+#: suchar_overflow/templates/base.html:182
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "New achievements"
+msgstr "Explora els assoliments"
+
+#: suchar_overflow/templates/base.html:198
+#, fuzzy
+#| msgid "Browse achievements"
+msgid "No new achievements"
+msgstr "Explora els assoliments"
+
+#: suchar_overflow/templates/base.html:201
+#, fuzzy
+#| msgid "My Achievements"
+msgid "View all my achievements"
+msgstr "Els meus èxits"
+
+#: suchar_overflow/templates/base.html:210
+#: suchar_overflow/templates/base.html:294
 msgid "Log Out"
 msgstr "Tancar sessió"
 
-#: suchar_overflow/templates/base.html:168
+#: suchar_overflow/templates/base.html:212
 msgid "Log In"
 msgstr "Inicia sessió"
 
-#: suchar_overflow/templates/base.html:169
+#: suchar_overflow/templates/base.html:213
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
 #: suchar_overflow/templates/registration/signup.html:23
 msgid "Sign Up"
 msgstr "Registra't"
 
-#: suchar_overflow/templates/base.html:179
+#: suchar_overflow/templates/base.html:223
 msgid "Default content."
 msgstr "Contingut per defecte."
 
-#: suchar_overflow/templates/base.html:188
+#: suchar_overflow/templates/base.html:232
 msgid "All rights reserved (but jokes stolen)."
 msgstr "Tots els drets reservats (però les brometes robades)."
 
-#: suchar_overflow/templates/base.html:197
+#: suchar_overflow/templates/base.html:237
+msgid "About"
+msgstr "Sobre"
+
+#: suchar_overflow/templates/base.html:246
 msgid "Report a Bug"
 msgstr "Informa d'un error"
 
-#: suchar_overflow/templates/base.html:219
+#: suchar_overflow/templates/base.html:266
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Error"
 
-#: suchar_overflow/templates/base.html:221
-msgid "Achievement Unlocked"
-msgstr "Assoliment desbloquejat"
-
-#: suchar_overflow/templates/base.html:223
+#: suchar_overflow/templates/base.html:268
 msgid "Success"
 msgstr "Èxit"
 
-#: suchar_overflow/templates/base.html:225
+#: suchar_overflow/templates/base.html:270
 msgid "Notification"
 msgstr "Notificació"
 
-#: suchar_overflow/templates/base.html:240
+#: suchar_overflow/templates/base.html:286
 msgid "Confirm Logout"
 msgstr "Confirma la sortida de sessió"
 
-#: suchar_overflow/templates/base.html:243
+#: suchar_overflow/templates/base.html:289
 msgid "Are you sure you want to log out?"
 msgstr "Esteu segurs que voleu tancar la sessió?"
 
-#: suchar_overflow/templates/base.html:245
+#: suchar_overflow/templates/base.html:291
 #: suchar_overflow/templates/suchary/suchar_form.html:89
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
@@ -648,12 +684,12 @@ msgstr "Missió"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one"
-" followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one "
+"followed by awkward silence and crickets chirping in the background."
 msgstr ""
-"L'objectiu de Suchar Overflow és recopilar la col·lecció més gran de acudits"
-" que causen dolor físic a qui els rep. Creiem que un bon acudit sec és "
-"aquell seguit d'un silenci incòmode i del so de grills al fons."
+"L'objectiu de Suchar Overflow és recopilar la col·lecció més gran de acudits "
+"que causen dolor físic a qui els rep. Creiem que un bon acudit sec és aquell "
+"seguit d'un silenci incòmode i del so de grills al fons."
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -661,8 +697,8 @@ msgstr "Tecnologia"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure"
-" fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure "
+"fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "El lloc web s'ha creat amb les últimes tecnologies (Django + CSS "
 "personalitzat) per garantir una entrega ràpida i fiable de contingut "
@@ -699,8 +735,7 @@ msgid "Vote"
 msgstr "Vota"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid ""
-"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Avalua les brometes d'altres persones. Decideix què és divertit (i què és "
 "patètic)."
@@ -899,8 +934,8 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
 msgstr ""
-"Estàs rebent aquest correu electrònic perquè has sol·licitat un restabliment"
-" de contrasenya per al teu compte d'usuari a"
+"Estàs rebent aquest correu electrònic perquè has sol·licitat un restabliment "
+"de contrasenya per al teu compte d'usuari a"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -915,12 +950,10 @@ msgid "Thanks for using our site!"
 msgstr "Gràcies per utilitzar el nostre lloc web!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-msgid "The"
-msgstr ""
-
-#: suchar_overflow/templates/registration/password_reset_email.html:13
-msgid "team"
-msgstr "equip"
+#, fuzzy
+#| msgid "The Suchar Overflow Team"
+msgid "The Suchar Overflow team"
+msgstr "L'equip de Suchar Overflow"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -957,79 +990,84 @@ msgstr ""
 "vostre compte."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-msgid "Celebreating the best (and the driest) caused by our community."
+#, fuzzy
+#| msgid "Celebreating the best (and the driest) caused by our community."
+msgid "Celebrating the best (and the driest) caused by our community."
+msgstr "Celebrant el millor (i el més divertit) creat per la nostra comunitat."
+
+#: suchar_overflow/templates/stats/leaderboard.html:20
+msgid "Activity"
 msgstr ""
-"Celebrant el millor (i el més divertit) creat per la nostra comunitat."
 
-#: suchar_overflow/templates/stats/leaderboard.html:19
-msgid "Activity (Last 30 Days)"
-msgstr "Activitat (darrers 30 dies)"
+#: suchar_overflow/templates/stats/leaderboard.html:29
+msgid "All time"
+msgstr ""
 
-#: suchar_overflow/templates/stats/leaderboard.html:36
+#: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
 msgstr "General"
 
-#: suchar_overflow/templates/stats/leaderboard.html:46
-#: suchar_overflow/templates/stats/leaderboard.html:169
-#: suchar_overflow/templates/suchary/suchar_list.html:116
-#: suchar_overflow/templates/suchary/suchar_list.html:119
-#: suchar_overflow/templates/users/user_detail.html:302
+#: suchar_overflow/templates/stats/leaderboard.html:58
+#: suchar_overflow/templates/stats/leaderboard.html:182
+#: suchar_overflow/templates/suchary/suchar_list.html:149
+#: suchar_overflow/templates/suchary/suchar_list.html:152
+#: suchar_overflow/templates/users/user_detail.html:299
 msgid "Funny"
 msgstr "Divertit"
 
-#: suchar_overflow/templates/stats/leaderboard.html:56
-#: suchar_overflow/templates/stats/leaderboard.html:242
-#: suchar_overflow/templates/suchary/suchar_list.html:128
-#: suchar_overflow/templates/suchary/suchar_list.html:131
-#: suchar_overflow/templates/users/user_detail.html:302
+#: suchar_overflow/templates/stats/leaderboard.html:68
+#: suchar_overflow/templates/stats/leaderboard.html:256
+#: suchar_overflow/templates/suchary/suchar_list.html:162
+#: suchar_overflow/templates/suchary/suchar_list.html:165
+#: suchar_overflow/templates/users/user_detail.html:299
 msgid "Dry"
 msgstr "Sec"
 
-#: suchar_overflow/templates/stats/leaderboard.html:75
+#: suchar_overflow/templates/stats/leaderboard.html:87
 msgid "Most Active Authors"
 msgstr "Autors més actius"
 
-#: suchar_overflow/templates/stats/leaderboard.html:88
-#: suchar_overflow/templates/stats/leaderboard.html:166
-#: suchar_overflow/templates/stats/leaderboard.html:239
+#: suchar_overflow/templates/stats/leaderboard.html:100
+#: suchar_overflow/templates/stats/leaderboard.html:179
+#: suchar_overflow/templates/stats/leaderboard.html:253
 msgid "jokes"
 msgstr "acudits"
 
-#: suchar_overflow/templates/stats/leaderboard.html:99
+#: suchar_overflow/templates/stats/leaderboard.html:111
 msgid "No data."
 msgstr "Sense dades."
 
-#: suchar_overflow/templates/stats/leaderboard.html:133
-#: suchar_overflow/templates/stats/leaderboard.html:206
-#: suchar_overflow/templates/stats/leaderboard.html:279
+#: suchar_overflow/templates/stats/leaderboard.html:146
+#: suchar_overflow/templates/stats/leaderboard.html:220
+#: suchar_overflow/templates/stats/leaderboard.html:294
 msgid "No jokes."
 msgstr "Sense bromes."
 
-#: suchar_overflow/templates/stats/leaderboard.html:153
+#: suchar_overflow/templates/stats/leaderboard.html:166
 msgid "Comedy Kings"
 msgstr "Reis de la comèdia"
 
-#: suchar_overflow/templates/stats/leaderboard.html:174
+#: suchar_overflow/templates/stats/leaderboard.html:187
 msgid "No funny data."
 msgstr "Cap dades interessants."
 
-#: suchar_overflow/templates/stats/leaderboard.html:185
+#: suchar_overflow/templates/stats/leaderboard.html:198
 msgid "Top Funny Jokes"
 msgstr "Les brometes més divertides"
 
-#: suchar_overflow/templates/stats/leaderboard.html:226
+#: suchar_overflow/templates/stats/leaderboard.html:240
 msgid "Lords of Drought"
 msgstr "Senyors de la sequera"
 
-#: suchar_overflow/templates/stats/leaderboard.html:247
+#: suchar_overflow/templates/stats/leaderboard.html:261
 msgid "No dry data."
 msgstr "Sense dades disponibles."
 
-#: suchar_overflow/templates/stats/leaderboard.html:258
+#: suchar_overflow/templates/stats/leaderboard.html:272
 msgid "Top Dry Jokes"
 msgstr "Millors acudits secs"
 
-#: suchar_overflow/templates/stats/leaderboard.html:307
+#: suchar_overflow/templates/stats/leaderboard.html:321
 msgid "New Jokes"
 msgstr "Noves frases gracioses"
 
@@ -1140,30 +1178,55 @@ msgstr "Amunt"
 msgid "Newest"
 msgstr "Més recent"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:85
+#: suchar_overflow/templates/suchary/suchar_list.html:77
+msgid "Active filters:"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:89
+#, fuzzy
+#| msgid "Search..."
+msgid "Search:"
+msgstr "Cerca..."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:97
+msgid "Author:"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:104
+msgid "Clear all"
+msgstr ""
+
+#: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
 msgstr "Programat"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:95
-#: suchar_overflow/templates/users/user_detail.html:194
+#: suchar_overflow/templates/suchary/suchar_list.html:127
+#: suchar_overflow/templates/users/user_detail.html:193
 msgid "Edit"
 msgstr "Edita"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:139
+#: suchar_overflow/templates/suchary/suchar_list.html:148
+#: suchar_overflow/templates/suchary/suchar_list.html:161
+#, fuzzy
+#| msgid "Log in"
+msgid "Log in to vote"
+msgstr "Inicia sessió"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
 msgstr "Aquí fa molt de fred..."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:140
+#: suchar_overflow/templates/suchary/suchar_list.html:174
 msgid "Be the hero we need and add the first joke."
 msgstr "Sigues l'heroi que necessitem i afegeix el primer acudit."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:154
-#: suchar_overflow/templates/suchary/suchar_list.html:158
+#: suchar_overflow/templates/suchary/suchar_list.html:188
+#: suchar_overflow/templates/suchary/suchar_list.html:192
 msgid "Previous"
 msgstr "Anterior"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:178
-#: suchar_overflow/templates/suchary/suchar_list.html:182
+#: suchar_overflow/templates/suchary/suchar_list.html:212
+#: suchar_overflow/templates/suchary/suchar_list.html:216
 msgid "Next"
 msgstr "Següent"
 
@@ -1214,13 +1277,17 @@ msgstr "Comprova totes les caselles!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation "
+"link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, "
+"so you know it's really you."
 msgstr ""
-"Hem enviat un missatge a la teva adreça <strong>nova</strong> amb un enllaç d'activació.\n"
+"Hem enviat un missatge a la teva adreça <strong>nova</strong> amb un enllaç "
+"d'activació.\n"
 "          <br />\n"
-"          Però també hem enviat un avís a la teva adreça <strong>antiga</strong>, perquè sàguies que és realment tu."
+"          Però també hem enviat un avís a la teva adreça <strong>antiga</"
+"strong>, perquè sàguies que és realment tu."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1276,7 +1343,7 @@ msgid "Changed my mind (go back)"
 msgstr "He canviat d'idea (torna enrere)"
 
 #: suchar_overflow/templates/users/email_change_revoked.html:6
-#: suchar_overflow/users/models.py:70
+#: suchar_overflow/users/models.py:75
 msgid "Revoked"
 msgstr "Revocat"
 
@@ -1332,8 +1399,8 @@ msgid ""
 "If it was you - great, you don't need to do anything here (just check that "
 "other inbox)."
 msgstr ""
-"Si ets tu, genial, no cal que facis res aquí (només has de comprovar l'altra"
-" bústia d'entrada)."
+"Si ets tu, genial, no cal que facis res aquí (només has de comprovar l'altra "
+"bústia d'entrada)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:9
 msgid "BUT IF IT WASN'T YOU:"
@@ -1344,8 +1411,8 @@ msgid ""
 "Someone might be trying to take over your account (or you just have a split "
 "personality)."
 msgstr ""
-"Algú podria estar intentant prendre el control del teu compte (o potser tens"
-" una personalitat dividida)."
+"Algú podria estar intentant prendre el control del teu compte (o potser tens "
+"una personalitat dividida)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:11
 msgid ""
@@ -1400,79 +1467,79 @@ msgstr "Usuari"
 msgid "Suchar Overflow User"
 msgstr "Usuari amb sobreescritura de la cerca"
 
-#: suchar_overflow/templates/users/user_detail.html:52
-msgid "No achievements yet."
-msgstr "Encara no hi ha cap èxit."
-
-#: suchar_overflow/templates/users/user_detail.html:62
-msgid "The Best Of"
-msgstr "El millor de"
-
-#: suchar_overflow/templates/users/user_detail.html:76
-msgid "Statistics"
-msgstr "Estadístiques"
-
-#: suchar_overflow/templates/users/user_detail.html:78
-msgid "Rank"
-msgstr "Posició"
-
-#: suchar_overflow/templates/users/user_detail.html:86
-msgid "Total Votes"
-msgstr "Vots totals"
-
-#: suchar_overflow/templates/users/user_detail.html:93
-msgid "Joined"
-msgstr "Unit"
-
-#: suchar_overflow/templates/users/user_detail.html:101
-msgid "Dryness Level"
-msgstr "Nivell de sequedat"
-
-#: suchar_overflow/templates/users/user_detail.html:109
-msgid "Reception"
-msgstr "Recepció"
-
-#: suchar_overflow/templates/users/user_detail.html:125
+#: suchar_overflow/templates/users/user_detail.html:34
 msgid "Drought Map"
 msgstr "Mapa de sequera"
 
-#: suchar_overflow/templates/users/user_detail.html:127
+#: suchar_overflow/templates/users/user_detail.html:36
 msgid "Less"
 msgstr "Menys"
 
-#: suchar_overflow/templates/users/user_detail.html:133
+#: suchar_overflow/templates/users/user_detail.html:42
 msgid "More"
 msgstr "Més"
 
-#: suchar_overflow/templates/users/user_detail.html:146
+#: suchar_overflow/templates/users/user_detail.html:55
 msgid "Mon"
 msgstr "Moneda"
 
-#: suchar_overflow/templates/users/user_detail.html:147
+#: suchar_overflow/templates/users/user_detail.html:56
 msgid "Wed"
 msgstr "Dimecres"
 
-#: suchar_overflow/templates/users/user_detail.html:148
+#: suchar_overflow/templates/users/user_detail.html:57
 msgid "Fri"
 msgstr "Div."
 
-#: suchar_overflow/templates/users/user_detail.html:167
+#: suchar_overflow/templates/users/user_detail.html:73
 msgid "jokes on"
 msgstr "amb humor"
 
-#: suchar_overflow/templates/users/user_detail.html:179
+#: suchar_overflow/templates/users/user_detail.html:107
+msgid "No achievements yet."
+msgstr "Encara no hi ha cap èxit."
+
+#: suchar_overflow/templates/users/user_detail.html:117
+msgid "The Best Of"
+msgstr "El millor de"
+
+#: suchar_overflow/templates/users/user_detail.html:131
+msgid "Statistics"
+msgstr "Estadístiques"
+
+#: suchar_overflow/templates/users/user_detail.html:133
+msgid "Rank"
+msgstr "Posició"
+
+#: suchar_overflow/templates/users/user_detail.html:141
+msgid "Total Votes"
+msgstr "Vots totals"
+
+#: suchar_overflow/templates/users/user_detail.html:148
+msgid "Joined"
+msgstr "Unit"
+
+#: suchar_overflow/templates/users/user_detail.html:156
+msgid "Dryness Level"
+msgstr "Nivell de sequedat"
+
+#: suchar_overflow/templates/users/user_detail.html:164
+msgid "Reception"
+msgstr "Recepció"
+
+#: suchar_overflow/templates/users/user_detail.html:178
 msgid "Latest Jokes"
 msgstr "Darrers acudits"
 
-#: suchar_overflow/templates/users/user_detail.html:185
+#: suchar_overflow/templates/users/user_detail.html:184
 msgid "Scheduled for Publication"
 msgstr "Programat per a publicació"
 
-#: suchar_overflow/templates/users/user_detail.html:228
+#: suchar_overflow/templates/users/user_detail.html:230
 msgid "See all entries"
 msgstr "Veure totes les entrades"
 
-#: suchar_overflow/templates/users/user_detail.html:232
+#: suchar_overflow/templates/users/user_detail.html:234
 msgid "User hasn't added any jokes yet."
 msgstr "L'usuari encara no ha afegit cap acudit."
 
@@ -1541,19 +1608,19 @@ msgstr "Giny de validació"
 msgid "Activation Tokens"
 msgstr "Fitxes d'activació"
 
-#: suchar_overflow/users/models.py:68
+#: suchar_overflow/users/models.py:73
 msgid "Pending"
 msgstr "En curs"
 
-#: suchar_overflow/users/models.py:69
+#: suchar_overflow/users/models.py:74
 msgid "Verified"
 msgstr "Verificat"
 
-#: suchar_overflow/users/models.py:89
+#: suchar_overflow/users/models.py:94
 msgid "Email Change Request"
 msgstr "Sol·licitud de canvi d'adreça de correu electrònic"
 
-#: suchar_overflow/users/models.py:90
+#: suchar_overflow/users/models.py:95
 msgid "Email Change Requests"
 msgstr "Sol·licituds de canvi d'adreça de correu electrònic"
 
@@ -1568,26 +1635,42 @@ msgstr "Confirma que ets tu (canvi d'adreça de correu electrònic)"
 #: suchar_overflow/users/tasks.py:41
 msgid "Someone wants to change your email address (We hope it's you)"
 msgstr ""
-"Algú vol canviar la teva adreça de correu electrònic (esperem que siguis "
-"tu)."
+"Algú vol canviar la teva adreça de correu electrònic (esperem que siguis tu)."
 
-#: suchar_overflow/users/tests/test_views.py:74
-#: suchar_overflow/users/views.py:203
-msgid "Information successfully updated"
-msgstr "La informació s'ha actualitzat correctament"
-
-#: suchar_overflow/users/views.py:334
+#: suchar_overflow/users/views.py:386
 msgid "The link has already been used or cancelled."
 msgstr "L'enllaç ja s'ha utilitzat o s'ha cancel·lat."
 
-#: suchar_overflow/users/views.py:344
+#: suchar_overflow/users/views.py:395
 msgid "The link has expired (24 hours have passed)."
 msgstr "L'enllaç ha expirat (han passat 24 hores)."
 
-#: suchar_overflow/users/views.py:352
+#: suchar_overflow/users/views.py:402
 msgid "Email already taken."
 msgstr "Aquest correu electrònic ja està en ús."
 
-#: suchar_overflow/users/views.py:370
+#: suchar_overflow/users/views.py:421
 msgid "The link is invalid."
 msgstr "L'enllaç no és vàlid."
+
+#, python-format
+#~ msgid "Achievement Unlocked: %(name)s!"
+#~ msgstr "Assoliment desbloquejat: %(name)s!"
+
+#~ msgid "Home"
+#~ msgstr "Inici"
+
+#~ msgid "Inbox"
+#~ msgstr "Safata d'entrada"
+
+#~ msgid "Achievement Unlocked"
+#~ msgstr "Assoliment desbloquejat"
+
+#~ msgid "team"
+#~ msgstr "equip"
+
+#~ msgid "Activity (Last 30 Days)"
+#~ msgstr "Activitat (darrers 30 dies)"
+
+#~ msgid "Information successfully updated"
+#~ msgstr "La informació s'ha actualitzat correctament"
