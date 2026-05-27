@@ -196,6 +196,6 @@ async def vote_suchar(request, pk):
     if not vote.is_funny and not vote.is_dry:
         await vote.adelete()
     else:
-        await sync_to_async(vote.save)()
+        await vote.asave()
 
     return redirect("suchary:list")

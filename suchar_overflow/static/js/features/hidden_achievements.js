@@ -125,7 +125,6 @@ function setupStluczonaMysz(teardownRegistry) {
 // Uses sessionStorage so the counter resets when the browser session ends.
 function setupZbieraczSucharow(teardownRegistry) {
     const PAGE_KEY = 'zbieracz_pages';
-    const VOTED_KEY = 'zbieracz_voted';
 
     // Reset counter on any vote action during this page load.
     const btns = document.querySelectorAll('.btn-vote');
