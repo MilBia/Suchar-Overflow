@@ -4,8 +4,11 @@
  */
 
 function getCsrfToken() {
-    const match = document.cookie.match(/csrftoken=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
+    return (
+        document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+        document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+        ''
+    );
 }
 
 async function getOwnedSlugs() {

@@ -95,7 +95,9 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {"default": env.db("DATABASE_URL")}
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES["default"]["CONN_MAX_AGE"] = 60
+# ATOMIC_REQUESTS is disabled: async views are incompatible with it.
+# Views that need transactions use transaction.atomic() / transaction.aatomic() explicitly.
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -105,6 +107,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 ROOT_URLCONF = "config.urls"
 # https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = "config.wsgi.application"
+# https://docs.djangoproject.com/en/dev/ref/settings/#asgi-application
+ASGI_APPLICATION = "config.asgi.application"
 
 # APPS
 # ------------------------------------------------------------------------------
@@ -119,7 +123,7 @@ DJANGO_APPS = [
     "django.forms",
 ]
 THIRD_PARTY_APPS = [
-    "django_rq",
+    "django_apscheduler",
     "compressor",
 ]
 
@@ -186,6 +190,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -193,7 +198,6 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "suchar_overflow.achievements.middleware.AchievementNotificationMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
@@ -254,6 +258,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.csp",
                 "suchar_overflow.context_processors.site_settings",
                 "suchar_overflow.achievements.context_processors.achievements_bell",
             ],
@@ -335,11 +340,29 @@ CACHES = {
     },
 }
 
-_rq_queue: dict = {"URL": REDIS_URL}
-if REDIS_SSL:
-    _rq_queue["SSL_CERT_REQS"] = None
+# SCHEDULER
+# ------------------------------------------------------------------------------
+# Set True in environment-specific settings to start APScheduler in-process.
+# Defaults to False so management commands and tests do not spin up a scheduler.
+SCHEDULER_AUTOSTART = False
 
-RQ_QUEUES = {"default": _rq_queue}
+# CSP
+# ------------------------------------------------------------------------------
+from django.utils.csp import CSP  # noqa: E402
+
+SECURE_CSP = {
+    "default-src": [CSP.SELF],
+    "script-src": [CSP.SELF, "cdn.jsdelivr.net", CSP.NONCE],
+    "style-src": [
+        CSP.SELF,
+        CSP.UNSAFE_INLINE,
+        "cdn.jsdelivr.net",
+        "fonts.googleapis.com",
+    ],  # CSS custom properties + flatpickr CDN + Google Fonts
+    "img-src": [CSP.SELF, "data:"],
+    "connect-src": [CSP.SELF],  # covers the SSE endpoint
+    "font-src": [CSP.SELF, "fonts.gstatic.com"],  # Google Fonts files
+}
 
 # Your stuff...
 # ------------------------------------------------------------------------------

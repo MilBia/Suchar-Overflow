@@ -142,10 +142,12 @@ button.badge:hover {
 }
 
 .chart-container-sm {
+  position: relative;
   height: 150px;
 }
 
 .chart-container-lg {
+  position: relative;
   height: 300px;
 }
 

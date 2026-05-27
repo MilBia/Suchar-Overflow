@@ -55,7 +55,12 @@ class ActivationToken(models.Model):
         verbose_name_plural = _("Activation Tokens")
 
     def __str__(self):
-        return f"ActivationToken({self.user.username})"
+        user_name = (
+            self.user.username
+            if "user" in self._state.fields_cache
+            else f"User #{self.user_id}"
+        )
+        return f"ActivationToken({user_name})"
 
     def is_valid(self):
         return timezone.now() < self.created_at + datetime.timedelta(
@@ -90,7 +95,9 @@ class EmailChangeRequest(models.Model):
         verbose_name_plural = _("Email Change Requests")
 
     def __str__(self):
-        return (
-            f"{self.user.username}: {self.old_email} -> {self.new_email} "
-            f"({self.status})"
+        user_name = (
+            self.user.username
+            if "user" in self._state.fields_cache
+            else f"User #{self.user_id}"
         )
+        return f"{user_name}: {self.old_email} -> {self.new_email} ({self.status})"

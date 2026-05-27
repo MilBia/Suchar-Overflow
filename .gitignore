@@ -66,6 +66,8 @@ docs/_build/
 target/
 
 
+# JetBrains
+.idea/*
 
 # Environments
 .venv

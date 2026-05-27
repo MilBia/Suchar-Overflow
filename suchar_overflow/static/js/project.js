@@ -13,6 +13,7 @@ function setTheme(theme, withTransition = false) {
     }
     htmlElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+    document.cookie = `theme=${theme}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
 function getCurrentTheme() {
@@ -379,7 +380,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (opening) {
                 const badge = document.getElementById('bell-badge');
                 if (badge) {
-                    const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+                    const csrfToken =
+                        document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+                        document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                        '';
                     fetch('/api/achievements/mark-seen', {
                         method: 'POST',
                         headers: { 'X-CSRFToken': csrfToken },

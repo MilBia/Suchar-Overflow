@@ -1,14 +1,12 @@
 import datetime
 import json
 
-import django_rq
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.db import transaction
+from asgiref.sync import sync_to_async
 from django.db.models import Count
 from django.db.models import Q
-from django.db.models import QuerySet
 from django.db.models.functions import TruncDay
+from django.forms import modelform_factory
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -17,12 +15,8 @@ from django.utils import timezone
 from django.utils.formats import date_format
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import DetailView
-from django.views.generic import FormView
-from django.views.generic import RedirectView
-from django.views.generic import UpdateView
-from django.views.generic.edit import CreateView
 
+from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 from suchar_overflow.users.models import User
 
 from .forms import EmailChangeForm
@@ -33,14 +27,21 @@ from .tasks import send_activation_email
 from .tasks import send_email_change_emails
 
 
-class UserDetailView(LoginRequiredMixin, DetailView):
-    model = User
-    slug_field = "username"
-    slug_url_kwarg = "username"
+class UserDetailView(AsyncLoginRequiredMixin, View):
+    template_name = "users/user_detail.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.object
+    async def get(self, request, username, *args, **kwargs):
+        user = await sync_to_async(get_object_or_404)(User, username=username)
+        if callable(getattr(request, "auser", None)):
+            current_user = await request.auser()
+        else:
+            current_user = request.user
+        context = await sync_to_async(self._build_context)(user, current_user == user)
+        context["object"] = user
+        return await sync_to_async(render)(request, self.template_name, context)
+
+    def _build_context(self, user, is_owner):
+        context = {}
 
         # 1. Latest Suchary
         context["latest_suchary"] = (
@@ -54,7 +55,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         )
 
         # 1.5 Scheduled Suchary (Owner Only)
-        if self.request.user == user:
+        if is_owner:
             context["scheduled_suchary"] = user.suchary.filter(
                 published_at__gt=timezone.now(),
             ).order_by("published_at")
@@ -67,7 +68,6 @@ class UserDetailView(LoginRequiredMixin, DetailView):
             total_count=Count("id", distinct=True),
         )
         user.total_score = stats["total_score"] or 0
-        # Add to context directly to avoid object reference issues in template
         context["total_funny_score"] = stats["funny_score"] or 0
         context["total_dry_score"] = stats["dry_score"] or 0
         context["suchar_count"] = stats["total_count"] or 0
@@ -111,7 +111,6 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
         # 5. Contribution Heatmap (Last ~1 year, aligned to weeks)
         context["heatmap_weeks"] = self._get_heatmap_weeks(user)
-
         return context
 
     def _get_heatmap_weeks(self, user):
@@ -198,104 +197,147 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 user_detail_view = UserDetailView.as_view()
 
 
-class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class UserUpdateView(AsyncLoginRequiredMixin, View):
     model = User
     fields = ["name"]
-    success_message = _("Information successfully updated")
+    template_name = "users/user_form.html"
 
-    def get_success_url(self) -> str:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user.get_absolute_url()
+    def _form_class(self):
+        return modelform_factory(self.model, fields=self.fields)
 
-    def get_object(self, queryset: QuerySet | None = None) -> User:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user
+    async def get(self, request, *args, **kwargs):
+        user = await request.auser()
+        form = self._form_class()(instance=user)
+        return await sync_to_async(render)(
+            request,
+            self.template_name,
+            {"form": form, "object": user},
+        )
+
+    async def post(self, request, *args, **kwargs):
+        user = await request.auser()
+        form = self._form_class()(request.POST, instance=user)
+        if not await sync_to_async(form.is_valid)():
+            return await sync_to_async(render)(
+                request,
+                self.template_name,
+                {"form": form, "object": user},
+            )
+        await sync_to_async(form.save)()
+        return redirect(user.get_absolute_url())
 
 
 user_update_view = UserUpdateView.as_view()
 
 
-class UserRedirectView(LoginRequiredMixin, RedirectView):
-    permanent = False
-
-    def get_redirect_url(self) -> str:
-        return reverse("users:detail", kwargs={"username": self.request.user.username})
+class UserRedirectView(AsyncLoginRequiredMixin, View):
+    async def get(self, request, *args, **kwargs):
+        user = await request.auser()
+        return redirect(
+            reverse("users:detail", kwargs={"username": user.username}),
+        )
 
 
 user_redirect_view = UserRedirectView.as_view()
 
 
-class SignupView(CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy("users:signup_done")
+class SignupView(View):
     template_name = "registration/signup.html"
 
-    def form_valid(self, form):
+    async def get(self, request, *args, **kwargs):
+        form = UserCreationForm()
+        return await sync_to_async(render)(request, self.template_name, {"form": form})
+
+    async def post(self, request, *args, **kwargs):
+        form = UserCreationForm(request.POST)
+        valid = await sync_to_async(form.is_valid)()
+        if not valid:
+            return await sync_to_async(render)(
+                request,
+                self.template_name,
+                {"form": form},
+            )
+
         user = form.save(commit=False)
         user.is_active = False
-        user.save()
+        await user.asave()
 
-        activation = ActivationToken.objects.create(user=user)
-        user_pk = user.pk
-        host = self.request.get_host()
-        token = str(activation.token)
-        protocol = "https" if self.request.is_secure() else "http"
-        transaction.on_commit(
-            lambda: django_rq.enqueue(
-                send_activation_email,
-                user_pk,
-                host,
-                token,
-                protocol,
-            ),
+        activation = await ActivationToken.objects.acreate(user=user)
+        host = request.get_host()
+        protocol = "https" if request.is_secure() else "http"
+        await sync_to_async(send_activation_email)(
+            user.pk,
+            host,
+            str(activation.token),
+            protocol,
         )
-        return redirect(self.success_url)
+        return redirect(reverse_lazy("users:signup_done"))
 
 
 signup_view = SignupView.as_view()
 
 
 class ActivateAccountView(View):
-    def get(self, request, token):
+    async def get(self, request, token):
         try:
-            activation = ActivationToken.objects.select_related("user").get(token=token)
+            activation = await ActivationToken.objects.select_related("user").aget(
+                token=token,
+            )
         except ActivationToken.DoesNotExist:
-            return render(request, "registration/activation_failed.html")
+            return await sync_to_async(render)(
+                request,
+                "registration/activation_failed.html",
+            )
 
         if not activation.is_valid():
-            activation.delete()
-            return render(request, "registration/activation_failed.html")
+            await activation.adelete()
+            return await sync_to_async(render)(
+                request,
+                "registration/activation_failed.html",
+            )
 
         user = activation.user
         user.is_active = True
-        user.save()
-        activation.delete()
-        return render(request, "registration/activation_complete.html")
+        await user.asave()
+        await activation.adelete()
+        return await sync_to_async(render)(
+            request,
+            "registration/activation_complete.html",
+        )
 
 
 activate_view = ActivateAccountView.as_view()
 
 
-class EmailChangeInitiateView(LoginRequiredMixin, FormView):
-    form_class = EmailChangeForm
+class EmailChangeInitiateView(AsyncLoginRequiredMixin, View):
     template_name = "users/email_change_form.html"
-    success_url = reverse_lazy("users:email_change_done")
 
-    def form_valid(self, form):
+    async def get(self, request, *args, **kwargs):
+        form = EmailChangeForm()
+        return await sync_to_async(render)(request, self.template_name, {"form": form})
+
+    async def post(self, request, *args, **kwargs):
+        form = EmailChangeForm(request.POST)
+        valid = await sync_to_async(form.is_valid)()
+        if not valid:
+            return await sync_to_async(render)(
+                request,
+                self.template_name,
+                {"form": form},
+            )
+
+        user = await request.auser()
         new_email = form.cleaned_data["email"]
-        user = self.request.user
-        assert isinstance(user, User)
+        old_email = user.email
 
-        # Create EmailChangeRequest
-        email_request = EmailChangeRequest.objects.create(
+        email_request = await EmailChangeRequest.objects.acreate(
             user=user,
             new_email=new_email,
-            old_email=user.email,
+            old_email=old_email,
         )
 
-        current_site = self.request.get_host()
-        protocol = "https" if self.request.is_secure() else "http"
-
+        host = request.get_host()
+        protocol = "https" if request.is_secure() else "http"
         verify_url = reverse(
             "users:email_change_verify",
             kwargs={"token": str(email_request.verification_token)},
@@ -304,81 +346,76 @@ class EmailChangeInitiateView(LoginRequiredMixin, FormView):
             "users:email_change_revoke",
             kwargs={"token": str(email_request.revocation_token)},
         )
+        verify_full = f"{protocol}://{host}{verify_url}"
+        revoke_full = f"{protocol}://{host}{revoke_url}"
 
-        user_pk = user.pk
-        old_email = user.email
-        verify_full = f"{protocol}://{current_site}{verify_url}"
-        revoke_full = f"{protocol}://{current_site}{revoke_url}"
-        transaction.on_commit(
-            lambda: django_rq.enqueue(
-                send_email_change_emails,
-                user_pk,
-                old_email,
-                new_email,
-                verify_full,
-                revoke_full,
-            ),
+        await sync_to_async(send_email_change_emails)(
+            user.pk,
+            old_email,
+            new_email,
+            verify_full,
+            revoke_full,
         )
-
-        return super().form_valid(form)
+        return redirect(reverse_lazy("users:email_change_done"))
 
 
 email_change_initiate_view = EmailChangeInitiateView.as_view()
 
 
-class EmailChangeDoneView(LoginRequiredMixin, RedirectView):
-    pattern_name = "users:email_change_done"
-
-    def get(self, request, *args, **kwargs):
-        return render(request, "users/email_change_done.html")
+class EmailChangeDoneView(AsyncLoginRequiredMixin, View):
+    async def get(self, request, *args, **kwargs):
+        return await sync_to_async(render)(request, "users/email_change_done.html")
 
 
 email_change_done_view = EmailChangeDoneView.as_view()
 
 
-class EmailChangeConfirmView(LoginRequiredMixin, View):
-    def get(self, request, token):
+class EmailChangeConfirmView(AsyncLoginRequiredMixin, View):
+    async def get(self, request, token):
         try:
-            email_request = EmailChangeRequest.objects.get(verification_token=token)
+            email_request = await EmailChangeRequest.objects.select_related(
+                "user",
+            ).aget(
+                verification_token=token,
+            )
 
             if email_request.status != EmailChangeRequest.Status.PENDING:
-                return render(
+                return await sync_to_async(render)(
                     request,
                     "users/email_change_failed.html",
                     {"error": _("The link has already been used or cancelled.")},
                 )
 
-            # Check expiry (24h)
             if email_request.created_at < timezone.now() - datetime.timedelta(hours=24):
-                email_request.status = EmailChangeRequest.Status.REVOKED  # Expired
-                email_request.save()
-                return render(
+                email_request.status = EmailChangeRequest.Status.REVOKED
+                await email_request.asave()
+                return await sync_to_async(render)(
                     request,
                     "users/email_change_failed.html",
                     {"error": _("The link has expired (24 hours have passed).")},
                 )
 
-            # Verify uniqueness agai
-            if User.objects.filter(email=email_request.new_email).exists():
-                return render(
+            if await User.objects.filter(email=email_request.new_email).aexists():
+                return await sync_to_async(render)(
                     request,
                     "users/email_change_failed.html",
                     {"error": _("Email already taken.")},
                 )
 
-            # Success
             user = email_request.user
             user.email = email_request.new_email
-            user.save()
+            await user.asave()
 
-            # Mark as VERIFIED
             email_request.status = EmailChangeRequest.Status.VERIFIED
-            email_request.save()
+            await email_request.asave()
 
-            return render(request, "users/email_change_complete.html")
+            return await sync_to_async(render)(
+                request,
+                "users/email_change_complete.html",
+            )
 
         except (EmailChangeRequest.DoesNotExist, ValueError):
-            return render(
+            return await sync_to_async(render)(
                 request,
                 "users/email_change_failed.html",
                 {"error": _("The link is invalid.")},
@@ -388,51 +425,54 @@ class EmailChangeConfirmView(LoginRequiredMixin, View):
 email_change_confirm_view = EmailChangeConfirmView.as_view()
 
 
-class EmailChangeRevokeView(LoginRequiredMixin, View):
-    def get(self, request, token):
+class EmailChangeRevokeView(AsyncLoginRequiredMixin, View):
+    async def get(self, request, token):
         try:
-            email_request = EmailChangeRequest.objects.get(revocation_token=token)
+            email_request = await EmailChangeRequest.objects.select_related(
+                "user",
+            ).aget(
+                revocation_token=token,
+            )
 
             if email_request.status == EmailChangeRequest.Status.VERIFIED:
-                # UNDO LOGIC
                 user = email_request.user
-                # Only undo if the current email is indeed the one we changed it to
-                # (prevents undoing a LATER change by an OLDER token)
                 if user.email == email_request.new_email:
                     user.email = email_request.old_email or ""
-                    user.save()
+                    await user.asave()
                     email_request.status = EmailChangeRequest.Status.REVOKED
-                    email_request.save()
-                    # We might want a different template for "Reverted" vs "Cancelled"
-                    return render(
+                    await email_request.asave()
+                    return await sync_to_async(render)(
                         request,
                         "users/email_change_revoked.html",
                         {"reverted": True},
                     )
-                # Email changed again in the meantime? Just mark revoked.
                 email_request.status = EmailChangeRequest.Status.REVOKED
-                email_request.save()
-                return render(
+                await email_request.asave()
+                return await sync_to_async(render)(
                     request,
                     "users/email_change_revoked.html",
                     {"reverted": False},
                 )
 
             if email_request.status == EmailChangeRequest.Status.PENDING:
-                # Standard cancellation
                 email_request.status = EmailChangeRequest.Status.REVOKED
-                email_request.save()
-                return render(
+                await email_request.asave()
+                return await sync_to_async(render)(
                     request,
                     "users/email_change_revoked.html",
                     {"reverted": False},
                 )
 
-            # Already revoked
-            return render(request, "users/email_change_revoked.html")
+            return await sync_to_async(render)(
+                request,
+                "users/email_change_revoked.html",
+            )
 
         except (EmailChangeRequest.DoesNotExist, ValueError):
-            return render(request, "users/email_change_revoked.html")
+            return await sync_to_async(render)(
+                request,
+                "users/email_change_revoked.html",
+            )
 
 
 email_change_revoke_view = EmailChangeRevokeView.as_view()

@@ -1,14 +1,16 @@
 import json
 from datetime import timedelta
 
+from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.db.models import Min
 from django.db.models import Q
 from django.db.models.functions import TruncDay
 from django.db.models.functions import TruncMonth
+from django.shortcuts import render
 from django.utils import timezone
-from django.views.generic import TemplateView
+from django.views import View
 
 from suchar_overflow.suchary.models import Suchar
 
@@ -110,34 +112,18 @@ def get_all_time_activity_data(start_of_today, now):
     return {"labels": labels, "values": values}
 
 
-class LeaderboardView(TemplateView):
+class LeaderboardView(View):
     template_name = "stats/leaderboard.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    async def get(self, request, *args, **kwargs):
+        context = await sync_to_async(self._build_context)()
+        return await sync_to_async(render)(request, self.template_name, context)
 
-        # Top Authors
-        # Subquery to get the text of the highest scored suchar for the author
-        # Score is now number of funny votes
+    def _build_context(self):
+        now = timezone.now()
+        start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-        # We need to compute score per suchar first to find the best one
-        # This is tricky with subqueries on related managers.
-        # Simpler approach for best_joke text: Get the suchar with most funny votes.
-
-        # Note: OuterRef("pk") refers to the User.
-        # We want to find the Suchar by this user that has the max funny votes.
-        # It's hard to order by a count in a subquery without extensive raw SQL
-        # or complex annotations in Django versions.
-        # However, we can try to annotate the subquery.
-
-        # Let's simplify: We just want total score for the user.
-        # best_joke text is nice to have.
-
-        # For top_authors:
-        # total_score = Count of all funny votes on all their suchars
-
-        # 1. Top Authors (Overall) - Sorted by Total Votes
-        top_authors_overall = (
+        top_authors_overall = list(
             User.objects.annotate(
                 total_score=Count("suchary__votes"),
                 funny_score=Count(
@@ -151,11 +137,10 @@ class LeaderboardView(TemplateView):
                 suchar_count=Count("suchary", distinct=True),
             )
             .exclude(total_score=0)
-            .order_by("-total_score")[:10]
+            .order_by("-total_score")[:10],
         )
 
-        # 2. Top Authors (Funny) - Sorted by Funny Score
-        top_authors_funny = (
+        top_authors_funny = list(
             User.objects.annotate(
                 funny_score=Count(
                     "suchary__votes",
@@ -164,11 +149,10 @@ class LeaderboardView(TemplateView):
                 suchar_count=Count("suchary", distinct=True),
             )
             .exclude(funny_score=0)
-            .order_by("-funny_score")[:10]
+            .order_by("-funny_score")[:10],
         )
 
-        # 3. Top Authors (Dry) - Sorted by Dry Score
-        top_authors_dry = (
+        top_authors_dry = list(
             User.objects.annotate(
                 dry_score=Count(
                     "suchary__votes",
@@ -177,11 +161,10 @@ class LeaderboardView(TemplateView):
                 suchar_count=Count("suchary", distinct=True),
             )
             .exclude(dry_score=0)
-            .order_by("-dry_score")[:10]
+            .order_by("-dry_score")[:10],
         )
 
-        # 4. Top Suchars (Overall)
-        top_suchars_overall = (
+        top_suchars_overall = list(
             Suchar.objects.select_related("author")
             .prefetch_related("tags")
             .annotate(
@@ -190,23 +173,21 @@ class LeaderboardView(TemplateView):
                 dry_count=Count("votes", filter=Q(votes__is_dry=True)),
             )
             .exclude(score=0)
-            .order_by("-score")[:10]
+            .order_by("-score")[:10],
         )
 
-        # 5. Top Suchars (Funny)
-        top_suchars_funny = (
+        top_suchars_funny = list(
             Suchar.objects.select_related("author")
             .prefetch_related("tags")
             .annotate(
                 funny_count=Count("votes", filter=Q(votes__is_funny=True)),
-                score=Count("votes"),  # Needed for display consistency if used
+                score=Count("votes"),
             )
             .exclude(funny_count=0)
-            .order_by("-funny_count")[:10]
+            .order_by("-funny_count")[:10],
         )
 
-        # 6. Top Suchars (Dry)
-        top_suchars_dry = (
+        top_suchars_dry = list(
             Suchar.objects.select_related("author")
             .prefetch_related("tags")
             .annotate(
@@ -214,12 +195,8 @@ class LeaderboardView(TemplateView):
                 score=Count("votes"),
             )
             .exclude(dry_count=0)
-            .order_by("-dry_count")[:10]
+            .order_by("-dry_count")[:10],
         )
-
-        # Generate activity chart data for 7, 30, 90 days and All Time
-        now = timezone.now()
-        start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
         chart_datasets = {
             "7": get_daily_activity_data(start_of_today, now, 7),
@@ -228,14 +205,12 @@ class LeaderboardView(TemplateView):
             "all": get_all_time_activity_data(start_of_today, now),
         }
 
-        context["top_authors_overall"] = top_authors_overall
-        context["top_authors_funny"] = top_authors_funny
-        context["top_authors_dry"] = top_authors_dry
-
-        context["top_suchars_overall"] = top_suchars_overall
-        context["top_suchars_funny"] = top_suchars_funny
-        context["top_suchars_dry"] = top_suchars_dry
-
-        context["chart_datasets"] = json.dumps(chart_datasets)
-
-        return context
+        return {
+            "top_authors_overall": top_authors_overall,
+            "top_authors_funny": top_authors_funny,
+            "top_authors_dry": top_authors_dry,
+            "top_suchars_overall": top_suchars_overall,
+            "top_suchars_funny": top_suchars_funny,
+            "top_suchars_dry": top_suchars_dry,
+            "chart_datasets": json.dumps(chart_datasets),
+        }

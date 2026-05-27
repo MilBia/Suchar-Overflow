@@ -130,6 +130,11 @@ ignore = [
     # https://github.com/astral-sh/ruff/issues/7871
 ]
 
+[tool.ruff.lint.per-file-ignores]
+# AppConfig.ready() intentionally defers imports to avoid circular-import issues
+# at module load time; these inside-function imports are unavoidable in Django.
+"*/apps.py" = ["PLC0415"]
+
 [tool.ruff.lint.isort]
 force-single-line = true
 
@@ -167,7 +172,7 @@ authors = [
 requires-python = ">=3.13.0,<3.14"
 dependencies = [
     "argon2-cffi==25.1.0",
-    "django==5.2.10",
+    "django>=6.0,<7",
     "django-environ==0.12.0",
     "django-redis==6.0.0",
     "gunicorn==23.0.0",
@@ -181,9 +186,10 @@ dependencies = [
     "rcssmin==1.1.2",
     "rjsmin==1.2.2",
     "redis==5.2.1",
-    "django-rq==3.0.0",
     "openai>=1.0.0",
     "polib>=1.2.0",
-    "rq-scheduler>=0.13",
     "django-modeltranslation>=0.20.3",
+    "uvicorn[standard]>=0.34",
+    "apscheduler>=3.10,<4",
+    "django-apscheduler>=0.7",
 ]

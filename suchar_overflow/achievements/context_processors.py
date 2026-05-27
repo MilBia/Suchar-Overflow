@@ -6,7 +6,7 @@ def achievements_bell(request):
         return {"unseen_achievements_count": 0, "unseen_achievements_preview": []}
     unseen = list(
         UserAchievement.objects.filter(user=request.user, is_seen=False)
-        .select_related("achievement")
+        .select_related("user", "achievement")
         .order_by("-awarded_at"),
     )
     return {

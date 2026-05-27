@@ -1,10 +1,8 @@
 import datetime
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.core.management import call_command
 from django.utils import timezone
 
 from suchar_overflow.achievements.models import Achievement
@@ -212,37 +210,3 @@ def test_award_best_suchar_raises_on_unknown_period(periodic_achievements):
         pytest.raises(ValueError, match="Unknown period"),
     ):
         award_best_suchar("week")
-
-
-# ---------------------------------------------------------------------------
-# register_scheduled_jobs management command
-# ---------------------------------------------------------------------------
-
-
-def test_register_scheduled_jobs_registers_cron_job():
-    """Command registers the monthly cron job in the scheduler."""
-    mock_scheduler = MagicMock()
-    mock_scheduler.get_jobs.return_value = []
-
-    with patch("django_rq.get_scheduler", return_value=mock_scheduler):
-        call_command("register_scheduled_jobs")
-
-    mock_scheduler.cron.assert_called_once()
-    call_kwargs = mock_scheduler.cron.call_args
-    assert call_kwargs.kwargs["id"] == "award-best-suchar-month"
-    assert call_kwargs.args[0] == "5 0 1 * *"
-
-
-def test_register_scheduled_jobs_is_idempotent():
-    """Running the command twice cancels the old job before re-registering."""
-    existing_job = MagicMock()
-    existing_job.id = "award-best-suchar-month"
-
-    mock_scheduler = MagicMock()
-    mock_scheduler.get_jobs.return_value = [existing_job]
-
-    with patch("django_rq.get_scheduler", return_value=mock_scheduler):
-        call_command("register_scheduled_jobs")
-
-    mock_scheduler.cancel.assert_called_once_with("award-best-suchar-month")
-    mock_scheduler.cron.assert_called_once()

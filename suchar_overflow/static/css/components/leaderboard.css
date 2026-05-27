@@ -213,6 +213,9 @@
     padding: 2px;
     border-radius: 30px;
     border: 1px solid var(--border-color);
+    position: relative;
+    display: inline-flex;
+    z-index: 1;
 }
 
 [data-theme="dark"] .chart-timeframe-selector {
@@ -227,20 +230,32 @@
     font-size: 0.75rem;
     padding: 0.25rem 0.75rem;
     background-color: transparent;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .chart-timeframe-selector .btn:hover {
     color: var(--text-main);
-    background-color: rgba(0, 0, 0, 0.03);
-}
-
-[data-theme="dark"] .chart-timeframe-selector .btn:hover {
-    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .chart-timeframe-selector .btn.active {
-    background-color: var(--color-primary) !important;
+    background-color: transparent !important;
     color: white !important;
+    box-shadow: none;
+}
+
+/* Sliding active pill for timeframe selector */
+.chart-timeframe-slider {
+    position: absolute;
+    border-radius: 30px;
+    pointer-events: none;
+    z-index: 0;
+    background-color: var(--color-primary);
     box-shadow: var(--shadow-sm);
+    transition:
+        left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }

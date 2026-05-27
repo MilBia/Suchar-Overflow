@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
-<html lang="{{ LANGUAGE_CODE }}">
+<html lang="{{ LANGUAGE_CODE }}" data-theme="{{ THEME }}">
 
   <head>
     <meta charset="utf-8" />
@@ -16,6 +16,7 @@
     <meta name="description"
           content="{% block description %}{% trans 'Joke aggregator with critically low humidity levels.' %}{% endblock description %}" />
     <meta name="author" content="Miłosz Białczak" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
 
     <!-- Open Graph -->
     <meta property="og:title"
@@ -49,17 +50,18 @@
       {% endif %}
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {% endblock javascript %}
-    <script>
-      // Immediately invoke to prevent flash of wrong theme and icon
+    <script nonce="{{ csp_nonce }}">
       (function() {
-        const localTheme = localStorage.getItem('theme');
-        const theme = localTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', theme);
-
-        // Pre-render the correct icon to avoid flicker
-        // We will make the icon visible via CSS or JS once loaded, or set innerHTML here if we blocking render
-        // Better strategy: Set a class on body or html that style the button icon?
-        // Actually, we can just save the theme in a global variable and let the button use it immediately when parsing
+        var stored = localStorage.getItem('theme');
+        var theme = stored ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        // Server already rendered data-theme from the cookie; only override on first visit
+        // (no cookie → server defaults to "light") or if localStorage differs.
+        if (document.documentElement.getAttribute('data-theme') !== theme) {
+          document.documentElement.setAttribute('data-theme', theme);
+        }
+        // Write cookie so the next server-rendered page arrives with the correct theme.
+        document.cookie = 'theme=' + theme + '; path=/; max-age=31536000; SameSite=Lax';
         window.__initialTheme = theme;
       })();
     </script>
@@ -85,7 +87,7 @@
   <body data-user-is-authenticated="{% if request.user.is_authenticated %}true{% else %}false{% endif %}">
     <!-- Navbar -->
     <nav class="navbar">
-      <div class="container navbar-container">
+      <div class="container-fluid navbar-container">
         <a class="navbar-brand d-flex align-items-center gap-2"
            href="{% url 'home' %}">{% include "svgs/logo.svg" %}</a>
 
@@ -224,7 +226,7 @@
     </main>
     <!-- Footer -->
     <footer class="footer">
-      <div class="container text-center">
+      <div class="container-fluid text-center">
         <p class="text-muted mb-0">
           © {% now "Y" %} Suchar Overflow.
           <span class="d-block d-sm-inline mt-1 mt-sm-0">{% trans "All rights reserved (but jokes stolen)." %}</span>

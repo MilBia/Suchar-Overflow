@@ -21,10 +21,7 @@ def test_typing_shows_matching_tag_suggestions(page, live_server, login):
     tags_input.type("pr", delay=60)
 
     # Wait for the dropdown wrapper to get the "show" class
-    page.wait_for_function(
-        "document.getElementById('tags-dropdown').classList.contains('show')",
-        timeout=2000,
-    )
+    page.locator("#tags-dropdown.show").wait_for(timeout=2000)
 
     # Wait for the specific text to appear — avoids a race between the dropdown
     # becoming visible and the async API response populating item text.
@@ -50,10 +47,7 @@ def test_clicking_suggestion_inserts_tag_and_closes_dropdown(page, live_server, 
     tags_input.click()
     tags_input.type("it", delay=60)
 
-    page.wait_for_function(
-        "document.getElementById('tags-dropdown').classList.contains('show')",
-        timeout=2000,
-    )
+    page.locator("#tags-dropdown.show").wait_for(timeout=2000)
 
     page.locator("#tags-suggestions .dropdown-item").first.click()
 

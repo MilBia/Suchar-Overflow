@@ -50,14 +50,6 @@ services:
   redis:
     image: docker.io/redis:7.2
 
-  rqworker:
-    <<: *django
-    image: suchar_overflow_production_rqworker
-    depends_on:
-      - postgres
-      - redis
-    command: /start-rqworker
-
   nginx:
     build:
       context: .

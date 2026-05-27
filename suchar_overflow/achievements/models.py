@@ -109,4 +109,14 @@ class UserAchievement(models.Model):
         unique_together = ("user", "achievement")
 
     def __str__(self):
-        return f"{self.user} - {self.achievement}"
+        user_name = (
+            self.user.username
+            if "user" in self._state.fields_cache
+            else f"User #{self.user_id}"
+        )
+        achievement_name = (
+            self.achievement.name
+            if "achievement" in self._state.fields_cache
+            else f"Achievement #{self.achievement_id}"
+        )
+        return f"{user_name} - {achievement_name}"

@@ -45,13 +45,3 @@ services:
   redis:
     image: docker.io/redis:7
     container_name: suchar_overflow_local_redis
-
-  rqworker:
-    <<: *django
-    image: suchar_overflow_local_rqworker
-    container_name: suchar_overflow_local_rqworker
-    depends_on:
-      - postgres
-      - redis
-    ports: []
-    command: /start-rqworker
