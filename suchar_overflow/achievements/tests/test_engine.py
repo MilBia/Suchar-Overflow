@@ -11,6 +11,7 @@ from suchar_overflow.achievements.engine import AchievementEngine
 from suchar_overflow.achievements.engine import NightOwlRule
 from suchar_overflow.achievements.engine import PolarizerRule
 from suchar_overflow.achievements.engine import StreakLoginRule
+from suchar_overflow.achievements.engine import VoteDryCountRule
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.suchary.models import Suchar
@@ -236,6 +237,26 @@ def test_streak_rule_engine_awards_achievement():
 # NightOwlRule
 # ---------------------------------------------------------------------------
 
+# Helpers used across NightOwl tests: TIME_ZONE=UTC so UTC hour == local hour.
+
+
+def _make_night_suchar(user, hour=2):
+    """Create a Suchar at the given UTC hour (within 0-4 = night window)."""
+    suchar = Suchar.objects.create(text=f"night joke h{hour}", author=user)
+    ts = timezone.now().replace(hour=hour, minute=0, second=0, microsecond=0)
+    Suchar.objects.filter(pk=suchar.pk).update(created_at=ts)
+    suchar.refresh_from_db()
+    return suchar
+
+
+def _make_day_suchar(user):
+    """Create a Suchar at 12:00 UTC (outside night window)."""
+    suchar = Suchar.objects.create(text="day joke", author=user)
+    ts = timezone.now().replace(hour=12, minute=0, second=0, microsecond=0)
+    Suchar.objects.filter(pk=suchar.pk).update(created_at=ts)
+    suchar.refresh_from_db()
+    return suchar
+
 
 @pytest.mark.django_db
 def test_night_owl_false_without_suchar_instance():
@@ -254,46 +275,184 @@ def test_night_owl_false_when_instance_is_wrong_type():
 def test_night_owl_false_when_suchar_belongs_to_other_user():
     user = make_user("u1")
     other = make_user("u2")
-    suchar = Suchar.objects.create(text="joke", author=other)
+    suchar = _make_night_suchar(other)
     assert not NightOwlRule.evaluate(user, threshold=1, instance=suchar)
 
 
 @pytest.mark.django_db
-def test_night_owl_true_when_suchar_created_at_midnight_hour():
+def test_night_owl_false_when_suchar_is_daytime():
+    """Daytime suchar must never satisfy Night Owl."""
     user = make_user("u1")
-    suchar = Suchar.objects.create(text="joke", author=user)
-    # Force created_at to 02:00 local time
-    midnight_utc = timezone.now().replace(hour=2, minute=0, second=0, microsecond=0)
-    Suchar.objects.filter(pk=suchar.pk).update(created_at=midnight_utc)
-    suchar.refresh_from_db()
-    # Rule checks hour in current timezone; UTC hour=2 is within 0-4 range
-    result = NightOwlRule.evaluate(user, threshold=1, instance=suchar)
-    # Result depends on server timezone — just assert no crash and returns bool
-    assert isinstance(result, bool)
+    suchar = _make_day_suchar(user)
+    assert not NightOwlRule.evaluate(user, threshold=1, instance=suchar)
 
 
 @pytest.mark.django_db
-def test_night_owl_engine_awards_achievement_for_late_night_suchar():
+def test_night_owl_true_for_first_night_suchar_at_threshold_1():
+    """First night suchar must satisfy Bronze (threshold=1)."""
     user = make_user("u1")
-    ach = make_achievement(
-        "night-owl",
+    suchar = _make_night_suchar(user)
+    assert NightOwlRule.evaluate(user, threshold=1, instance=suchar)
+
+
+@pytest.mark.django_db
+def test_night_owl_false_when_threshold_not_yet_met():
+    """One night suchar must NOT satisfy Silver threshold=2."""
+    user = make_user("u1")
+    suchar = _make_night_suchar(user)
+    assert not NightOwlRule.evaluate(user, threshold=2, instance=suchar)
+
+
+@pytest.mark.django_db
+def test_night_owl_true_when_threshold_met_after_accumulation():
+    """Two accumulated night suchary must satisfy threshold=2."""
+    user = make_user("u1")
+    _make_night_suchar(user, hour=1)
+    suchar2 = _make_night_suchar(user, hour=2)
+    assert NightOwlRule.evaluate(user, threshold=2, instance=suchar2)
+
+
+@pytest.mark.django_db
+def test_night_owl_daytime_suchary_do_not_count_toward_threshold():
+    """Daytime suchary must not increment the night owl counter."""
+    user = make_user("u1")
+    _make_day_suchar(user)
+    _make_day_suchar(user)
+    suchar_night = _make_night_suchar(user)
+    # 2 day + 1 night = only 1 night suchar → threshold 2 not met
+    assert not NightOwlRule.evaluate(user, threshold=2, instance=suchar_night)
+
+
+@pytest.mark.django_db
+def test_night_owl_engine_awards_only_bronze_on_first_night_post():
+    """With 1 night suchar, only Bronze (threshold=1) must be awarded;
+    Silver (threshold=2) must NOT be awarded."""
+    user = make_user("u1")
+    bronze = make_achievement(
+        "night-owl-bronze",
         Achievement.Metric.NIGHT_OWL,
         event_type=Achievement.EventType.SUCHAR_POSTED,
         threshold=1,
     )
-    suchar = Suchar.objects.create(text="joke", author=user)
-    # Set created_at to 01:00 UTC (within 0-4 range)
-    early_am = timezone.now().replace(hour=1, minute=0, second=0, microsecond=0)
-    Suchar.objects.filter(pk=suchar.pk).update(created_at=early_am)
-    suchar.refresh_from_db()
+    silver = make_achievement(
+        "night-owl-silver",
+        Achievement.Metric.NIGHT_OWL,
+        event_type=Achievement.EventType.SUCHAR_POSTED,
+        threshold=2,
+    )
+    suchar = _make_night_suchar(user)
     AchievementEngine.check_achievements(
         user,
         Achievement.EventType.SUCHAR_POSTED,
         instance=suchar,
     )
-    # Whether awarded depends on timezone config; assert no exception raised
-    awarded = UserAchievement.objects.filter(user=user, achievement=ach).exists()
-    assert isinstance(awarded, bool)
+    assert UserAchievement.objects.filter(user=user, achievement=bronze).exists()
+    assert not UserAchievement.objects.filter(user=user, achievement=silver).exists()
+
+
+@pytest.mark.django_db
+def test_night_owl_engine_awards_bronze_and_silver_after_two_night_posts():
+    """After 2 night suchary both Bronze (threshold=1) and Silver (threshold=2)
+    must be awarded."""
+    user = make_user("u1")
+    bronze = make_achievement(
+        "night-owl-bronze",
+        Achievement.Metric.NIGHT_OWL,
+        event_type=Achievement.EventType.SUCHAR_POSTED,
+        threshold=1,
+    )
+    silver = make_achievement(
+        "night-owl-silver",
+        Achievement.Metric.NIGHT_OWL,
+        event_type=Achievement.EventType.SUCHAR_POSTED,
+        threshold=2,
+    )
+    # First night post — awards only bronze
+    s1 = _make_night_suchar(user, hour=1)
+    AchievementEngine.check_achievements(
+        user,
+        Achievement.EventType.SUCHAR_POSTED,
+        instance=s1,
+    )
+    # Second night post — now both bronze and silver conditions are met
+    s2 = _make_night_suchar(user, hour=2)
+    AchievementEngine.check_achievements(
+        user,
+        Achievement.EventType.SUCHAR_POSTED,
+        instance=s2,
+    )
+    assert UserAchievement.objects.filter(user=user, achievement=bronze).exists()
+    assert UserAchievement.objects.filter(user=user, achievement=silver).exists()
+
+
+# ---------------------------------------------------------------------------
+# VoteDryCountRule
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_vote_dry_count_rule_false_when_no_votes_cast():
+    user = make_user("u1")
+    assert not VoteDryCountRule.evaluate(user, threshold=1)
+
+
+@pytest.mark.django_db
+def test_vote_dry_count_rule_true_when_user_casts_dry_vote():
+    """Casting 1 dry vote must satisfy threshold=1."""
+    voter = make_user("voter")
+    author = make_user("author")
+    suchar = Suchar.objects.create(text="joke", author=author)
+    Vote.objects.create(suchar=suchar, user=voter, is_dry=True)
+    assert VoteDryCountRule.evaluate(voter, threshold=1)
+
+
+@pytest.mark.django_db
+def test_vote_dry_count_rule_funny_vote_does_not_count():
+    """Casting only funny votes must NOT satisfy the dry vote threshold."""
+    voter = make_user("voter")
+    author = make_user("author")
+    suchar = Suchar.objects.create(text="joke", author=author)
+    Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+    assert not VoteDryCountRule.evaluate(voter, threshold=1)
+
+
+@pytest.mark.django_db
+def test_vote_dry_count_rule_receiving_dry_votes_does_not_count():
+    """A user whose own suchary received dry votes must NOT earn the rule
+    unless they themselves also cast dry votes."""
+    author = make_user("author")
+    voter = make_user("voter")
+    suchar = Suchar.objects.create(text="joke", author=author)
+    # author's suchar receives a dry vote — author should NOT earn the rule
+    Vote.objects.create(suchar=suchar, user=voter, is_dry=True)
+    assert not VoteDryCountRule.evaluate(author, threshold=1)
+
+
+@pytest.mark.django_db
+def test_vote_dry_count_rule_threshold_not_met():
+    voter = make_user("voter")
+    author = make_user("author")
+    suchar = Suchar.objects.create(text="joke", author=author)
+    Vote.objects.create(suchar=suchar, user=voter, is_dry=True)
+    assert not VoteDryCountRule.evaluate(voter, threshold=2)
+
+
+@pytest.mark.django_db
+def test_vote_dry_count_engine_awards_achievement_to_voter():
+    """Casting a dry vote must award a COUNT_VOTE_DRY achievement to the voter,
+    not to the suchar author."""
+    voter = make_user("voter")
+    author = make_user("author")
+    suchar = Suchar.objects.create(text="joke", author=author)
+    ach = make_achievement(
+        "grzybiarz-bronze",
+        Achievement.Metric.COUNT_VOTE_DRY,
+        event_type=Achievement.EventType.VOTE_CAST,
+        threshold=1,
+    )
+    Vote.objects.create(suchar=suchar, user=voter, is_dry=True)
+    assert UserAchievement.objects.filter(user=voter, achievement=ach).exists()
+    assert not UserAchievement.objects.filter(user=author, achievement=ach).exists()
 
 
 # ---------------------------------------------------------------------------

@@ -6,6 +6,7 @@ from django.db.models import IntegerField
 from django.db.models import Q
 from django.db.models import Sum
 from django.db.models import When
+from django.db.models.functions import ExtractHour
 from django.utils import timezone
 
 from suchar_overflow.suchary.models import Suchar
@@ -44,9 +45,7 @@ class VoteDryCountRule(AchievementRule):
 
     @classmethod
     def evaluate(cls, user, threshold, instance=None):
-        # Grzybiarz: Zebranie co najmniej X minusowych głosów pod sucharami.
-        dry_votes = Vote.objects.filter(suchar__author=user, is_dry=True).count()
-        return dry_votes >= threshold
+        return user.suchar_votes.filter(is_dry=True).count() >= threshold
 
 
 class VoteCastCountRule(AchievementRule):
@@ -83,12 +82,20 @@ class NightOwlRule(AchievementRule):
 
     @classmethod
     def evaluate(cls, user, threshold, instance=None):
-        if isinstance(instance, Suchar) and instance.author == user:
-            hour = instance.created_at.astimezone(timezone.get_current_timezone()).hour
-            max_night_hour = 4
-            if 0 <= hour <= max_night_hour:
-                return True
-        return False
+        if not (isinstance(instance, Suchar) and instance.author == user):
+            return False
+        hour = instance.created_at.astimezone(timezone.get_current_timezone()).hour
+        max_night_hour = 4
+        if not (0 <= hour <= max_night_hour):
+            return False
+        tz = timezone.get_current_timezone()
+        night_count = (
+            Suchar.objects.filter(author=user)
+            .annotate(local_hour=ExtractHour("created_at", tzinfo=tz))
+            .filter(local_hour__lte=max_night_hour)
+            .count()
+        )
+        return night_count >= threshold
 
 
 class PolarizerRule(AchievementRule):
