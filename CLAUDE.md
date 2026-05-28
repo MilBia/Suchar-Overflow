@@ -3,7 +3,7 @@
 ## Project overview
 
 Django 5.2 web app (joke aggregator). Backend: Python 3.13, PostgreSQL, Redis.
-Frontend: Jinja2 templates, vanilla JS, CSS custom properties.
+Frontend: Django templates (DjangoTemplates backend), vanilla JS, CSS custom properties.
 Package manager: `uv`. Local dev and CI both run inside Docker Compose.
 
 ## Running commands
@@ -61,13 +61,13 @@ Always run a second time after auto-fixes to confirm all hooks pass.
 - `--reuse-db` keeps the DB between runs; pass `--create-db` to rebuild from scratch.
 - The test settings (`config/settings/test.py`) use `locmem` cache (no Redis needed)
   and `COMPRESS_ENABLED = False` (no compressor).
-- **Django RQ**: tests that trigger `django_rq.enqueue` must mock it:
+- **Email sending**: views call `send_activation_email` / `send_email_change_emails`
+  via `sync_to_async`. These functions call `django.core.mail.send_mail` directly.
+  In tests, mock at the send_mail level or the task function level:
   ```python
-  with patch("suchar_overflow.users.views.django_rq.enqueue"):
-      client.post(...)
+  with patch("suchar_overflow.users.views.send_activation_email"):
+      await client.post(...)
   ```
-  `RQ_QUEUES` in test settings has `ASYNC: False` but still needs a Redis connection
-  for `enqueue_call` — patching is required to avoid `ConnectionError`.
 - **Migration-seeded achievements**: the DB has real Achievement rows from data
   migrations (e.g. "First Suchar", "Królowa/Król Sucharów"). Tests that create
   `Suchar` or `Vote` objects will trigger the achievement engine and award these.
@@ -166,8 +166,8 @@ just build
 
 ## Templates and static files
 
-- Templates: `suchar_overflow/templates/` — Jinja2 via `django.template.backends.jinja2`
-  with `{% load compress %}` and `{% load i18n %}` where needed.
+- Templates: `suchar_overflow/templates/` — Django template engine (`DjangoTemplates`)
+  with `{% load compress %}`, `{% load static %}` and `{% load i18n %}` where needed.
 - CSS: `suchar_overflow/static/css/` — uses CSS custom properties (`variables.css`).
 - JS: `suchar_overflow/static/js/project.js` (main) + `js/features/` (split features).
 - djlint enforces template formatting. After editing templates, run `pre-commit` to

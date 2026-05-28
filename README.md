@@ -31,8 +31,8 @@ Wchodzisz na własną odpowiedzialność (i z butelką wody).
 
 Suchar Overflow to platforma do dzielenia się żartami (sucharami) – z systemem głosowania,
 rankingiem użytkowników, osiągnięciami i statystykami. Projekt wspiera dwa języki
-(polski i angielski), używa kolejki RQ (Redis Queue) do asynchronicznego wysyłania maili
-oraz cyklicznych zadań (np. przyznawanie osiągnięć) za pomocą wbudowanego schedulera RQ.
+(polski i angielski), wysyła maile przez wbudowany Django mail backend oraz obsługuje
+cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowanego w proces Django.
 
 ### Główne funkcje
 
@@ -41,7 +41,7 @@ oraz cyklicznych zadań (np. przyznawanie osiągnięć) za pomocą wbudowanego s
 - 🏆 **Ranking / Leaderboard** – najlepsi twórcy sucharów
 - 🎖️ **Osiągnięcia** – system achievement'ów z ukrytymi odznaczeniami i skrzynką powiadomień
 - 📊 **Statystyki** – wykresy aktywności użytkowników
-- 📬 **Asynchroniczne maile** – aktywacja konta i zmiana e-maila przez kolejkę RQ
+- 📬 **Maile transakcyjne** – aktywacja konta i zmiana e-maila (Django mail backend)
 - 🌙 **Dark / Light mode** – przełączanie motywu
 - 🌍 **Internationalizacja** – pełne wsparcie PL / EN
 
@@ -56,7 +56,7 @@ oraz cyklicznych zadań (np. przyznawanie osiągnięć) za pomocą wbudowanego s
 | **REST API**     | Django Ninja                                       |
 | **Baza danych**  | PostgreSQL 18                                      |
 | **Cache**        | Redis 7 (django-redis)                             |
-| **Kolejka zadań** | django-rq + rq-scheduler + Redis                  |
+| **Harmonogram zadań** | APScheduler + django-apscheduler (wbudowany w Django) |
 | **Serwer WSGI** | Gunicorn                                           |
 | **Reverse Proxy** | Traefik 3 (produkcja)                             |
 | **Media Proxy**  | Nginx (produkcja)                                  |
@@ -134,10 +134,9 @@ just manage createsuperuser
 | Admin       | http://127.0.0.1:8000/admin/ |
 | API         | http://127.0.0.1:8000/api/   |
 
-> **RQ worker** uruchamia się automatycznie jako osobny kontener (`rqworker`).
-> Maile (aktywacja konta, zmiana e-maila) są wysyłane asynchronicznie przez ten worker.
+> Maile (aktywacja konta, zmiana e-maila) są wysyłane synchronicznie przez Django mail backend.
 > Cykliczne zadania (np. przyznawanie osiągnięcia „Najlepszy suchar miesiąca") obsługuje
-> wbudowany `rqscheduler`, który działa w tle wewnątrz tego samego kontenera.
+> APScheduler działający jako wątek w tle wewnątrz procesu Django.
 > Mailpit przechwytuje wszystkie maile wychodzące w środowisku lokalnym.
 
 ### 6. Zatrzymaj kontenery
@@ -326,8 +325,8 @@ just manage compilemessages
 ```
 Suchar-Overflow/
 ├── compose/                  # Konfiguracja Docker
-│   ├── local/                #   └─ development (Django, rqworker+scheduler)
-│   └── production/           #   └─ produkcja (Django, Nginx, Traefik, Postgres, rqworker+scheduler)
+│   ├── local/                #   └─ development (Django)
+│   └── production/           #   └─ produkcja (Django, Nginx, Traefik, Postgres)
 ├── config/                   # Konfiguracja Django
 │   ├── settings/             #   └─ base.py, local.py, production.py, test.py, e2e.py
 │   ├── urls.py               #   └─ główny routing
@@ -337,7 +336,7 @@ Suchar-Overflow/
 │   ├── achievements/         #   └─ system osiągnięć (engine, signals, middleware, inbox)
 │   ├── suchary/              #   └─ główna apka – żarty, głosowanie, API
 │   ├── stats/                #   └─ statystyki i leaderboard
-│   ├── users/                #   └─ zarządzanie użytkownikami (ActivationToken, RQ tasks)
+│   ├── users/                #   └─ zarządzanie użytkownikami (ActivationToken, mail tasks)
 │   ├── contrib/              #   └─ współdzielone narzędzia i mixiny
 │   ├── static/               #   └─ CSS, JS, obrazy, czcionki
 │   └── templates/            #   └─ szablony Django (HTML)

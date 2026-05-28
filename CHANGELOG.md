@@ -24,7 +24,7 @@ Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 - Tagowanie sucharów z autouzupełnianiem i filtrowaniem po tagach
 - Wyszukiwanie sucharów i sortowanie wyników
 - Formularz dodawania suchary z podglądem na żywo i harmonogramem publikacji
-- System schedulowania: publikacja sucharów o wybranej godzinie (rq-scheduler)
+- System schedulowania: publikacja sucharów o wybranej godzinie (APScheduler)
 - Zmiana adresu e-mail z potwierdzeniem przez bezpieczny token i możliwością cofnięcia
 - Reset hasła przez e-mail z dopasowanymi szablonami
 - Niestandardowy system autentykacji (bez django-allauth)
@@ -41,8 +41,9 @@ Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 - Docker Compose: środowisko lokalne i produkcyjne
 - Produkcja: Gunicorn + Traefik 3 (SSL, routing) + Nginx (media proxy)
 - Baza danych: PostgreSQL 18 z wbudowanymi skryptami do backupu
-- Cache i kolejka zadań: Redis 7 + django-rq + rq-scheduler
-- Asynchroniczne e-maile (aktywacja konta, zmiana e-maila) przez RQ worker
+- Cache: Redis 7 + django-redis
+- Harmonogram cyklicznych zadań: APScheduler + django-apscheduler (wbudowany w Django)
+- Maile transakcyjne: Django mail backend (sync_to_async w widokach asynchronicznych)
 - Minifikacja CSS/JS: django-compressor + rcssmin + rjsmin (production)
 - Zarządzanie zależnościami: uv + uv.lock
 - CI: GitHub Actions — lint (pre-commit) + testy jednostkowe + testy E2E
