@@ -39,11 +39,13 @@
               <textarea name="text"
                         cols="40"
                         rows="10"
+                        maxlength="2000"
                         class="form-control form-control-lg"
                         placeholder="{% trans 'Why did the chicken cross the road?' %}"
                         required
                         id="id_text">{{ form.text.value|default_if_none:'' }}</textarea>
               <div class="form-text">{% trans "Remember, the drier the better." %}</div>
+              <small id="charCounter" class="char-counter">0 / 2000</small>
             </div>
 
             <div class="mb-4">
@@ -55,7 +57,8 @@
                        placeholder="{% trans 'e.g. it, programming, school' %}"
                        id="id_tags_input"
                        value="{{ form.tags_input.value|default_if_none:'' }}"
-                       autocomplete="off" />
+                       autocomplete="off"
+                       data-tags-url="/api/suchary/tags" />
                 <!-- Suggestions Box managed by JS -->
                 <div id="tags-suggestions" class="dropdown-menu w-100"></div>
               </div>
@@ -112,7 +115,9 @@
             </div>
 
             <!-- Preview Content -->
-            <p class="mb-4 preview-text text-muted fst-italic" id="previewText">
+            <p class="mb-4 preview-text text-muted fst-italic"
+               id="previewText"
+               data-placeholder="{% trans 'Your joke content will appear here...' %}">
               {% trans "Your joke content will appear here..." %}
             </p>
 

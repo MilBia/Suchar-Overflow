@@ -14,13 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
             publishedAtInput: document.getElementById('id_published_at'),
             suggestionsBox: document.getElementById('tags-suggestions'),
             form: document.querySelector('form'),
-            dateError: document.getElementById('dateError')
+            dateError: document.getElementById('dateError'),
+            charCounter: document.getElementById('charCounter'),
+            submitBtn: document.querySelector('button[type="submit"]')
         },
 
         init() {
             this.setupTextPreview();
             this.setupScheduling();
             this.setupTags();
+            this.setupCharCounter();
             this.setupValidation();
         },
 
@@ -34,10 +37,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     previewText.textContent = val;
                     previewText.classList.remove('text-muted', 'fst-italic');
                 } else {
-                    previewText.textContent = 'Tutaj pojawi się treść Twojego suchara...';
+                    previewText.textContent = previewText.dataset.placeholder || '';
                     previewText.classList.add('text-muted', 'fst-italic');
                 }
             });
+        },
+
+        setupCharCounter() {
+            const { textInput, charCounter } = this.elements;
+            if (!textInput || !charCounter) return;
+
+            const MAX = 2000;
+            const update = () => {
+                const len = textInput.value.length;
+                charCounter.textContent = `${len} / ${MAX}`;
+                charCounter.classList.remove('is-warning', 'is-error');
+                if (len >= MAX) {
+                    charCounter.classList.add('is-error');
+                } else if (len >= 1700) {  // noqa: PLR2004
+                    charCounter.classList.add('is-warning');
+                }
+            };
+
+            textInput.addEventListener('input', update);
+            update();
         },
 
         setupScheduling() {
@@ -103,7 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const fetchTags = async (query) => {
                 try {
-                    const response = await fetch(`/api/suchary/tags?q=${encodeURIComponent(query)}`);
+                    const url = tagsInput.dataset.tagsUrl;
+                    const response = await fetch(`${url}?q=${encodeURIComponent(query)}`);
                     if (response.ok) return await response.json();
                 } catch (e) {
                     console.error('Failed to fetch tags', e);
@@ -195,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         setupValidation() {
-            const { form, dateError, scheduleCheck, publishedAtInput } = this.elements;
+            const { form, dateError, scheduleCheck, publishedAtInput, submitBtn } = this.elements;
             if (!form) return;
 
             form.addEventListener('submit', (e) => {
@@ -205,18 +229,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (inputDate <= now) {
                         e.preventDefault();
-                        // ... validation logic ...
                         if (dateError) {
-                            // Assuming validation feedback is handled elsewhere or simple text
                             dateError.classList.remove('d-none');
                             dateError.classList.add('d-block');
                             dateError.textContent = "Data publikacji nie może być w przeszłości.";
                         }
                         publishedAtInput.classList.add('is-invalid');
+                        return;
                     }
                 }
+
+                if (submitBtn) {
+                    submitBtn.classList.add('is-loading');
+                    submitBtn.disabled = true;
+                }
             });
-            // ... cleanup ...
+
             if (publishedAtInput) {
                 publishedAtInput.addEventListener('input', () => {
                     if (dateError) {
