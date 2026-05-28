@@ -1,5 +1,4 @@
 from asgiref.sync import sync_to_async
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator
 from django.db.models import Count
@@ -7,7 +6,6 @@ from django.db.models import OuterRef
 from django.db.models import Q
 from django.db.models import Subquery
 from django.http import Http404
-from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -119,7 +117,7 @@ class SucharCreateView(AsyncLoginRequiredMixin, View):
             suchar = form.save(commit=False)
             suchar.author = request.user
             suchar.save()
-            form._save_tags(suchar)  # noqa: SLF001
+            form.save_m2m()
 
         await sync_to_async(_save)()
         return redirect(self.success_url)
@@ -169,33 +167,3 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin, View):
             )
         await sync_to_async(form.save)()
         return redirect(self.success_url)
-
-
-@login_required
-async def vote_suchar(request, pk):
-    if request.method != "POST":
-        return JsonResponse({"error": "Method not allowed"}, status=405)
-
-    try:
-        suchar = await Suchar.objects.aget(pk=pk)
-    except Suchar.DoesNotExist:
-        return JsonResponse({"error": "Not found"}, status=404)
-
-    vote_type = request.POST.get("vote_type")
-    if vote_type not in ["funny", "dry"]:
-        return JsonResponse({"error": "Invalid vote type"}, status=400)
-
-    user = await request.auser()
-    vote, _ = await Vote.objects.aget_or_create(user=user, suchar=suchar)
-
-    if vote_type == "funny":
-        vote.is_funny = not vote.is_funny
-    elif vote_type == "dry":
-        vote.is_dry = not vote.is_dry
-
-    if not vote.is_funny and not vote.is_dry:
-        await vote.adelete()
-    else:
-        await sync_to_async(vote.save)()
-
-    return redirect("suchary:list")

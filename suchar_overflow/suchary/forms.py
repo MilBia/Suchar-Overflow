@@ -60,17 +60,51 @@ class SucharForm(forms.ModelForm):
             )
         return published_at
 
+    def clean_tags_input(self):
+        tags_input = self.cleaned_data.get("tags_input", "")
+        normalized = tags_input.replace(",", " ")
+        tag_names = [
+            t.strip().lstrip("#") for t in normalized.split() if t.strip().lstrip("#")
+        ]
+        too_long = [t for t in tag_names if len(t) > 50]  # noqa: PLR2004
+        if too_long:
+            raise forms.ValidationError(
+                _("Tag names must be 50 characters or fewer: %(tags)s"),
+                params={"tags": ", ".join(too_long)},
+            )
+        return tags_input
+
+    def clean_text(self):
+        text = self.cleaned_data.get("text", "")
+        if len(text) > 2000:  # noqa: PLR2004
+            raise forms.ValidationError(
+                _("Joke cannot exceed 2000 characters (currently %(count)d)."),
+                params={"count": len(text)},
+            )
+        return text
+
     def save(self, commit=True):  # noqa: FBT002
-        instance = super().save(commit=commit)
+        instance = super().save(commit=False)
         if commit:
+            instance.save()
             self._save_tags(instance)
+        else:
+            _base_save_m2m = self.save_m2m
+
+            def save_m2m():
+                _base_save_m2m()
+                self._save_tags(instance)
+
+            self.save_m2m = save_m2m
         return instance
 
     def _save_tags(self, instance):
         tags_input = self.cleaned_data.get("tags_input", "")
         # Replace commas with spaces to handle both separators
         tags_input = tags_input.replace(",", " ")
-        tag_names = [t.strip() for t in tags_input.split() if t.strip()]
+        tag_names = [
+            t.strip().lstrip("#") for t in tags_input.split() if t.strip().lstrip("#")
+        ]
 
         tags = []
         for name in tag_names:

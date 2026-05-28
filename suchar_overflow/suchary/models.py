@@ -13,7 +13,7 @@ class Tag(models.Model):
 
 
 class Suchar(models.Model):
-    text = models.TextField(_("Suchar text"))
+    text = models.TextField(_("Suchar text"), max_length=2000)
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

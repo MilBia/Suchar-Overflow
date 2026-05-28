@@ -37,7 +37,9 @@ def test_text_preview_shows_placeholder_when_cleared(page, live_server, login):
     page.locator("#id_text").dispatch_event("input")
 
     preview = page.locator("#previewText")
-    assert "Tutaj pojawi się" in preview.inner_text()
+    placeholder = preview.get_attribute("data-placeholder") or ""
+    assert placeholder
+    assert preview.inner_text() == placeholder
     classes = preview.get_attribute("class") or ""
     assert "text-muted" in classes
     assert "fst-italic" in classes
