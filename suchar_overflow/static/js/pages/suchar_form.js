@@ -185,11 +185,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update Preview
                 previewTags.innerHTML = '';
                 if (val.trim()) {
-                    const tags = val.split(/[ ,]+/).filter(tag => tag.trim() !== '');
+                    const tags = val.split(/[ ,]+/).filter(tag => tag.replace(/^#+/, '').trim() !== '');
                     tags.forEach(tag => {
                         const badge = document.createElement('span');
                         badge.className = 'badge text-secondary border me-1 bg-light';
-                        badge.textContent = '#' + tag.trim();
+                        badge.textContent = '#' + tag.replace(/^#+/, '').trim();
                         previewTags.appendChild(badge);
                     });
                 }

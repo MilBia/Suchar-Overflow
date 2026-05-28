@@ -63,7 +63,9 @@ class SucharForm(forms.ModelForm):
     def clean_tags_input(self):
         tags_input = self.cleaned_data.get("tags_input", "")
         normalized = tags_input.replace(",", " ")
-        tag_names = [t.strip() for t in normalized.split() if t.strip()]
+        tag_names = [
+            t.strip().lstrip("#") for t in normalized.split() if t.strip().lstrip("#")
+        ]
         too_long = [t for t in tag_names if len(t) > 50]  # noqa: PLR2004
         if too_long:
             raise forms.ValidationError(
@@ -100,7 +102,9 @@ class SucharForm(forms.ModelForm):
         tags_input = self.cleaned_data.get("tags_input", "")
         # Replace commas with spaces to handle both separators
         tags_input = tags_input.replace(",", " ")
-        tag_names = [t.strip() for t in tags_input.split() if t.strip()]
+        tag_names = [
+            t.strip().lstrip("#") for t in tags_input.split() if t.strip().lstrip("#")
+        ]
 
         tags = []
         for name in tag_names:
