@@ -28,11 +28,6 @@
     <!-- "{% static 'images/logo.svg' %}" -->
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <link rel="icon" href="{% static 'images/favicons/favicon.svg' %}" />
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet" />
     {% block css %}
       {% compress css %}
         <link href="{% static 'css/base.css' %}" rel="stylesheet" />
@@ -48,7 +43,7 @@
           <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
         {% endcompress %}
       {% endif %}
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="{% static 'js/chart.umd.min.js' %}"></script>
     {% endblock javascript %}
     <script nonce="{{ csp_nonce }}">
       (function() {

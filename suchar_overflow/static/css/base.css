@@ -3,6 +3,9 @@
  * Imports all modules
  */
 
+/* Fonts */
+@import 'fonts.css';
+
 /* Core */
 @import 'variables.css';
 @import 'reset.css';

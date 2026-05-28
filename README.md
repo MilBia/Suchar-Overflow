@@ -6,7 +6,7 @@ Wchodzisz na własną odpowiedzialność (i z butelką wody).
 [![CI](https://github.com/MilBia/Suchar-Overflow/actions/workflows/ci.yml/badge.svg)](https://github.com/MilBia/Suchar-Overflow/actions/workflows/ci.yml)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)]()
 
 ---
 

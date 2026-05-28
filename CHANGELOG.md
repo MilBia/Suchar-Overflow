@@ -2,6 +2,15 @@
 
 Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 
+## [1.0.2] — 2026-05-28
+
+### Poprawki
+
+- Usunięto zależności od zewnętrznych CDN — aplikacja działa w pełni offline
+- Czcionki Inter i Fira Code są teraz hostowane lokalnie (zamiast Google Fonts)
+- Chart.js i flatpickr są teraz hostowane lokalnie (zamiast jsDelivr CDN)
+- Poprawiono wersję aplikacji w stopce strony (było `1.0.0-beta.1`)
+
 ## [1.0.0] — 2026-05-24
 
 ### Funkcje
