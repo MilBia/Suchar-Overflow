@@ -84,8 +84,10 @@ Always run a second time after auto-fixes to confirm all hooks pass.
   `Suchar` or `Vote` objects will trigger the achievement engine and award these.
   When asserting `UserAchievement` state, always filter by the specific achievement
   being tested, never assert on all `UserAchievement` for a user.
-- **Streaming responses**: `StreamingHttpResponse` is evaluated lazily.
-  Consume with `b"".join(response.streaming_content)` in tests.
+- **Streaming responses**: the only streaming endpoint is the SSE stream, whose
+  generator never completes. Do **not** use `b"".join(response.streaming_content)`
+  — it hangs. Use `async for chunk in response.streaming_content` + `break`
+  (see `achievements/tests/test_stream.py`).
 - **Template language**: templates render in Polish (LANGUAGE_CODE = "pl").
   Don't assert on English strings in rendered HTML content.
 
@@ -137,7 +139,8 @@ There is **no** `AchievementNotificationMiddleware` (it was removed — see
 from clearing the cache before the SSE generator could read it). The current flow:
 `AchievementEngine` sets cache key `achievements_pending:{user.pk}` when it awards an
 achievement; `suchar_overflow/achievements/api.py` (`GET /api/achievements/unseen`, a
-django-ninja endpoint) reads and clears that key when the frontend polls it.
+django-ninja endpoint) reads and clears that key when the frontend fetches it (triggered by the SSE
+event — see below).
 
 ### SSE stream (`/achievements/stream/`)
 
@@ -146,7 +149,7 @@ loop**, not single-shot: it yields an initial `retry: 5000\n\n`, then loops
 `while True`, checking `achievements_pending:{user.pk}` every 2 seconds and yielding
 `data: new\n\n` when set; it only ends on `asyncio.CancelledError` (client disconnect).
 Because the generator never completes on its own, the general test advice
-"consume with `b"".join(response.streaming_content)`" (see Test patterns below)
+"consume with `b"".join(response.streaming_content)`" (see Test patterns above)
 **does not apply to this endpoint** — it would hang. Tests instead iterate
 `async for chunk in response.streaming_content` and `break` once they've seen what
 they need (see `achievements/tests/test_stream.py`).
@@ -174,7 +177,10 @@ duplicate/unwanted schedulers.
 Django 6.0's `django.middleware.csp.ContentSecurityPolicyMiddleware` is enabled in
 `MIDDLEWARE` (`config/settings/base.py`), configured via `SECURE_CSP` in the same file.
 `script-src` requires `CSP.NONCE` — inline `<script>` blocks need the nonce Django
-injects; `style-src` currently allows `unsafe-inline` for CSS custom properties.
+injects. `style-src` allows `unsafe-inline` for CSS custom properties. Both
+`script-src` and `style-src` also allowlist `cdn.jsdelivr.net`; `style-src` and
+`font-src` additionally allowlist Google Fonts (`fonts.googleapis.com`,
+`fonts.gstatic.com`).
 If you add inline `<script>` tags to a template, they must use the nonce or they will
 be blocked in browsers that enforce CSP.
 
@@ -276,7 +282,8 @@ existing patterns in those files.
 
 ## Pull requests and git
 
-- Branch from `main`; target `main` for PRs.
+- Branch from `main`; target `main` for PRs. Name branches `<type>/<slug>`,
+  where `<type>` is `feat`, `fix`, `docs`, or `release`.
 - Commit messages: imperative mood, explain *why* not *what*.
 - Never force-push `main`.
 - Run `pre-commit run --all-files` and `just test` before proposing a commit.
