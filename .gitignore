@@ -284,3 +284,6 @@ suchar_overflow/media/
 .envs/*
 !.envs/.local/
 !.envs/.production/
+
+# Superpowers subagent-driven-development scratch workspace
+.superpowers/
