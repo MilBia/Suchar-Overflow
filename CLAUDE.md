@@ -280,3 +280,24 @@ existing patterns in those files.
 - Commit messages: imperative mood, explain *why* not *what*.
 - Never force-push `main`.
 - Run `pre-commit run --all-files` and `just test` before proposing a commit.
+
+### Working from a GitHub issue
+
+When a task starts from a GitHub issue (the user gives you an issue number or link):
+
+1. Run `gh issue view <number>` to read the full issue body and comments —
+   don't work from the title alone.
+2. Branch from `main` using `<type>/<issue-number>-<slug>`, e.g.
+   `fix/42-vote-count-bug` or `feat/58-add-dark-mode`. Non-issue-driven work
+   keeps using the plain `<type>/<slug>` convention above — nothing changes
+   there.
+3. Implement and test as usual (see "Workflow — mandatory steps after every
+   task").
+4. Open the PR with `Closes #<issue-number>` in the description, so the issue
+   auto-closes when the PR merges to `main`. Every issue-linked PR closes its
+   issue — there is no "reference only" mode.
+
+If you find a problem unrelated to the current issue while working (e.g. an
+unrelated bug), you may propose opening a new issue with `gh issue create`,
+but always ask for explicit confirmation first — never create an issue
+unprompted.
