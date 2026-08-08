@@ -2,9 +2,15 @@
 
 ## Project overview
 
-Django 5.2 web app (joke aggregator). Backend: Python 3.13, PostgreSQL, Redis.
+Django 6.0 web app (joke aggregator). Backend: Python 3.13, PostgreSQL, Redis.
 Frontend: Django templates (DjangoTemplates backend), vanilla JS, CSS custom properties.
 Package manager: `uv`. Local dev and CI both run inside Docker Compose.
+Compose services: `django`, `postgres`, `redis`, `mailpit` (catches outgoing dev email at
+`localhost:8025`).
+Local Django apps: `suchar_overflow.users`, `suchar_overflow.suchary`,
+`suchar_overflow.stats`, `suchar_overflow.achievements`. Model-level translations
+(`django-modeltranslation`, `MODELTRANSLATION_LANGUAGES = ("pl", "en")`) are separate
+from the `i18n`/`LANGUAGE_CODE` template-rendering language noted in Test patterns.
 
 ## Running commands
 
@@ -19,13 +25,18 @@ just test-e2e                    # run Playwright E2E tests only
 just test-all                    # unit tests then E2E sequentially
 just test suchar_overflow/achievements/tests/test_engine.py  # targeted
 
-# Direct docker-compose equivalent (when DATABASE_URL must be explicit)
-docker-compose -f docker-compose.local.yml exec -T django bash -c \
+# Direct docker compose equivalent (when DATABASE_URL must be explicit)
+# Note: justfile and CI use `run --rm` (fresh container), not `exec` (existing one).
+docker compose -f docker-compose.local.yml run --rm django bash -c \
   "export DATABASE_URL=postgres://USER:PASS@postgres:5432/suchar_overflow && \
    cd /app && python -m pytest ..."
 ```
 
 Credentials are in `.envs/.local/.postgres`. The compose service is named `django`.
+
+`just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
+(defined in `pyproject.toml`) instead of extending it — the E2E run does **not** get
+`--reuse-db`.
 
 ### Unit tests vs E2E tests — critical distinction
 
@@ -80,13 +91,15 @@ Always run a second time after auto-fixes to confirm all hooks pass.
 
 ## Code style — ruff rules in force
 
-Active rule sets include: F, E, W, C90, I, N, UP, S, B, SLF, PLC, PL, DJ, and many more.
+Active rule sets include: F, E, W, C90, I, N, UP, S, B, SLF, PL (covers PLC/PLE/PLR/PLW),
+DJ, and many more. Only `S101`, `RUF012`, `SIM102` are globally ignored — the rules below
+are all active.
 Key rules that trip agents up:
 
 | Rule | What it catches | How to fix |
 |------|----------------|-----------|
 | `SLF001` | Private member access (`_attr`) | Add `# noqa: SLF001` in tests that must poke private state |
-| `PLC0415` | `import` inside a function | Move all imports to the top of the file |
+| `PLC0415` | `import` inside a function | Move all imports to the top of the file. Exception: `*/apps.py` has a per-file-ignore for `PLC0415` — `AppConfig.ready()` methods (e.g. `AchievementsConfig`) may import inline. |
 | `N806` | Uppercase variable in function (`User = ...`) | Use `user_model = get_user_model()` |
 | `S106` | Hardcoded password string | Add `# noqa: S106` on test fixture passwords |
 | `PLR2004` | Magic value comparison | Add `# noqa: PLR2004` on numeric assertions in tests |
@@ -96,7 +109,10 @@ Key rules that trip agents up:
 
 ## Settings architecture — do not break this
 
-Settings layer: `base.py` → `local.py` / `test.py` / `production.py`
+Settings layer: `base.py` → `local.py` / `test.py` / `production.py`, with `test.py` →
+`e2e.py` as a further override (`e2e.py` extends `test.py` and adds `ALLOWED_HOSTS`,
+`CSRF_TRUSTED_ORIGINS`, `CSRF_COOKIE_HTTPONLY = False`, and `DJANGO_ALLOW_ASYNC_UNSAFE`
+for Playwright).
 
 **Critical**: Python module-level code in `base.py` runs at import time.
 A setting like `COMPRESS_ENABLED = not DEBUG` in `base.py` evaluates immediately
@@ -114,16 +130,61 @@ Current safe defaults in `base.py`:
 
 ## Architecture notes
 
-### Middleware — `AchievementNotificationMiddleware`
+### Achievement notifications — no middleware, cache + polling
 
-Runs on every non-API, non-stream request. Skipped paths: `/api/` and `/achievements/stream/`.
-If you add new API-style or streaming endpoints, add them to `_BYPASS_PATHS` in the middleware.
+There is **no** `AchievementNotificationMiddleware` (it was removed — see
+`0d5f6c5 Fix async achievement notifications and CSRF errors` — to stop the middleware
+from clearing the cache before the SSE generator could read it). The current flow:
+`AchievementEngine` sets cache key `achievements_pending:{user.pk}` when it awards an
+achievement; `suchar_overflow/achievements/api.py` (`GET /api/achievements/unseen`, a
+django-ninja endpoint) reads and clears that key when the frontend polls it.
 
 ### SSE stream (`/achievements/stream/`)
 
-Single-shot SSE: yields one event then closes; browser auto-reconnects after `retry:` interval.
-The endpoint is intentionally excluded from the notification middleware so the middleware
-doesn't clear the cache before the generator can read it.
+`suchar_overflow/achievements/views.py:achievement_stream` is a **long-lived polling
+loop**, not single-shot: it yields an initial `retry: 5000\n\n`, then loops
+`while True`, checking `achievements_pending:{user.pk}` every 2 seconds and yielding
+`data: new\n\n` when set; it only ends on `asyncio.CancelledError` (client disconnect).
+Because the generator never completes on its own, the general test advice
+"consume with `b"".join(response.streaming_content)`" (see Test patterns below)
+**does not apply to this endpoint** — it would hang. Tests instead iterate
+`async for chunk in response.streaming_content` and `break` once they've seen what
+they need (see `achievements/tests/test_stream.py`).
+
+### Achievement API (`django-ninja`)
+
+`suchar_overflow/achievements/api.py` exposes a `Router` mounted at `/api/` in
+`config/urls.py`: `GET /achievements/unseen`, `POST /achievements/mark-seen`,
+`GET /achievements/frontend-owned`, `POST /achievements/frontend-event` (the last is
+how the frontend awards `FRONTEND_EVENT`-metric achievements for client-only actions,
+gated by an allowlist of slugs in `VALID_FRONTEND_SLUGS`).
+
+### Background scheduling — APScheduler, not Django-RQ
+
+Django-RQ has been removed entirely. `AchievementsConfig.ready()`
+(`suchar_overflow/achievements/apps.py`) starts an in-process `BackgroundScheduler`
+(`apscheduler` + `django_apscheduler.jobstores.DjangoJobStore`) on a plain thread,
+scheduling `award_best_suchar` as a monthly cron job. The scheduler is skipped under
+pytest and for management commands in `_NO_SCHEDULER` (`migrate`, `makemigrations`,
+`collectstatic`, `compress`, `check`, `shell`, `createsuperuser`) to avoid starting
+duplicate/unwanted schedulers.
+
+### Content Security Policy
+
+Django 6.0's `django.middleware.csp.ContentSecurityPolicyMiddleware` is enabled in
+`MIDDLEWARE` (`config/settings/base.py`), configured via `SECURE_CSP` in the same file.
+`script-src` requires `CSP.NONCE` — inline `<script>` blocks need the nonce Django
+injects; `style-src` currently allows `unsafe-inline` for CSS custom properties.
+If you add inline `<script>` tags to a template, they must use the nonce or they will
+be blocked in browsers that enforce CSP.
+
+### Async views
+
+Most view classes are async (`async def get/post`, `AsyncLoginRequiredMixin` from
+`suchar_overflow.users.mixins`) — not just the email-sending code path. When adding a
+new class-based view, check a neighboring view in the same app first; the async
+pattern (via `sync_to_async`/`request.auser()`/`aupdate()`/`async for`) is the norm,
+not the exception.
 
 ### Django Compressor
 
@@ -141,12 +202,21 @@ voter, VOTE_RECEIVED for suchar author) only when `created=True`.
 Metric → what it evaluates:
 - `COUNT_SUCHAR` → suchary authored by user
 - `COUNT_VOTE_FUNNY` → funny votes **cast by** user (voter perspective)
-- `COUNT_VOTE_DRY` → dry votes **received on** user's suchary (author perspective)
+- `COUNT_VOTE_DRY` → dry votes **cast by** user (voter perspective — same
+  `user.suchar_votes` accessor as `COUNT_VOTE_FUNNY`, *not* votes received)
 - `COUNT_VOTE_CAST` → all votes cast by user
 - `SUM_SCORE` → net score of votes received on user's suchary (author perspective)
 - `POLARIZER` → custom rule: suchar where funny == dry >= threshold
 - `STREAK_LOGIN` → consecutive days with at least one suchar posted
 - `NIGHT_OWL` → suchar created between 00:00–04:00 local time
+- `FRONTEND_EVENT` → not evaluated by a rule in `engine.py`; awarded directly by
+  `POST /api/achievements/frontend-event` for client-only actions (e.g. UI interactions
+  with no server-side signal)
+
+Achievements also have a `Tier` (`NONE/BRONZE/SILVER/GOLD/PLATINUM/DIAMOND`,
+`Achievement.Tier`) used to build tiered series (e.g. multiple thresholds of the same
+metric/theme, such as "Królowa/Król Sucharów"). `AchievementListView` only reveals the
+next unearned tier of each series to the user.
 
 ## Dependency management
 
@@ -163,6 +233,11 @@ After adding dependencies, rebuild the Docker image before running tests in the 
 ```bash
 just build
 ```
+
+Notable non-obvious dependencies already in use: `apscheduler` + `django-apscheduler`
+(in-process job scheduling, see Architecture notes), `django-ninja` (the `/api/`
+router), `django-modeltranslation` (model-field translation for `Achievement`, distinct
+from the template-level `i18n` used elsewhere).
 
 ## Templates and static files
 
@@ -184,9 +259,13 @@ After completing **any** task (feature, fix, refactor):
    all hooks pass cleanly.
 2. Run `just test` (inside the Docker container). Fix all failures before considering the
    task done. Do not skip or comment out failing tests.
+3. If you changed any model, run
+   `docker compose -f docker-compose.local.yml run --rm django python manage.py makemigrations --check`.
+   CI blocks the build on this — a model change without a matching migration will pass
+   `just test` locally but fail CI.
 
-Both steps are **blocking** — do not propose a commit or mark a task complete until they
-both pass with no errors.
+All steps are **blocking** — do not propose a commit or mark a task complete until they
+all pass with no errors.
 
 ## Tests for new functionality
 
