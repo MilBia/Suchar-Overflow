@@ -154,7 +154,6 @@ MODELTRANSLATION_FALLBACK_LANGUAGES = ("pl",)
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    # "allauth.account.auth_backends.AuthenticationBackend",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
@@ -299,9 +298,6 @@ ADMIN_URL = "admin/"
 ADMINS = [("""Miłosz Białczak""", "miłosz-białczak@example.com")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
-# https://cookiecutter-django.readthedocs.io/en/latest/settings.html#other-environment-settings
-# Force the `admin` sign in process to go through the `django-allauth` workflow
-DJANGO_ADMIN_FORCE_ALLAUTH = False
 
 # LOGGING
 # ------------------------------------------------------------------------------
@@ -339,12 +335,6 @@ CACHES = {
         },
     },
 }
-
-# SCHEDULER
-# ------------------------------------------------------------------------------
-# Set True in environment-specific settings to start APScheduler in-process.
-# Defaults to False so management commands and tests do not spin up a scheduler.
-SCHEDULER_AUTOSTART = False
 
 # CSP
 # ------------------------------------------------------------------------------

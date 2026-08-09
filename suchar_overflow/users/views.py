@@ -370,56 +370,63 @@ class EmailChangeDoneView(AsyncLoginRequiredMixin, View):
 email_change_done_view = EmailChangeDoneView.as_view()
 
 
+async def _aget_email_change_request(
+    token: str,
+    token_field: str,
+) -> EmailChangeRequest | None:
+    """Look up an EmailChangeRequest by token, or None if invalid/not found."""
+    try:
+        return await EmailChangeRequest.objects.select_related("user").aget(
+            **{token_field: token},
+        )
+    except (EmailChangeRequest.DoesNotExist, ValueError):
+        return None
+
+
 class EmailChangeConfirmView(AsyncLoginRequiredMixin, View):
     async def get(self, request, token):
-        try:
-            email_request = await EmailChangeRequest.objects.select_related(
-                "user",
-            ).aget(
-                verification_token=token,
-            )
-
-            if email_request.status != EmailChangeRequest.Status.PENDING:
-                return await sync_to_async(render)(
-                    request,
-                    "users/email_change_failed.html",
-                    {"error": _("The link has already been used or cancelled.")},
-                )
-
-            if email_request.created_at < timezone.now() - datetime.timedelta(hours=24):
-                email_request.status = EmailChangeRequest.Status.REVOKED
-                await email_request.asave()
-                return await sync_to_async(render)(
-                    request,
-                    "users/email_change_failed.html",
-                    {"error": _("The link has expired (24 hours have passed).")},
-                )
-
-            if await User.objects.filter(email=email_request.new_email).aexists():
-                return await sync_to_async(render)(
-                    request,
-                    "users/email_change_failed.html",
-                    {"error": _("Email already taken.")},
-                )
-
-            user = email_request.user
-            user.email = email_request.new_email
-            await user.asave()
-
-            email_request.status = EmailChangeRequest.Status.VERIFIED
-            await email_request.asave()
-
-            return await sync_to_async(render)(
-                request,
-                "users/email_change_complete.html",
-            )
-
-        except (EmailChangeRequest.DoesNotExist, ValueError):
+        email_request = await _aget_email_change_request(token, "verification_token")
+        if email_request is None:
             return await sync_to_async(render)(
                 request,
                 "users/email_change_failed.html",
                 {"error": _("The link is invalid.")},
             )
+
+        if email_request.status != EmailChangeRequest.Status.PENDING:
+            return await sync_to_async(render)(
+                request,
+                "users/email_change_failed.html",
+                {"error": _("The link has already been used or cancelled.")},
+            )
+
+        if email_request.created_at < timezone.now() - datetime.timedelta(hours=24):
+            email_request.status = EmailChangeRequest.Status.REVOKED
+            await email_request.asave()
+            return await sync_to_async(render)(
+                request,
+                "users/email_change_failed.html",
+                {"error": _("The link has expired (24 hours have passed).")},
+            )
+
+        if await User.objects.filter(email=email_request.new_email).aexists():
+            return await sync_to_async(render)(
+                request,
+                "users/email_change_failed.html",
+                {"error": _("Email already taken.")},
+            )
+
+        user = email_request.user
+        user.email = email_request.new_email
+        await user.asave()
+
+        email_request.status = EmailChangeRequest.Status.VERIFIED
+        await email_request.asave()
+
+        return await sync_to_async(render)(
+            request,
+            "users/email_change_complete.html",
+        )
 
 
 email_change_confirm_view = EmailChangeConfirmView.as_view()
@@ -427,52 +434,46 @@ email_change_confirm_view = EmailChangeConfirmView.as_view()
 
 class EmailChangeRevokeView(AsyncLoginRequiredMixin, View):
     async def get(self, request, token):
-        try:
-            email_request = await EmailChangeRequest.objects.select_related(
-                "user",
-            ).aget(
-                revocation_token=token,
-            )
-
-            if email_request.status == EmailChangeRequest.Status.VERIFIED:
-                user = email_request.user
-                if user.email == email_request.new_email:
-                    user.email = email_request.old_email or ""
-                    await user.asave()
-                    email_request.status = EmailChangeRequest.Status.REVOKED
-                    await email_request.asave()
-                    return await sync_to_async(render)(
-                        request,
-                        "users/email_change_revoked.html",
-                        {"reverted": True},
-                    )
-                email_request.status = EmailChangeRequest.Status.REVOKED
-                await email_request.asave()
-                return await sync_to_async(render)(
-                    request,
-                    "users/email_change_revoked.html",
-                    {"reverted": False},
-                )
-
-            if email_request.status == EmailChangeRequest.Status.PENDING:
-                email_request.status = EmailChangeRequest.Status.REVOKED
-                await email_request.asave()
-                return await sync_to_async(render)(
-                    request,
-                    "users/email_change_revoked.html",
-                    {"reverted": False},
-                )
-
+        email_request = await _aget_email_change_request(token, "revocation_token")
+        if email_request is None:
             return await sync_to_async(render)(
                 request,
                 "users/email_change_revoked.html",
             )
 
-        except (EmailChangeRequest.DoesNotExist, ValueError):
+        if email_request.status == EmailChangeRequest.Status.VERIFIED:
+            user = email_request.user
+            if user.email == email_request.new_email:
+                user.email = email_request.old_email or ""
+                await user.asave()
+                email_request.status = EmailChangeRequest.Status.REVOKED
+                await email_request.asave()
+                return await sync_to_async(render)(
+                    request,
+                    "users/email_change_revoked.html",
+                    {"reverted": True},
+                )
+            email_request.status = EmailChangeRequest.Status.REVOKED
+            await email_request.asave()
             return await sync_to_async(render)(
                 request,
                 "users/email_change_revoked.html",
+                {"reverted": False},
             )
+
+        if email_request.status == EmailChangeRequest.Status.PENDING:
+            email_request.status = EmailChangeRequest.Status.REVOKED
+            await email_request.asave()
+            return await sync_to_async(render)(
+                request,
+                "users/email_change_revoked.html",
+                {"reverted": False},
+            )
+
+        return await sync_to_async(render)(
+            request,
+            "users/email_change_revoked.html",
+        )
 
 
 email_change_revoke_view = EmailChangeRevokeView.as_view()

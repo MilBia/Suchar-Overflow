@@ -137,26 +137,30 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin, View):
         suchar = await self._get_suchar(self.kwargs["pk"])
         return suchar.author == self.request.user
 
-    async def get(self, request, pk, *args, **kwargs):
-        suchar = await self._get_suchar(pk)
+    async def _reject_if_published(self, request, suchar):
+        """Return the "too late to edit" response if suchar is published, else None."""
         if suchar.is_published:
             return await sync_to_async(render)(
                 request,
                 "suchary/edit_too_late.html",
                 status=403,
             )
+        return None
+
+    async def get(self, request, pk, *args, **kwargs):
+        suchar = await self._get_suchar(pk)
+        too_late = await self._reject_if_published(request, suchar)
+        if too_late is not None:
+            return too_late
         # SucharForm.__init__ reads existing tags from DB when given an instance
         form = await sync_to_async(SucharForm)(instance=suchar)
         return await sync_to_async(render)(request, self.template_name, {"form": form})
 
     async def post(self, request, pk, *args, **kwargs):
         suchar = await self._get_suchar(pk)
-        if suchar.is_published:
-            return await sync_to_async(render)(
-                request,
-                "suchary/edit_too_late.html",
-                status=403,
-            )
+        too_late = await self._reject_if_published(request, suchar)
+        if too_late is not None:
+            return too_late
         # SucharForm.__init__ reads existing tags from DB when given an instance
         form = await sync_to_async(SucharForm)(request.POST, instance=suchar)
         if not await sync_to_async(form.is_valid)():

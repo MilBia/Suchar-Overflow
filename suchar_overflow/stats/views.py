@@ -112,6 +112,15 @@ def get_all_time_activity_data(start_of_today, now):
     return {"labels": labels, "values": values}
 
 
+def _top_n(queryset, annotate_kwargs, order_field, limit=10):
+    """Annotate, drop zero scores, and return the top `limit` by `order_field` desc."""
+    return list(
+        queryset.annotate(**annotate_kwargs)
+        .exclude(**{order_field: 0})
+        .order_by(f"-{order_field}")[:limit],
+    )
+
+
 class LeaderboardView(View):
     template_name = "stats/leaderboard.html"
 
@@ -123,79 +132,75 @@ class LeaderboardView(View):
         now = timezone.now()
         start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-        top_authors_overall = list(
-            User.objects.annotate(
-                total_score=Count("suchary__votes"),
-                funny_score=Count(
+        suchary = Suchar.objects.select_related("author").prefetch_related("tags")
+
+        top_authors_overall = _top_n(
+            User.objects,
+            {
+                "total_score": Count("suchary__votes"),
+                "funny_score": Count(
                     "suchary__votes",
                     filter=Q(suchary__votes__is_funny=True),
                 ),
-                dry_score=Count(
+                "dry_score": Count(
                     "suchary__votes",
                     filter=Q(suchary__votes__is_dry=True),
                 ),
-                suchar_count=Count("suchary", distinct=True),
-            )
-            .exclude(total_score=0)
-            .order_by("-total_score")[:10],
+                "suchar_count": Count("suchary", distinct=True),
+            },
+            "total_score",
         )
 
-        top_authors_funny = list(
-            User.objects.annotate(
-                funny_score=Count(
+        top_authors_funny = _top_n(
+            User.objects,
+            {
+                "funny_score": Count(
                     "suchary__votes",
                     filter=Q(suchary__votes__is_funny=True),
                 ),
-                suchar_count=Count("suchary", distinct=True),
-            )
-            .exclude(funny_score=0)
-            .order_by("-funny_score")[:10],
+                "suchar_count": Count("suchary", distinct=True),
+            },
+            "funny_score",
         )
 
-        top_authors_dry = list(
-            User.objects.annotate(
-                dry_score=Count(
+        top_authors_dry = _top_n(
+            User.objects,
+            {
+                "dry_score": Count(
                     "suchary__votes",
                     filter=Q(suchary__votes__is_dry=True),
                 ),
-                suchar_count=Count("suchary", distinct=True),
-            )
-            .exclude(dry_score=0)
-            .order_by("-dry_score")[:10],
+                "suchar_count": Count("suchary", distinct=True),
+            },
+            "dry_score",
         )
 
-        top_suchars_overall = list(
-            Suchar.objects.select_related("author")
-            .prefetch_related("tags")
-            .annotate(
-                score=Count("votes"),
-                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
-                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
-            )
-            .exclude(score=0)
-            .order_by("-score")[:10],
+        top_suchars_overall = _top_n(
+            suchary,
+            {
+                "score": Count("votes"),
+                "funny_count": Count("votes", filter=Q(votes__is_funny=True)),
+                "dry_count": Count("votes", filter=Q(votes__is_dry=True)),
+            },
+            "score",
         )
 
-        top_suchars_funny = list(
-            Suchar.objects.select_related("author")
-            .prefetch_related("tags")
-            .annotate(
-                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
-                score=Count("votes"),
-            )
-            .exclude(funny_count=0)
-            .order_by("-funny_count")[:10],
+        top_suchars_funny = _top_n(
+            suchary,
+            {
+                "funny_count": Count("votes", filter=Q(votes__is_funny=True)),
+                "score": Count("votes"),
+            },
+            "funny_count",
         )
 
-        top_suchars_dry = list(
-            Suchar.objects.select_related("author")
-            .prefetch_related("tags")
-            .annotate(
-                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
-                score=Count("votes"),
-            )
-            .exclude(dry_count=0)
-            .order_by("-dry_count")[:10],
+        top_suchars_dry = _top_n(
+            suchary,
+            {
+                "dry_count": Count("votes", filter=Q(votes__is_dry=True)),
+                "score": Count("votes"),
+            },
+            "dry_count",
         )
 
         chart_datasets = {
