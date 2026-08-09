@@ -1,38 +1,27 @@
 # Project Coding Guidelines & Rules
 
-This document outlines the mandatory standards and workflows for the Suchar Overflow project.
+This document outlines `.agent/`-specific guidance for Suchar Overflow. `CLAUDE.md`
+at the repo root is the source of truth for commands, workflow steps, and code style
+rules (execution environment, testing, pre-commit, dependency management, ruff rules,
+PR conventions) — read it first. This file adds only what CLAUDE.md doesn't already
+cover.
 
 ## 1. Execution Environment (**CRITICAL**)
 
->**Strict Rule**: Never run commands directly on the host system unless verifying the environment itself.
-
-*   **Application / Python**: MUST run inside the Docker container.
-    ```bash
-    docker compose -f docker-compose.local.yml run --rm django <command>
-    ```
-*   **Tooling (Pre-commit)**: MUST run via the local virtual environment wrapper.
-    ```bash
-    .venv/bin/pre-commit run --all-files
-    ```
+See CLAUDE.md's "Running commands" section: application/tests run in the Docker
+`django` service, pre-commit runs via the local `.venv` (see "Running pre-commit").
 
 ## 2. Workflow & QA
 
-### Pre-Commit
-Before requesting a commit, **ALWAYS** run the pre-commit checks:
-```bash
-.venv/bin/pre-commit run --all-files
-```
-*   **Auto-fixes**: Re-run if Ruff/isort fixes files.
-*   **Manual Fixes**:
-    *   **Inline Styles**: Forbidden (`H021`). Use Bootstrap utility classes (`d-none`, `bg-primary`, etc.).
-    *   **Line Length**: Max 88 chars. Split long comments/lines.
-    *   **Imports**: No local imports (`PLC0415`). Move to top-level.
+Before requesting a commit, follow CLAUDE.md's "Workflow — mandatory steps after
+every task" section in full (`pre-commit run --all-files` twice, `just test`, and the
+migration check when models changed).
 
-### Testing
-Tests must be run in Docker to match CI:
-```bash
-docker compose -f docker-compose.local.yml run --rm django pytest
-```
+### Manual fixes agents commonly need to apply
+*   **Inline Styles**: Forbidden (`H021`). Use CSS custom properties and the
+    project's component classes — this project does **not** use Bootstrap.
+*   **Line Length / local imports**: see CLAUDE.md's ruff rules table (`E501`,
+    `PLC0415`).
 
 ## 3. Frontend Architecture
 

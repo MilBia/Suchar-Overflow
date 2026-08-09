@@ -2,12 +2,16 @@
 description: Run pre-commit checks to ensure code quality and style before committing.
 ---
 
-1. Run pre-commit on all files using local environment:
+Per CLAUDE.md's "Running pre-commit" section, pre-commit runs in the local `.venv`,
+not inside Docker.
+
+1. Run pre-commit on all files using the local environment:
 // turbo
    ```bash
-   uv run pre-commit run --all-files
+   .venv/bin/pre-commit run --all-files
    ```
-   *(Fallback: if fails, use `docker compose -f docker-compose.local.yml run --rm django pre-commit run --all-files`)*
+   *(Fallback if `.venv` is missing or broken — see `run_pre_commit` skill: `docker compose -f docker-compose.local.yml run --rm django pre-commit run --all-files`)*
 
 2. If there are failures, review the changes. Many hooks (like ruff) will auto-fix issues.
-3. If manual fixes are required, apply them and re-run the command to verify.
+3. If manual fixes are required, apply them and re-run the command to verify — per
+   CLAUDE.md, always run a second time to confirm all hooks pass cleanly.

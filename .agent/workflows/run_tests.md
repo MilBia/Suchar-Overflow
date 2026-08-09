@@ -2,13 +2,19 @@
 description: Run tests inside the Docker container to ensure environment consistency.
 ---
 
-1. Run all tests using pytest inside the django container:
+1. Run the unit/integration suite (excludes E2E) inside the django container:
 // turbo
    ```bash
-   docker compose -f docker-compose.local.yml run --rm django pytest
+   just test
    ```
+   Never run plain `pytest` without a `-m` marker filter — see CLAUDE.md's
+   "Unit tests vs E2E tests" section for why that collects E2E tests under the
+   wrong settings and fails with CSRF/fixture errors.
 
 2. To run specific tests, append the path:
    ```bash
-   docker compose -f docker-compose.local.yml run --rm django pytest path/to/test.py
+   just test path/to/test.py
    ```
+
+3. To run the Playwright E2E suite instead, use `just test-e2e` (separate settings,
+   see CLAUDE.md).
