@@ -4,12 +4,18 @@ description: Start the local development server using Docker Compose.
 
 1. Start the containers in detached mode:
    ```bash
-   docker compose up -d --remove-orphans
+   just up
+   ```
+   Or, equivalently, with the compose file specified explicitly (required outside
+   `just`, which sets `COMPOSE_FILE` for you — a bare `docker compose up -d` fails
+   with "no configuration file provided" otherwise):
+   ```bash
+   docker compose -f docker-compose.local.yml up -d --remove-orphans
    ```
 
 2. View the logs to ensure everything started correctly:
    ```bash
-   docker compose logs -f django
+   just logs django
    ```
    (Press Ctrl+C to exit logs, the server will keep running)
 
@@ -19,5 +25,5 @@ description: Start the local development server using Docker Compose.
 
 4. To stop the server:
    ```bash
-   docker compose down
+   just down
    ```
