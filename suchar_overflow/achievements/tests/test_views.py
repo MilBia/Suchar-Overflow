@@ -2,23 +2,13 @@ from http import HTTPStatus
 
 import pytest
 from asgiref.sync import sync_to_async
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
-
-User = get_user_model()
+from suchar_overflow.conftest import make_user
 
 ACHIEVEMENT_LIST_URL = "achievements:list"
-
-
-def make_user(username):
-    return User.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-    )
 
 
 def make_achievement(

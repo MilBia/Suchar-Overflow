@@ -1,22 +1,12 @@
 """Extra signal tests: created=False skip, author vs voter both checked."""
 
 import pytest
-from django.contrib.auth import get_user_model
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
+from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
-
-User = get_user_model()
-
-
-def make_user(username):
-    return User.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-    )
 
 
 def make_suchar_achievement(slug, threshold=1):

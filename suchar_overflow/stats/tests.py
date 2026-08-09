@@ -3,24 +3,14 @@ from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 
+from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
-User = get_user_model()
-
 LEADERBOARD_URL = "stats:leaderboard"
-
-
-def make_user(username):
-    return User.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-    )
 
 
 # ---------------------------------------------------------------------------
