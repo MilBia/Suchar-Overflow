@@ -1,5 +1,4 @@
 import pytest
-from django.utils.html import escape
 from django.utils.safestring import SafeString
 
 from suchar_overflow.achievements.admin import AchievementAdmin
@@ -15,7 +14,7 @@ class TestAchievementAdmin:
             name="Test Achievement",
             slug="test-achievement",
             description="A test achievement",
-            icon_content='<svg><style>.cls{fill:red}</style></svg>',
+            icon_content="<svg><style>.cls{fill:red}</style></svg>",
             category="LIFETIME",
             event_type="SUCHAR_POSTED",
             metric="COUNT_SUCHAR",
@@ -33,7 +32,7 @@ class TestAchievementAdmin:
         # Result should contain the SVG content
         assert ".cls{fill:red}" in result
         # Result should be wrapped in the div
-        assert 'width: 32px; height: 32px;' in result
+        assert "width: 32px; height: 32px;" in result
 
     def test_icon_preview_with_multiple_braces(self):
         """Test icon_preview with multiple braces in different contexts."""
@@ -41,7 +40,7 @@ class TestAchievementAdmin:
             name="Complex SVG",
             slug="complex-svg",
             description="SVG with multiple braces",
-            icon_content='<svg><defs><style>{.class1{fill:blue}.class2{stroke:green}}</style></defs></svg>',
+            icon_content="<svg><defs><style>{.class1{fill:blue}.class2{stroke:green}}</style></defs></svg>",
             category="LIFETIME",
             event_type="SUCHAR_POSTED",
             metric="COUNT_SUCHAR",
