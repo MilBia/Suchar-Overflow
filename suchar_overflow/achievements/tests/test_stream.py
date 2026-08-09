@@ -4,21 +4,12 @@ from http import HTTPStatus
 
 import pytest
 from asgiref.sync import sync_to_async
-from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.urls import reverse
 
-User = get_user_model()
+from suchar_overflow.conftest import make_user
 
 STREAM_URL = "achievements:stream"
-
-
-def make_user(username):
-    return User.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-    )
 
 
 @pytest.mark.anyio

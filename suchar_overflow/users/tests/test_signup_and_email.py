@@ -12,6 +12,7 @@ from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
 
+from suchar_overflow.conftest import make_user
 from suchar_overflow.users.models import ActivationToken
 from suchar_overflow.users.models import EmailChangeRequest
 
@@ -20,18 +21,6 @@ User = get_user_model()
 
 # ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
-
-
-def make_user(username, email=None, password="password", *, is_active=True):  # noqa: S107
-    return User.objects.create_user(
-        username=username,
-        email=email or f"{username}@example.com",
-        password=password,
-        is_active=is_active,
-    )
-
-
 # ---------------------------------------------------------------------------
 # SignupView
 # ---------------------------------------------------------------------------

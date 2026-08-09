@@ -4,23 +4,13 @@ from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 
+from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
-
-
-def make_user(username):
-    user_model = get_user_model()
-    return user_model.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-    )
-
 
 LIST_URL = "suchary:list"
 ADD_URL = "suchary:add"

@@ -1,26 +1,16 @@
 from http import HTTPStatus
 
 import pytest
-from django.contrib.auth import get_user_model
 from django.core.cache import cache
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
-
-User = get_user_model()
+from suchar_overflow.conftest import make_user
 
 UNSEEN_ACHIEVEMENTS_URL = "/api/achievements/unseen"
 MARK_SEEN_URL = "/api/achievements/mark-seen"
 FRONTEND_OWNED_URL = "/api/achievements/frontend-owned"
 FRONTEND_EVENT_URL = "/api/achievements/frontend-event"
-
-
-def make_user(username):
-    return User.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-    )
 
 
 def make_achievement(slug, name="Achievement"):

@@ -3,7 +3,6 @@
 import datetime
 
 import pytest
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from suchar_overflow.achievements import engine as eng
@@ -14,18 +13,9 @@ from suchar_overflow.achievements.engine import StreakLoginRule
 from suchar_overflow.achievements.engine import VoteDryCountRule
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
+from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
-
-User = get_user_model()
-
-
-def make_user(username):
-    return User.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-    )
 
 
 def make_achievement(

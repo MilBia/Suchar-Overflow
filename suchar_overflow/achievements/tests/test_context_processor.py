@@ -1,22 +1,12 @@
 """Tests for the achievements_bell context processor."""
 
 import pytest
-from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 
 from suchar_overflow.achievements.context_processors import achievements_bell
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
-
-User = get_user_model()
-
-
-def make_user(username):
-    return User.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-    )
+from suchar_overflow.conftest import make_user
 
 
 def make_achievement(slug, name="Achievement"):

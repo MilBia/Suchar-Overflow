@@ -1,21 +1,11 @@
 from datetime import timedelta
 
 import pytest
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.forms import SucharForm
 from suchar_overflow.suchary.models import Tag
-
-User = get_user_model()
-
-
-def make_user(username="author"):
-    return User.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-    )
 
 
 def form_data(**kwargs):
@@ -30,7 +20,7 @@ def form_data(**kwargs):
 
 @pytest.mark.django_db
 def test_published_at_empty_defaults_to_now():
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(published_at=""))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -41,7 +31,7 @@ def test_published_at_empty_defaults_to_now():
 
 @pytest.mark.django_db
 def test_published_at_future_date_is_valid():
-    user = make_user()
+    user = make_user("author")
     future = timezone.now() + timedelta(days=3)
     form = SucharForm(data=form_data(published_at=future.strftime("%Y-%m-%dT%H:%M")))
     form.instance.author = user
@@ -51,7 +41,7 @@ def test_published_at_future_date_is_valid():
 @pytest.mark.django_db
 def test_published_at_recent_past_within_buffer_is_valid():
     """Dates up to 5 minutes in the past should be accepted (network/clock drift)."""
-    user = make_user()
+    user = make_user("author")
     slight_past = timezone.now() - timedelta(minutes=3)
     form = SucharForm(
         data=form_data(published_at=slight_past.strftime("%Y-%m-%dT%H:%M")),
@@ -62,7 +52,7 @@ def test_published_at_recent_past_within_buffer_is_valid():
 
 @pytest.mark.django_db
 def test_published_at_old_past_date_is_rejected():
-    user = make_user()
+    user = make_user("author")
     old_past = timezone.now() - timedelta(minutes=10)
     form = SucharForm(data=form_data(published_at=old_past.strftime("%Y-%m-%dT%H:%M")))
     form.instance.author = user
@@ -77,7 +67,7 @@ def test_published_at_old_past_date_is_rejected():
 
 @pytest.mark.django_db
 def test_tags_comma_separated():
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(tags_input="it, python, linux"))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -92,7 +82,7 @@ def test_tags_comma_separated():
 
 @pytest.mark.django_db
 def test_tags_space_separated():
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(tags_input="it python linux"))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -107,7 +97,7 @@ def test_tags_space_separated():
 
 @pytest.mark.django_db
 def test_tags_mixed_separators():
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(tags_input="it, python linux"))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -121,7 +111,7 @@ def test_tags_mixed_separators():
 
 @pytest.mark.django_db
 def test_tags_empty_input_clears_tags():
-    user = make_user()
+    user = make_user("author")
     # Pre-create a tag to ensure clearing works
     Tag.objects.create(name="IT", slug="it")
     form = SucharForm(data=form_data(tags_input=""))
@@ -138,7 +128,7 @@ def test_tags_empty_input_clears_tags():
 @pytest.mark.django_db
 def test_tags_deduplication_same_slug():
     """Submitting the same tag twice (or different capitalisation) creates one tag."""
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(tags_input="Python, python, PYTHON"))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -154,7 +144,7 @@ def test_tags_deduplication_same_slug():
 @pytest.mark.django_db
 def test_tags_reuse_existing_tag():
     """If a tag with the same slug already exists it is reused, not duplicated."""
-    user = make_user()
+    user = make_user("author")
     existing = Tag.objects.create(name="IT", slug="it")
     form = SucharForm(data=form_data(tags_input="it"))
     form.instance.author = user
@@ -171,7 +161,7 @@ def test_tags_reuse_existing_tag():
 @pytest.mark.django_db
 def test_tags_invalid_slug_skipped():
     """Tags whose slugify result is empty (pure punctuation) are silently skipped."""
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(tags_input="python, !!!, ---"))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -191,7 +181,7 @@ def test_tags_invalid_slug_skipped():
 @pytest.mark.django_db
 def test_save_m2m_applies_tags():
     """save(commit=False) + save_m2m() must apply tags without accessing _save_tags."""
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(tags_input="it, python"))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -211,7 +201,7 @@ def test_save_m2m_applies_tags():
 
 @pytest.mark.django_db
 def test_tag_at_limit_is_accepted():
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(tags_input="x" * 50))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -219,7 +209,7 @@ def test_tag_at_limit_is_accepted():
 
 @pytest.mark.django_db
 def test_tag_too_long_is_rejected():
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(tags_input="x" * 51))
     form.instance.author = user
     assert not form.is_valid()
@@ -228,7 +218,7 @@ def test_tag_too_long_is_rejected():
 
 @pytest.mark.django_db
 def test_mixed_tags_one_too_long_is_rejected():
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(tags_input="python, " + "x" * 51))
     form.instance.author = user
     assert not form.is_valid()
@@ -242,7 +232,7 @@ def test_mixed_tags_one_too_long_is_rejected():
 
 @pytest.mark.django_db
 def test_text_at_limit_is_accepted():
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(text="x" * 2000))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -250,7 +240,7 @@ def test_text_at_limit_is_accepted():
 
 @pytest.mark.django_db
 def test_text_too_long_is_rejected():
-    user = make_user()
+    user = make_user("author")
     form = SucharForm(data=form_data(text="x" * 2001))
     form.instance.author = user
     assert not form.is_valid()

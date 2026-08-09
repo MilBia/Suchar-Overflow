@@ -2,13 +2,11 @@ import json
 from http import HTTPStatus
 
 import pytest
-from django.contrib.auth import get_user_model
 
+from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
-
-User = get_user_model()
 
 TAGS_URL = "/api/suchary/tags"
 VOTE_URL = "/api/suchary/{pk}/vote"
@@ -21,15 +19,6 @@ VOTE_URL = "/api/suchary/{pk}/vote"
 
 def vote_url(pk):
     return VOTE_URL.format(pk=pk)
-
-
-def make_user(username, **kwargs):
-    return User.objects.create_user(
-        username=username,
-        email=f"{username}@example.com",
-        password="password",  # noqa: S106
-        **kwargs,
-    )
 
 
 # ---------------------------------------------------------------------------

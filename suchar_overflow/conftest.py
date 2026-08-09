@@ -12,3 +12,19 @@ def _media_storage(settings, tmpdir) -> None:
 @pytest.fixture
 def user(db) -> User:
     return UserFactory()
+
+
+def make_user(
+    username: str,
+    email: str | None = None,
+    password: str = "password",  # noqa: S107
+    *,
+    is_active: bool = True,
+) -> User:
+    """Create a test user via UserFactory with an explicit, predictable username."""
+    return UserFactory(
+        username=username,
+        email=email or f"{username}@example.com",
+        password=password,
+        is_active=is_active,
+    )
