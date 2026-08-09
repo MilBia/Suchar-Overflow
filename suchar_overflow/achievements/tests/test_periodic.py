@@ -1,71 +1,16 @@
-import datetime
-
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.utils import timezone
 
-from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
+from suchar_overflow.achievements.tests.conftest import last_month_end
+from suchar_overflow.achievements.tests.conftest import last_month_mid
+from suchar_overflow.achievements.tests.conftest import last_year_end
+from suchar_overflow.achievements.tests.conftest import last_year_mid
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
 User = get_user_model()
-
-
-@pytest.fixture
-def periodic_achievements(db):
-    Achievement.objects.get_or_create(
-        slug="best-suchar-month",
-        defaults={
-            "name": "Comedian of the Month",
-            "category": "PERIODIC",
-            "metric": "SUM_SCORE",
-            "threshold": 0,
-            "icon_content": "<svg></svg>",
-        },
-    )
-    Achievement.objects.get_or_create(
-        slug="best-suchar-year",
-        defaults={
-            "name": "Legend of the Year",
-            "category": "PERIODIC",
-            "metric": "SUM_SCORE",
-            "threshold": 0,
-            "icon_content": "<svg></svg>",
-        },
-    )
-
-
-def _last_month_mid() -> datetime.datetime:
-    """Return a timezone-aware datetime in the middle of the previous calendar month."""
-    today = timezone.now().date()
-    first_of_this_month = today.replace(day=1)
-    last_month = first_of_this_month - datetime.timedelta(days=1)
-    mid = last_month.replace(day=min(15, last_month.day))
-    return timezone.make_aware(
-        datetime.datetime(mid.year, mid.month, mid.day, 12, 0, 0),  # noqa: DTZ001
-    )
-
-
-def _last_month_end() -> str:
-    """Return a YYYY-MM-DD string for the last day of the previous calendar month."""
-    today = timezone.now().date()
-    first_of_this_month = today.replace(day=1)
-    last_day = first_of_this_month - datetime.timedelta(days=1)
-    return last_day.strftime("%Y-%m-%d")
-
-
-def _last_year_mid() -> datetime.datetime:
-    """Return a timezone-aware datetime in the middle of the previous calendar year."""
-    last_year = timezone.now().year - 1
-    return timezone.make_aware(datetime.datetime(last_year, 6, 15, 12, 0, 0))  # noqa: DTZ001
-
-
-def _last_year_end() -> str:
-    """Return the last day of the previous calendar year as YYYY-MM-DD."""
-    last_year = timezone.now().year - 1
-    return f"{last_year}-12-31"
 
 
 @pytest.mark.django_db
@@ -81,7 +26,7 @@ def test_award_periodic_month(periodic_achievements):
         password="password",  # noqa: S106
     )
 
-    mid_last_month = _last_month_mid()
+    mid_last_month = last_month_mid()
 
     # Winner's joke — place it in last month
     s1 = Suchar.objects.create(text="Funny joke", author=winner)
@@ -104,7 +49,7 @@ def test_award_periodic_month(periodic_achievements):
 
     Vote.objects.create(suchar=s2, user=winner, is_funny=True)
 
-    call_command("award_periodic", period="month", date=_last_month_end())
+    call_command("award_periodic", period="month", date=last_month_end())
 
     assert UserAchievement.objects.filter(
         user=winner,
@@ -125,7 +70,7 @@ def test_award_periodic_year(periodic_achievements):
     )
 
     s1 = Suchar.objects.create(text="Yearly best", author=winner)
-    s1.created_at = _last_year_mid()
+    s1.created_at = last_year_mid()
     s1.save()
 
     voter = User.objects.create_user(
@@ -135,7 +80,7 @@ def test_award_periodic_year(periodic_achievements):
     )
     Vote.objects.create(suchar=s1, user=voter, is_funny=True)
 
-    call_command("award_periodic", period="year", date=_last_year_end())
+    call_command("award_periodic", period="year", date=last_year_end())
 
     assert UserAchievement.objects.filter(
         user=winner,
@@ -146,7 +91,7 @@ def test_award_periodic_year(periodic_achievements):
 @pytest.mark.django_db
 def test_award_periodic_month_no_suchars_does_not_crash(periodic_achievements):
     """Running the command on an empty period should exit gracefully."""
-    call_command("award_periodic", period="month", date=_last_month_end())
+    call_command("award_periodic", period="month", date=last_month_end())
     assert UserAchievement.objects.count() == 0
 
 
@@ -161,7 +106,7 @@ def test_award_periodic_month_winner_is_highest_vote_getter(periodic_achievement
         )
         for i in range(3)
     ]
-    mid = _last_month_mid()
+    mid = last_month_mid()
 
     suchars = []
     for author in authors:
@@ -180,7 +125,7 @@ def test_award_periodic_month_winner_is_highest_vote_getter(periodic_achievement
             )
             Vote.objects.create(suchar=suchars[i], user=voter, is_funny=True)
 
-    call_command("award_periodic", period="month", date=_last_month_end())
+    call_command("award_periodic", period="month", date=last_month_end())
 
     assert UserAchievement.objects.filter(
         user=authors[1],
