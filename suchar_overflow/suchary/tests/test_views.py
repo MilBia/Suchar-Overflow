@@ -2,6 +2,7 @@ from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
+from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.utils import timezone
 
@@ -33,6 +34,8 @@ def test_create_suchar(client, django_user_model):
     first_suchar = Suchar.objects.first()
     assert first_suchar is not None
     assert first_suchar.text == "A dry joke"
+    messages = list(get_messages(response.wsgi_request))
+    assert [str(m) for m in messages] == ["Your suchar has been posted."]
 
 
 @pytest.mark.django_db

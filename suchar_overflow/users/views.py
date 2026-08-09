@@ -2,6 +2,7 @@ import datetime
 import json
 
 from asgiref.sync import sync_to_async
+from django.contrib import messages
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models.functions import TruncDay
@@ -13,6 +14,7 @@ from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.formats import date_format
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
@@ -224,6 +226,7 @@ class UserUpdateView(AsyncLoginRequiredMixin, View):
                 {"form": form, "object": user},
             )
         await sync_to_async(form.save)()
+        messages.success(request, gettext("Profile updated."))
         return redirect(user.get_absolute_url())
 
 

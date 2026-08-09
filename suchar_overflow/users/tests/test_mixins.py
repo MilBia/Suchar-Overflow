@@ -4,6 +4,8 @@ from http import HTTPStatus
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.contrib.messages import get_messages
+from django.contrib.messages.storage.cookie import CookieStorage
 from django.http import HttpResponse
 from django.test import AsyncRequestFactory
 from django.views import View
@@ -63,9 +65,13 @@ async def test_async_user_passes_test_blocks_failing_user(django_user_model):
     arf = AsyncRequestFactory()
     request = arf.get("/fake-path/")
     request.user = user
+    request._messages = CookieStorage(request)  # noqa: SLF001
     view = _PassesTestView.as_view()
     response = await view(request)
     assert response.status_code == HTTPStatus.FOUND
+    messages = list(get_messages(request))
+    assert len(messages) == 1
+    assert str(messages[0]) == "You don't have permission to do that."
 
 
 @pytest.mark.anyio

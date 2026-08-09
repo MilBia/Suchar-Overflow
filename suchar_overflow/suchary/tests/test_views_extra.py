@@ -4,6 +4,7 @@ from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
+from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.utils import timezone
 
@@ -211,6 +212,8 @@ def test_update_non_author_forbidden(client, django_user_model):
     response = client.get(reverse("suchary:update", kwargs={"pk": suchar.pk}))
     # Non-author gets redirected to login (Django's default handle_no_permission)
     assert response.status_code in (HTTPStatus.FOUND, HTTPStatus.FORBIDDEN)
+    messages = list(get_messages(response.wsgi_request))
+    assert [str(m) for m in messages] == ["You don't have permission to do that."]
 
 
 @pytest.mark.django_db
@@ -230,6 +233,30 @@ def test_update_author_can_edit_unpublished(client, django_user_model):
     client.force_login(author)
     response = client.get(reverse("suchary:update", kwargs={"pk": suchar.pk}))
     assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.django_db
+def test_update_author_post_success_shows_message(client, django_user_model):
+    author = django_user_model.objects.create_user(
+        username="upd_auth4",
+        email="ua4@example.com",
+        password="pw",  # noqa: S106
+    )
+    future = timezone.now() + timedelta(days=1)
+    suchar = Suchar.objects.create(
+        text="Future joke",
+        author=author,
+        published_at=future,
+    )
+
+    client.force_login(author)
+    response = client.post(
+        reverse("suchary:update", kwargs={"pk": suchar.pk}),
+        {"text": "Updated future joke"},
+    )
+    assert response.status_code == HTTPStatus.FOUND
+    messages = list(get_messages(response.wsgi_request))
+    assert [str(m) for m in messages] == ["Your suchar has been updated."]
 
 
 @pytest.mark.django_db

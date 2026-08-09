@@ -3,6 +3,7 @@ from http import HTTPStatus
 import pytest
 from asgiref.sync import sync_to_async
 from django.conf import settings
+from django.contrib.messages import get_messages
 from django.urls import reverse
 
 from suchar_overflow.suchary.models import Suchar
@@ -27,6 +28,8 @@ async def test_user_update_post_redirects_to_profile(async_client):
     response = await async_client.post(reverse("users:update"), {"name": "New Name"})
     assert response.status_code == HTTPStatus.FOUND
     assert response.url == f"/users/{user.username}/"
+    messages = list(get_messages(response.asgi_request))
+    assert [str(m) for m in messages] == ["Profile updated."]
 
 
 @pytest.mark.anyio
