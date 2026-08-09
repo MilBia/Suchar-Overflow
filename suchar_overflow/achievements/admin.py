@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from modeltranslation.admin import TabbedTranslationAdmin
 
 from .models import Achievement
@@ -81,7 +82,7 @@ class AchievementAdmin(TabbedTranslationAdmin):
             # We wrap the SVG in a div with fixed size for the admin list
             return format_html(
                 '<div style="width: 32px; height: 32px;">{}</div>',
-                format_html(obj.icon_content),
+                mark_safe(obj.icon_content),  # noqa: S308
             )
         return "-"
 
