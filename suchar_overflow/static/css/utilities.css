@@ -234,6 +234,15 @@
     background-color: hsl(var(--hue-warning), 80%, 50%) !important;
 }
 
+/* Not part of issue #86's original 7 classes, but added at the repo owner's
+   request during review: without it, `bg-info text-white` badges (e.g. the
+   "D" dry-count badge next to the #86-fixed "F" badge) render invisible
+   white-on-transparent text in light mode. No `--hue-info` variable exists
+   yet, so this uses a literal cyan hue distinct from the other named hues. */
+.bg-info {
+    background-color: hsl(200, 70%, 50%) !important;
+}
+
 /* Opacity modifiers — only meaningful combined with a matching .bg-* class */
 .bg-primary.bg-opacity-10 {
     background-color: hsla(var(--hue-primary), var(--sat-primary), var(--lig-primary), 0.1) !important;
