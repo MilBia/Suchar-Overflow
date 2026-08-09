@@ -209,13 +209,38 @@
     color: hsl(var(--hue-success), 70%, 45%) !important;
 }
 
+.text-white {
+    color: #fff !important;
+}
+
 .bg-light {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
 }
 
+.bg-white {
+    background-color: var(--bg-surface);
+}
+
 .bg-transparent {
     background-color: transparent;
+}
+
+.bg-primary {
+    background-color: var(--color-primary) !important;
+}
+
+.bg-warning {
+    background-color: hsl(var(--hue-warning), 80%, 50%) !important;
+}
+
+/* Opacity modifiers — only meaningful combined with a matching .bg-* class */
+.bg-primary.bg-opacity-10 {
+    background-color: hsla(var(--hue-primary), var(--sat-primary), var(--lig-primary), 0.1) !important;
+}
+
+.bg-warning.bg-opacity-10 {
+    background-color: hsla(var(--hue-warning), 80%, 50%, 0.1) !important;
 }
 
 .rounded-4 {
@@ -305,6 +330,26 @@
 
 .border-top {
     border-top: 1px solid var(--border-color) !important;
+}
+
+/* Note: this project has no bare `.border` utility (border-style/width come
+   from `.card`/`.suchar-card`, etc.), so `.border-warning` sets the full
+   shorthand rather than just border-color — a color-only override would be
+   invisible wherever the initial `border-style: none` still applies (e.g. on
+   `.badge`, which sets no border of its own). 1px solid also matches `.card`'s
+   own border width/style, so the two card usages of `.border-warning` keep
+   their existing border thickness. */
+.border-warning {
+    border: 1px solid hsl(var(--hue-warning), 80%, 50%) !important;
+}
+
+/* Opacity modifiers — only meaningful combined with a matching .border-* class */
+.border-warning.border-opacity-25 {
+    border: 1px solid hsla(var(--hue-warning), 80%, 50%, 0.25) !important;
+}
+
+.border-primary.border-opacity-25 {
+    border: 1px solid hsla(var(--hue-primary), var(--sat-primary), var(--lig-primary), 0.25) !important;
 }
 
 .fs-sm {
