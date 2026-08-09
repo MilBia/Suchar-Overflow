@@ -3,10 +3,12 @@ from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
+from django.db.models import Count
 from django.urls import reverse
 from django.utils import timezone
 
 from suchar_overflow.conftest import make_user
+from suchar_overflow.stats.views import _top_n
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
@@ -137,6 +139,47 @@ def test_top_suchars_overall_excludes_zero_score(client):
     response = client.get(reverse(LEADERBOARD_URL))
     texts = [s.text for s in response.context["top_suchars_overall"]]
     assert "No votes joke" not in texts
+
+
+# ---------------------------------------------------------------------------
+# _top_n
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_top_n_orders_descending_and_caps_at_limit():
+    author = make_user("top_n_author")
+    for i in range(5):
+        Suchar.objects.create(text=f"Joke {i}", author=author)
+    suchary_by_score = list(Suchar.objects.annotate(score=Count("votes")))
+    for suchar, votes in zip(suchary_by_score, [1, 3, 0, 2, 4], strict=True):
+        for j in range(votes):
+            voter = make_user(f"voter_{suchar.pk}_{j}")
+            Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+
+    result = _top_n(
+        Suchar.objects.all(),
+        {"score": Count("votes")},
+        "score",
+        limit=3,
+    )
+
+    assert len(result) == 3  # noqa: PLR2004
+    scores = [s.score for s in result]
+    assert scores == sorted(scores, reverse=True)
+
+
+@pytest.mark.django_db
+def test_top_n_excludes_zero_order_field():
+    author = make_user("top_n_zero_author")
+    scored = Suchar.objects.create(text="Scored", author=author)
+    Suchar.objects.create(text="Unscored", author=author)
+    voter = make_user("top_n_zero_voter")
+    Vote.objects.create(suchar=scored, user=voter, is_funny=True)
+
+    result = _top_n(Suchar.objects.all(), {"score": Count("votes")}, "score")
+
+    assert [s.pk for s in result] == [scored.pk]
 
 
 # ---------------------------------------------------------------------------
