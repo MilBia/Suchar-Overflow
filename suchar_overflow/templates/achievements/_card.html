@@ -1,0 +1,48 @@
+{% load i18n %}
+
+{% if locked %}
+  <div class="achievement-card locked tier-{{ achievement.tier }}">
+    <div class="achievement-icon-wrapper tier-icon-{{ achievement.tier }}">
+      {% if is_secret %}
+        <div class="lock-icon text-muted">🔒</div>
+      {% else %}
+        {% if achievement.icon_content %}
+          {{ achievement.icon_content|safe }}
+        {% else %}
+          <div class="lock-icon text-muted">🔒</div>
+        {% endif %}
+      {% endif %}
+    </div>
+    <div class="achievement-info text-muted">
+      {% if is_secret %}
+        <h3 class="achievement-name">???</h3>
+        <p class="achievement-desc">{% trans "Achievement locked. Discover its secret by playing!" %}</p>
+      {% else %}
+        <h3 class="achievement-name">{{ achievement.name }}</h3>
+        <p class="achievement-desc">{{ achievement.description }}</p>
+        {% include "achievements/_tags.html" with achievement=achievement %}
+      {% endif %}
+    </div>
+  </div>
+{% else %}
+  <div class="achievement-card unlocked tier-{{ achievement.tier }}">
+    <div class="achievement-glow"></div>
+    <div class="achievement-icon-wrapper tier-icon-{{ achievement.tier }}">
+      {% if achievement.icon_content %}
+        {{ achievement.icon_content|safe }}
+      {% else %}
+        <div class="default-icon">🏆</div>
+      {% endif %}
+    </div>
+    <div class="achievement-info">
+      <h3 class="achievement-name">{{ achievement.name }}</h3>
+      <p class="achievement-desc">{{ achievement.description }}</p>
+      {% include "achievements/_tags.html" with achievement=achievement %}
+      {% if awarded_at %}
+        <p class="text-muted mt-2 mb-0 fs-sm">
+          {% blocktrans with date=awarded_at|date:"j N Y, H:i" %}Unlocked: {{ date }}{% endblocktrans %}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

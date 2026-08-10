@@ -23,63 +23,9 @@
     <div class="achievements-grid">
       {% for ach in achievements %}
         {% if ach.id in user_achievements %}
-          <div class="achievement-card unlocked tier-{{ ach.tier }}">
-            <div class="achievement-glow"></div>
-            <div class="achievement-icon-wrapper tier-icon-{{ ach.tier }}">
-              {% if ach.icon_content %}
-                {{ ach.icon_content|safe }}
-              {% else %}
-                <div class="default-icon">🏆</div>
-              {% endif %}
-            </div>
-            <div class="achievement-info">
-              <h3 class="achievement-name">{{ ach.name }}</h3>
-              <p class="achievement-desc">{{ ach.description }}</p>
-              <div class="achievement-tags mt-2">
-                {% if ach.theme %}<span class="badge theme-badge">{{ ach.theme }}</span>{% endif %}
-                <span class="badge tier-badge tier-color-{{ ach.tier }}">
-                  {% if ach.tier == 0 %}
-                    {% trans "Common" %}
-                  {% else %}
-                    {{ ach.get_tier_display }}
-                  {% endif %}
-                </span>
-              </div>
-            </div>
-          </div>
+          {% include "achievements/_card.html" with achievement=ach locked=False %}
         {% else %}
-          <div class="achievement-card locked tier-{{ ach.tier }}">
-            <div class="achievement-icon-wrapper tier-icon-{{ ach.tier }}">
-              {% if ach.is_secret %}
-                <div class="lock-icon text-muted">🔒</div>
-              {% else %}
-                {% if ach.icon_content %}
-                  {{ ach.icon_content|safe }}
-                {% else %}
-                  <div class="lock-icon text-muted">🔒</div>
-                {% endif %}
-              {% endif %}
-            </div>
-            <div class="achievement-info text-muted">
-              {% if ach.is_secret %}
-                <h3 class="achievement-name">???</h3>
-                <p class="achievement-desc">{% trans "Achievement locked. Discover its secret by playing!" %}</p>
-              {% else %}
-                <h3 class="achievement-name">{{ ach.name }}</h3>
-                <p class="achievement-desc">{{ ach.description }}</p>
-                <div class="achievement-tags mt-2">
-                  {% if ach.theme %}<span class="badge theme-badge">{{ ach.theme }}</span>{% endif %}
-                  <span class="badge tier-badge tier-color-{{ ach.tier }}">
-                    {% if ach.tier == 0 %}
-                      {% trans "Common" %}
-                    {% else %}
-                      {{ ach.get_tier_display }}
-                    {% endif %}
-                  </span>
-                </div>
-              {% endif %}
-            </div>
-          </div>
+          {% include "achievements/_card.html" with achievement=ach locked=True is_secret=ach.is_secret %}
         {% endif %}
       {% endfor %}
     </div>

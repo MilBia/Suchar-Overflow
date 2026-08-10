@@ -6,6 +6,7 @@ import pytest
 from django.db.models import Count
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext
 
 from suchar_overflow.conftest import make_user
 from suchar_overflow.stats.views import _top_n
@@ -106,6 +107,33 @@ def test_top_authors_funny_only_counts_funny_votes(client):
     assert "funny_author" not in dry_authors
     assert "dry_author" in dry_authors
     assert "dry_author" not in funny_authors
+
+
+@pytest.mark.django_db
+def test_leaderboard_renders_card_per_tab_via_shared_partials(client):
+    u_funny = make_user("badge_funny_author")
+    u_dry = make_user("badge_dry_author")
+    s_funny = Suchar.objects.create(text="Funny joke", author=u_funny)
+    s_dry = Suchar.objects.create(text="Dry joke", author=u_dry)
+    Vote.objects.create(suchar=s_funny, user=u_dry, is_funny=True)
+    Vote.objects.create(suchar=s_dry, user=u_funny, is_dry=True)
+
+    response = client.get(reverse(LEADERBOARD_URL))
+    content = response.content.decode()
+
+    # Two cards (authors + suchary) per tab, three tabs.
+    cards_per_tab = 2
+    assert content.count("card-header-gold") == cards_per_tab
+    assert content.count("card-header-funny") == cards_per_tab
+    assert content.count("card-header-dry") == cards_per_tab
+    assert gettext("Most Active Authors") in content
+    assert gettext("Hall of Fame") in content
+    assert gettext("Comedy Kings") in content
+    assert gettext("Top Funny Jokes") in content
+    assert gettext("Lords of Drought") in content
+    assert gettext("Top Dry Jokes") in content
+    # Only the "overall" badge variant shows the funny/dry breakdown line.
+    assert "stats-text-sm" in content
 
 
 # ---------------------------------------------------------------------------
