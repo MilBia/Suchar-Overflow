@@ -1,7 +1,6 @@
 """Extra UserDetailView tests: scheduled suchary, rank, heatmap, signup."""
 
 import datetime
-import json
 from http import HTTPStatus
 
 import pytest
@@ -209,14 +208,12 @@ def test_best_joke_is_none_when_no_suchary(client):
 
 
 @pytest.mark.django_db
-def test_activity_labels_and_values_are_json(client):
+def test_activity_labels_and_values_are_lists(client):
     user = make_user("chart_u")
     client.force_login(user)
     response = client.get(detail_url("chart_u"))
-    labels = json.loads(response.context["activity_labels"])
-    values = json.loads(response.context["activity_values"])
-    assert isinstance(labels, list)
-    assert isinstance(values, list)
+    assert isinstance(response.context["activity_labels"], list)
+    assert isinstance(response.context["activity_values"], list)
 
 
 @pytest.mark.django_db
@@ -224,7 +221,7 @@ def test_reception_data_is_list_of_two(client):
     user = make_user("recv_u")
     client.force_login(user)
     response = client.get(detail_url("recv_u"))
-    data = json.loads(response.context["reception_data"])
+    data = response.context["reception_data"]
     assert isinstance(data, list)
     assert len(data) == 2  # noqa: PLR2004
 

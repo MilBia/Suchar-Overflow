@@ -1,15 +1,8 @@
 /* Hidden frontend achievements tracker.
  * Only runs for authenticated users. Fetches already-owned slugs on init
  * and skips monitors for achievements the user already has.
+ * Relies on window.getCsrfToken, defined in project.js (loaded first).
  */
-
-function getCsrfToken() {
-    return (
-        document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
-        document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
-        ''
-    );
-}
 
 async function getOwnedSlugs() {
     try {

@@ -163,7 +163,11 @@
                   <!-- Reception Chart -->
                   <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Reception" %}</h6>
                   <div class="chart-container-sm">
-                    <canvas id="userReceptionChart"></canvas>
+                    {% trans "Funny" as funny_label %}
+                    {% trans "Dry" as dry_label %}
+                    <canvas id="userReceptionChart"
+                            data-funny-label="{{ funny_label }}"
+                            data-dry-label="{{ dry_label }}"></canvas>
                   </div>
                 {% endif %}
               </div>
@@ -242,81 +246,9 @@
 
   {% block javascript %}
     {{ block.super }}
-    <script nonce="{{ csp_nonce }}">
-      document.addEventListener('DOMContentLoaded', function() {
-
-        // Activity Chart
-        const ctxActivity = document.getElementById('userActivityChart');
-        if (ctxActivity) {
-          const labels = JSON.parse('{{ activity_labels|safe }}');
-          const data = JSON.parse('{{ activity_values|safe }}');
-
-          new Chart(ctxActivity.getContext('2d'), {
-            type: 'bar',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Suchary',
-                data: data,
-                backgroundColor: '#3b82f6',
-                borderRadius: 2
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: false
-                }
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    display: false
-                  },
-                  grid: {
-                    display: false
-                  }
-                },
-                x: {
-                  display: false
-                }
-              }
-            }
-          });
-        }
-
-        // Reception Chart
-        const ctxReception = document.getElementById('userReceptionChart');
-        if (ctxReception) {
-          const data = JSON.parse('{{ reception_data|safe }}'); // [funny, dry]
-
-          new Chart(ctxReception.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-              labels: ['{% trans "Funny" %}', '{% trans "Dry" %}'],
-              datasets: [{
-                data: data,
-                backgroundColor: ['#E58E26', '#0ea5e9'], // Orange (Funny), Blue (Dry)
-                borderWidth: 0
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: 'right',
-                  labels: {
-                    boxWidth: 10
-                  }
-                }
-              }
-            }
-          });
-        }
-      });
-    </script>
+    <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
+    {{ activity_labels|json_script:"activity-labels-data" }}
+    {{ activity_values|json_script:"activity-values-data" }}
+    {{ reception_data|json_script:"reception-data-data" }}
+    <script defer src="{% static 'js/pages/user_detail.js' %}"></script>
   {% endblock javascript %}
