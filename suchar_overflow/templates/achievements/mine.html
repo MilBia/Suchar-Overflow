@@ -23,33 +23,7 @@
     {% if user_achievements %}
       <div class="achievements-grid">
         {% for ua in user_achievements %}
-          <div class="achievement-card unlocked tier-{{ ua.achievement.tier }}">
-            <div class="achievement-glow"></div>
-            <div class="achievement-icon-wrapper tier-icon-{{ ua.achievement.tier }}">
-              {% if ua.achievement.icon_content %}
-                {{ ua.achievement.icon_content|safe }}
-              {% else %}
-                <div class="default-icon">🏆</div>
-              {% endif %}
-            </div>
-            <div class="achievement-info">
-              <h3 class="achievement-name">{{ ua.achievement.name }}</h3>
-              <p class="achievement-desc">{{ ua.achievement.description }}</p>
-              <div class="achievement-tags mt-2">
-                {% if ua.achievement.theme %}<span class="badge theme-badge">{{ ua.achievement.theme }}</span>{% endif %}
-                <span class="badge tier-badge tier-color-{{ ua.achievement.tier }}">
-                  {% if ua.achievement.tier == 0 %}
-                    {% trans "Common" %}
-                  {% else %}
-                    {{ ua.achievement.get_tier_display }}
-                  {% endif %}
-                </span>
-              </div>
-              <p class="text-muted mt-2 mb-0 fs-sm">
-                {% blocktrans with date=ua.awarded_at|date:"j N Y, H:i" %}Unlocked: {{ date }}{% endblocktrans %}
-              </p>
-            </div>
-          </div>
+          {% include "achievements/_card.html" with achievement=ua.achievement locked=False awarded_at=ua.awarded_at %}
         {% endfor %}
       </div>
     {% else %}
