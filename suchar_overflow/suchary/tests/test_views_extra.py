@@ -7,6 +7,7 @@ import pytest
 from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext
 
 from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
@@ -213,7 +214,9 @@ def test_update_non_author_forbidden(client, django_user_model):
     # Non-author gets redirected to login (Django's default handle_no_permission)
     assert response.status_code in (HTTPStatus.FOUND, HTTPStatus.FORBIDDEN)
     messages = list(get_messages(response.wsgi_request))
-    assert [str(m) for m in messages] == ["You don't have permission to do that."]
+    assert [str(m) for m in messages] == [
+        gettext("You don't have permission to do that."),
+    ]
 
 
 @pytest.mark.django_db
@@ -256,7 +259,7 @@ def test_update_author_post_success_shows_message(client, django_user_model):
     )
     assert response.status_code == HTTPStatus.FOUND
     messages = list(get_messages(response.wsgi_request))
-    assert [str(m) for m in messages] == ["Your suchar has been updated."]
+    assert [str(m) for m in messages] == [gettext("Your suchar has been updated.")]
 
 
 @pytest.mark.django_db

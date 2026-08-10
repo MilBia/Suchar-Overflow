@@ -8,6 +8,7 @@ from django.contrib.messages import get_messages
 from django.contrib.messages.storage.cookie import CookieStorage
 from django.http import HttpResponse
 from django.test import AsyncRequestFactory
+from django.utils.translation import gettext
 from django.views import View
 
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
@@ -71,7 +72,7 @@ async def test_async_user_passes_test_blocks_failing_user(django_user_model):
     assert response.status_code == HTTPStatus.FOUND
     messages = list(get_messages(request))
     assert len(messages) == 1
-    assert str(messages[0]) == "You don't have permission to do that."
+    assert str(messages[0]) == gettext("You don't have permission to do that.")
 
 
 @pytest.mark.anyio

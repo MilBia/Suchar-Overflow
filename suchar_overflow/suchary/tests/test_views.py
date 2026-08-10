@@ -5,6 +5,7 @@ import pytest
 from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext
 
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
@@ -35,7 +36,7 @@ def test_create_suchar(client, django_user_model):
     assert first_suchar is not None
     assert first_suchar.text == "A dry joke"
     messages = list(get_messages(response.wsgi_request))
-    assert [str(m) for m in messages] == ["Your suchar has been posted."]
+    assert [str(m) for m in messages] == [gettext("Your suchar has been posted.")]
 
 
 @pytest.mark.django_db
