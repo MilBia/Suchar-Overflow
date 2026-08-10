@@ -1,4 +1,3 @@
-import json
 from datetime import timedelta
 
 from asgiref.sync import sync_to_async
@@ -172,5 +171,5 @@ class LeaderboardView(View):
             "top_suchars_overall": top_suchars_overall,
             "top_suchars_funny": top_suchars_funny,
             "top_suchars_dry": top_suchars_dry,
-            "chart_datasets": json.dumps(chart_datasets),
+            "chart_datasets": chart_datasets,
         }

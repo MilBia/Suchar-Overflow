@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             container.classList.add('loading');
 
             try {
-                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+                const csrftoken = getCsrfToken();
                 if (!csrftoken) {
                     console.error('CSRF token not found');
                     container.classList.remove('loading');

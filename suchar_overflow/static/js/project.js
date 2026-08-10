@@ -1,5 +1,12 @@
 /* Project specific Javascript goes here. */
 
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+        document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+        '';
+}
+window.getCsrfToken = getCsrfToken;
+
 const themeToggleBtn = document.getElementById('theme-toggle');
 const htmlElement = document.documentElement;
 
@@ -380,13 +387,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (opening) {
                 const badge = document.getElementById('bell-badge');
                 if (badge) {
-                    const csrfToken =
-                        document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
-                        document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
-                        '';
                     fetch('/api/achievements/mark-seen', {
                         method: 'POST',
-                        headers: { 'X-CSRFToken': csrfToken },
+                        headers: { 'X-CSRFToken': getCsrfToken() },
                     }).then(() => badge.remove()).catch(() => {});
                 }
             }

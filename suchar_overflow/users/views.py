@@ -1,5 +1,4 @@
 import datetime
-import json
 
 from asgiref.sync import sync_to_async
 from django.contrib import messages
@@ -103,13 +102,11 @@ class UserDetailView(AsyncLoginRequiredMixin, View):
 
         chart_labels = [entry["date"].strftime("%Y-%m-%d") for entry in activity_data]
         chart_values = [entry["count"] for entry in activity_data]
-        context["activity_labels"] = json.dumps(chart_labels)
-        context["activity_values"] = json.dumps(chart_values)
+        context["activity_labels"] = chart_labels
+        context["activity_values"] = chart_values
 
         # 4. Reception Chart (Funny vs Dry received) — reuse already-computed stats
-        context["reception_data"] = json.dumps(
-            [stats["funny_score"] or 0, stats["dry_score"] or 0],
-        )
+        context["reception_data"] = [stats["funny_score"] or 0, stats["dry_score"] or 0]
 
         # 5. Contribution Heatmap (Last ~1 year, aligned to weeks)
         context["heatmap_weeks"] = self._get_heatmap_weeks(user)
