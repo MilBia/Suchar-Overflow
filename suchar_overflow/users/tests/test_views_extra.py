@@ -279,3 +279,39 @@ def test_signup_creates_inactive_user(client):
     )
     user = User.objects.get(username="inactive_test")
     assert user.is_active is False
+
+
+# ---------------------------------------------------------------------------
+# Consolidated form partial (snippets/form_field.html) rendering
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_password_change_form_uses_shared_error_bubble_styling(client):
+    user = make_user("pwchange_user", password="OriginalPass123")  # noqa: S106
+    client.force_login(user)
+
+    response = client.post(
+        reverse("password_change"),
+        {
+            "old_password": "wrong-password",
+            "new_password1": "NewSecretPass123",
+            "new_password2": "NewSecretPass123",
+        },
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert "error-bubble" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_user_update_form_uses_shared_field_partial(client):
+    user = make_user("form_field_user")
+    client.force_login(user)
+
+    response = client.get(reverse("users:update"))
+
+    assert response.status_code == HTTPStatus.OK
+    content = response.content.decode()
+    assert "error-bubble-container" not in content
+    assert 'class="form-label"' in content
