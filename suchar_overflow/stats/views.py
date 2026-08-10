@@ -133,29 +133,46 @@ class LeaderboardView(View):
 
         suchary = Suchar.objects.select_related("author").prefetch_related("tags")
 
-        # Every card variant (overall/funny/dry) needs all three score fields —
-        # the "overall" card shows a funny/dry breakdown alongside its primary metric.
-        author_annotations = {
-            "total_score": Count("suchary__votes"),
-            "funny_score": Count(
-                "suchary__votes",
-                filter=Q(suchary__votes__is_funny=True),
-            ),
-            "dry_score": Count("suchary__votes", filter=Q(suchary__votes__is_dry=True)),
-            "suchar_count": Count("suchary", distinct=True),
-        }
-        top_authors_overall = _top_n(User.objects, author_annotations, "total_score")
-        top_authors_funny = _top_n(User.objects, author_annotations, "funny_score")
-        top_authors_dry = _top_n(User.objects, author_annotations, "dry_score")
+        # Each tab's card only ever renders the fields it annotates here — the
+        # "overall" card is the only one showing a funny/dry breakdown
+        # alongside its primary metric, so only its queryset needs all three.
+        suchar_count = Count("suchary", distinct=True)
+        total_score = Count("suchary__votes")
+        funny_score = Count("suchary__votes", filter=Q(suchary__votes__is_funny=True))
+        dry_score = Count("suchary__votes", filter=Q(suchary__votes__is_dry=True))
 
-        suchar_annotations = {
-            "score": Count("votes"),
-            "funny_count": Count("votes", filter=Q(votes__is_funny=True)),
-            "dry_count": Count("votes", filter=Q(votes__is_dry=True)),
-        }
-        top_suchars_overall = _top_n(suchary, suchar_annotations, "score")
-        top_suchars_funny = _top_n(suchary, suchar_annotations, "funny_count")
-        top_suchars_dry = _top_n(suchary, suchar_annotations, "dry_count")
+        top_authors_overall = _top_n(
+            User.objects,
+            {
+                "total_score": total_score,
+                "funny_score": funny_score,
+                "dry_score": dry_score,
+                "suchar_count": suchar_count,
+            },
+            "total_score",
+        )
+        top_authors_funny = _top_n(
+            User.objects,
+            {"funny_score": funny_score, "suchar_count": suchar_count},
+            "funny_score",
+        )
+        top_authors_dry = _top_n(
+            User.objects,
+            {"dry_score": dry_score, "suchar_count": suchar_count},
+            "dry_score",
+        )
+
+        score = Count("votes")
+        funny_count = Count("votes", filter=Q(votes__is_funny=True))
+        dry_count = Count("votes", filter=Q(votes__is_dry=True))
+
+        top_suchars_overall = _top_n(
+            suchary,
+            {"score": score, "funny_count": funny_count, "dry_count": dry_count},
+            "score",
+        )
+        top_suchars_funny = _top_n(suchary, {"funny_count": funny_count}, "funny_count")
+        top_suchars_dry = _top_n(suchary, {"dry_count": dry_count}, "dry_count")
 
         chart_datasets = {
             "7": get_daily_activity_data(start_of_today, now, 7),

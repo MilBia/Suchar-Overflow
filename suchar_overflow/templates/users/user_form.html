@@ -29,14 +29,7 @@
             method="post"
             action="{% url 'users:update' %}">
         {% csrf_token %}
-        {% if form.non_field_errors %}
-          <div class="alert alert-danger">
-            {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
-          </div>
-        {% endif %}
-        {% for field in form %}
-          {% include "snippets/form_field.html" with field=field %}
-        {% endfor %}
+        {% include "snippets/form_body.html" %}
         <div class="mt-4 d-flex justify-content-end gap-2">
           <a href="{% url 'users:detail' request.user.username %}"
              class="btn btn-secondary">{% trans "Cancel" %}</a>

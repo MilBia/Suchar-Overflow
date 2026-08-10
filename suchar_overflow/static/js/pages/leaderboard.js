@@ -1,5 +1,21 @@
 /* Leaderboard: activity chart + sliding tab/timeframe indicators */
 
+// Shared by the timeframe and tab sliding indicators below: positions
+// `slider` over `btn`, relative to `container`, optionally without a
+// transition (used for the initial, unanimated placement).
+function positionSliderOverButton(slider, container, btn, animate) {
+    if (!animate) slider.style.transition = 'none';
+    const containerRect = container.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
+    slider.style.left = (btnRect.left - containerRect.left) + 'px';
+    slider.style.top = (btnRect.top - containerRect.top) + 'px';
+    slider.style.width = btnRect.width + 'px';
+    slider.style.height = btnRect.height + 'px';
+    if (!animate) requestAnimationFrame(() => {
+        slider.style.transition = '';
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const activityCanvas = document.getElementById('activityChart');
     if (!activityCanvas) return;
@@ -59,22 +75,9 @@ document.addEventListener('DOMContentLoaded', function() {
         slider.setAttribute('aria-hidden', 'true');
         timeframeSelector.appendChild(slider);
 
-        function positionTimeframeSlider(btn, animate) {
-            if (!animate) slider.style.transition = 'none';
-            const containerRect = timeframeSelector.getBoundingClientRect();
-            const btnRect = btn.getBoundingClientRect();
-            slider.style.left = (btnRect.left - containerRect.left) + 'px';
-            slider.style.top = (btnRect.top - containerRect.top) + 'px';
-            slider.style.width = btnRect.width + 'px';
-            slider.style.height = btnRect.height + 'px';
-            if (!animate) requestAnimationFrame(() => {
-                slider.style.transition = '';
-            });
-        }
-
         const initialActive = timeframeSelector.querySelector('button.active');
         if (initialActive) {
-            setTimeout(() => positionTimeframeSlider(initialActive, false), 50);
+            setTimeout(() => positionSliderOverButton(slider, timeframeSelector, initialActive, false), 50);
         }
 
         // Bind timeframe buttons
@@ -91,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 chart.data.datasets[0].data = datasets[timeframe].values;
                 chart.update();
 
-                positionTimeframeSlider(this, true);
+                positionSliderOverButton(slider, timeframeSelector, this, true);
             });
         });
 
@@ -99,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('resize', () => {
             const activeBtn = timeframeSelector.querySelector('button.active');
             if (activeBtn) {
-                positionTimeframeSlider(activeBtn, false);
+                positionSliderOverButton(slider, timeframeSelector, activeBtn, false);
             }
         });
     }
@@ -117,34 +120,25 @@ document.addEventListener('DOMContentLoaded', function() {
         slider.setAttribute('aria-hidden', 'true');
         tabList.appendChild(slider);
 
-        function positionSlider(btn, animate) {
-            if (!animate) slider.style.transition = 'none';
-            const containerRect = tabList.getBoundingClientRect();
-            const btnRect = btn.getBoundingClientRect();
-            slider.style.left = (btnRect.left - containerRect.left) + 'px';
-            slider.style.top = (btnRect.top - containerRect.top) + 'px';
-            slider.style.width = btnRect.width + 'px';
-            slider.style.height = btnRect.height + 'px';
+        function positionTabSlider(btn, animate) {
+            positionSliderOverButton(slider, tabList, btn, animate);
             tabList.dataset.activeTab = tabColorMap[btn.id] || 'overall';
-            if (!animate) requestAnimationFrame(() => {
-                slider.style.transition = '';
-            });
         }
 
         const initialActive = tabList.querySelector('.nav-link.active');
         if (initialActive) {
-            setTimeout(() => positionSlider(initialActive, false), 50);
+            setTimeout(() => positionTabSlider(initialActive, false), 50);
         }
 
         tabList.querySelectorAll('[data-toggle="tab"]').forEach(btn => {
-            btn.addEventListener('click', () => positionSlider(btn, true));
+            btn.addEventListener('click', () => positionTabSlider(btn, true));
         });
 
         // Reposition tabs on window resize
         window.addEventListener('resize', () => {
             const activeBtn = tabList.querySelector('.nav-link.active');
             if (activeBtn) {
-                positionSlider(activeBtn, false);
+                positionTabSlider(activeBtn, false);
             }
         });
     }
