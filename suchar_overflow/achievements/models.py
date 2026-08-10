@@ -27,7 +27,7 @@ class Achievement(models.Model):
         FRONTEND_EVENT = "FRONTEND_EVENT", _("Frontend Event")
 
     class Tier(models.IntegerChoices):
-        NONE = 0, _("None")
+        NONE = 0, _("Common")
         BRONZE = 1, _("Bronze")
         SILVER = 2, _("Silver")
         GOLD = 3, _("Gold")

@@ -2,18 +2,7 @@
 
 <div class="col-lg-6">
   <div class="card shadow-lg border-0 h-100">
-    <div class="card-header {{ header_class }} py-3 border-0">
-      <div class="d-flex align-items-center gap-2">
-        <div class="header-icon-wrapper {{ header_text_class }} {{ icon_wrapper_class }}">
-          {% if icon_svg %}
-            {% include icon_svg %}
-          {% else %}
-            {{ icon_emoji }}
-          {% endif %}
-        </div>
-        <h4 class="mb-0 fw-bold {{ header_text_class }}">{{ title }}</h4>
-      </div>
-    </div>
+    {% include "stats/_leaderboard_card_header.html" %}
     <div class="list-group list-group-flush">
       {% for author in authors %}
         <div class="list-group-item p-3 border-0 border-bottom">
@@ -34,7 +23,7 @@
                 </small>
               {% elif badge_mode == "funny" %}
                 <span class="badge bg-warning text-dark border border-warning border-opacity-25 fw-bold mb-1">{{ author.funny_score }} {% trans "Funny" %}</span>
-              {% else %}
+              {% elif badge_mode == "dry" %}
                 <span class="badge bg-info text-white border border-info border-opacity-25 fw-bold mb-1">{{ author.dry_score }} {% trans "Dry" %}</span>
               {% endif %}
             </div>

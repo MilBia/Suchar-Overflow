@@ -1,0 +1,12 @@
+<div class="card-header {{ header_class }} py-3 border-0">
+  <div class="d-flex align-items-center gap-2">
+    <div class="header-icon-wrapper {{ header_text_class }} {{ icon_wrapper_class }}">
+      {% if icon_svg %}
+        {% include icon_svg %}
+      {% else %}
+        {{ icon_emoji }}
+      {% endif %}
+    </div>
+    <h4 class="mb-0 fw-bold {{ header_text_class }}">{{ title }}</h4>
+  </div>
+</div>

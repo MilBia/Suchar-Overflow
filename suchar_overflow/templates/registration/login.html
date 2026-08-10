@@ -12,14 +12,7 @@
       <h1>{% translate "Sign In" %}</h1>
       <form class="login" method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        {% if form.non_field_errors %}
-          <div class="alert alert-danger">
-            {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
-          </div>
-        {% endif %}
-        {% for field in form %}
-          {% include "snippets/form_field.html" with field=field %}
-        {% endfor %}
+        {% include "snippets/form_body.html" %}
         <button class="primaryAction btn btn-primary w-100 mt-3" type="submit">{% translate "Sign In" %}</button>
       </form>
       <p class="mt-3">
