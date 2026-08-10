@@ -1,4 +1,8 @@
-/* Leaderboard Ranks */
+/* Leaderboard Ranks. `!important` is load-bearing: templates combine these
+   with `.text-dark`/`.text-muted` (utilities.css), which set `color` with
+   `!important` themselves — same specificity, so without `!important` here
+   the rank color would lose to whichever text-color utility is also on the
+   element. */
 .rank-1 {
     color: #fbbf24 !important;
     /* Amber-400 */
@@ -43,25 +47,6 @@
     background: linear-gradient(135deg, var(--color-dry) 0%, #0284c7 100%);
     /* Sky Blue to Blue */
     color: white;
-}
-
-/* Avatar Rank Borders */
-.avatar-rank-1 {
-    border: 4px solid #fbbf24 !important;
-    /* Amber-400 */
-    box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
-}
-
-.avatar-rank-2 {
-    border: 4px solid #9ca3af !important;
-    /* Gray-400 */
-    box-shadow: 0 0 8px rgba(156, 163, 175, 0.4);
-}
-
-.avatar-rank-3 {
-    border: 4px solid #b45309 !important;
-    /* Amber-700 */
-    box-shadow: 0 0 8px rgba(180, 83, 9, 0.3);
 }
 
 /* Consistent Header Icons */
@@ -167,8 +152,8 @@
 
 /* Active tab — slider provides the background, button just needs white text */
 #leaderboardTabs .nav-link.active {
-    color: #fff !important;
-    background-color: transparent !important;
+    color: #fff;
+    background-color: transparent;
 }
 
 /* Tab Colors (applied to the slider via JS data attributes) */
@@ -217,7 +202,7 @@
 }
 
 .chart-timeframe-selector .btn {
-    border-radius: 30px !important;
+    border-radius: 30px;
     border: none;
     color: var(--text-muted);
     font-weight: 600;
@@ -234,8 +219,8 @@
 }
 
 .chart-timeframe-selector .btn.active {
-    background-color: transparent !important;
-    color: white !important;
+    background-color: transparent;
+    color: white;
     box-shadow: none;
 }
 
