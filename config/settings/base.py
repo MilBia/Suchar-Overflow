@@ -342,16 +342,11 @@ from django.utils.csp import CSP  # noqa: E402
 
 SECURE_CSP = {
     "default-src": [CSP.SELF],
-    "script-src": [CSP.SELF, "cdn.jsdelivr.net", CSP.NONCE],
-    "style-src": [
-        CSP.SELF,
-        CSP.UNSAFE_INLINE,
-        "cdn.jsdelivr.net",
-        "fonts.googleapis.com",
-    ],  # CSS custom properties + flatpickr CDN + Google Fonts
+    "script-src": [CSP.SELF, CSP.NONCE],
+    "style-src": [CSP.SELF, CSP.UNSAFE_INLINE],  # CSS custom properties
     "img-src": [CSP.SELF, "data:"],
     "connect-src": [CSP.SELF],  # covers the SSE endpoint
-    "font-src": [CSP.SELF, "fonts.gstatic.com"],  # Google Fonts files
+    "font-src": [CSP.SELF],
 }
 
 # Your stuff...

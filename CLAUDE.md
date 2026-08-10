@@ -177,10 +177,11 @@ duplicate/unwanted schedulers.
 Django 6.0's `django.middleware.csp.ContentSecurityPolicyMiddleware` is enabled in
 `MIDDLEWARE` (`config/settings/base.py`), configured via `SECURE_CSP` in the same file.
 `script-src` requires `CSP.NONCE` — inline `<script>` blocks need the nonce Django
-injects. `style-src` allows `unsafe-inline` for CSS custom properties. Both
-`script-src` and `style-src` also allowlist `cdn.jsdelivr.net`; `style-src` and
-`font-src` additionally allowlist Google Fonts (`fonts.googleapis.com`,
-`fonts.gstatic.com`).
+injects. `style-src` allows `unsafe-inline` for CSS custom properties. There is no
+third-party CDN allowlisted anywhere in `SECURE_CSP` — `chart.umd.min.js` and
+`flatpickr` are vendored under `static/js/`, and fonts (Inter, Fira Code) are
+self-hosted via `static/css/fonts.css`; none of them load from `cdn.jsdelivr.net` or
+Google Fonts.
 If you add inline `<script>` tags to a template, they must use the nonce or they will
 be blocked in browsers that enforce CSP.
 
