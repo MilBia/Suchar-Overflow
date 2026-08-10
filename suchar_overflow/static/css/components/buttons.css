@@ -43,7 +43,8 @@
 }
 
 /* Outline Button */
-.btn-outline {
+.btn-outline,
+.btn-outline-primary {
     background: transparent;
     border: 2px solid var(--color-primary);
     color: var(--color-primary);
@@ -51,7 +52,8 @@
     /* Adjust for border */
 }
 
-.btn-outline:hover {
+.btn-outline:hover,
+.btn-outline-primary:hover {
     background: var(--color-primary);
     color: white;
     box-shadow: 0 4px 12px hsla(var(--hue-primary), 80%, 50%, 0.2);
