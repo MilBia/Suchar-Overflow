@@ -18,16 +18,10 @@
 }
 
 .rank-col {
+    width: 40px;
+    min-width: 40px;
     font-feature-settings: "tnum";
     font-variant-numeric: tabular-nums;
-    min-width: 40px;
-}
-
-/* Royal Header (Indigo/Purple Gradient) */
-.card-header-royal {
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-    /* Indigo-500 to Purple-500 */
-    color: white;
 }
 
 /* Gold Header (Amber/Orange Gradient) - Overall */

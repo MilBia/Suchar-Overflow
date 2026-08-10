@@ -72,19 +72,6 @@ a:hover {
   padding-bottom: 3rem;
 }
 
-/* Auth Cards Override */
-.auth-card {
-  max-width: 450px;
-  margin: 3rem auto;
-  padding: 2rem;
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: var(--glass-border);
-  box-shadow: var(--shadow-lg);
-  border-radius: var(--radius-lg);
-}
-
 /* Tag Hover Effects */
 .badge {
   transition: all 0.2s ease;
@@ -129,10 +116,6 @@ button.badge:hover {
   line-height: 1;
 }
 
-.lang-select {
-  width: auto;
-}
-
 .form-max-width {
   max-width: 600px;
 }
@@ -149,10 +132,6 @@ button.badge:hover {
 .chart-container-lg {
   position: relative;
   height: 300px;
-}
-
-.rank-col {
-  width: 40px;
 }
 
 /* Custom Tooltip Styling */

@@ -26,19 +26,3 @@
     font-weight: 600;
     color: var(--text-main);
 }
-
-/* Auth Card - Inherits glass properties via project.css override,
-   but we can define base structural properties here */
-.auth-card {
-    /* Styles handled in project.css for glassmorphism override */
-}
-
-.auth-card .h3 {
-    text-align: center;
-    margin-bottom: var(--space-lg);
-    font-weight: 800;
-    background: var(--gradient-primary);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}

@@ -59,7 +59,3 @@
     justify-content: flex-end;
     gap: 0.5rem;
 }
-
-.btn-close {
-    filter: var(--icon-filter);
-}
