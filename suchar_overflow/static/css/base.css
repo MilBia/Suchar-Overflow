@@ -27,7 +27,7 @@
 @import 'components/heatmap.css';
 @import 'components/achievement-badge.css';
 @import 'components/footer.css';
-@import 'components/leaderboard.css';
 
 /* Pages */
+@import 'pages/leaderboard.css';
 @import 'pages/profile.css';
