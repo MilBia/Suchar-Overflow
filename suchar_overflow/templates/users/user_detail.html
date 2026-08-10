@@ -91,7 +91,7 @@
                   <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-xl-start">
                     {% for user_ach in object.user_achievements.all %}
                       <div class="achievement-container">
-                        <div class="achievement-icon-wrapper text-warning">{{ user_ach.achievement.icon_content|safe }}</div>
+                        <div class="achievement-badge-icon-wrapper text-warning">{{ user_ach.achievement.icon_content|safe }}</div>
 
                         <div class="achievement-details-popover">
                           <div class="achievement-details-icon text-warning">{{ user_ach.achievement.icon_content|safe }}</div>
