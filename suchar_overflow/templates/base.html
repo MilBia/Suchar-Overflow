@@ -250,11 +250,13 @@
     </footer>
 
     <!-- Toasts Container -->
-    {# Achievement notifications never go through django.contrib.messages —
-       they're a separate cache/SSE-driven flow (see achievements/api.py and
-       achievements/views.py:achievement_stream). If that ever changes, an
-       achievement-tagged message would double-surface here and in the bell
-       dropdown; give it a distinct tag/level to filter it out below. #}
+    {% comment %}
+    Achievement notifications never go through django.contrib.messages —
+    they're a separate cache/SSE-driven flow (see achievements/api.py and
+    achievements/views.py:achievement_stream). If that ever changes, an
+    achievement-tagged message would double-surface here and in the bell
+    dropdown; give it a distinct tag/level to filter it out below.
+    {% endcomment %}
     <div class="toast-container"
          id="toast-container"
          aria-live="assertive"
