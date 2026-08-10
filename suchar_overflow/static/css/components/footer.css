@@ -27,7 +27,7 @@
 }
 
 .footer-feedback-link:hover {
-    color: var(--color-accent, var(--text-primary));
+    color: var(--color-primary);
     opacity: 1;
     text-decoration: underline;
 }

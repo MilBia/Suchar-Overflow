@@ -41,13 +41,11 @@
 .col-lg-3,
 .col-lg-6,
 .col-lg-9,
-.col-md-5,
 .col-md-4,
 .col-md-6,
 .col-md-8,
 .col-12,
-.col-lg-8,
-.col-auto {
+.col-lg-8 {
     padding-inline: var(--space-md);
     position: relative;
     width: 100%;
@@ -55,11 +53,6 @@
 
 .col {
     flex: 1 0 0%;
-}
-
-.col-auto {
-    flex: 0 0 auto;
-    width: auto;
 }
 
 /* Grid Gaps */
@@ -96,11 +89,6 @@
     .col-md-4 {
         flex: 0 0 33.3333%;
         max-width: 33.3333%;
-    }
-
-    .col-md-5 {
-        flex: 0 0 41.6667%;
-        max-width: 41.6667%;
     }
 
     .col-md-6 {

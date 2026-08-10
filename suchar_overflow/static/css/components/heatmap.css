@@ -71,22 +71,6 @@
     display: inline-block;
 }
 
-/* Custom Tooltip Styling */
-.custom-tooltip .tooltip-inner {
-    background-color: var(--text-main);
-    color: var(--bg-surface);
-    box-shadow: var(--shadow-md);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-family: var(--font-sans);
-    font-size: 0.8rem;
-    border: 1px solid var(--border-color);
-}
-
-.custom-tooltip .tooltip-arrow::before {
-    border-top-color: var(--text-main);
-}
-
 /* Heatmap Legend Colors */
 .heatmap-bg-0 {
     background-color: var(--heatmap-level-0);
