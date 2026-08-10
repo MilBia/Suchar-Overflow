@@ -38,18 +38,10 @@
               <div class="achievement-tags mt-2">
                 {% if ach.theme %}<span class="badge theme-badge">{{ ach.theme }}</span>{% endif %}
                 <span class="badge tier-badge tier-color-{{ ach.tier }}">
-                  {% if ach.tier == 1 %}
-                    {% trans "Bronze" %}
-                  {% elif ach.tier == 2 %}
-                    {% trans "Silver" %}
-                  {% elif ach.tier == 3 %}
-                    {% trans "Gold" %}
-                  {% elif ach.tier == 4 %}
-                    {% trans "Platinum" %}
-                  {% elif ach.tier == 5 %}
-                    {% trans "Diamond" %}
-                  {% else %}
+                  {% if ach.tier == 0 %}
                     {% trans "Common" %}
+                  {% else %}
+                    {{ ach.get_tier_display }}
                   {% endif %}
                 </span>
               </div>
@@ -78,18 +70,10 @@
                 <div class="achievement-tags mt-2">
                   {% if ach.theme %}<span class="badge theme-badge">{{ ach.theme }}</span>{% endif %}
                   <span class="badge tier-badge tier-color-{{ ach.tier }}">
-                    {% if ach.tier == 1 %}
-                      {% trans "Bronze" %}
-                    {% elif ach.tier == 2 %}
-                      {% trans "Silver" %}
-                    {% elif ach.tier == 3 %}
-                      {% trans "Gold" %}
-                    {% elif ach.tier == 4 %}
-                      {% trans "Platinum" %}
-                    {% elif ach.tier == 5 %}
-                      {% trans "Diamond" %}
-                    {% else %}
+                    {% if ach.tier == 0 %}
                       {% trans "Common" %}
+                    {% else %}
+                      {{ ach.get_tier_display }}
                     {% endif %}
                   </span>
                 </div>
