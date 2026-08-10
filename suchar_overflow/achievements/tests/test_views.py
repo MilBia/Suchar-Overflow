@@ -68,6 +68,28 @@ async def test_achievement_list_shows_all_non_grouped_achievements(async_client)
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
+async def test_achievement_list_shows_tier_labels(async_client):
+    user = await sync_to_async(make_user)("user1")
+    await async_client.aforce_login(user)
+    await sync_to_async(make_achievement)(
+        "ach-gold",
+        name="Gold Achievement",
+        tier=Achievement.Tier.GOLD,
+    )
+    await sync_to_async(make_achievement)(
+        "ach-none",
+        name="Tierless Achievement",
+        tier=Achievement.Tier.NONE,
+    )
+
+    response = await async_client.get(reverse(ACHIEVEMENT_LIST_URL))
+    content = response.content.decode()
+    assert "Złoto" in content
+    assert "Pospolite" in content
+
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
 async def test_user_achievements_set_in_context(async_client):
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)

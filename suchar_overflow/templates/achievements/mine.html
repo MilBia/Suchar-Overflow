@@ -38,18 +38,10 @@
               <div class="achievement-tags mt-2">
                 {% if ua.achievement.theme %}<span class="badge theme-badge">{{ ua.achievement.theme }}</span>{% endif %}
                 <span class="badge tier-badge tier-color-{{ ua.achievement.tier }}">
-                  {% if ua.achievement.tier == 1 %}
-                    {% trans "Bronze" %}
-                  {% elif ua.achievement.tier == 2 %}
-                    {% trans "Silver" %}
-                  {% elif ua.achievement.tier == 3 %}
-                    {% trans "Gold" %}
-                  {% elif ua.achievement.tier == 4 %}
-                    {% trans "Platinum" %}
-                  {% elif ua.achievement.tier == 5 %}
-                    {% trans "Diamond" %}
-                  {% else %}
+                  {% if ua.achievement.tier == 0 %}
                     {% trans "Common" %}
+                  {% else %}
+                    {{ ua.achievement.get_tier_display }}
                   {% endif %}
                 </span>
               </div>

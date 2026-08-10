@@ -10,7 +10,7 @@ from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
 
 
-def make_achievement(slug, name="Achievement"):
+def make_achievement(slug, name="Achievement", tier=Achievement.Tier.NONE):
     ach, _ = Achievement.objects.get_or_create(
         slug=slug,
         defaults={
@@ -21,6 +21,7 @@ def make_achievement(slug, name="Achievement"):
             "event_type": Achievement.EventType.SUCHAR_POSTED,
             "metric": Achievement.Metric.COUNT_SUCHAR,
             "threshold": 99,  # high threshold so signals never auto-award it
+            "tier": tier,
         },
     )
     return ach
@@ -72,6 +73,18 @@ def test_mine_shows_users_achievements(client):
     ua_list = list(response.context["user_achievements"])
     assert len(ua_list) == 1
     assert ua_list[0].achievement == ach
+
+
+@pytest.mark.django_db
+def test_mine_shows_tier_label(client):
+    user = make_user("alice")
+    ach = make_achievement("gold-ach", "Gold Achievement", tier=Achievement.Tier.GOLD)
+    UserAchievement.objects.create(user=user, achievement=ach)
+
+    client.force_login(user)
+    response = client.get(reverse("achievements:mine"))
+
+    assert "Złoto" in response.content.decode()
 
 
 @pytest.mark.django_db
