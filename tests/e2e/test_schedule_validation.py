@@ -8,8 +8,8 @@ import pytest
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_past_date_shows_polish_error_message(page, live_server, login):
-    """Past scheduled date shows a Polish validation error on submit."""
+def test_past_date_shows_error_message(page, live_server, login):
+    """Past scheduled date shows the server-provided validation error on submit."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
 
@@ -35,7 +35,11 @@ def test_past_date_shows_polish_error_message(page, live_server, login):
 
     date_error = page.locator("#dateError")
     date_error.wait_for(state="visible")
-    assert "przeszłości" in date_error.inner_text()
+    # The message text comes from the data-error-text attribute rendered by
+    # Django ({% trans %}) — assert the JS actually used it, not a language.
+    expected_text = date_error.get_attribute("data-error-text")
+    assert expected_text
+    assert date_error.inner_text() == expected_text
 
 
 @pytest.mark.e2e

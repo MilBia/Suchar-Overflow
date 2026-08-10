@@ -171,7 +171,11 @@
                 {% if unseen_achievements_count > 0 %}
                   <span class="bell-badge" id="bell-badge">{{ unseen_achievements_count }}</span>
                 {% endif %}
-                <div class="bell-dropdown" id="bell-dropdown" hidden>
+                <div class="bell-dropdown"
+                     id="bell-dropdown"
+                     hidden
+                     data-new-achievements-text="{% trans 'New achievements' %}"
+                     data-no-achievements-text="{% trans 'No new achievements' %}">
                   {% if unseen_achievements_preview %}
                     <div class="bell-header">{% trans "New achievements" %}</div>
                     {% for ua in unseen_achievements_preview %}

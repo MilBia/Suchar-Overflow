@@ -81,7 +81,9 @@
                            placeholder="{% trans 'Select date and time...' %}"
                            value="{{ form.published_at.value|date:'Y-m-d H:i' }}" />
                   </div>
-                  <div class="invalid-feedback d-none" id="dateError"></div>
+                  <div class="invalid-feedback d-none"
+                       id="dateError"
+                       data-error-text="{% trans 'The publication date cannot be in the past.' %}"></div>
                 </div>
               </div>
             </div>
@@ -161,6 +163,6 @@
 
 {% block javascript %}
   {{ block.super }}
-  <script src="{% static 'js/flatpickr.min.js' %}"></script>
+  <script defer src="{% static 'js/flatpickr.min.js' %}"></script>
   <script defer src="{% static 'js/pages/suchar_form.js' %}"></script>
 {% endblock javascript %}

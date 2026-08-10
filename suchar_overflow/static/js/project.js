@@ -31,9 +31,6 @@ function getCurrentTheme() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-// Icon SVGs - No longer needed as we use CSS toggling, but kept for reference if needed or cleanup
-// ...
-
 // Initialize theme on load
 const currentTheme = getCurrentTheme();
 setTheme(currentTheme);
@@ -461,13 +458,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (child !== footer) child.remove();
         });
 
-        const lang = document.documentElement.lang || 'pl';
         const mineUrl = footer?.querySelector('a')?.href || '/achievements/mine/';
 
         if (achievements.length > 0) {
             const header = document.createElement('div');
             header.className = 'bell-header';
-            header.textContent = lang.startsWith('pl') ? 'Nowe osiągnięcia' : 'New achievements';
+            header.textContent = dropdown.dataset.newAchievementsText;
             dropdown.insertBefore(header, footer);
 
             achievements.forEach(ach => {
@@ -499,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             const empty = document.createElement('div');
             empty.className = 'bell-empty';
-            empty.textContent = lang.startsWith('pl') ? 'Brak nowych osiągnięć' : 'No new achievements';
+            empty.textContent = dropdown.dataset.noAchievementsText;
             dropdown.insertBefore(empty, footer);
         }
     }
