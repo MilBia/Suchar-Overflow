@@ -84,9 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 minDate: "today",
                 time_24hr: true,
                 disableMobile: true, // Force custom UI
-                onChange: function (selectedDates, dateStr, instance) {
-                    // Optional: Validate on change
-                }
             });
 
             // Handle Schedule Toggle
@@ -157,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const debouncedSearch = debounce(async (term) => {
                 const tags = await fetchTags(term);
                 if (tags && tags.length > 0) {
-                    suggestionsBox.innerHTML = '';
+                    suggestionsBox.replaceChildren();
                     tags.forEach(tag => {
                         const item = document.createElement('div');
                         // Use project standard class
@@ -183,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const val = e.target.value;
 
                 // Update Preview
-                previewTags.innerHTML = '';
+                previewTags.replaceChildren();
                 if (val.trim()) {
                     const tags = val.split(/[ ,]+/).filter(tag => tag.replace(/^#+/, '').trim() !== '');
                     tags.forEach(tag => {
@@ -232,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (dateError) {
                             dateError.classList.remove('d-none');
                             dateError.classList.add('d-block');
-                            dateError.textContent = "Data publikacji nie może być w przeszłości.";
+                            dateError.textContent = dateError.dataset.errorText;
                         }
                         publishedAtInput.classList.add('is-invalid');
                         return;

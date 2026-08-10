@@ -79,7 +79,7 @@
             {% if request.GET.tag %}
               <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
                 <span>#{{ request.GET.tag }}</span>
-                <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.author %}author={{ request.GET.author }}{% endif %}"
+                <a href="{% querystring tag=None page=None %}"
                    class="text-muted text-decoration-none fw-bold">×</a>
               </div>
             {% endif %}
@@ -87,7 +87,7 @@
             {% if request.GET.q %}
               <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
                 <span>{% trans "Search:" %} "{{ request.GET.q }}"</span>
-                <a href="?{% if request.GET.tag %}tag={{ request.GET.tag }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.author %}author={{ request.GET.author }}{% endif %}"
+                <a href="{% querystring q=None page=None %}"
                    class="text-muted text-decoration-none fw-bold">×</a>
               </div>
             {% endif %}
@@ -95,7 +95,7 @@
             {% if request.GET.author %}
               <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
                 <span>{% trans "Author:" %} {{ request.GET.author }}</span>
-                <a href="?{% if request.GET.tag %}tag={{ request.GET.tag }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.q %}q={{ request.GET.q }}{% endif %}"
+                <a href="{% querystring author=None page=None %}"
                    class="text-muted text-decoration-none fw-bold">×</a>
               </div>
             {% endif %}
@@ -112,7 +112,7 @@
                   <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
                   <div>
                     <h6 class="mb-0 fw-bold">
-                      <a href="?author={{ suchar.author.username }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}">{{ suchar.author.display_name }}</a>
+                      <a href="{% querystring author=suchar.author.username page=None %}">{{ suchar.author.display_name }}</a>
                       {% if not suchar.is_published %}
                         <span class="badge bg-warning text-dark ms-2">{% trans "Scheduled" %}</span>
                       {% endif %}
@@ -132,7 +132,7 @@
               {% if suchar.tags.all %}
                 <div class="mb-3">
                   {% for tag in suchar.tags.all %}
-                    <a href="?tag={{ tag.slug }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}"
+                    <a href="{% querystring tag=tag.slug page=None %}"
                        class="badge text-secondary border me-1 text-decoration-none bg-light">#{{ tag.name }}</a>
                   {% endfor %}
                 </div>
@@ -185,7 +185,7 @@
             {% if page_obj.has_previous %}
               <li class="page-item">
                 <a class="page-link"
-                   href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}">{% trans "Previous" %}</a>
+                   href="{% querystring page=page_obj.previous_page_number %}">{% trans "Previous" %}</a>
               </li>
             {% else %}
               <li class="page-item disabled">
@@ -199,17 +199,14 @@
                 </li>
               {% else %}
                 <li class="page-item">
-                  <a class="page-link"
-                     href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}">
-                    {{ i }}
-                  </a>
+                  <a class="page-link" href="{% querystring page=i %}">{{ i }}</a>
                 </li>
               {% endif %}
             {% endfor %}
             {% if page_obj.has_next %}
               <li class="page-item">
                 <a class="page-link"
-                   href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.tag %}&tag={{ request.GET.tag }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}">{% trans "Next" %}</a>
+                   href="{% querystring page=page_obj.next_page_number %}">{% trans "Next" %}</a>
               </li>
             {% else %}
               <li class="page-item disabled">

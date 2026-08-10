@@ -149,3 +149,30 @@ def test_pagination_preserves_params(client, django_user_model):
     assert "sort=top" in content
     assert "tag=it" in content
     assert "author=author" in content
+
+
+@pytest.mark.django_db
+def test_search_query_with_special_chars_is_urlencoded_in_links(
+    client,
+    django_user_model,
+):
+    user = django_user_model.objects.create_user(
+        username="author2",
+        email="author2@example.com",
+        password="password",  # noqa: S106
+    )
+    tag_it = Tag.objects.create(name="IT2", slug="it2")
+    for i in range(15):
+        s = Suchar.objects.create(text=f"Fish & Chips {i}", author=user)
+        s.tags.add(tag_it)
+
+    url = reverse("suchary:list")
+    response = client.get(url, {"q": "Fish & Chips", "tag": "it2"})
+
+    assert response.status_code == HTTPStatus.OK
+    content = response.content.decode()
+
+    # An unescaped "&" inside a query-string value would be parsed as the
+    # start of a new parameter, breaking the pagination/filter-removal links.
+    assert "q=Fish & Chips" not in content
+    assert "%26" in content
