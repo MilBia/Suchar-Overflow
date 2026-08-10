@@ -1,4 +1,5 @@
 from asgiref.sync import sync_to_async
+from django.contrib import messages
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator
 from django.db.models import Count
@@ -10,6 +11,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.translation import gettext
 from django.views import View
 
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
@@ -120,6 +122,7 @@ class SucharCreateView(AsyncLoginRequiredMixin, View):
             form.save_m2m()
 
         await sync_to_async(_save)()
+        messages.success(request, gettext("Your suchar has been posted."))
         return redirect(self.success_url)
 
 
@@ -170,4 +173,5 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin, View):
                 {"form": form},
             )
         await sync_to_async(form.save)()
+        messages.success(request, gettext("Your suchar has been updated."))
         return redirect(self.success_url)

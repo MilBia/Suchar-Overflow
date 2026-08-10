@@ -1,8 +1,10 @@
 import asyncio
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import redirect
+from django.utils.translation import gettext
 from django.views.generic import View
 
 
@@ -38,5 +40,6 @@ class AsyncUserPassesTestMixin(UserPassesTestMixin):
         if callable(getattr(request, "auser", None)):
             request.user = await request.auser()
         if not await self.test_func():
+            messages.error(request, gettext("You don't have permission to do that."))
             return redirect(self.get_login_url())
         return await View.dispatch(self, request, *args, **kwargs)

@@ -253,23 +253,21 @@
          aria-atomic="false">
       {% if messages %}
         {% for message in messages %}
-          {% if "Achievement" not in message.message %}
-            <div class="toast toast-{{ message.tags }}" role="alert">
-              <div class="toast-header">
-                <strong class="me-auto">
-                  {% if 'error' in message.tags %}
-                    {% trans "Error" %}
-                  {% elif 'success' in message.tags %}
-                    {% trans "Success" %}
-                  {% else %}
-                    {% trans "Notification" %}
-                  {% endif %}
-                </strong>
-                <button type="button" class="btn-close" aria-label="Close"></button>
-              </div>
-              <div class="toast-body">{{ message }}</div>
+          <div class="toast toast-{{ message.tags }}" role="alert">
+            <div class="toast-header">
+              <strong class="me-auto">
+                {% if 'error' in message.tags %}
+                  {% trans "Error" %}
+                {% elif 'success' in message.tags %}
+                  {% trans "Success" %}
+                {% else %}
+                  {% trans "Notification" %}
+                {% endif %}
+              </strong>
+              <button type="button" class="btn-close" aria-label="Close"></button>
             </div>
-          {% endif %}
+            <div class="toast-body">{{ message }}</div>
+          </div>
         {% endfor %}
       {% endif %}
     </div>
