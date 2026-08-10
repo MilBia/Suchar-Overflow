@@ -27,7 +27,7 @@
     z-index: 100;
 }
 
-.achievement-icon-wrapper {
+.achievement-badge-icon-wrapper {
     width: 44px;
     height: 44px;
     display: flex;
@@ -42,7 +42,7 @@
 }
 
 /* Hover Effect: Scale Icon */
-.achievement-container:hover .achievement-icon-wrapper {
+.achievement-container:hover .achievement-badge-icon-wrapper {
     transform: scale(1.25);
     background: rgba(255, 193, 7, 0.2);
     box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
