@@ -3,6 +3,7 @@ from http import HTTPStatus
 import pytest
 from asgiref.sync import sync_to_async
 from django.urls import reverse
+from django.utils.translation import gettext
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
@@ -84,8 +85,8 @@ async def test_achievement_list_shows_tier_labels(async_client):
 
     response = await async_client.get(reverse(ACHIEVEMENT_LIST_URL))
     content = response.content.decode()
-    assert "Złoto" in content
-    assert "Pospolite" in content
+    assert str(Achievement.Tier.GOLD.label) in content
+    assert gettext("Common") in content
 
 
 @pytest.mark.anyio

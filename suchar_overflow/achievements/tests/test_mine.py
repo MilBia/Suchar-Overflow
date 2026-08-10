@@ -84,7 +84,7 @@ def test_mine_shows_tier_label(client):
     client.force_login(user)
     response = client.get(reverse("achievements:mine"))
 
-    assert "Złoto" in response.content.decode()
+    assert str(Achievement.Tier.GOLD.label) in response.content.decode()
 
 
 @pytest.mark.django_db
