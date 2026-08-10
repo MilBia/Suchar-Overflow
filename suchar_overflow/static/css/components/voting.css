@@ -27,9 +27,9 @@
 
 /* Inactive hover: light tint preview */
 .btn-vote[data-vote-type="funny"]:not(.active):hover {
-    color: #E58E26;
-    background-color: rgba(229, 142, 38, 0.12);
-    border-color: #E58E26;
+    color: var(--color-funny);
+    background-color: rgba(var(--color-funny-rgb), 0.12);
+    border-color: var(--color-funny);
     transform: scale(1.05);
     z-index: 10;
 }
@@ -37,41 +37,41 @@
 /* Active: solid fill — you've voted (WCAG 1.4.1: ring + bold) */
 .btn-vote[data-vote-type="funny"].active {
     color: #fff;
-    background-color: #E58E26;
-    border-color: #E58E26;
+    background-color: var(--color-funny);
+    border-color: var(--color-funny);
     font-weight: 700;
-    box-shadow: 0 0 0 3px #E58E26, 0 2px 4px rgba(229, 142, 38, 0.4);
+    box-shadow: 0 0 0 3px var(--color-funny), 0 2px 4px rgba(var(--color-funny-rgb), 0.4);
 }
 
 /* Active + hover: dimmed → "click to undo" signal */
 .btn-vote[data-vote-type="funny"].active:hover {
-    background-color: rgba(229, 142, 38, 0.6);
-    border-color: rgba(229, 142, 38, 0.6);
-    box-shadow: 0 0 0 3px rgba(229, 142, 38, 0.35);
+    background-color: rgba(var(--color-funny-rgb), 0.6);
+    border-color: rgba(var(--color-funny-rgb), 0.6);
+    box-shadow: 0 0 0 3px rgba(var(--color-funny-rgb), 0.35);
 }
 
 /* ---- Dry (cyan) ---- */
 
 .btn-vote[data-vote-type="dry"]:not(.active):hover {
-    color: #0ea5e9;
-    background-color: rgba(14, 165, 233, 0.12);
-    border-color: #0ea5e9;
+    color: var(--color-dry);
+    background-color: rgba(var(--color-dry-rgb), 0.12);
+    border-color: var(--color-dry);
     transform: scale(1.05);
     z-index: 10;
 }
 
 .btn-vote[data-vote-type="dry"].active {
     color: #fff;
-    background-color: #0ea5e9;
-    border-color: #0ea5e9;
+    background-color: var(--color-dry);
+    border-color: var(--color-dry);
     font-weight: 700;
-    box-shadow: 0 0 0 3px #0ea5e9, 0 2px 4px rgba(14, 165, 233, 0.4);
+    box-shadow: 0 0 0 3px var(--color-dry), 0 2px 4px rgba(var(--color-dry-rgb), 0.4);
 }
 
 .btn-vote[data-vote-type="dry"].active:hover {
-    background-color: rgba(14, 165, 233, 0.6);
-    border-color: rgba(14, 165, 233, 0.6);
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.35);
+    background-color: rgba(var(--color-dry-rgb), 0.6);
+    border-color: rgba(var(--color-dry-rgb), 0.6);
+    box-shadow: 0 0 0 3px rgba(var(--color-dry-rgb), 0.35);
 }
 
 /* ---- Anonymous tooltip ---- */

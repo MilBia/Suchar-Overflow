@@ -52,6 +52,12 @@
     --bs-warning: hsl(var(--hue-warning), 80%, 60%);
     --bs-success: hsl(var(--hue-success), 80%, 45%);
 
+    /* Vote Colors (Funny/Dry) */
+    --color-funny: #E58E26;
+    --color-funny-rgb: 229, 142, 38;
+    --color-dry: #0ea5e9;
+    --color-dry-rgb: 14, 165, 233;
+
     /* Accents (Gradients) */
     --gradient-primary: linear-gradient(135deg, hsl(var(--hue-primary), 90%, 65%), hsl(var(--hue-primary), 80%, 55%));
     --gradient-brand: linear-gradient(135deg, hsl(var(--hue-primary), 90%, 60%), hsl(var(--hue-secondary), 80%, 60%));

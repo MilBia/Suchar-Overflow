@@ -45,27 +45,6 @@ body::before {
     radial-gradient(circle at 85% 85%, hsla(var(--hue-secondary), 80%, 60%, 0.08) 0%, transparent 35%);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--text-main);
-}
-
-a {
-  text-decoration: none;
-  transition: all 0.2s ease;
-  color: var(--color-primary);
-}
-
-a:hover {
-  filter: brightness(1.1);
-}
-
 /* Main Content Wrapper */
 .main-wrapper {
   flex: 1;

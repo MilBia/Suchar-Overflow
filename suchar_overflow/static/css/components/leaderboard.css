@@ -33,14 +33,14 @@
 
 /* Funny Header (Orange/Red Gradient) */
 .card-header-funny {
-    background: linear-gradient(135deg, #E58E26 0%, #c2410c 100%);
+    background: linear-gradient(135deg, var(--color-funny) 0%, #c2410c 100%);
     /* Orange to Red-Orange */
     color: white;
 }
 
 /* Dry Header (Cyan/Blue Gradient) */
 .card-header-dry {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    background: linear-gradient(135deg, var(--color-dry) 0%, #0284c7 100%);
     /* Sky Blue to Blue */
     color: white;
 }
@@ -173,8 +173,8 @@
 
 /* Tab Colors (applied to the slider via JS data attributes) */
 #leaderboardTabs[data-active-tab="overall"] .leaderboard-tab-slider { background-color: #f59e0b; }
-#leaderboardTabs[data-active-tab="funny"]   .leaderboard-tab-slider { background-color: #E58E26; }
-#leaderboardTabs[data-active-tab="dry"]     .leaderboard-tab-slider { background-color: #0ea5e9; }
+#leaderboardTabs[data-active-tab="funny"]   .leaderboard-tab-slider { background-color: var(--color-funny); }
+#leaderboardTabs[data-active-tab="dry"]     .leaderboard-tab-slider { background-color: var(--color-dry); }
 
 /* Tab Animations & Visibility Fixes */
 .tab-content>.tab-pane {
