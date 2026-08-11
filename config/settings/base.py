@@ -98,8 +98,8 @@ DATABASES = {"default": env.db("DATABASE_URL")}
 DATABASES["default"]["CONN_MAX_AGE"] = 60
 # ATOMIC_REQUESTS is disabled: async views are incompatible with it.
 # Views that need transactions use transaction.atomic() / transaction.aatomic() explicitly.
-# https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# DEFAULT_AUTO_FIELD is not set explicitly: Django 6.0's default is already
+# "django.db.models.BigAutoField".
 
 # URLS
 # ------------------------------------------------------------------------------
@@ -118,7 +118,6 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.forms",
 ]
@@ -132,7 +131,6 @@ LOCAL_APPS = [
     "suchar_overflow.suchary",
     "suchar_overflow.stats",
     "suchar_overflow.achievements",
-    # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 # modeltranslation must precede django.contrib.admin
@@ -295,7 +293,7 @@ EMAIL_TIMEOUT = 5
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""Miłosz Białczak""", "miłosz-białczak@example.com")]
+ADMINS = ["miłosz-białczak@example.com"]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
@@ -348,9 +346,6 @@ SECURE_CSP = {
     "connect-src": [CSP.SELF],  # covers the SSE endpoint
     "font-src": [CSP.SELF],
 }
-
-# Your stuff...
-# ------------------------------------------------------------------------------
 
 # FEEDBACK
 # ------------------------------------------------------------------------------

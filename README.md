@@ -183,6 +183,8 @@ cp .envs/.production/.postgres.example .envs/.production/.postgres
 
 Edytuj `compose/production/traefik/traefik.yml` – zamień `example.com` na swoją domenę
 w sekcjach `rule: 'Host(...)'` oraz podaj poprawny email do certyfikatów Let's Encrypt.
+Ten plik, w przeciwieństwie do reszty konfiguracji, nie czyta zmiennych środowiskowych –
+zmiany trzeba wprowadzić ręcznie bezpośrednio w pliku.
 
 ### 3. Zbuduj i uruchom
 

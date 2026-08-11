@@ -34,6 +34,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync
 
 # devcontainer dependencies and utils
+# Installed unconditionally (not gated on VS Code Devcontainers use) because this
+# Dockerfile is shared between plain `docker compose` local dev and the devcontainer —
+# splitting it into two images isn't worth the added maintenance for a local-only image.
 RUN apt-get update && apt-get install --no-install-recommends -y \
   sudo git bash-completion nano ssh
 

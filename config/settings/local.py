@@ -13,7 +13,8 @@ SECRET_KEY = env(
     default="cyK4VvpwGM7EpstJLbiTOtPh2On3tyUNs9p331Yo38OPkiBqgiLCeLnjaNT5VPUi",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "*"]  # noqa: S104
+# Wildcard is fine for local dev only; the other entries were redundant.
+ALLOWED_HOSTS = ["*"]
 
 # CACHES
 # ------------------------------------------------------------------------------
@@ -48,8 +49,9 @@ MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 DEBUG_TOOLBAR_CONFIG = {
     "DISABLE_PANELS": [
         "debug_toolbar.panels.redirects.RedirectsPanel",
-        # Disable profiling panel due to an issue with Python 3.12+:
-        # https://github.com/jazzband/django-debug-toolbar/issues/1875
+        # Disable profiling panel due to an issue with Python 3.12+ (still open
+        # as of 2026-08-11, now tracked under django-commons):
+        # https://github.com/django-commons/django-debug-toolbar/issues/1875
         "debug_toolbar.panels.profiling.ProfilingPanel",
     ],
     "SHOW_TEMPLATE_CONTEXT": True,
@@ -70,6 +72,3 @@ INSTALLED_APPS += ["django_extensions"]
 # COMPRESSOR
 # ------------------------------------------------------------------------------
 COMPRESS_ENABLED = False
-
-# Your stuff...
-# ------------------------------------------------------------------------------
