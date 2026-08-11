@@ -285,8 +285,21 @@
     color: var(--text-main) !important;
 }
 
+/* .text-dark is theme-relative (var(--text-main), near-white in dark mode),
+   but .bg-warning is a fixed-hue background in both themes — pairing them
+   would render near-invisible text in dark mode. Force an explicit,
+   theme-independent dark color whenever both are combined (the "F" count
+   badges, "Scheduled" badge, etc). */
+.bg-warning.text-dark {
+    color: hsl(var(--hue-neutral), 60%, 15%) !important;
+}
+
 .text-warning-emphasis {
     color: hsl(var(--hue-warning), 80%, 35%) !important;
+}
+
+[data-theme='dark'] .text-warning-emphasis {
+    color: hsl(var(--hue-warning), 80%, 75%) !important;
 }
 
 .bg-light {
