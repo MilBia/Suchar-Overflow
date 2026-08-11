@@ -150,7 +150,6 @@ dev = [
     "ipdb==0.13.13",
     "mypy==1.19.1",
     "pre-commit==4.6.0",
-    "psycopg[c]==3.3.4",
     "pytest==9.1.1",
     "pytest-django==4.12.0",
     "pytest-playwright==0.8.0",
@@ -186,6 +185,9 @@ dependencies = [
     "rcssmin==1.1.2",
     "rjsmin==1.2.2",
     "redis==5.2.1",
+    # Open ranges below are intentional, not pinning drift: each package ships
+    # frequent patch/minor releases we want automatically, and none has broken
+    # our usage across a minor bump so far.
     "openai>=2.44.0",
     "polib>=1.2.0",
     "django-modeltranslation>=0.20.3",

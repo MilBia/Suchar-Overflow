@@ -5,6 +5,7 @@
         "../docker-compose.local.yml"
     ],
     "init": true,
+    "initializeCommand": "touch ${localWorkspaceFolder}/.devcontainer/bash_history || type nul > ${localWorkspaceFolder}/.devcontainer/bash_history",
     "mounts": [
         {
             "source": "./.devcontainer/bash_history",
