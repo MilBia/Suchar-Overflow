@@ -71,11 +71,11 @@ jobs:
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
 
       - name: Run Django Tests
-        run: docker compose -f docker-compose.local.yml run django pytest -vv -m "not e2e" --junitxml=root_junit.xml
+        run: docker compose -f docker-compose.local.yml run --rm django pytest -vv -m "not e2e" --junitxml=root_junit.xml
 
       - name: Run E2E Tests
         run: |
-          docker compose -f docker-compose.local.yml run django pytest -vv \
+          docker compose -f docker-compose.local.yml run --rm django pytest -vv \
             --override-ini="addopts=--ds=config.settings.e2e --import-mode=importlib" \
             -m e2e \
             tests/e2e/ \
