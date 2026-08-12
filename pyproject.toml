@@ -155,7 +155,6 @@ dev = [
     "pytest-playwright==0.8.0",
     "pytest-sugar==1.1.1",
     "ruff==0.15.20",
-    "werkzeug[watchdog]==3.1.8",
 ]
 
 [project]
@@ -176,7 +175,6 @@ dependencies = [
     "django-redis==6.0.0",
     "gunicorn==26.0.0",
     "hiredis==3.4.0",
-    "pillow==12.2.0",
     "psycopg[c]==3.3.4",
     "python-slugify==8.0.4",
     "whitenoise==6.12.0",
