@@ -256,7 +256,7 @@ msgstr "Фронтенд"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
-msgstr "Broj <0>"
+msgstr "Број Suchar-a"
 
 #: suchar_overflow/achievements/models.py:20
 msgid "Funny Vote Count"
