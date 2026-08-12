@@ -281,6 +281,17 @@ logic, you **must** write tests for it in the same PR/commit. Tests go in the `t
 directory of the relevant app (e.g. `suchar_overflow/achievements/tests/`). Follow the
 existing patterns in those files.
 
+## Planning artifacts (`docs/superpowers/`)
+
+Plans and specs written via `superpowers:writing-plans` / `superpowers:brainstorming`
+live in `docs/superpowers/plans/` and `docs/superpowers/specs/`. Once the work they
+describe is merged to `main` and its outcome is documented elsewhere (this file, code
+comments, or the PR itself), delete the plan/spec file(s) — as part of that PR or a
+small follow-up. Don't keep them around as historical artifacts; they go stale and
+duplicate what's already documented. Git doesn't track empty directories, so
+`docs/superpowers/` may simply be absent from the tree between planning sessions —
+that's expected, not a regression.
+
 ## Pull requests and git
 
 - Branch from `main`; target `main` for PRs. Name branches `<type>/<slug>`,
@@ -309,14 +320,3 @@ If you find a problem unrelated to the current issue while working (e.g. an
 unrelated bug), you may propose opening a new issue with `gh issue create`,
 but always ask for explicit confirmation first — never create an issue
 unprompted.
-
-### Planning artifacts (`docs/superpowers/`)
-
-Plans and specs written via `superpowers:writing-plans` / `superpowers:brainstorming`
-live in `docs/superpowers/plans/` and `docs/superpowers/specs/`. Once the work they
-describe is merged to `main` and its outcome is documented elsewhere (this file, code
-comments, or the PR itself), delete the plan/spec file(s) — as part of that PR or a
-small follow-up. Don't keep them around as historical artifacts; they go stale and
-duplicate what's already documented. Git doesn't track empty directories, so
-`docs/superpowers/` may simply be absent from the tree between planning sessions —
-that's expected, not a regression.
