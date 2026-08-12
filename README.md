@@ -354,6 +354,11 @@ Suchar-Overflow/
 └── uv.lock                   # Zablokowane wersje zależności
 ```
 
+> **Uwaga:** `docs/superpowers/` (plany/specyfikacje generowane przez AI-agenta na potrzeby
+> pracy nad projektem) to katalog roboczy, nie stała część repo – po zmergowaniu i
+> udokumentowaniu opisanej w nich pracy pliki są usuwane. Git nie śledzi pustych katalogów,
+> więc `docs/` może w danym momencie w ogóle nie występować w drzewie repo.
+
 ---
 
 ## Testy
