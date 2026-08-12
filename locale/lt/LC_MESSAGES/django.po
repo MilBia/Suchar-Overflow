@@ -704,8 +704,8 @@ msgid ""
 "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
 "you need a drink."
 msgstr ""
-"Vilietiškai:\n"
-"Gražu į <strong>Suchar Overflow</strong>. Ta vieta, kurios žydria rūbos, turite gėrimą."
+"Sveiki atvykę į <strong>Suchar Overflow</strong>. Vieta, kur humoras toks "
+"sausas, kad prireiks gėrimo."
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."

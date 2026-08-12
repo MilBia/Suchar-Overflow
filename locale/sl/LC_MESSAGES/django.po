@@ -252,10 +252,7 @@ msgstr "Oddan glas"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
-"Predvidi se, da sem prevedel samo sporočilo, ki ga si želiš prepisati v "
-"slovenščino, a ni mi podano nobeno tekstovno navedko. Prosimo, pošljite me "
-"točen string, ki hočete pre"
+msgstr "Frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"

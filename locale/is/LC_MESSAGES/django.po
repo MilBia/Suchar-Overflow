@@ -1029,7 +1029,7 @@ msgstr "Engin fyndnir sögur."
 
 #: suchar_overflow/templates/stats/leaderboard.html:166
 msgid "Comedy Kings"
-msgstr "<translation placeholder=\"Comedy Kings\">Comedy Kings</translation>"
+msgstr "Comedy Kings"
 
 #: suchar_overflow/templates/stats/leaderboard.html:187
 msgid "No funny data."

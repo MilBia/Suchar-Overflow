@@ -940,10 +940,7 @@ msgstr "Paldies, ka lietojat mūsu vietni!"
 #: suchar_overflow/templates/registration/password_reset_email.html:13
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr ""
-"Latviešu valodā:\n"
-"\n"
-"Skaņas pārplūdes komanda"
+msgstr "Suchar Overflow komanda"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -982,10 +979,7 @@ msgstr ""
 #| msgid ""
 #| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr ""
-"Lūdzu, atbildi tikai ar latviešu valodā pārveidoto tekstu, bez kādas papildas informācijas vai izteikumiem.\n"
-"\n"
-"Sievīt un vīriešu labklājība (un visdriestākais) no mūsu kopienas."
+msgstr "Svinam labākos (un sausākos), ko radījusi mūsu kopiena."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"

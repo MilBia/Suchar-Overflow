@@ -252,15 +252,15 @@ msgstr "ಮತ ಚಲಾಯಿಸಲಾಗಿದೆ"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "ಮುಂದಿನ ಭಾಗವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಸೇ"
+msgstr "ಫ್ರಂಟ್ ಎಂಡ್"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
-msgstr "ಸುಚಾರ್ எண்ணிக்கை"
+msgstr "ಸುಚಾರ್ ಸಂಖ್ಯೆ"
 
 #: suchar_overflow/achievements/models.py:20
 msgid "Funny Vote Count"
-msgstr "ವಿನೋದಮಯ ಮತಗಳ எண்ணிக்கை"
+msgstr "ವಿನೋದಮಯ ಮತಗಳ ಸಂಖ್ಯೆ"
 
 #: suchar_overflow/achievements/models.py:21
 msgid "Dry Vote Count"

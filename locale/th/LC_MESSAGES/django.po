@@ -566,9 +566,7 @@ msgstr "ตารางคะแนน"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
-"ข้อความ \"Post\" เป็นคำที่ใช้เรียกหัวข้อบทความหรือการแสดงข้อมูลบนเว็บไซต์ ใน"
-" UI ขอ"
+msgstr "โพสต์"
 
 #: suchar_overflow/templates/base.html:146
 #| msgid "Search..."

@@ -1176,10 +1176,7 @@ msgstr "Søg:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
-"For at kunne levere den bedste oversættelse, har jeg brug for den faktiske "
-"engelske UI-strøm som du vil have oversat til dansk. Koden du har angivet "
-"indeholder kun konteksten og et stednavn (`suchar_overflow/...`), men"
+msgstr "Forfatter:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"

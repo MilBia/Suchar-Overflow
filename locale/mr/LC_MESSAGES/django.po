@@ -252,14 +252,7 @@ msgstr "मत नोंदवले"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
-"मराठीत अनुवाद:\n"
-"\n"
-"```html\n"
-"<strong>%(name)s</strong> <br /> <a href=\"{0}\">देखावा पाहा</a>\n"
-"```\n"
-"\n"
-"(Note: The original string structure and placeholders are preserved exactly as"
+msgstr "फ्रंटएंड"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"

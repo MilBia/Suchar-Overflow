@@ -616,9 +616,7 @@ msgstr "Nội dung mặc định."
 
 #: suchar_overflow/templates/base.html:232
 msgid "All rights reserved (but jokes stolen)."
-msgstr ""
-"Bản quyền thuộc về [Tên công ty], mọi quyền được bảo lưu (nhưng những câu "
-"đùa thì có thể lấy đi)."
+msgstr "Bảo lưu mọi quyền (nhưng những câu đùa thì có thể bị lấy cắp)."
 
 #: suchar_overflow/templates/base.html:237
 msgid "About"

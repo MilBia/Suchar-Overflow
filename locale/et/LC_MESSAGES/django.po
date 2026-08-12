@@ -252,10 +252,7 @@ msgstr "Hääle andmine"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
-"Eestikeelne tõlge:\n"
-"\n"
-"<noinput>"
+msgstr "Frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"

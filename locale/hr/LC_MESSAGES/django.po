@@ -252,10 +252,7 @@ msgstr "Glas je odan"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
-"Predvidljivo, kao profesionalni prevoditelj koji radi na aplikaciji Django web, prevedem datu tekstualnu nizu s engleskog na hrvatski, pridržavajući sve navedene pravile. \n"
-"\n"
-"Međutim, u"
+msgstr "Frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -291,10 +288,7 @@ msgstr "Polarni filter"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
-"Prijevod UI niza iz engleskog na hrvatski:\n"
-"\n"
-"Frontend Event → Front-end događaj"
+msgstr "Frontend događaj"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

@@ -896,8 +896,7 @@ msgstr ""
 #: suchar_overflow/templates/registration/password_reset_done.html:6
 #: suchar_overflow/templates/registration/password_reset_done.html:12
 msgid "Password Reset Sent"
-msgstr ""
-"Senha redefinida com sucesso. Verifique seu e-mail para obter as instruções."
+msgstr "Redefinição de senha enviada"
 
 #: suchar_overflow/templates/registration/password_reset_done.html:14
 #: suchar_overflow/templates/registration/signup_done.html:23

@@ -252,10 +252,7 @@ msgstr "Kura imetolewa"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
-"Majibu ya API\n"
-"\n"
-"(Note: The context provided seems to be a reference to a specific file and section within a Django project, but the actual UI string to translate was not included in your request. Assuming the task is to translate \"Frontend\" as it might appear in a UI context, the Swahili"
+msgstr "Frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -1173,10 +1170,7 @@ msgstr "Filters aktivi:"
 #: suchar_overflow/templates/suchary/suchar_list.html:89
 #| msgid "Search..."
 msgid "Search:"
-msgstr ""
-"Kuelewa! Unataka uanzishwa la kesi ya \"Search:\" katika faili ya suchar_list.html, inayohusiana na UI ya Django. Hapa ni tafsiri ya Swahili:\n"
-"\n"
-"Mfalme:"
+msgstr "Tafuta:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"

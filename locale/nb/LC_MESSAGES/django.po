@@ -1173,10 +1173,7 @@ msgstr "Søk:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
-"For å gi en korrekt oversettelse, trenger jeg å se på den faktiske strengen som skal oversettes i filen `suchar_list.html`. Du har kun angitt konteksten og at \"Author\" er navnet på den som skrev strengen. \n"
-"\n"
-"Vennligst"
+msgstr "Forfatter:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"

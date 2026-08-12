@@ -576,7 +576,7 @@ msgstr "ਪੋਸਟ"
 #: suchar_overflow/templates/base.html:146
 #| msgid "Search..."
 msgid "Search…"
-msgstr "<search_input placeholder=\"Search…\" />"
+msgstr "ਖੋਜ…"
 
 #: suchar_overflow/templates/base.html:174
 #| msgid "Notification"

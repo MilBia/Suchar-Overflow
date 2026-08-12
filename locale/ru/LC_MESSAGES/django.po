@@ -252,10 +252,7 @@ msgstr "Голос отдан"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
-"Перевод строки интерфейса на русский язык:\n"
-"\n"
-"frontend"
+msgstr "Фронтенд"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"

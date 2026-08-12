@@ -252,7 +252,7 @@ msgstr "הצבעה בוצעה"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "תודה על ההקשר. אולי יש לך שאלה או ביקוש נוסף? כמו שאלה מהי תוכן הטק"
+msgstr "פרונט-אנד"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -1145,7 +1145,7 @@ msgstr "חדשים ביותר"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr "מפני שהתוכן המקורי אינו מצויין, נראה שהבקשה לתרגום מתייחסת לחלק מ"
+msgstr "מסננים פעילים:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
 #| msgid "Search..."
@@ -1154,9 +1154,7 @@ msgstr "חיפוש:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
-"מייצג התוכן של עמוד \"suchar_list.html\" באפליקציה Django לאיש \"Suchar "
-"Overflow\". אני מתורגמן מקצ"
+msgstr "מחבר:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"

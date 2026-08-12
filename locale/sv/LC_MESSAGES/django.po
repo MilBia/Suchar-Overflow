@@ -252,10 +252,7 @@ msgstr "Rösten har registrerats"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
-"Förfrågan saknar innehåll att översätta till svenska. Det finns ingen sträng"
-" eller text som har angetts för översättning. Om du vill ha en översättning "
-"av något specifikt, vänligen ange den här gången."
+msgstr "Frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"

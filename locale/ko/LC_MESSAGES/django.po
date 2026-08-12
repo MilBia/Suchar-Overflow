@@ -252,8 +252,7 @@ msgstr "투표 완료"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
-"앞으로의 작업에 대한 맥락을 제공해 주셔서 감사합니다만, 직접적인 코드나 파일 내용이 아닌 UI 문자열만 번역해 드리는 것이 원칙입니다."
+msgstr "프론트엔드"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
