@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Tiếng Estonia"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Thông tin cá nhân"
+msgstr "Tiếng Việt"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Bỏ phiếu"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Trước mặt"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Bộ lọc phân cực"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Sự kiện Frontend"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -544,10 +543,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Thành tựu đã bị khóa. Hãy khám phá bí mật của nó bằng cách chơi game!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Xem thành tích"
+msgstr "Xem tất cả thành tựu"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -569,37 +567,32 @@ msgstr "Bảng xếp hạng"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Bài viết"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Tìm kiếm..."
+msgstr "Tìm kiếm…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
 msgstr "Thông báo"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Xem thành tích"
+msgstr "Các thành tích mới"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Xem thành tích"
+msgstr "Không có thành tích mới nào"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Thành tích của tôi"
+msgstr "Xem tất cả thành tựu của mình"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -623,9 +616,7 @@ msgstr "Nội dung mặc định."
 
 #: suchar_overflow/templates/base.html:232
 msgid "All rights reserved (but jokes stolen)."
-msgstr ""
-"Bản quyền thuộc về [Tên công ty], mọi quyền được bảo lưu (nhưng những câu "
-"đùa thì có thể lấy đi)."
+msgstr "Bảo lưu mọi quyền (nhưng những câu đùa thì có thể bị lấy cắp)."
 
 #: suchar_overflow/templates/base.html:237
 msgid "About"
@@ -681,11 +672,11 @@ msgstr "Nhiệm vụ"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
-"Mục tiêu của Suchar Overflow là thu thập bộ sưu tập lớn nhất các câu đùa gây "
-"ra đau khổ về mặt thể chất cho người nhận. Chúng tôi tin rằng một câu đùa "
+"Mục tiêu của Suchar Overflow là thu thập bộ sưu tập lớn nhất các câu đùa gây"
+" ra đau khổ về mặt thể chất cho người nhận. Chúng tôi tin rằng một câu đùa "
 "hay là một câu đùa khô khan, sau đó là sự im lặng khó xử và tiếng dế kêu "
 "trong nền."
 
@@ -695,11 +686,11 @@ msgstr "Công nghệ"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
-"Trang web được xây dựng trên các công nghệ mới nhất (Django + CSS tùy chỉnh) "
-"để đảm bảo cung cấp nội dung hài hước một cách nhanh chóng và đáng tin cậy "
+"Trang web được xây dựng trên các công nghệ mới nhất (Django + CSS tùy chỉnh)"
+" để đảm bảo cung cấp nội dung hài hước một cách nhanh chóng và đáng tin cậy "
 "trực tiếp đến màn hình của bạn."
 
 #: suchar_overflow/templates/pages/home.html:8
@@ -733,7 +724,8 @@ msgid "Vote"
 msgstr "Bỏ phiếu"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Đánh giá những câu chuyện cười của người khác. Quyết định điều gì là hài "
 "hước (và điều gì là buồn cười)."
@@ -871,7 +863,8 @@ msgstr "Đặt lại mật khẩu thành công"
 
 #: suchar_overflow/templates/registration/password_reset_complete.html:18
 msgid "Your password has been set. You may go ahead and log in now."
-msgstr "Mật khẩu của bạn đã được thiết lập. Bạn có thể đăng nhập ngay bây giờ."
+msgstr ""
+"Mật khẩu của bạn đã được thiết lập. Bạn có thể đăng nhập ngay bây giờ."
 
 #: suchar_overflow/templates/registration/password_reset_confirm.html:6
 #: suchar_overflow/templates/registration/password_reset_confirm.html:12
@@ -883,8 +876,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Vui lòng nhập mật khẩu mới của bạn hai lần để chúng tôi có thể xác minh rằng "
-"bạn đã nhập chính xác."
+"Vui lòng nhập mật khẩu mới của bạn hai lần để chúng tôi có thể xác minh rằng"
+" bạn đã nhập chính xác."
 
 #: suchar_overflow/templates/registration/password_reset_confirm.html:20
 msgid "Change password"
@@ -946,7 +939,6 @@ msgid "Thanks for using our site!"
 msgstr "Cảm ơn bạn đã sử dụng trang web của chúng tôi!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
 msgstr "Đội ngũ Suchar Overflow"
@@ -985,20 +977,18 @@ msgstr ""
 "kiểm tra hộp thư đến và nhấp vào liên kết để kích hoạt tài khoản của bạn."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr ""
-"Kỷ niệm những điều tốt đẹp nhất (và cả những điều hài hước nhất) mà cộng "
-"đồng của chúng tôi tạo ra."
+msgstr "Sự vinh danh những kỳ tích (và những sự khô ráo) do cộng đồng tạo ra."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Hoạt động"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "Thời gian toàn cầu"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1081,9 +1071,9 @@ msgid ""
 "This joke has already been published. You can't polish a diamond (or a dry "
 "biscuit) once it's been served."
 msgstr ""
-"Câu chuyện cười này đã được đăng tải rồi. Bạn không thể làm cho một viên kim "
-"cương (hoặc một chiếc bánh quy khô) trở nên hoàn hảo hơn sau khi nó đã được "
-"kể."
+"Câu chuyện cười này đã được đăng tải rồi. Bạn không thể làm cho một viên kim"
+" cương (hoặc một chiếc bánh quy khô) trở nên hoàn hảo hơn sau khi nó đã được"
+" kể."
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
 msgid "Time creates jokes, but it also seals them."
@@ -1180,21 +1170,20 @@ msgstr "Mới nhất"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Tùy chọn hiện tại:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Tìm kiếm..."
+msgstr "Tìm kiếm:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Tác giả"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Xóa tất cả"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1207,10 +1196,9 @@ msgstr "Chỉnh sửa"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Đăng nhập"
+msgstr "Đăng nhập để bỏ phiếu"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1261,8 +1249,8 @@ msgstr "Thành công!"
 msgid ""
 "Your email address has been changed. You can now sleep peacefully (or not)."
 msgstr ""
-"Địa chỉ email của bạn đã được thay đổi. Bây giờ bạn có thể yên tâm rồi (hoặc "
-"không)."
+"Địa chỉ email của bạn đã được thay đổi. Bây giờ bạn có thể yên tâm rồi (hoặc"
+" không)."
 
 #: suchar_overflow/templates/users/email_change_complete.html:28
 msgid "Back to settings"
@@ -1278,17 +1266,13 @@ msgstr "Kiểm tra cả hai hộp thư đến!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Chúng tôi đã gửi một tin nhắn đến địa chỉ <strong>MỚI</strong> của bạn với "
-"liên kết kích hoạt.\n"
+"Chúng tôi đã gửi một tin nhắn đến địa chỉ <strong>MỚI</strong> của bạn với liên kết kích hoạt.\n"
 "          <br />\n"
-"          Nhưng chúng tôi cũng đã gửi một thông báo đến địa chỉ <strong>CŨ</"
-"strong> của bạn, để bạn biết đó thực sự là bạn."
+"          Nhưng chúng tôi cũng đã gửi một thông báo đến địa chỉ <strong>CŨ</strong> của bạn, để bạn biết đó thực sự là bạn."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""

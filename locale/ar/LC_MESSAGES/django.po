@@ -16,8 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
-"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
 #: config/settings/base.py:34
 msgid "Arabic"
@@ -64,10 +63,9 @@ msgid "Estonian"
 msgstr "الإستونية"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "معلومات شخصية"
+msgstr "فارسی"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -254,7 +252,7 @@ msgstr "تم التصويت"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "الواجهة الأمامية"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -290,7 +288,7 @@ msgstr "مستقطب"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "حدث أمامي"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -433,7 +431,8 @@ msgid ""
 "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
 "programowanie)."
 msgstr ""
-"أدخل العلامات مفصولة بمسافات أو فواصل (مثل: خبز، تكنولوجيا المعلومات، برمجة)."
+"أدخل العلامات مفصولة بمسافات أو فواصل (مثل: خبز، تكنولوجيا المعلومات، "
+"برمجة)."
 
 #: suchar_overflow/suchary/forms.py:34 suchar_overflow/suchary/models.py:24
 msgid "Publication Date"
@@ -487,8 +486,8 @@ msgid ""
 "We track these errors automatically, but if the problem persists feel free "
 "to contact us. In the meantime, try refreshing."
 msgstr ""
-"نحن نتتبع هذه الأخطاء تلقائيًا، ولكن إذا استمرت المشكلة، فلا تتردد في الاتصال "
-"بنا. في غضون ذلك، حاول تحديث الصفحة."
+"نحن نتتبع هذه الأخطاء تلقائيًا، ولكن إذا استمرت المشكلة، فلا تتردد في "
+"الاتصال بنا. في غضون ذلك، حاول تحديث الصفحة."
 
 #: suchar_overflow/templates/achievements/inbox.html:6
 #: suchar_overflow/templates/achievements/inbox.html:17
@@ -543,10 +542,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "تم قفل الإنجاز. اكتشف سره باللعب!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "تصفح الإنجازات"
+msgstr "تصفّح جميع الإنجازات"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -568,37 +566,32 @@ msgstr "لوحة المتصدرين"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "منشور"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "بحث..."
+msgstr "بحث…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "إشعار"
+msgstr "إشعارات"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "تصفح الإنجازات"
+msgstr "الإنجازات الجديدة"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "تصفح الإنجازات"
+msgstr "لا توجد إنجازات جديدة"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "إنجازاتي"
+msgstr "عرض جميع إنجازاتي"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -678,12 +671,12 @@ msgstr "مهمة"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "تهدف \"Suchar Overflow\" إلى جمع أكبر مجموعة من النكات التي تسبب الألم "
-"الجسدي للمستقبل. نحن نؤمن بأن النكتة الجيدة هي تلك التي يتبعها صمت محرج وصوت "
-"حشرات الليل في الخلفية."
+"الجسدي للمستقبل. نحن نؤمن بأن النكتة الجيدة هي تلك التي يتبعها صمت محرج وصوت"
+" حشرات الليل في الخلفية."
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -691,8 +684,8 @@ msgstr "تكنولوجيا"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "تم تصميم هذا الموقع باستخدام أحدث التقنيات (Django + CSS مخصص) لضمان تقديم "
 "محتوى مضحك بسرعة وموثوقية مباشرةً على شاشتك."
@@ -706,8 +699,8 @@ msgid ""
 "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
 "you need a drink."
 msgstr ""
-"أهلاً بك في <strong class=\"font-weight-bold\">Suchar Overflow</strong>. مكان "
-"يفيض فيه الفكاهة الجافة لدرجة أنك تحتاج إلى مشروب."
+"أهلاً بك في <strong class=\"font-weight-bold\">Suchar Overflow</strong>. "
+"مكان يفيض فيه الفكاهة الجافة لدرجة أنك تحتاج إلى مشروب."
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."
@@ -726,7 +719,8 @@ msgid "Vote"
 msgstr "تصويت"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr "قيّم نكات الآخرين. قرّر ما هو مضحك (وما هو مثير للشفقة)."
 
 #: suchar_overflow/templates/pages/home.html:39
@@ -885,8 +879,8 @@ msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
 msgstr ""
-"الرابط لإعادة تعيين كلمة المرور غير صالح، ربما لأنه تم استخدامه بالفعل. يرجى "
-"طلب إعادة تعيين كلمة مرور جديدة."
+"الرابط لإعادة تعيين كلمة المرور غير صالح، ربما لأنه تم استخدامه بالفعل. يرجى"
+" طلب إعادة تعيين كلمة مرور جديدة."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:6
 #: suchar_overflow/templates/registration/password_reset_done.html:12
@@ -935,10 +929,9 @@ msgid "Thanks for using our site!"
 msgstr "شكراً لاستخدام موقعنا!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "فريق \"سوتشار أوفر\""
+msgstr "فريق Suchar Overflow"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -970,22 +963,22 @@ msgid ""
 "We have sent you an email to confirm your registration. Please check your "
 "inbox and click the link to activate your account."
 msgstr ""
-"لقد أرسلنا إليك بريدًا إلكترونيًا لتأكيد تسجيلك. يرجى التحقق من صندوق الوارد "
-"الخاص بك والنقر على الرابط لتفعيل حسابك."
+"لقد أرسلنا إليك بريدًا إلكترونيًا لتأكيد تسجيلك. يرجى التحقق من صندوق الوارد"
+" الخاص بك والنقر على الرابط لتفعيل حسابك."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "نحتفل بأفضل الإنجازات (واللحظات المضحكة) التي حققها مجتمعنا."
+msgstr "يحتفل بأفضل الأعمال (والأجافة) التي أنجزتها مجتمعنا."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "نشاط"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "جميع الأوقات"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1164,21 +1157,20 @@ msgstr "الأحدث"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "الفلاتر النشطة:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "بحث..."
+msgstr "بحث:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "المؤلف"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "تنظيف الكل"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1191,10 +1183,9 @@ msgstr "تحرير"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "تسجيل الدخول"
+msgstr "تسجيل الدخول للتصويت"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1259,22 +1250,20 @@ msgstr "تحقق من صندوقي الوارد!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
 "لقد أرسلنا رسالة إلى عنوانك الجديد مع رابط تفعيل.\n"
 "          <br />\n"
-"          ولكننا أرسلنا أيضًا تحذيرًا إلى عنوانك القديم، حتى تعرف أن هذا أنت "
-"بالفعل."
+"          ولكننا أرسلنا أيضًا تحذيرًا إلى عنوانك القديم، حتى تعرف أن هذا أنت بالفعل."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
 "If you don't click the link, nothing will change. Your account will remain "
 "as dry as our jokes."
-msgstr "إذا لم تنقر على الرابط، فلن يتغير أي شيء. سيبقى حسابك جافًا مثل نكاتنا."
+msgstr ""
+"إذا لم تنقر على الرابط، فلن يتغير أي شيء. سيبقى حسابك جافًا مثل نكاتنا."
 
 #: suchar_overflow/templates/users/email_change_done.html:34
 #: suchar_overflow/templates/users/email_change_revoked.html:43

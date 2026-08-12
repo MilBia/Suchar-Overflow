@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Estniska"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Personlig information"
+msgstr "persianspråk"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Rösten har registrerats"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Polarisationsfilter"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Frontend-händelse"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -385,7 +384,7 @@ msgstr "Nivå"
 
 #: suchar_overflow/achievements/models.py:76
 msgid "Difficulty/Rarity tier of the achievement"
-msgstr ""
+msgstr "Skillnads-/sällsynta nivå av insatseren"
 
 #: suchar_overflow/achievements/models.py:79
 msgid "Secret Achievement"
@@ -433,8 +432,8 @@ msgid ""
 "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
 "programowanie)."
 msgstr ""
-"Ange taggar åtskilda med mellanslag eller kommatecken (t.ex. knäckebröd, IT, "
-"programmering)."
+"Ange taggar åtskilda med mellanslag eller kommatecken (t.ex. knäckebröd, IT,"
+" programmering)."
 
 #: suchar_overflow/suchary/forms.py:34 suchar_overflow/suchary/models.py:24
 msgid "Publication Date"
@@ -544,10 +543,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Uppgift låst. Upptäck dess hemlighet genom att spela!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Bläddra bland prestationer"
+msgstr "Bläddra alla insatser"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -569,37 +567,32 @@ msgstr "Resultatlista"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Inlägg"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Sök..."
+msgstr "Sök…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Meddelande"
+msgstr "Meddelanden"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Bläddra bland prestationer"
+msgstr "Ny utmärkelser"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Bläddra bland prestationer"
+msgstr "Inga nya insatser"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Mina prestationer"
+msgstr "Visa alla mina insatser"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -679,12 +672,12 @@ msgstr "Uppdrag"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Målet med Suchar Overflow är att samla den största samlingen av skämt som "
-"orsakar fysisk smärta hos mottagaren. Vi tror att ett bra torrt skämt är ett "
-"som följs av obekväm tystnad och cikador som kvittrar i bakgrunden."
+"orsakar fysisk smärta hos mottagaren. Vi tror att ett bra torrt skämt är ett"
+" som följs av obekväm tystnad och cikador som kvittrar i bakgrunden."
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -692,8 +685,8 @@ msgstr "Teknologi"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Webbplatsen är byggd med den senaste tekniken (Django + anpassad CSS) för "
 "att säkerställa snabb och pålitlig leverans av roliga och underhållande "
@@ -729,7 +722,8 @@ msgid "Vote"
 msgstr "Rösta"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Betygsätt andras skämt. Bestäm vad som är roligt (och vad som är patetiskt)."
 
@@ -917,8 +911,8 @@ msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
 msgstr ""
-"Om du inte får något e-postmeddelande, se till att du har angivit den adress "
-"du registrerade dig med och kontrollera din skräppostmapp."
+"Om du inte får något e-postmeddelande, se till att du har angivit den adress"
+" du registrerade dig med och kontrollera din skräppostmapp."
 
 #: suchar_overflow/templates/registration/password_reset_email.html:4
 msgid ""
@@ -941,10 +935,9 @@ msgid "Thanks for using our site!"
 msgstr "Tack för att du använder vår sida!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Suchar Overflow-teamet"
+msgstr "The Suchar Overflow-team"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -980,18 +973,18 @@ msgstr ""
 "Kontrollera inkorgen och klicka på länken för att aktivera ditt konto."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "Vi hyllar det bästa (och det roligaste) som skapats av vår gemenskap."
+msgstr "Firar de bästa (och torreste) som gjorts av vår gemenskap."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktivitet"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "alla tiderna"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1074,8 +1067,8 @@ msgid ""
 "This joke has already been published. You can't polish a diamond (or a dry "
 "biscuit) once it's been served."
 msgstr ""
-"Den här skämtet har redan publicerats. Man kan inte polera en diamant (eller "
-"en torr kex) när den väl är serverad."
+"Den här skämtet har redan publicerats. Man kan inte polera en diamant (eller"
+" en torr kex) när den väl är serverad."
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
 msgid "Time creates jokes, but it also seals them."
@@ -1170,21 +1163,20 @@ msgstr "Senaste"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktiva filter:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Sök..."
+msgstr "Sök:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Författare:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Rensa alla"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1197,10 +1189,9 @@ msgstr "Redigera"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Logga in"
+msgstr "Logga in för att rösta"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1265,16 +1256,13 @@ msgstr "Kontrollera båda inkorgarna!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
 "Vi har skickat ett meddelande till din nya adress med en aktiveringslänk.\n"
 "          <br />\n"
-"          Vi har också skickat en varning till din gamla adress, så du vet "
-"att det verkligen är du."
+"          Vi har också skickat en varning till din gamla adress, så du vet att det verkligen är du."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1343,7 +1331,8 @@ msgid ""
 "Phew, that was close. Your email address has been restored to its previous "
 "state."
 msgstr ""
-"Pust, det var nära. Din e-postadress har återställts till sitt tidigare läge."
+"Pust, det var nära. Din e-postadress har återställts till sitt tidigare "
+"läge."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:19
 msgid "You can breathe a sigh of relief. We recommend changing your password."
@@ -1381,8 +1370,8 @@ msgid ""
 "If it was you - great, you don't need to do anything here (just check that "
 "other inbox)."
 msgstr ""
-"Om det var du – bra, då behöver du inte göra något här (bara kontrollera den "
-"andra inkorgen)."
+"Om det var du – bra, då behöver du inte göra något här (bara kontrollera den"
+" andra inkorgen)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:9
 msgid "BUT IF IT WASN'T YOU:"
@@ -1421,8 +1410,8 @@ msgid ""
 "We received a request to change your email address to this one you're "
 "reading (%(email)s)."
 msgstr ""
-"Vi har tagit emot en begäran om att ändra din e-postadress till den du läser "
-"detta med (%(email)s)."
+"Vi har tagit emot en begäran om att ändra din e-postadress till den du läser"
+" detta med (%(email)s)."
 
 #: suchar_overflow/templates/users/email_verify_email.txt:7
 msgid "If it's you, click the link below to confirm the change:"

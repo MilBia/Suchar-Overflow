@@ -16,8 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
-"2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
 
 #: config/settings/base.py:34
 msgid "Arabic"
@@ -64,10 +63,9 @@ msgid "Estonian"
 msgstr "Igauniski"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Personīgā informācija"
+msgstr "persija"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -254,7 +252,7 @@ msgstr "Balss iesniegta"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -290,7 +288,7 @@ msgstr "Polarisators"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Frontend notikums"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -541,18 +539,16 @@ msgstr "Slavas zāle"
 
 #: suchar_overflow/templates/achievements/list.html:19
 msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
-msgstr ""
-"Jūsu goda zīmes, medaļas un kaunpilnās noslēpums no \"Suchar Overflow\"."
+msgstr "Jūsu goda zīmes, medaļas un kaunpilnās noslēpums no \"Suchar Overflow\"."
 
 #: suchar_overflow/templates/achievements/list.html:74
 msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Sasniegums bloķēts. Uzziniet tā noslēpumu, spēlējot!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Skatīt sasniegumiem"
+msgstr "Pārlūkot visus sasniegumus"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -574,37 +570,32 @@ msgstr "Rezultatīvu saraksts"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Daba"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "Meklēt..."
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Paziņojums"
+msgstr "Paziņojumi"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Skatīt sasniegumiem"
+msgstr "Jaunie sasniegumi"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Skatīt sasniegumiem"
+msgstr "Nav jaunus sasniegumus"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Mani sasniegumi"
+msgstr "Skatīt visus manos sasniegumus"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -684,8 +675,8 @@ msgstr "Uzdevums"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Suchar Overflow mērķis ir apkopot visplašāko joku kolekciju, kas izraisa "
 "fizisku sāpi lasītājam. Mēs uzskatām, ka labs sauss joks ir tāds, kam seko "
@@ -697,11 +688,11 @@ msgstr "Tehnoloģijas"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
-"Šī vietne ir izveidota, izmantojot jaunākās tehnoloģijas (Django + pielāgota "
-"CSS), lai nodrošinātu ātru un uzticamu \"cringe\" satura piegādi tieši uz "
+"Šī vietne ir izveidota, izmantojot jaunākās tehnoloģijas (Django + pielāgota"
+" CSS), lai nodrošinātu ātru un uzticamu \"cringe\" satura piegādi tieši uz "
 "jūsu ekrāna."
 
 #: suchar_overflow/templates/pages/home.html:8
@@ -734,7 +725,8 @@ msgid "Vote"
 msgstr "Balss"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Novērtējiet citu cilvēku jokus. Izlemiet, kas ir smieklīgi (un kas ir "
 "žēlīgi)."
@@ -884,8 +876,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Lūdzu, ievadiet savu jauno paroli divreiz, lai mēs varētu pārliecināties, ka "
-"to esat ierakstījis pareizi."
+"Lūdzu, ievadiet savu jauno paroli divreiz, lai mēs varētu pārliecināties, ka"
+" to esat ierakstījis pareizi."
 
 #: suchar_overflow/templates/registration/password_reset_confirm.html:20
 msgid "Change password"
@@ -930,8 +922,8 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
 msgstr ""
-"Jūs saņemat šo e-pastu, jo pieprasījāt paroles atiestatīšanu savam lietotāja "
-"kontam vietnē."
+"Jūs saņemat šo e-pastu, jo pieprasījāt paroles atiestatīšanu savam lietotāja"
+" kontam vietnē."
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -946,7 +938,6 @@ msgid "Thanks for using our site!"
 msgstr "Paldies, ka lietojat mūsu vietni!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
 msgstr "Suchar Overflow komanda"
@@ -981,22 +972,22 @@ msgid ""
 "We have sent you an email to confirm your registration. Please check your "
 "inbox and click the link to activate your account."
 msgstr ""
-"Mēs nosūtījām jums e-pastu, lai apstiprinātu reģistrāciju. Lūdzu, pārbaudiet "
-"savu iespēju pastu un noklikšķiniet uz saites, lai aktivizētu savu kontu."
+"Mēs nosūtījām jums e-pastu, lai apstiprinātu reģistrāciju. Lūdzu, pārbaudiet"
+" savu iespēju pastu un noklikšķiniet uz saites, lai aktivizētu savu kontu."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "Atzīmējam labākos (un sausākos) mirkļus, ko radījusi mūsu kopiena."
+msgstr "Svinam labākos (un sausākos), ko radījusi mūsu kopiena."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktivitāte"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "Visu laiku"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1175,21 +1166,20 @@ msgstr "Jaunākie"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktīvie filtrs:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Meklēt..."
+msgstr "Meklēšana:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Autoris"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Svaidīt visu"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1202,10 +1192,9 @@ msgstr "Labot"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Ielogoties"
+msgstr "Iesi, lai balsotu"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1271,11 +1260,9 @@ msgstr "Pārbaudiet abas iesūtnes!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
 
 #: suchar_overflow/templates/users/email_change_done.html:30

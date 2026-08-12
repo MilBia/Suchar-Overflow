@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Viro"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Henkilötiedot"
+msgstr "persian"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Ääni annettu"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Polarisaatiosuodatin"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Frontend-tapahtuma"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -540,17 +539,17 @@ msgstr "Mainosgalleria"
 #: suchar_overflow/templates/achievements/list.html:19
 msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
 msgstr ""
-"Palkintosi, mitalisi ja häpeälliset salaisuutesi osoitteesta Suchar Overflow."
+"Palkintosi, mitalisi ja häpeälliset salaisuutesi osoitteesta Suchar "
+"Overflow."
 
 #: suchar_overflow/templates/achievements/list.html:74
 msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Saavutus on lukittu. Paljasta sen salaisuus pelaamalla!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Selaa saavutuksia"
+msgstr "Selaa kaikkia saavutuksia"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -572,37 +571,32 @@ msgstr "Tulostaulu"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Posti"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "Hae…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Ilmoitus"
+msgstr "Ilmoitukset"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Selaa saavutuksia"
+msgstr "Uudet saavutukset"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Selaa saavutuksia"
+msgstr "Ei uusia saavutuksia"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Omat saavutukset"
+msgstr "Näytä kaikki saavutuksetni"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -682,8 +676,8 @@ msgstr "Missio"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Suchar Overflowin tavoitteena on kerätä mahdollisimman suuri kokoelma "
 "vitsejä, jotka aiheuttavat fyysistä kipua vastaanottajalle. Uskomme, että "
@@ -696,8 +690,8 @@ msgstr "Teknologia"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Sivusto on rakennettu uusimmilla teknologioilla (Django + mukautettu CSS), "
 "jotta voimme tarjota nopeasti ja luotettavasti ärsyttävää sisältöä suoraan "
@@ -732,7 +726,8 @@ msgid "Vote"
 msgstr "Äänestä"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Arvioi muiden käyttäjien vitsejä. Päätä, mikä on hauskaa (ja mikä on "
 "surullista)."
@@ -945,10 +940,9 @@ msgid "Thanks for using our site!"
 msgstr "Kiitos, että käytät sivustoamme!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Sucharin ylivuoto-tiimi"
+msgstr "Jäsenet Suchar Overflowsa"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -984,18 +978,18 @@ msgstr ""
 "Tarkista postilaatikkosi ja napsauta linkkiä tilisi aktivoimiseksi."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "Juhlistamme yhteisömämme parhaita (ja hauskoimpia) hetkiä."
+msgstr "Juhlaamme parhaita ja kuivimpia, jotka yhteisömme on tuottanut."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktiviteetti"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "Kaikki aika"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1078,8 +1072,8 @@ msgid ""
 "This joke has already been published. You can't polish a diamond (or a dry "
 "biscuit) once it's been served."
 msgstr ""
-"Tämä vitsi on jo julkaistu. Ei voi kiillottaa timanttia (tai kuivaa keksiä), "
-"kun se on jo tarjoiltu."
+"Tämä vitsi on jo julkaistu. Ei voi kiillottaa timanttia (tai kuivaa keksiä),"
+" kun se on jo tarjoiltu."
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
 msgid "Time creates jokes, but it also seals them."
@@ -1174,21 +1168,20 @@ msgstr "Uusin"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktiiviset suodattimet:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Hae…"
+msgstr "Hae:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Kirjoittaja:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Poista kaikki"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1201,10 +1194,9 @@ msgstr "Muokkaa"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Kirjaudu sisään"
+msgstr "Kirjaudu sisään äänestääksesi"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1269,16 +1261,13 @@ msgstr "Tarkista molemmat postilaatikot!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
 "Lähetimme viestin uuteen osoitteeseesi aktivointilinkillä.\n"
 "          <br />\n"
-"          Lähetimme myös varoituksen vanhaan osoitteeseesi, jotta tiedät, "
-"että kyseessä olet todella sinä."
+"          Lähetimme myös varoituksen vanhaan osoitteeseesi, jotta tiedät, että kyseessä olet todella sinä."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1360,7 +1349,8 @@ msgstr "Muutos peruutettu"
 #: suchar_overflow/templates/users/email_change_revoked.html:34
 msgid "All active email change links have been invalidated."
 msgstr ""
-"Kaikki aktiiviset sähköpostiosoitteen vaihtoon liittyvät linkit on mitätöity."
+"Kaikki aktiiviset sähköpostiosoitteen vaihtoon liittyvät linkit on "
+"mitätöity."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:36
 msgid ""

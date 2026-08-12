@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "ایسٹونین"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "ذاتی معلومات"
+msgstr "فارسی"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "ووٹ ڈال دیا گیا"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "ایچیزمینٹ کا فرنٹ اینڈ"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "پولرائزر"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "فرنٹ اینڈ ایونٹ"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -432,8 +431,8 @@ msgid ""
 "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
 "programowanie)."
 msgstr ""
-"خالی جگہ یا کنما سے الگ کیے گئے ٹیگز درج کریں (مثال کے طور پر: خشک روٹی، آئی "
-"ٹی، پروگرامنگ)۔"
+"خالی جگہ یا کنما سے الگ کیے گئے ٹیگز درج کریں (مثال کے طور پر: خشک روٹی، آئی"
+" ٹی، پروگرامنگ)۔"
 
 #: suchar_overflow/suchary/forms.py:34 suchar_overflow/suchary/models.py:24
 msgid "Publication Date"
@@ -544,10 +543,9 @@ msgstr ""
 "یہ کامیابی ابھی تک حاصل نہیں ہوئی۔ کھیلنے کے ذریعے اس کا راز دریافت کریں!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "کارنامے دیکھیں۔"
+msgstr "میں تمام حصولات کا معائنہ کروں"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -569,37 +567,32 @@ msgstr "لیڈر بورڈ"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "منشا"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "تلاش کریں..."
+msgstr "جستجو..."
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "نوٹس"
+msgstr "اطلاعات"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "کارنامے دیکھیں۔"
+msgstr "نئے حصولات"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "کارنامے دیکھیں۔"
+msgstr "کوئی نئے حصولات نہیں"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "میری کامیابیاں"
+msgstr "میرے تمام حصولات دیکھیں"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -679,8 +672,8 @@ msgstr "مشن"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "\"Suchar Overflow\" کا مقصد مذاح کا سب سے بڑا مجموعہ جمع کرنا ہے جو سننے "
 "والے کو جسمانی تکلیف پہنچاتے ہیں۔ ہمارا خیال ہے کہ ایک اچھا اور خشک مزاح وہ "
@@ -693,8 +686,8 @@ msgstr "ٹیکنالوجی"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "یہ سائٹ جدید ترین ٹیکنالوجیز (Django + Custom CSS) پر بنائی گئی ہے تاکہ آپ "
 "کے اسکرین پر مزاحیہ مواد تیزی اور اعتماد سے پہنچایا جا سکے۔"
@@ -728,7 +721,8 @@ msgid "Vote"
 msgstr "ووٹ دیں"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "دوسروں کے لطیفوں کو ریٹ کریں۔ فیصلہ کریں کہ کیا مزاحیہ ہے (اور کیا مایوس کن "
 "ہے۔)"
@@ -784,8 +778,8 @@ msgstr "ہیلو، %(username)s!"
 msgid ""
 "Welcome to Suchar Overflow - a place where air humidity drops below zero."
 msgstr ""
-"سُچار اوورفلو میں خوش آمدید – یہ وہ جگہ ہے جہاں ہوا کی نمی صفر سے کم ہو جاتی "
-"ہے۔"
+"سُچار اوورفلو میں خوش آمدید – یہ وہ جگہ ہے جہاں ہوا کی نمی صفر سے کم ہو جاتی"
+" ہے۔"
 
 #: suchar_overflow/templates/registration/activation_email.txt:6
 msgid ""
@@ -879,8 +873,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"براہ کرم اپنا نیا پاس ورڈ دو بار درج کریں تاکہ ہم اس بات کی تصدیق کر سکیں کہ "
-"آپ نے اسے صحیح طریقے سے درج کیا ہے۔"
+"براہ کرم اپنا نیا پاس ورڈ دو بار درج کریں تاکہ ہم اس بات کی تصدیق کر سکیں کہ"
+" آپ نے اسے صحیح طریقے سے درج کیا ہے۔"
 
 #: suchar_overflow/templates/registration/password_reset_confirm.html:20
 msgid "Change password"
@@ -909,9 +903,9 @@ msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
-"اگر آپ نے جو ای میل ایڈریس درج کیا ہے اس سے پہلے سے کوئی اکاؤنٹ موجود ہے، تو "
-"ہم نے آپ کو اپنا پاس ورڈ سیٹ کرنے کے لیے ہدایات والا ایک ای میل بھیج دیا ہے۔ "
-"آپ کو جلد ہی وہ مل جانا چاہیے۔"
+"اگر آپ نے جو ای میل ایڈریس درج کیا ہے اس سے پہلے سے کوئی اکاؤنٹ موجود ہے، تو"
+" ہم نے آپ کو اپنا پاس ورڈ سیٹ کرنے کے لیے ہدایات والا ایک ای میل بھیج دیا "
+"ہے۔ آپ کو جلد ہی وہ مل جانا چاہیے۔"
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
@@ -943,10 +937,9 @@ msgid "Thanks for using our site!"
 msgstr "ہماری سائٹ استعمال کرنے کے لیے آپ کا شکریہ!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "سچار اوورفلو ٹیم"
+msgstr "ٹیم اسکھار آورفلو"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -982,19 +975,19 @@ msgstr ""
 "باکس کو چیک کریں اور اپنے اکاؤنٹ کو فعال کرنے کے لیے لنک پر کلک کریں۔"
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
 msgstr ""
-"ہماری کمیونٹی کی جانب سے پیدا ہونے والی بہترین (اور سب سے خشک) چیزوں کا جشن۔"
+"معاشرے کی جانب سے پیدا ہونے والے بہترین اور سخت ترین موضوعات کا جشن منانا۔"
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "گتریکیوں کا اعداد و شمار"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "سارے وقت"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1082,7 +1075,8 @@ msgstr ""
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
 msgid "Time creates jokes, but it also seals them."
-msgstr "وقت مذاق پیدا کرتا ہے، لیکن یہ انہیں ہمیشہ کے لیے مقفل بھی کر دیتا ہے۔"
+msgstr ""
+"وقت مذاق پیدا کرتا ہے، لیکن یہ انہیں ہمیشہ کے لیے مقفل بھی کر دیتا ہے۔"
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:23
 msgid "Ancient Suchar Proverb"
@@ -1173,21 +1167,20 @@ msgstr "جدید ترین"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "فعال فیلترز:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "تلاش کریں..."
+msgstr "جستجو:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "نویسندہ"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "سب کونکریت"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1200,10 +1193,9 @@ msgstr "ترمیم کریں"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "لاگ ان کریں"
+msgstr "لگے رہیں تاکہ ووٹ دے سکیں"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1270,17 +1262,13 @@ msgstr "دونوں ان باکس چیک کریں!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"ہم نے آپ کے <strong>نئے</strong> ایڈریس پر ایک پیغام بھیجا ہے جس میں ایک "
-"فعال لنک موجود ہے۔\n"
+"ہم نے آپ کے <strong>نئے</strong> ایڈریس پر ایک پیغام بھیجا ہے جس میں ایک فعال لنک موجود ہے۔\n"
 "<br />\n"
-"لیکن ہم نے آپ کے <strong>پرانے</strong> ایڈریس پر بھی ایک وارننگ بھیجی ہے، "
-"تاکہ آپ کو معلوم ہو کہ یہ واقعی آپ ہی ہیں۔"
+"لیکن ہم نے آپ کے <strong>پرانے</strong> ایڈریس پر بھی ایک وارننگ بھیجی ہے، تاکہ آپ کو معلوم ہو کہ یہ واقعی آپ ہی ہیں۔"
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1433,7 +1421,8 @@ msgstr ""
 
 #: suchar_overflow/templates/users/email_verify_email.txt:7
 msgid "If it's you, click the link below to confirm the change:"
-msgstr "اگر یہ آپ ہیں، تو تبدیلی کی تصدیق کے لیے نیچے دیے گئے لنک پر کلک کریں۔"
+msgstr ""
+"اگر یہ آپ ہیں، تو تبدیلی کی تصدیق کے لیے نیچے دیے گئے لنک پر کلک کریں۔"
 
 #: suchar_overflow/templates/users/email_verify_email.txt:10
 msgid "The link is valid for 24 hours (or until it evaporates)."
@@ -1444,8 +1433,8 @@ msgid ""
 "If it wasn't you, ignore this message. We sent instructions on how to block "
 "the intruder to your old address."
 msgstr ""
-"اگر یہ آپ نہیں تھے، تو اس پیغام کو نظر انداز کریں۔ ہم نے اپنے سابقہ ​​ایڈریس "
-"پر انٹروڈر کو بلاک کرنے کے طریقہ کار کی ہدایات بھیجی ہیں۔"
+"اگر یہ آپ نہیں تھے، تو اس پیغام کو نظر انداز کریں۔ ہم نے اپنے سابقہ ​​ایڈریس"
+" پر انٹروڈر کو بلاک کرنے کے طریقہ کار کی ہدایات بھیجی ہیں۔"
 
 #: suchar_overflow/templates/users/user_detail.html:6
 #: suchar_overflow/users/models.py:48
@@ -1624,8 +1613,8 @@ msgstr "تصدیق کریں کہ یہ آپ ہی ہیں (ای میل تبدیلی
 #: suchar_overflow/users/tasks.py:41
 msgid "Someone wants to change your email address (We hope it's you)"
 msgstr ""
-"کسی نے آپ کا ای میل ایڈریس تبدیل کرنا چاہتا ہے (ہم امید کرتے ہیں کہ یہ آپ ہی "
-"ہیں۔)"
+"کسی نے آپ کا ای میل ایڈریس تبدیل کرنا چاہتا ہے (ہم امید کرتے ہیں کہ یہ آپ ہی"
+" ہیں۔)"
 
 #: suchar_overflow/users/views.py:386
 msgid "The link has already been used or cancelled."

@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "愛沙尼亞語"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "個人資訊"
+msgstr "波斯語"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "已投票"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "前端"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "偏光鏡"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "前端事件"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -484,9 +483,7 @@ msgstr "似乎發生了錯誤！"
 msgid ""
 "We track these errors automatically, but if the problem persists feel free "
 "to contact us. In the meantime, try refreshing."
-msgstr ""
-"我們會自動追蹤這些錯誤，但如果問題持續發生，請隨時與我們聯繫。在此期間，您可"
-"以嘗試重新整理頁面。"
+msgstr "我們會自動追蹤這些錯誤，但如果問題持續發生，請隨時與我們聯繫。在此期間，您可以嘗試重新整理頁面。"
 
 #: suchar_overflow/templates/achievements/inbox.html:6
 #: suchar_overflow/templates/achievements/inbox.html:17
@@ -541,10 +538,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "成就已鎖定。透過遊玩來探索它的秘密！"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "瀏覽成就"
+msgstr "瀏覽所有成就"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -566,37 +562,32 @@ msgstr "排行榜"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "文章"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "搜尋..."
+msgstr "搜尋…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
 msgstr "通知"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "瀏覽成就"
+msgstr "新成就"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "瀏覽成就"
+msgstr "無新成就"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "我的成就"
+msgstr "查看我的所有成就"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -676,11 +667,10 @@ msgstr "使命"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
-"Suchar Overflow 的目標是收集能讓接收者感到身體不適的笑話。我們認為，一個好的"
-"冷笑話應該在聽完後伴隨著尷尬的沉默和背景中的蟋蟀叫聲。"
+"Suchar Overflow 的目標是收集能讓接收者感到身體不適的笑話。我們認為，一個好的冷笑話應該在聽完後伴隨著尷尬的沉默和背景中的蟋蟀叫聲。"
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -688,11 +678,9 @@ msgstr "技術"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
-msgstr ""
-"網站採用最新的技術（Django + 自訂CSS）構建，以確保快速且可靠地將令人尷尬的內"
-"容直接傳送到您的螢幕。"
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr "網站採用最新的技術（Django + 自訂CSS）構建，以確保快速且可靠地將令人尷尬的內容直接傳送到您的螢幕。"
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -702,9 +690,7 @@ msgstr "馬糧"
 msgid ""
 "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
 "you need a drink."
-msgstr ""
-"歡迎來到 <strong>Suchar Overflow</strong>。這裡充滿了極度幽默的內容，讓你笑到"
-"乾渴。"
+msgstr "歡迎來到 <strong>Suchar Overflow</strong>。這裡充滿了極度幽默的內容，讓你笑到乾渴。"
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."
@@ -723,7 +709,8 @@ msgid "Vote"
 msgstr "投票"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr "評分其他人的笑話。決定什麼是幽默，什麼是可悲。"
 
 #: suchar_overflow/templates/pages/home.html:39
@@ -871,8 +858,7 @@ msgstr "變更密碼"
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
-msgstr ""
-"重設密碼的連結已失效，可能是因為該連結已經被使用過。請重新申請重設密碼。"
+msgstr "重設密碼的連結已失效，可能是因為該連結已經被使用過。請重新申請重設密碼。"
 
 #: suchar_overflow/templates/registration/password_reset_done.html:6
 #: suchar_overflow/templates/registration/password_reset_done.html:12
@@ -888,17 +874,13 @@ msgstr "請查看您的收件匣"
 msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
-msgstr ""
-"如果您輸入的電子郵件地址已存在帳戶，我們已發送一封包含設定密碼指示的電子郵"
-"件。 您應該很快收到它。"
+msgstr "如果您輸入的電子郵件地址已存在帳戶，我們已發送一封包含設定密碼指示的電子郵件。 您應該很快收到它。"
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
-msgstr ""
-"如果您沒有收到電子郵件，請確保您已輸入註冊時使用的地址，並檢查您的垃圾郵件資"
-"料夾。"
+msgstr "如果您沒有收到電子郵件，請確保您已輸入註冊時使用的地址，並檢查您的垃圾郵件資料夾。"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:4
 msgid ""
@@ -919,10 +901,9 @@ msgid "Thanks for using our site!"
 msgstr "感謝您使用我們的網站！"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Suchar Overflow 團隊"
+msgstr "The Suchar Overflow 團隊"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -951,23 +932,21 @@ msgstr "確認已發送"
 msgid ""
 "We have sent you an email to confirm your registration. Please check your "
 "inbox and click the link to activate your account."
-msgstr ""
-"我們已發送一封電子郵件至您的註冊信箱，以確認您的註冊。請查看您的收件匣並點擊"
-"連結以啟用您的帳戶。"
+msgstr "我們已發送一封電子郵件至您的註冊信箱，以確認您的註冊。請查看您的收件匣並點擊連結以啟用您的帳戶。"
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "慶祝社群帶來的最佳（和最有趣的）時刻。"
+msgstr "慶祝社群所創造的最佳（並且最乾爽）成就。"
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "活動"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "所有時間"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1049,8 +1028,7 @@ msgstr "時機已過！"
 msgid ""
 "This joke has already been published. You can't polish a diamond (or a dry "
 "biscuit) once it's been served."
-msgstr ""
-"這個笑話已經發表過了。俗語說，鑽石（或乾餅）一旦被端上桌，就不能再打磨了。"
+msgstr "這個笑話已經發表過了。俗語說，鑽石（或乾餅）一旦被端上桌，就不能再打磨了。"
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
 msgid "Time creates jokes, but it also seals them."
@@ -1145,21 +1123,20 @@ msgstr "最新"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "活動篩選條件:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "搜尋..."
+msgstr "搜尋："
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "撰稿人："
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "清除所有"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1172,10 +1149,9 @@ msgstr "編輯"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "登入"
+msgstr "登入以投票"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1240,19 +1216,16 @@ msgstr "請檢查兩個收件匣！"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
 "If you don't click the link, nothing will change. Your account will remain "
 "as dry as our jokes."
-msgstr ""
-"如果您沒有點擊連結，任何內容都不會改變。您的帳戶將像我們的笑話一樣乏味。"
+msgstr "如果您沒有點擊連結，任何內容都不會改變。您的帳戶將像我們的笑話一樣乏味。"
 
 #: suchar_overflow/templates/users/email_change_done.html:34
 #: suchar_overflow/templates/users/email_change_revoked.html:43
@@ -1343,8 +1316,7 @@ msgstr "我們剛收到一項請求，將您的電子郵件地址更改為：%(e
 msgid ""
 "If it was you - great, you don't need to do anything here (just check that "
 "other inbox)."
-msgstr ""
-"如果是您，那就太好了，您不需要在此處進行任何操作（只需檢查其他收件匣）。"
+msgstr "如果是您，那就太好了，您不需要在此處進行任何操作（只需檢查其他收件匣）。"
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:9
 msgid "BUT IF IT WASN'T YOU:"
@@ -1376,9 +1348,7 @@ msgstr "Suchar Overflow"
 msgid ""
 "We received a request to change your email address to this one you're "
 "reading (%(email)s)."
-msgstr ""
-"我們收到一項請求，將您的電子郵件地址更改為您現在正在閱讀的此地址"
-"（%(email)s）。"
+msgstr "我們收到一項請求，將您的電子郵件地址更改為您現在正在閱讀的此地址（%(email)s）。"
 
 #: suchar_overflow/templates/users/email_verify_email.txt:7
 msgid "If it's you, click the link below to confirm the change:"
@@ -1392,8 +1362,7 @@ msgstr "此連結在 24 小時內有效（或直到過期）。"
 msgid ""
 "If it wasn't you, ignore this message. We sent instructions on how to block "
 "the intruder to your old address."
-msgstr ""
-"如果不是您，請忽略此訊息。我們已將關於如何阻止入侵者的說明發送到您的舊地址。"
+msgstr "如果不是您，請忽略此訊息。我們已將關於如何阻止入侵者的說明發送到您的舊地址。"
 
 #: suchar_overflow/templates/users/user_detail.html:6
 #: suchar_overflow/users/models.py:48
