@@ -52,7 +52,7 @@ cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowa
 | Warstwa          | Technologia                                        |
 | ---------------- | -------------------------------------------------- |
 | **Język**        | Python 3.13                                        |
-| **Framework**    | Django 5.2                                         |
+| **Framework**    | Django 6.0                                         |
 | **REST API**     | Django Ninja                                       |
 | **Baza danych**  | PostgreSQL 18                                      |
 | **Cache**        | Redis 7 (django-redis)                             |
@@ -335,7 +335,7 @@ Suchar-Overflow/
 │   ├── api.py                #   └─ Django Ninja – rejestracja routerów API
 │   └── wsgi.py
 ├── suchar_overflow/          # Kod aplikacji
-│   ├── achievements/         #   └─ system osiągnięć (engine, signals, middleware, inbox)
+│   ├── achievements/         #   └─ system osiągnięć (engine, signals, api)
 │   ├── suchary/              #   └─ główna apka – żarty, głosowanie, API
 │   ├── stats/                #   └─ statystyki i leaderboard
 │   ├── users/                #   └─ zarządzanie użytkownikami (ActivationToken, mail tasks)
