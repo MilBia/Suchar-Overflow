@@ -252,7 +252,7 @@ msgstr "ลงคะแนนแล้ว"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "เทคนิค"
+msgstr "ฟรอนต์เอนด์"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -288,7 +288,7 @@ msgstr "ตัวกรองโพลาไรซ์"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "องค์การเหตุการณ์หน้าข้าง"
+msgstr "เหตุการณ์ฟรอนต์เอนด์"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

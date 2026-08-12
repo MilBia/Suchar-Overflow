@@ -252,7 +252,7 @@ msgstr "வாக்கு செலுத்தியது"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "முன்னோட்டம்"
+msgstr "ஃப்ரண்ட்எண்ட்"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -288,7 +288,7 @@ msgstr "துருவமுனைப்பான்"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "முனைய நிகழ்வு"
+msgstr "ஃப்ரண்ட்எண்ட் நிகழ்வு"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

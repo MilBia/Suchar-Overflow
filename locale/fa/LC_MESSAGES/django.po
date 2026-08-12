@@ -252,7 +252,7 @@ msgstr "رای ثبت شد"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "امکانات"
+msgstr "فرانت‌اند"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -288,7 +288,7 @@ msgstr "پلاریزه کننده"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "رویداد برنامه‌ای کاربردی"
+msgstr "رویداد فرانت‌اند"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

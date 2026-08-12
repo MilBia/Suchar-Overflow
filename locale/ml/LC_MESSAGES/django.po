@@ -252,7 +252,7 @@ msgstr "വോട്ട് രേഖപ്പെടുത്തി"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "മുന്നോട്ട്‌പറയുന്ന ഭാഗം ഒരു ഫ്രെയിംവർക"
+msgstr "ഫ്രണ്ട്എൻഡ്"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -288,7 +288,7 @@ msgstr "പോളറൈസർ"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "മുന്നോട്ട് പറഞ്ഞ സംഭവം"
+msgstr "ഫ്രണ്ട്എൻഡ് ഇവന്റ്"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

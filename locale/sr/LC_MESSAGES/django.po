@@ -252,7 +252,7 @@ msgstr "Гласано"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "Prednja strana"
+msgstr "Фронтенд"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -288,7 +288,7 @@ msgstr "Поларизатор"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "Predijač događaja"
+msgstr "Фронтенд догађај"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

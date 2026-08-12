@@ -252,7 +252,7 @@ msgstr "ఓటు వేయబడింది"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "ముందు భాగం"
+msgstr "ఫ్రంట్ ఎండ్"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -288,7 +288,7 @@ msgstr "పోలరైజర్"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "ముందు భాగం సంఘటన"
+msgstr "ఫ్రంట్ ఎండ్ ఈవెంట్"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

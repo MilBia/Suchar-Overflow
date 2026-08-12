@@ -288,7 +288,7 @@ msgstr "פילטר מקטב"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "אירוע קדם-שרת"
+msgstr "אירוע פרונט-אנד"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

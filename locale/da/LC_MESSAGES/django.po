@@ -252,7 +252,7 @@ msgstr "Afgiv stemme"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "Fornyelsestid"
+msgstr "Frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"

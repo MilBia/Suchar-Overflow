@@ -252,7 +252,7 @@ msgstr "वोट डाला गया"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr "अग्रपनीति"
+msgstr "फ्रंटएंड"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -288,7 +288,7 @@ msgstr "ध्रुवीकरण फिल्टर"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "सामने का घटना"
+msgstr "फ्रंटएंड इवेंट"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

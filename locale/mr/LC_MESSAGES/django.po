@@ -288,7 +288,7 @@ msgstr "ध्रुवीकरण फिल्टर"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "मोबाईल इव्हेंट"
+msgstr "फ्रंटएंड इव्हेंट"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

@@ -288,7 +288,7 @@ msgstr "편광 필터"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "프런트엔드 이벤트"
+msgstr "프론트엔드 이벤트"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"

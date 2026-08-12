@@ -252,7 +252,7 @@ msgstr "Гласувано"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Фронтенд"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -288,7 +288,7 @@ msgstr "Поляризатор"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr "Предметно събитие"
+msgstr "Фронтенд събитие"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
