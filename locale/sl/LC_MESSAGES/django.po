@@ -16,8 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
-"n%100==4 ? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
 
 #: config/settings/base.py:34
 msgid "Arabic"
@@ -64,10 +63,9 @@ msgid "Estonian"
 msgstr "Estonija"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Osebni podatki"
+msgstr "perzisc"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -255,6 +253,9 @@ msgstr "Oddan glas"
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
 msgstr ""
+"Predvidi se, da sem prevedel samo sporočilo, ki ga si želiš prepisati v "
+"slovenščino, a ni mi podano nobeno tekstovno navedko. Prosimo, pošljite me "
+"točen string, ki hočete pre"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -290,7 +291,7 @@ msgstr "Polarisator"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Predvajanje dogodka"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -394,7 +395,8 @@ msgstr "Skrita nagrada"
 
 #: suchar_overflow/achievements/models.py:81
 msgid "If checked, name and description are hidden until unlocked."
-msgstr "Če je možnost označena, ime in opis so skriti, dokler niso odklenjeni."
+msgstr ""
+"Če je možnost označena, ime in opis so skriti, dokler niso odklenjeni."
 
 #: suchar_overflow/achievements/models.py:85
 msgid "Achievement"
@@ -545,10 +547,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Dosežek je zaklenjen. Odkrijte njegovo skrivnost z igranjem!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Preglej dosežke"
+msgstr "Pregledaj vse dosežke"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -570,37 +571,32 @@ msgstr "Lestvica najboljših"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Priredba"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Išči..."
+msgstr "Iskanje…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Obvestilo"
+msgstr "Oglasni"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Preglej dosežke"
+msgstr "Novi dosežki"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Preglej dosežke"
+msgstr "Ni novih dosežkov"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Moje dosežki"
+msgstr "Poglej vse moje dosežke"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -680,8 +676,8 @@ msgstr "Naloga"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Cilj spletne strani Suchar Overflow je zbrati največjo zbirko šal, ki "
 "povzročajo fizično bolečino prejemniku. Verjamemo, že dober suh šala je "
@@ -693,12 +689,12 @@ msgstr "Tehnologija"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Spletna stran je zgrajena na najnovejših tehnologijah (Django + prilagojena "
-"CSS), da zagotovi hitro in zanesljivo dostavo vsebine, ki vas bo spravila ob "
-"smeh, neposredno na vaš zaslon."
+"CSS), da zagotovi hitro in zanesljivo dostavo vsebine, ki vas bo spravila ob"
+" smeh, neposredno na vaš zaslon."
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -709,8 +705,8 @@ msgid ""
 "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
 "you need a drink."
 msgstr ""
-"Dobrodošli v <strong>Suchar Overflow</strong>. Kraj, kjer je humor tako suh, "
-"da potrebujete pijačo."
+"Dobrodošli v <strong>Suchar Overflow</strong>. Kraj, kjer je humor tako suh,"
+" da potrebujete pijačo."
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."
@@ -730,7 +726,8 @@ msgid "Vote"
 msgstr "Glasuj"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Ocenjajte druge ljudi in njihove šale. Odločite, kaj je smešno (in kaj "
 "žalostno)."
@@ -944,10 +941,9 @@ msgid "Thanks for using our site!"
 msgstr "Hvala, da uporabljate našo spletno stran!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Ekipa Suchar Overflow"
+msgstr "Ekipo Suchar Overflowa"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -979,24 +975,23 @@ msgid ""
 "We have sent you an email to confirm your registration. Please check your "
 "inbox and click the link to activate your account."
 msgstr ""
-"Počastili smo vam e-pošto za potrditev registracije. Prosimo, preverite vašo "
-"pošto in kliknite povezavo za aktivacijo računa."
+"Počastili smo vam e-pošto za potrditev registracije. Prosimo, preverite vašo"
+" pošto in kliknite povezavo za aktivacijo računa."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
 msgstr ""
-"Praznujemo najboljše (in najzabavnejše) stvaritve, ki jih ustvarja naša "
-"skupnost."
+"Slavimo najboljše (in suščše) delovanje, ki ga je povzročila naša skupnost."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktivnost"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "vsaj čas"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1175,21 +1170,20 @@ msgstr "Najnovejši"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktivne filterje:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Išči..."
+msgstr "Preveri:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Avtor"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Izbriši vse"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1202,10 +1196,9 @@ msgstr "Uredi"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Prijava"
+msgstr "Prijava za glasovanje"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1271,17 +1264,13 @@ msgstr "Preverite obe nabiralnici!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Počastili smo sporočilo na vašo <strong>NOVO</strong> naslov in priložili "
-"povezavo za aktivacijo.\n"
+"Počastili smo sporočilo na vašo <strong>NOVO</strong> naslov in priložili povezavo za aktivacijo.\n"
 "          <br />\n"
-"          Vendar pa smo tudi poslali opozorilo na vaš <strong>STARI</strong> "
-"naslov, da vemo, da ste res vi."
+"          Vendar pa smo tudi poslali opozorilo na vaš <strong>STARI</strong> naslov, da vemo, da ste res vi."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1325,8 +1314,8 @@ msgid ""
 "Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
 "judge."
 msgstr ""
-"Ste naveličani svojega starega naslova? Ali pa poskušate se izogniti davkom? "
-"Mi ne sodimo."
+"Ste naveličani svojega starega naslova? Ali pa poskušate se izogniti davkom?"
+" Mi ne sodimo."
 
 #: suchar_overflow/templates/users/email_change_form.html:25
 msgid "Send a pigeon with the link"
@@ -1349,7 +1338,8 @@ msgstr "Spremembe so bile vrnjene!"
 msgid ""
 "Phew, that was close. Your email address has been restored to its previous "
 "state."
-msgstr "Uf, šlo je tesno. Vaš e-poštni naslov je bil vrnjen v prejšnje stanje."
+msgstr ""
+"Uf, šlo je tesno. Vaš e-poštni naslov je bil vrnjen v prejšnje stanje."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:19
 msgid "You can breathe a sigh of relief. We recommend changing your password."
@@ -1368,8 +1358,8 @@ msgid ""
 "If it wasn't you who tried to change the email, we recommend changing your "
 "password."
 msgstr ""
-"Če niste vi tisti, ki ste poskušali spremeniti e-poštni naslov, priporočamo, "
-"da spremenite geslo."
+"Če niste vi tisti, ki ste poskušali spremeniti e-poštni naslov, priporočamo,"
+" da spremenite geslo."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:41
 msgid "Change password (just in case)"
@@ -1396,7 +1386,8 @@ msgstr "AMPAK ČE TO NI BILO VI:"
 msgid ""
 "Someone might be trying to take over your account (or you just have a split "
 "personality)."
-msgstr "Nekdo morda poskuša prevzeti vaš račun (ali pa imate dvojno osebnost)."
+msgstr ""
+"Nekdo morda poskuša prevzeti vaš račun (ali pa imate dvojno osebnost)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:11
 msgid ""
@@ -1421,8 +1412,8 @@ msgid ""
 "We received a request to change your email address to this one you're "
 "reading (%(email)s)."
 msgstr ""
-"Prejeli smo zahtevo za spremembo vaše e-poštne naslove na ta, ki ga trenutno "
-"berete (%(email)s)."
+"Prejeli smo zahtevo za spremembo vaše e-poštne naslove na ta, ki ga trenutno"
+" berete (%(email)s)."
 
 #: suchar_overflow/templates/users/email_verify_email.txt:7
 msgid "If it's you, click the link below to confirm the change:"

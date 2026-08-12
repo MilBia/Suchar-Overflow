@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Eesti keel"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Isiklik teave"
+msgstr "persian"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -254,6 +253,9 @@ msgstr "Hääle andmine"
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
 msgstr ""
+"Eestikeelne tõlge:\n"
+"\n"
+"<noinput>"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +291,7 @@ msgstr "Polarisaator"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Eespuhutud sündmus"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -545,10 +547,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Saavutus on lukustatud. Avasta selle saladus mängides!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Vaata saavutusi"
+msgstr "Vaata kõiki aukohi"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -570,37 +571,32 @@ msgstr "Edetabel"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Postitused"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Otsing..."
+msgstr "Otsi..."
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Teavitus"
+msgstr "Uudised"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Vaata saavutusi"
+msgstr "Uued saavutused"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Vaata saavutusi"
+msgstr "Ei ole uusi saavutusi"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Minu saavutused"
+msgstr "Vaata kõik austratute minu saavutused"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -680,8 +676,8 @@ msgstr "Missioon"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Suchar Overflow eesmärk on koguda suurim kollektsioon nalju, mis tekitavad "
 "vastuvõtjal füüsilist valu. Me usume, et hea kuiva nalja järel järgneb "
@@ -693,11 +689,12 @@ msgstr "Tehnoloogia"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "See sait on loodud uusimate tehnoloogiatega (Django + kohandatud CSS), et "
-"tagada kiire ja usaldusväärne \"cringe\" sisu edastamine otse teie ekraanile."
+"tagada kiire ja usaldusväärne \"cringe\" sisu edastamine otse teie "
+"ekraanile."
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -728,8 +725,10 @@ msgid "Vote"
 msgstr "Hääleta"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
-msgstr "Hinnake teiste kasutajate nalju. Otsustage, mis on lõbus ja mis mitte."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr ""
+"Hinnake teiste kasutajate nalju. Otsustage, mis on lõbus ja mis mitte."
 
 #: suchar_overflow/templates/pages/home.html:39
 #: suchar_overflow/templates/suchary/suchar_list.html:68
@@ -814,8 +813,8 @@ msgid ""
 "The activation link is invalid or has expired. Please try registering again "
 "or contact support."
 msgstr ""
-"Aktiveerimislink on kehtetu või aegunud. Palun proovige uuesti registreerida "
-"või võtke ühendust tugiteenusega."
+"Aktiveerimislink on kehtetu või aegunud. Palun proovige uuesti registreerida"
+" või võtke ühendust tugiteenusega."
 
 #: suchar_overflow/templates/registration/activation_failed.html:29
 msgid "Sign Up Again"
@@ -938,10 +937,9 @@ msgid "Thanks for using our site!"
 msgstr "Aitäh, et kasutate meie veebilehte!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Suchari arendusmeeskond"
+msgstr "Teaduste Keskuse Töötajad"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -977,18 +975,20 @@ msgstr ""
 "kontrollige oma postkastist ja klõpsake lingil, et oma konto aktiveerida."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "Tähistame meie kogukonna poolt loodud parimaid (ja lõbusamaid) hetki."
+msgstr ""
+"Töötlemine kõige paremini ja kuivamasse viisile, mis on meie ühenduse "
+"tulemus."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktiviteed"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "kogu aeg"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1168,21 +1168,20 @@ msgstr "Uusim"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktiivsed filterid:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Otsing..."
+msgstr "Otsing:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Autor"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Kustuta kõik"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1195,10 +1194,9 @@ msgstr "Muuda"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Sisselogimine"
+msgstr "Tule universumisse hääldata"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1248,7 +1246,8 @@ msgstr "See õnnestus!"
 msgid ""
 "Your email address has been changed. You can now sleep peacefully (or not)."
 msgstr ""
-"Sinu e-posti aadress on muutunud. Sa võid nüüd rahulikult magada (või mitte)."
+"Sinu e-posti aadress on muutunud. Sa võid nüüd rahulikult magada (või "
+"mitte)."
 
 #: suchar_overflow/templates/users/email_change_complete.html:28
 msgid "Back to settings"
@@ -1264,17 +1263,13 @@ msgstr "Kontrolli mõlemat postkastit!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Saatsime teie <strong>UUELE</strong> aadressile teate, mis sisaldab "
-"aktiveerimislinki.\n"
+"Saatsime teie <strong>UUELE</strong> aadressile teate, mis sisaldab aktiveerimislinki.\n"
 "          <br />\n"
-"          Samuti saatsime hoiatuskõne teie <strong>VANAALE</strong> "
-"aadressile, et te teaksite, et see on tõesti teie."
+"          Samuti saatsime hoiatuskõne teie <strong>VANAALE</strong> aadressile, et te teaksite, et see on tõesti teie."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1388,7 +1383,8 @@ msgid ""
 "Someone might be trying to take over your account (or you just have a split "
 "personality)."
 msgstr ""
-"Keegi võib püüda teie kontot üle võtta (või teil on lihtsalt kahene isiksus)."
+"Keegi võib püüda teie kontot üle võtta (või teil on lihtsalt kahene "
+"isiksus)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:11
 msgid ""
@@ -1400,7 +1396,8 @@ msgstr ""
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:15
 msgid "We also recommend changing your password if you suspect a breach."
-msgstr "Soovitame ka oma salasõna muuta, kui kahtlustate, et see on ohustatud."
+msgstr ""
+"Soovitame ka oma salasõna muuta, kui kahtlustate, et see on ohustatud."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:17
 #: suchar_overflow/templates/users/email_verify_email.txt:14
@@ -1418,7 +1415,8 @@ msgstr ""
 
 #: suchar_overflow/templates/users/email_verify_email.txt:7
 msgid "If it's you, click the link below to confirm the change:"
-msgstr "Kui see olete teie, klõpsake alloleval lingil, et muudatuse kinnitada:"
+msgstr ""
+"Kui see olete teie, klõpsake alloleval lingil, et muudatuse kinnitada:"
 
 #: suchar_overflow/templates/users/email_verify_email.txt:10
 msgid "The link is valid for 24 hours (or until it evaporates)."

@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Естонски"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Лична информация"
+msgstr "Арабски"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -289,7 +288,7 @@ msgstr "Поляризатор"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Предметно събитие"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -501,7 +500,8 @@ msgstr "Вход за известия"
 #: suchar_overflow/templates/achievements/mine.html:18
 msgid "All achievements you have earned, newest first."
 msgstr ""
-"Всички постижения, които сте спечелили, подредени по дата (най-новите първи)."
+"Всички постижения, които сте спечелили, подредени по дата (най-новите "
+"първи)."
 
 #: suchar_overflow/templates/achievements/inbox.html:50
 #: suchar_overflow/templates/achievements/list.html:52
@@ -546,10 +546,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Постижението е заключено. Разкрийте неговата тайна, като играете!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Разгледайте постиженията"
+msgstr "Прегледай всички постижения"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -571,37 +570,32 @@ msgstr "Класация"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Пост"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Търсене..."
+msgstr "Търсене…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Известие"
+msgstr "Уведомления"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Разгледайте постиженията"
+msgstr "Нови постижения"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Разгледайте постиженията"
+msgstr "Няма нови постижения"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Моите постижения"
+msgstr "Виждане на всички мои постижения"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -681,8 +675,8 @@ msgstr "Мисия"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Целта на Suchar Overflow е да събере най-голямата колекция от шеги, които "
 "причиняват физическа болка на получателя. Ние вярваме, че една добра суха "
@@ -695,12 +689,12 @@ msgstr "Технологии"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Сайтът е изграден с най-новите технологии (Django + персонализиран CSS), за "
-"да осигури бързо и надеждно доставяне на съдържание, което предизвиква смях, "
-"директно до вашия екран."
+"да осигури бързо и надеждно доставяне на съдържание, което предизвиква смях,"
+" директно до вашия екран."
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -732,7 +726,8 @@ msgid "Vote"
 msgstr "Гласувай"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Оценявайте шегите на други хора. Решете какво е забавно (а какво е жалко)."
 
@@ -785,8 +780,8 @@ msgstr "Здравейте, %(username)s!"
 msgid ""
 "Welcome to Suchar Overflow - a place where air humidity drops below zero."
 msgstr ""
-"Добре дошли в Suchar Overflow – място, където влажността на въздуха пада под "
-"нулата."
+"Добре дошли в Suchar Overflow – място, където влажността на въздуха пада под"
+" нулата."
 
 #: suchar_overflow/templates/registration/activation_email.txt:6
 msgid ""
@@ -880,8 +875,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Моля, въведете новата си парола два пъти, за да можем да проверим дали сте я "
-"въвели правилно."
+"Моля, въведете новата си парола два пъти, за да можем да проверим дали сте я"
+" въвели правилно."
 
 #: suchar_overflow/templates/registration/password_reset_confirm.html:20
 msgid "Change password"
@@ -942,10 +937,9 @@ msgid "Thanks for using our site!"
 msgstr "Благодарим ви, че използвате нашия сайт!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Екипът на Suchar Overflow"
+msgstr "Групата на Suchar Overflow"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -981,18 +975,18 @@ msgstr ""
 "входящата си поща и кликнете върху връзката, за да активирате акаунта си."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "Празнуваме най-доброто (и най-забавното), създадено от нашата общност."
+msgstr "Празнуваме най-добрите (и най-сухите) дела нашата общност."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Дейност"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "време"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1171,21 +1165,20 @@ msgstr "Най-нови"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Активни филтри:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Търсене..."
+msgstr "Търсене:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Автор:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "премахни всички"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1198,10 +1191,9 @@ msgstr "Редактиране"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Вход"
+msgstr "Влезте, за да гласувате"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1250,7 +1242,8 @@ msgstr "Успешно!"
 #: suchar_overflow/templates/users/email_change_complete.html:25
 msgid ""
 "Your email address has been changed. You can now sleep peacefully (or not)."
-msgstr "Вашият имейл адрес е променен. Сега можете да спите спокойно (или не)."
+msgstr ""
+"Вашият имейл адрес е променен. Сега можете да спите спокойно (или не)."
 
 #: suchar_overflow/templates/users/email_change_complete.html:28
 msgid "Back to settings"
@@ -1266,17 +1259,13 @@ msgstr "Проверете и двете пощенски кутии!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Изпратихме съобщение на вашия <strong>НОВ</strong> адрес с линк за "
-"активиране.\n"
+"Изпратихме съобщение на вашия <strong>НОВ</strong> адрес с линк за активиране.\n"
 "          <br />\n"
-"          Също така изпратихме предупреждение на вашия <strong>СТАР</strong> "
-"адрес, за да знаете, че това наистина сте вие."
+"          Също така изпратихме предупреждение на вашия <strong>СТАР</strong> адрес, за да знаете, че това наистина сте вие."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1409,7 +1398,8 @@ msgstr ""
 #: suchar_overflow/templates/users/email_notify_old_email.txt:15
 msgid "We also recommend changing your password if you suspect a breach."
 msgstr ""
-"Също така препоръчваме да смените паролата си, ако подозирате компрометиране."
+"Също така препоръчваме да смените паролата си, ако подозирате "
+"компрометиране."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:17
 #: suchar_overflow/templates/users/email_verify_email.txt:14

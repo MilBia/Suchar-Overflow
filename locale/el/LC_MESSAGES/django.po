@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Εσθονικά"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Προσωπικά στοιχεία"
+msgstr "Πέρσικα"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Ψήφος κατατεθειμένη"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Πρόσθετα ικανοτήτων"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Πολωτής"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Προσανατολιμένο Συμβάν"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -551,10 +550,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Το επίτευγμα είναι κλειδωμένο. Ανακαλύψτε το μυστικό του παίζοντας!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Περιήγηση στα επιτεύγματα"
+msgstr "Περιήγηση όλων των επιτευξεων"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -576,37 +574,32 @@ msgstr "Κατάταξη"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Μήνυμα"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Αναζήτηση..."
+msgstr "Αναζήτηση…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Ειδοποίηση"
+msgstr "Ανακοινώσεις"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Περιήγηση στα επιτεύγματα"
+msgstr "Καινούργια επιτεύγματα"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Περιήγηση στα επιτεύγματα"
+msgstr "Δεν υπάρχουν νέα αποτελέσματα"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Τα επιτεύγματά μου"
+msgstr "Προβολή όλων των επιτευγμάτων μου"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -686,8 +679,8 @@ msgstr "Αποστολή"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Στόχος του Suchar Overflow είναι να συγκεντρώσει τη μεγαλύτερη συλλογή "
 "αστείων που προκαλούν σωματικό πόνο στον αποδέκτη. Πιστεύουμε ότι ένα καλό, "
@@ -700,8 +693,8 @@ msgstr "Τεχνολογία"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Η ιστοσελίδα έχει δημιουργηθεί με τις πιο πρόσφατες τεχνολογίες (Django + "
 "Προσαρμοσμένο CSS) για να διασφαλιστεί η γρήγορη και αξιόπιστη παράδοση "
@@ -738,7 +731,8 @@ msgid "Vote"
 msgstr "Ψήφος"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Βαθμολογήστε τα ανέκδοτα των άλλων. Αποφασίστε τι είναι αστείο (και τι "
 "λυπητερό)."
@@ -937,8 +931,8 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
 msgstr ""
-"Λαμβάνετε αυτό το μήνυμα ηλεκτρονικού ταχυδρομείου επειδή ζητήσατε επαναφορά "
-"κωδικού πρόσβασης για τον λογαριασμό σας στην"
+"Λαμβάνετε αυτό το μήνυμα ηλεκτρονικού ταχυδρομείου επειδή ζητήσατε επαναφορά"
+" κωδικού πρόσβασης για τον λογαριασμό σας στην"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -955,10 +949,9 @@ msgid "Thanks for using our site!"
 msgstr "Σας ευχαριστούμε που χρησιμοποιείτε την ιστοσελίδα μας!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Η ομάδα Suchar Overflow"
+msgstr "το Πλήγμα Suchar Overflow"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -996,20 +989,20 @@ msgstr ""
 "ενεργοποιήσετε τον λογαριασμό σας."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
 msgstr ""
-"Γιορτάζοντας τα καλύτερα (και τα πιο αστεία) που δημιουργήθηκαν από την "
-"κοινότητά μας."
+"Υπέροχη τιμήσεις για τους καλύτερους (και τους πιο ξηρούς) από την κοινότητά"
+" μας."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Ενεργότητα"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "παράλληλα όλο το χρόνιο"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1190,21 +1183,20 @@ msgstr "Πιο πρόσφατα"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Ενεργοί φιλτρα:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Αναζήτηση..."
+msgstr "Αναζήτηση:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Συγγραφέας"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Καθάρισμα όλων"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1217,10 +1209,9 @@ msgstr "Επεξεργασία"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Σύνδεση"
+msgstr "Είσοδος για ψήφο"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1287,16 +1278,13 @@ msgstr "Ελέγξτε και τα δύο εισερχόμενα!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
 "Στείλαμε ένα μήνυμα στη νέα σας διεύθυνση με έναν σύνδεσμο ενεργοποίησης.\n"
 "          <br />\n"
-"          Επίσης, στείλαμε μια προειδοποίηση στην παλιά σας διεύθυνση, για "
-"να ξέρετε ότι πρόκειται όντως για εσάς."
+"          Επίσης, στείλαμε μια προειδοποίηση στην παλιά σας διεύθυνση, για να ξέρετε ότι πρόκειται όντως για εσάς."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1406,8 +1394,8 @@ msgid ""
 "If it was you - great, you don't need to do anything here (just check that "
 "other inbox)."
 msgstr ""
-"Αν ήσασταν εσείς, τότε όλα είναι εντάξει και δεν χρειάζεται να κάνετε τίποτα "
-"εδώ (απλώς ελέγξτε και το άλλο σας εισερχόμενο)."
+"Αν ήσασταν εσείς, τότε όλα είναι εντάξει και δεν χρειάζεται να κάνετε τίποτα"
+" εδώ (απλώς ελέγξτε και το άλλο σας εισερχόμενο)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:9
 msgid "BUT IF IT WASN'T YOU:"

@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Észt"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Személyes adatok"
+msgstr "perzsa"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Szavazat leadva"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Elvállaltak"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Polarizátor"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Előtéri esemény"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -546,10 +545,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "A teljesítmény le van zárva. Fedezze fel titkát a játék során!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Eredmények böngészése"
+msgstr "Megnézni az összes érmet"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -572,37 +570,32 @@ msgstr "Ranglista"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Post"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Keresés..."
+msgstr "Keresés…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Értesítés"
+msgstr "Értesítések"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Eredmények böngészése"
+msgstr "Új elvégzések"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Eredmények böngészése"
+msgstr "Nincsen új érmet"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Eredményeim"
+msgstr "Minden érdemkeresztjemet megtekinteni"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -682,12 +675,12 @@ msgstr "Feladat"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "A Suchar Overflow célja, hogy összegyűjtse a lehető legtöbb olyan viccet, "
-"amelyek fizikai fájdalmat okoznak az olvasónak. Úgy gondoljuk, egy jó száraz "
-"vicc az, amely után kínos csend következik, és a háttérben tücskök "
+"amelyek fizikai fájdalmat okoznak az olvasónak. Úgy gondoljuk, egy jó száraz"
+" vicc az, amely után kínos csend következik, és a háttérben tücskök "
 "csiripelése hallatszik."
 
 #: suchar_overflow/templates/pages/about.html:22
@@ -696,8 +689,8 @@ msgstr "Technológia"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "A webhely a legújabb technológiákra épül (Django + egyedi CSS), hogy gyors "
 "és megbízható módon biztosítsa a \"cringe\" tartalmak közvetlen "
@@ -732,7 +725,8 @@ msgid "Vote"
 msgstr "Szavazás"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr "Értékeld mások vicceit. Dönts el, mi a vicces (és mi a szánalmas)."
 
 #: suchar_overflow/templates/pages/home.html:39
@@ -751,8 +745,8 @@ msgstr "Nevetés (opcionális)"
 #: suchar_overflow/templates/pages/home.html:48
 msgid "We guarantee a pity smile or your money back (the site is free)."
 msgstr ""
-"Garantáljuk, hogy legalább egy kedves mosolyt elkap, különben visszatérítjük "
-"az összeget (a weboldal ingyenes)."
+"Garantáljuk, hogy legalább egy kedves mosolyt elkap, különben visszatérítjük"
+" az összeget (a weboldal ingyenes)."
 
 #: suchar_overflow/templates/registration/activation_complete.html:6
 msgid "Activation Complete"
@@ -767,8 +761,8 @@ msgid ""
 "Your account has been activated successfully. You can now log in and start "
 "using Suchar Overflow."
 msgstr ""
-"A fiókja sikeresen aktiválva lett. Most már bejelentkezhet és használhatja a "
-"Suchar Overflow-t."
+"A fiókja sikeresen aktiválva lett. Most már bejelentkezhet és használhatja a"
+" Suchar Overflow-t."
 
 #: suchar_overflow/templates/registration/activation_complete.html:28
 #: suchar_overflow/templates/registration/password_reset_complete.html:19
@@ -912,8 +906,8 @@ msgid ""
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
 "Ha a megadott e-mail címmel már létezik egy fiók, akkor utasításokat "
-"küldtünk az Ön által megadott címre a jelszó beállításához. Ezeket hamarosan "
-"megkapja."
+"küldtünk az Ön által megadott címre a jelszó beállításához. Ezeket hamarosan"
+" megkapja."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
@@ -944,7 +938,6 @@ msgid "Thanks for using our site!"
 msgstr "Köszönjük, hogy oldalunkat használja!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
 msgstr "A Suchar Overflow csapat"
@@ -983,20 +976,20 @@ msgstr ""
 "beérkezett leveleket, és kattintson a hivatkozásra a fiókja aktiválásához."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
 msgstr ""
-"A közösségünk által létrehozott legjobb (és legviccesebb) tartalmakat "
-"mutatjuk be."
+"Örvendezünk a legjobbakkal és a legördögültebbekkel, amelyeket a közösség "
+"teremtett."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktivitás"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "Mindig"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1175,21 +1168,20 @@ msgstr "Legfrissebb"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktív szűrők:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Keresés..."
+msgstr "Keresés:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Szerző:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Tisztítás összes"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1202,10 +1194,9 @@ msgstr "Szerkesztés"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Bejelentkezés"
+msgstr "Jelentkezzen be szavazni"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1270,17 +1261,13 @@ msgstr "Ellenőrizze mindkét beérkezett levelezést!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Üzenetet küldtünk az Ön <strong>ÚJ</strong> címére egy aktivációs "
-"hivatkozással.\n"
+"Üzenetet küldtünk az Ön <strong>ÚJ</strong> címére egy aktivációs hivatkozással.\n"
 "          <br />\n"
-"          Emellett figyelmeztetést is küldtünk a régi címére, hogy tudja, "
-"valóban Önről van szó."
+"          Emellett figyelmeztetést is küldtünk a régi címére, hogy tudja, valóban Önről van szó."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1349,13 +1336,14 @@ msgid ""
 "Phew, that was close. Your email address has been restored to its previous "
 "state."
 msgstr ""
-"Szia! A fiókod biztonságban van. Az e-mail címedet visszaállítottuk az előző "
-"állapotára."
+"Szia! A fiókod biztonságban van. Az e-mail címedet visszaállítottuk az előző"
+" állapotára."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:19
 msgid "You can breathe a sigh of relief. We recommend changing your password."
 msgstr ""
-"Most már nyugodtan lélegzethez. Javasoljuk, hogy változtassa meg a jelszavát."
+"Most már nyugodtan lélegzethez. Javasoljuk, hogy változtassa meg a "
+"jelszavát."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:32
 msgid "Change cancelled"
@@ -1391,8 +1379,8 @@ msgid ""
 "If it was you - great, you don't need to do anything here (just check that "
 "other inbox)."
 msgstr ""
-"Ha ez Ön volt – nagyszerű, ebben az esetben itt nem kell semmit tennie (csak "
-"ellenőrizze a másik beérkezett üzenetek mappáját)."
+"Ha ez Ön volt – nagyszerű, ebben az esetben itt nem kell semmit tennie (csak"
+" ellenőrizze a másik beérkezett üzenetek mappáját)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:9
 msgid "BUT IF IT WASN'T YOU:"

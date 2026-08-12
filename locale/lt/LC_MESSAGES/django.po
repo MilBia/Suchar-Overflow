@@ -16,9 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? "
-"1 : n % 1 != 0 ? 2: 3);\n"
+"Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 #: config/settings/base.py:34
 msgid "Arabic"
@@ -65,10 +63,9 @@ msgid "Estonian"
 msgstr "Estija"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Asmeninė informacija"
+msgstr "Persian"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -291,7 +288,7 @@ msgstr "Poliarizatorius"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Frontend Event"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -549,10 +546,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Pasiekimas užblokuotas. Sužinokite jo paslaptį žaisdami!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Peržiūrėti pasiekimus"
+msgstr "Peržiūrėti visus įvertinimus"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -574,37 +570,32 @@ msgstr "Lygų lentelė"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
-
-#: suchar_overflow/templates/base.html:146
-#, fuzzy
-#| msgid "Search..."
-msgid "Search…"
-msgstr "Ieškoti..."
-
-#: suchar_overflow/templates/base.html:174
-#, fuzzy
-#| msgid "Notification"
-msgid "Notifications"
 msgstr "Pranešimas"
 
+#: suchar_overflow/templates/base.html:146
+#| msgid "Search..."
+msgid "Search…"
+msgstr "Rodyti…"
+
+#: suchar_overflow/templates/base.html:174
+#| msgid "Notification"
+msgid "Notifications"
+msgstr "Pastatymai"
+
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Peržiūrėti pasiekimus"
+msgstr "Nauji pasiekimai"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Peržiūrėti pasiekimus"
+msgstr "Nėra naujų pasiekimų"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Mano pasiekimai"
+msgstr "Visų mano pasiekimų peržiūra"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -684,8 +675,8 @@ msgstr "Užduotis"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "„Suchar Overflow“ tikslas – surinkti didžiausią juokelių, kurie sukelia "
 "fizinį diskomfortą, kolekciją. Mūsų nuomone, geras sausas juokelis yra tas, "
@@ -697,12 +688,12 @@ msgstr "Technologijos"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Svetainė sukurta naudojant naujausias technologijas (Django + individualų "
-"CSS), kad užtikrintume greitą ir patikimą „cringe“ turinio pateikimą tiesiai "
-"į jūsų ekraną."
+"CSS), kad užtikrintume greitą ir patikimą „cringe“ turinio pateikimą tiesiai"
+" į jūsų ekraną."
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -713,6 +704,8 @@ msgid ""
 "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
 "you need a drink."
 msgstr ""
+"Vilietiškai:\n"
+"Gražu į <strong>Suchar Overflow</strong>. Ta vieta, kurios žydria rūbos, turite gėrimą."
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."
@@ -732,7 +725,8 @@ msgid "Vote"
 msgstr "Balsuoti"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Įvertinkite kitų žmonių pokštus. Nuspręskite, kas yra juokinga (o kas – "
 "nevykėliška)."
@@ -786,8 +780,8 @@ msgstr "Sveiki, %(username)s!"
 msgid ""
 "Welcome to Suchar Overflow - a place where air humidity drops below zero."
 msgstr ""
-"Sveiki atvykę į „Suchar Overflow“ – vietą, kur oro drėgnumas nukrenta žemiau "
-"nulio."
+"Sveiki atvykę į „Suchar Overflow“ – vietą, kur oro drėgnumas nukrenta žemiau"
+" nulio."
 
 #: suchar_overflow/templates/registration/activation_email.txt:6
 msgid ""
@@ -894,8 +888,9 @@ msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
 msgstr ""
-"Slaptažodžio atstatymo nuoroda yra ne galiojanti, greičiausiai todėl, kad ji "
-"jau buvo panaudota. Prašome užsisakyti naują slaptažodžio atstatymo nuorodą."
+"Slaptažodžio atstatymo nuoroda yra ne galiojanti, greičiausiai todėl, kad ji"
+" jau buvo panaudota. Prašome užsisakyti naują slaptažodžio atstatymo "
+"nuorodą."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:6
 #: suchar_overflow/templates/registration/password_reset_done.html:12
@@ -928,8 +923,8 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
 msgstr ""
-"Jūs gaunate šį el. laišką, nes užklausėte slaptažodžio keitimą savo paskyros "
-"vardui, esančiai adresu:"
+"Jūs gaunate šį el. laišką, nes užklausėte slaptažodžio keitimą savo paskyros"
+" vardui, esančiai adresu:"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -944,10 +939,9 @@ msgid "Thanks for using our site!"
 msgstr "Ačiū, kad naudojatės mūsų svetaine!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "„Suchar Overflow“ komanda"
+msgstr "Suchar Overflow komanda"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -984,20 +978,19 @@ msgstr ""
 "aktyvuotumėte paskyrą."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
 msgstr ""
-"Švenčiame geriausius (ir sausiausius) momentus, kuriuos sukūrė mūsų "
-"bendruomenė."
+"Šventintame geriausius ir sausumos (ir sausumos) dėl mūsų bendruomenės."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Veiksmingumas"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "Viso laiko"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1176,21 +1169,20 @@ msgstr "Naujausi"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktyvūs filtrai:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Ieškoti..."
+msgstr "Rodyti:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Kūrėjas"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Visų paistis"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1203,10 +1195,9 @@ msgstr "Redaguoti"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Prisijungti"
+msgstr "Prisijungti norint balsuoti"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1256,7 +1247,8 @@ msgstr "Pavyko!"
 msgid ""
 "Your email address has been changed. You can now sleep peacefully (or not)."
 msgstr ""
-"Jūsų el. pašto adresas buvo pakeistas. Dabar galite ramiai miegoti (arba ne)."
+"Jūsų el. pašto adresas buvo pakeistas. Dabar galite ramiai miegoti (arba "
+"ne)."
 
 #: suchar_overflow/templates/users/email_change_complete.html:28
 msgid "Back to settings"
@@ -1272,12 +1264,13 @@ msgstr "Patikrinkite abu laukus!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
+"Mūsų išsiuntome laišką į Jūsų naują adresą su aktyvavimo sanduku.\n"
+"<br />\n"
+"Tačiau taip pat išsiuntome atspaudą į Jūsų seną adresą, kad galėtumėte gerai pamatyti, ar tai tikrai Jums."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""

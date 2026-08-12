@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Eist"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Persónuupplýsingar"
+msgstr "persian"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Atkvæði gefið"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Fjármunir"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Pólfókus"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Framsíðuáhöpp"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -544,10 +543,9 @@ msgstr ""
 "Náttúrulegur árangur er læst. Uppgötvaðu leyndarmál þess með því að spila!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Skoða afrek"
+msgstr "Bragg allar upplýsingarnar"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -569,37 +567,32 @@ msgstr "Stigatafla"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Stjörnur"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Leita eftir..."
+msgstr "Sök..."
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Tilkynning"
+msgstr "Uppmunir"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Skoða afrek"
+msgstr "Ný gjörðir"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Skoða afrek"
+msgstr "Engin nýir upplifslög"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Aðgerðir mínar"
+msgstr "Sjá alla minna ávinninga mín"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -679,12 +672,12 @@ msgstr "Markmið"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Markmið <0xE1><0xBD><0xB3>ar Suchar Overflow er að safna stærstu söfnuninni "
-"af fyndnum sem valda líkamlegum óþægindum hjá þeim sem heyra þau. Við teljum "
-"að góður, \"dry\" spásskipti sé sá sem fylgist með óhuggunlegri þögn og "
+"af fyndnum sem valda líkamlegum óþægindum hjá þeim sem heyra þau. Við teljum"
+" að góður, \"dry\" spásskipti sé sá sem fylgist með óhuggunlegri þögn og "
 "grísum í baksýninu."
 
 #: suchar_overflow/templates/pages/about.html:22
@@ -693,11 +686,11 @@ msgstr "Tækni"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
-"Síðan er byggð á nýjustu tækni (Django + sérsniðin CSS) til að tryggja hraða "
-"og áreiðanlega afgreiðslu á innihaldi sem getur vakið hlátur, beint í "
+"Síðan er byggð á nýjustu tækni (Django + sérsniðin CSS) til að tryggja hraða"
+" og áreiðanlega afgreiðslu á innihaldi sem getur vakið hlátur, beint í "
 "skjáinn þinn."
 
 #: suchar_overflow/templates/pages/home.html:8
@@ -709,8 +702,8 @@ msgid ""
 "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
 "you need a drink."
 msgstr ""
-"Velkomin(n) í <strong>Suchar Overflow</strong>. Staður þar sem fyndið er svo "
-"þurrt að þú þarft að fá sér eitthvað til að drekka."
+"Velkomin(n) í <strong>Suchar Overflow</strong>. Staður þar sem fyndið er svo"
+" þurrt að þú þarft að fá sér eitthvað til að drekka."
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."
@@ -731,7 +724,8 @@ msgid "Vote"
 msgstr "Kjörðu"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr "Meta fyndni annarra og ákvarða hvað er fyndið (og hvað er misfyndið)."
 
 #: suchar_overflow/templates/pages/home.html:39
@@ -791,8 +785,8 @@ msgid ""
 "To make sure you're not a bot (or a person without a sense of humor), you "
 "need to activate your account."
 msgstr ""
-"Til að tryggja að þú sért ekki tölva (eða manneskja án skynsemlingar) þarftu "
-"að virkja reikninginn þinn."
+"Til að tryggja að þú sért ekki tölva (eða manneskja án skynsemlingar) þarftu"
+" að virkja reikninginn þinn."
 
 #: suchar_overflow/templates/registration/activation_email.txt:8
 msgid "Click this link before it dries out:"
@@ -816,8 +810,8 @@ msgid ""
 "The activation link is invalid or has expired. Please try registering again "
 "or contact support."
 msgstr ""
-"Virkjunartengillinn er ónýtur eða hefur verið útrunninn. Vinsamlegast reynið "
-"að skrá ykkur aftur eða hafið samband við þjónustuver."
+"Virkjunartengillinn er ónýtur eða hefur verið útrunninn. Vinsamlegast reynið"
+" að skrá ykkur aftur eða hafið samband við þjónustuver."
 
 #: suchar_overflow/templates/registration/activation_failed.html:29
 msgid "Sign Up Again"
@@ -878,8 +872,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Vinsamlegast sláðu inn nýja lykilorðið tvisvar, svo að við getum staðfest að "
-"þú slóst því rétt inn."
+"Vinsamlegast sláðu inn nýja lykilorðið tvisvar, svo að við getum staðfest að"
+" þú slóst því rétt inn."
 
 #: suchar_overflow/templates/registration/password_reset_confirm.html:20
 msgid "Change password"
@@ -942,10 +936,9 @@ msgid "Thanks for using our site!"
 msgstr "Takk fyrir að nota síðuna okkar!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Liðið hjá Suchar sem sér um yfirfyllingu"
+msgstr "Þjóðfélagið Suchar Overflow"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -981,20 +974,18 @@ msgstr ""
 "skoðaðu innkassann og smelltu á hlekkinn til að virkja reikninginn þinn."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr ""
-"Fagnað þeim frábæra (og það sem er ekki eins frábært) sem samfélagið okkar "
-"hefur skapað."
+msgstr "Þjónustur um bestu (og þurrasta) sem er skapað af samfélögum okkar."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktivitet"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "Á öllum tímum"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1173,21 +1164,20 @@ msgstr "Nýjasta"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktive filter:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Leita eftir..."
+msgstr "Sökja:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Forritari:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Ræna öll"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1200,10 +1190,9 @@ msgstr "Breyta"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Innskráning"
+msgstr "Inni inn í notaskil til að kalla röskun."
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1269,17 +1258,13 @@ msgstr "Athugaðu bæði innsöndurnar!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Við sendum þér skilaboð í <strong>NÝJA</strong> heimilisfanginu þínu með "
-"hlekk til að virkja reikninginn.\n"
+"Við sendum þér skilaboð í <strong>NÝJA</strong> heimilisfanginu þínu með hlekk til að virkja reikninginn.\n"
 "<br />\n"
-"En við sendum einnig varaheimild í <strong>GAMLA** heimilisfanginu þínu, svo "
-"þú vitir að þetta er raunverulega þú."
+"En við sendum einnig varaheimild í <strong>GAMLA** heimilisfanginu þínu, svo þú vitir að þetta er raunverulega þú."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1411,7 +1396,8 @@ msgstr ""
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:15
 msgid "We also recommend changing your password if you suspect a breach."
-msgstr "Við mælum einnig með því að þú skiptir um lykilorði ef þú grunar brot."
+msgstr ""
+"Við mælum einnig með því að þú skiptir um lykilorði ef þú grunar brot."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:17
 #: suchar_overflow/templates/users/email_verify_email.txt:14
@@ -1430,7 +1416,8 @@ msgstr ""
 #: suchar_overflow/templates/users/email_verify_email.txt:7
 msgid "If it's you, click the link below to confirm the change:"
 msgstr ""
-"Ef þetta er þú, smelltu á hlekkinn hér að neðan til að staðfesta breytinguna:"
+"Ef þetta er þú, smelltu á hlekkinn hér að neðan til að staðfesta "
+"breytinguna:"
 
 #: suchar_overflow/templates/users/email_verify_email.txt:10
 msgid "The link is valid for 24 hours (or until it evaporates)."
@@ -1504,7 +1491,7 @@ msgstr "Heildarfjöldi atkvæða"
 
 #: suchar_overflow/templates/users/user_detail.html:148
 msgid "Joined"
-msgstr ""
+msgstr "Bjóðað"
 
 #: suchar_overflow/templates/users/user_detail.html:156
 msgid "Dryness Level"

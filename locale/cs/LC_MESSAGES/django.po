@@ -16,8 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
-"<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
 #: config/settings/base.py:34
 msgid "Arabic"
@@ -64,10 +63,9 @@ msgid "Estonian"
 msgstr "Estonsky"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Osobní údaje"
+msgstr "persianský"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -254,7 +252,7 @@ msgstr "Hlasováno"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Přední část"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -290,7 +288,7 @@ msgstr "Polarizační filtr"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Přední část události"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -490,8 +488,8 @@ msgid ""
 "We track these errors automatically, but if the problem persists feel free "
 "to contact us. In the meantime, try refreshing."
 msgstr ""
-"Tyto chyby automaticky sledujeme, ale pokud problém přetrvává, neváhejte nás "
-"kontaktovat. Mezitím zkuste stránku obnovit."
+"Tyto chyby automaticky sledujeme, ale pokud problém přetrvává, neváhejte nás"
+" kontaktovat. Mezitím zkuste stránku obnovit."
 
 #: suchar_overflow/templates/achievements/inbox.html:6
 #: suchar_overflow/templates/achievements/inbox.html:17
@@ -502,7 +500,8 @@ msgstr "Vstupní schránka oznámení"
 #: suchar_overflow/templates/achievements/mine.html:18
 msgid "All achievements you have earned, newest first."
 msgstr ""
-"Všechny odznaky, které jste získali, seřazeny podle data (nejnovější nahoře)."
+"Všechny odznaky, které jste získali, seřazeny podle data (nejnovější "
+"nahoře)."
 
 #: suchar_overflow/templates/achievements/inbox.html:50
 #: suchar_overflow/templates/achievements/list.html:52
@@ -547,10 +546,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Úspěch je uzamčený. Odhalte jeho tajemství hraním!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Prohlédnout úspěchy"
+msgstr "Procházet všechny úspěchy"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -572,37 +570,32 @@ msgstr "Žebříček"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Příspěvek"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Vyhledat..."
+msgstr "Hledat…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Notifikace"
+msgstr "Oznámení"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Prohlédnout úspěchy"
+msgstr "Nové úspěchy"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Prohlédnout úspěchy"
+msgstr "Žádné nové úspěchy"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Moje úspěchy"
+msgstr "Zobrazit všechny mé úspěchy"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -682,8 +675,8 @@ msgstr "Mise"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Cílem projektu Suchar Overflow je shromáždit největší sbírku vtipů, které "
 "způsobují příjemci fyzickou bolest. Věříme, že dobrý suchý vtip je ten, po "
@@ -695,11 +688,12 @@ msgstr "Technologie"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
-"Stránka je vytvořena pomocí nejnovějších technologií (Django + vlastní CSS), "
-"aby se zajistilo rychlé a spolehlivé doručování obsahu přímo na váš monitor."
+"Stránka je vytvořena pomocí nejnovějších technologií (Django + vlastní CSS),"
+" aby se zajistilo rychlé a spolehlivé doručování obsahu přímo na váš "
+"monitor."
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -732,9 +726,11 @@ msgid "Vote"
 msgstr "Hlasovat"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
-"Ohodnoťte vtipy ostatních uživatelů. Rozhodněte, co je zábavné (a co směšné)."
+"Ohodnoťte vtipy ostatních uživatelů. Rozhodněte, co je zábavné (a co "
+"směšné)."
 
 #: suchar_overflow/templates/pages/home.html:39
 #: suchar_overflow/templates/suchary/suchar_list.html:68
@@ -784,7 +780,8 @@ msgstr "Ahoj, %(username)s!"
 #: suchar_overflow/templates/registration/activation_email.txt:5
 msgid ""
 "Welcome to Suchar Overflow - a place where air humidity drops below zero."
-msgstr "Vítejte v Suchar Overflow – místě, kde klesá vlhkost vzduchu pod nulu."
+msgstr ""
+"Vítejte v Suchar Overflow – místě, kde klesá vlhkost vzduchu pod nulu."
 
 #: suchar_overflow/templates/registration/activation_email.txt:6
 msgid ""
@@ -940,10 +937,9 @@ msgid "Thanks for using our site!"
 msgstr "Děkujeme, že používáte naše stránky!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Tým Suchar Overflow"
+msgstr "Tým Suchar Overflowu"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -979,18 +975,18 @@ msgstr ""
 "schránku a klikněte na odkaz k aktivaci účtu."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "Oslavujeme to nejlepší (a nejzábavnější), co naše komunita vytvořila."
+msgstr "Slavíme nejlepší (a nejobtížnější) vytvořené naším komunitou."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktivita"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "vždy"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1073,8 +1069,8 @@ msgid ""
 "This joke has already been published. You can't polish a diamond (or a dry "
 "biscuit) once it's been served."
 msgstr ""
-"Tento vtip už byl zveřejněn. Nemůžete vyleštit diamant (nebo suchý sušenku), "
-"jakmile je podán."
+"Tento vtip už byl zveřejněn. Nemůžete vyleštit diamant (nebo suchý sušenku),"
+" jakmile je podán."
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
 msgid "Time creates jokes, but it also seals them."
@@ -1169,21 +1165,20 @@ msgstr "Nejnovější"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktivní filtry:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Vyhledat..."
+msgstr "Hledat:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Autor"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Vyčistit vše"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1196,10 +1191,9 @@ msgstr "Upravit"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Přihlásit se"
+msgstr "Přihlaste se a hlasujte"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1248,7 +1242,8 @@ msgstr "Funguje to!"
 #: suchar_overflow/templates/users/email_change_complete.html:25
 msgid ""
 "Your email address has been changed. You can now sleep peacefully (or not)."
-msgstr "Vaše e-mailová adresa byla změněna. Nyní můžete klidně spát (nebo ne)."
+msgstr ""
+"Vaše e-mailová adresa byla změněna. Nyní můžete klidně spát (nebo ne)."
 
 #: suchar_overflow/templates/users/email_change_complete.html:28
 msgid "Back to settings"
@@ -1264,12 +1259,13 @@ msgstr "Zkontrolujte obě schránky!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
+"Odeslali jsme zprávu na vaši <strong>NOVOU</strong> adresu s aktivací odkazu.  \n"
+"<br />  \n"
+"Poslali jsme vám také upozornění na vaši <strong>STAROU</strong> adresu, abyste věděli, že jste to opravdu vy."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1322,7 +1318,7 @@ msgstr "Pošlete holubem odkaz"
 
 #: suchar_overflow/templates/users/email_change_form.html:26
 msgid "Changed my mind (go back)"
-msgstr ""
+msgstr "Změnil jsem názor (zpět)"
 
 #: suchar_overflow/templates/users/email_change_revoked.html:6
 #: suchar_overflow/users/models.py:75
@@ -1338,7 +1334,8 @@ msgid ""
 "Phew, that was close. Your email address has been restored to its previous "
 "state."
 msgstr ""
-"Fuj, to bylo těsně. Vaše e-mailová adresa byla obnovena do předchozího stavu."
+"Fuj, to bylo těsně. Vaše e-mailová adresa byla obnovena do předchozího "
+"stavu."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:19
 msgid "You can breathe a sigh of relief. We recommend changing your password."
@@ -1401,7 +1398,8 @@ msgstr ""
 #: suchar_overflow/templates/users/email_notify_old_email.txt:15
 msgid "We also recommend changing your password if you suspect a breach."
 msgstr ""
-"Doporučujeme také změnit heslo, pokud máte podezření na narušení bezpečnosti."
+"Doporučujeme také změnit heslo, pokud máte podezření na narušení "
+"bezpečnosti."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:17
 #: suchar_overflow/templates/users/email_verify_email.txt:14

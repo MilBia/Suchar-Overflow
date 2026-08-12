@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Estnisch"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Persönliche Daten"
+msgstr "Persian"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Stimme abgegeben"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Vorderseite"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Polarisationsfilter"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Vorderer Ereignis"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -387,7 +386,7 @@ msgstr "Tier"
 
 #: suchar_overflow/achievements/models.py:76
 msgid "Difficulty/Rarity tier of the achievement"
-msgstr ""
+msgstr "Schwierigkeits-/Seltenheits-Tier der Errungenschaft"
 
 #: suchar_overflow/achievements/models.py:79
 msgid "Secret Achievement"
@@ -491,8 +490,8 @@ msgid ""
 "We track these errors automatically, but if the problem persists feel free "
 "to contact us. In the meantime, try refreshing."
 msgstr ""
-"Wir protokollieren diese Fehler automatisch, aber wenn das Problem weiterhin "
-"besteht, können Sie sich gerne an uns wenden. Versuchen Sie in der "
+"Wir protokollieren diese Fehler automatisch, aber wenn das Problem weiterhin"
+" besteht, können Sie sich gerne an uns wenden. Versuchen Sie in der "
 "Zwischenzeit, die Seite neu zu laden."
 
 #: suchar_overflow/templates/achievements/inbox.html:6
@@ -550,10 +549,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Erfolgreich freigeschaltet. Entdecke sein Geheimnis beim Spielen!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Erfolge durchsuchen"
+msgstr "Durchsuche alle Errungenschaften"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -575,37 +573,32 @@ msgstr "Bestenliste"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Post"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "Suchen…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Benachrichtigung"
+msgstr "Benachrichtigungen"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Erfolge durchsuchen"
+msgstr "Neue Errungenschaften"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Erfolge durchsuchen"
+msgstr "Keine neuen Errungenschaften"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Meine Erfolge"
+msgstr "Alle meine Errungenschaften anzeigen"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -685,13 +678,13 @@ msgstr "Mission"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Das Ziel von Suchar Overflow ist es, die größte Sammlung von Witzen zu "
 "sammeln, die dem Empfänger körperliches Unbehagen bereiten. Wir glauben, "
-"dass ein guter trockener Witz einer ist, der von unangenehmer Stille und dem "
-"Zirpen von Grillen im Hintergrund begleitet wird."
+"dass ein guter trockener Witz einer ist, der von unangenehmer Stille und dem"
+" Zirpen von Grillen im Hintergrund begleitet wird."
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -699,12 +692,12 @@ msgstr "Technologie"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Die Seite wurde mit den neuesten Technologien (Django + Custom CSS) "
-"entwickelt, um eine schnelle und zuverlässige Bereitstellung von Inhalten zu "
-"gewährleisten, die dich zum Lachen bringen."
+"entwickelt, um eine schnelle und zuverlässige Bereitstellung von Inhalten zu"
+" gewährleisten, die dich zum Lachen bringen."
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -737,7 +730,8 @@ msgid "Vote"
 msgstr "Abstimmen"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Bewerte die Witze anderer Leute. Entscheide, was lustig ist (und was "
 "erbärmlich)."
@@ -888,8 +882,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Bitte geben Sie Ihr neues Passwort zweimal ein, damit wir überprüfen können, "
-"ob Sie es korrekt eingegeben haben."
+"Bitte geben Sie Ihr neues Passwort zweimal ein, damit wir überprüfen können,"
+" ob Sie es korrekt eingegeben haben."
 
 #: suchar_overflow/templates/registration/password_reset_confirm.html:20
 msgid "Change password"
@@ -900,8 +894,8 @@ msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
 msgstr ""
-"Der Link zum Zurücksetzen des Passworts ist ungültig, möglicherweise weil er "
-"bereits verwendet wurde. Bitte fordern Sie ein neues Zurücksetzen Ihres "
+"Der Link zum Zurücksetzen des Passworts ist ungültig, möglicherweise weil er"
+" bereits verwendet wurde. Bitte fordern Sie ein neues Zurücksetzen Ihres "
 "Passworts an."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:6
@@ -919,8 +913,8 @@ msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
-"Wir haben Ihnen eine E-Mail mit Anweisungen zum Zurücksetzen Ihres Passworts "
-"geschickt, falls ein Konto mit der von Ihnen angegebenen E-Mail-Adresse "
+"Wir haben Ihnen eine E-Mail mit Anweisungen zum Zurücksetzen Ihres Passworts"
+" geschickt, falls ein Konto mit der von Ihnen angegebenen E-Mail-Adresse "
 "existiert. Sie sollten diese in Kürze erhalten."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
@@ -929,8 +923,8 @@ msgid ""
 "you registered with, and check your spam folder."
 msgstr ""
 "Wenn Sie keine E-Mail erhalten, stellen Sie bitte sicher, dass Sie die "
-"Adresse eingegeben haben, mit der Sie sich registriert haben, und überprüfen "
-"Sie Ihren Spam-Ordner."
+"Adresse eingegeben haben, mit der Sie sich registriert haben, und überprüfen"
+" Sie Ihren Spam-Ordner."
 
 #: suchar_overflow/templates/registration/password_reset_email.html:4
 msgid ""
@@ -954,10 +948,9 @@ msgid "Thanks for using our site!"
 msgstr "Vielen Dank für die Nutzung unserer Website!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Das Suchar Overflow-Team"
+msgstr "Das Suchar Overflow Team"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -994,20 +987,20 @@ msgstr ""
 "Konto zu aktivieren."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
 msgstr ""
-"Wir feiern die besten (und trockensten) Inhalte, die von unserer Community "
-"erstellt wurden."
+"Feiert die besten (und trockensten) Beiträge, die unsere Community "
+"hervorgebracht hat."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktivität"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "Gesamtzeit"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1090,8 +1083,8 @@ msgid ""
 "This joke has already been published. You can't polish a diamond (or a dry "
 "biscuit) once it's been served."
 msgstr ""
-"Dieser Witz wurde bereits veröffentlicht. Man kann einen Diamanten (oder ein "
-"trockenes Keks) nicht zweimal polieren, wenn er schon einmal präsentiert "
+"Dieser Witz wurde bereits veröffentlicht. Man kann einen Diamanten (oder ein"
+" trockenes Keks) nicht zweimal polieren, wenn er schon einmal präsentiert "
 "wurde."
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
@@ -1187,21 +1180,20 @@ msgstr "Neueste"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktive Filter:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Suchen…"
+msgstr "Suche:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Autor"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Löschen"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1214,10 +1206,9 @@ msgstr "Bearbeiten"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Anmelden"
+msgstr "Melde dich an, um abzustimmen"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1284,17 +1275,13 @@ msgstr "Überprüfen Sie beide Postfächer!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Wir haben eine Nachricht an Ihre <strong>NEUE</strong> Adresse mit einem "
-"Aktivierungslink gesendet.\n"
+"Wir haben eine Nachricht an Ihre <strong>NEUE</strong> Adresse mit einem Aktivierungslink gesendet.\n"
 "          <br />\n"
-"          Außerdem haben wir eine Warnung an Ihre <strong>ALTE</strong> "
-"Adresse gesendet, damit Sie wissen, dass es wirklich Sie sind."
+"          Außerdem haben wir eine Warnung an Ihre <strong>ALTE</strong> Adresse gesendet, damit Sie wissen, dass es wirklich Sie sind."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1394,7 +1381,8 @@ msgstr "Passwort ändern (nur für den Fall der Fälle)"
 #, python-format
 msgid "We just received a request to change your email address to: %(email)s."
 msgstr ""
-"Wir haben eine Anfrage erhalten, Ihre E-Mail-Adresse auf %(email)s zu ändern."
+"Wir haben eine Anfrage erhalten, Ihre E-Mail-Adresse auf %(email)s zu "
+"ändern."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:7
 msgid ""
@@ -1630,7 +1618,8 @@ msgstr "E-Mail-Änderungsanfragen"
 
 #: suchar_overflow/users/tasks.py:11
 msgid "Confirm you have a sense of humor (Account Activation)"
-msgstr "Bestätigen Sie, dass Sie einen Sinn für Humor haben (Kontoaktivierung)"
+msgstr ""
+"Bestätigen Sie, dass Sie einen Sinn für Humor haben (Kontoaktivierung)"
 
 #: suchar_overflow/users/tasks.py:29
 msgid "Confirm it's you (Email Change)"

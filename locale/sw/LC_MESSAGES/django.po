@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Estonia"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Taarifa za kibinafsi"
+msgstr "Farsi"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -254,6 +253,9 @@ msgstr "Kura imetolewa"
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
 msgstr ""
+"Majibu ya API\n"
+"\n"
+"(Note: The context provided seems to be a reference to a specific file and section within a Django project, but the actual UI string to translate was not included in your request. Assuming the task is to translate \"Frontend\" as it might appear in a UI context, the Swahili"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +291,7 @@ msgstr "Kipolaraisha"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Ufafadhili wa Uhusiano"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -544,10 +546,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Mafanikio yamefungwa. Gundua siri yake kwa kucheza!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Angalia mafanikio"
+msgstr "naviga kwa yote ya hatari"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -569,37 +570,32 @@ msgstr "Orodha ya Washindi"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Poste"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Tafuta..."
+msgstr "Kuelekea..."
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Arifa"
+msgstr "Maagizo"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Angalia mafanikio"
+msgstr "nyewe za elimu zaidi"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Angalia mafanikio"
+msgstr "Hakuna matokeo ya kujifunza mpya"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Mafanikio Yangu"
+msgstr "nitaona yote ya hisia zangu za kazi"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -679,8 +675,8 @@ msgstr "Lengo"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Lengo la Suchar Overflow ni kukusanya mkusanyiko mkubwa zaidi wa vicheko "
 "ambavyo husababisha maumivu kwa yule anayepokea. Tunaamini kwamba kituko "
@@ -693,8 +689,8 @@ msgstr "Teknolojia"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Tovuti hii imejengwa kwa teknolojia za kisasa (Django + CSS maalum) ili "
 "kuhakikisha utoaji wa haraka na wa kuaminika wa yaliyomo ya kusumbua moja "
@@ -730,10 +726,11 @@ msgid "Vote"
 msgstr "Kura"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
-"Toa alama kwa vichekesho vya watu wengine. Amua ni nini kinachofurahisha (na "
-"ni nini ambacho ni cha kusikitisha)."
+"Toa alama kwa vichekesho vya watu wengine. Amua ni nini kinachofurahisha (na"
+" ni nini ambacho ni cha kusikitisha)."
 
 #: suchar_overflow/templates/pages/home.html:39
 #: suchar_overflow/templates/suchary/suchar_list.html:68
@@ -910,8 +907,8 @@ msgid ""
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
 "Tumekutumia barua pepe yenye maelekezo ya kuweka nenosiri lako, ikiwa kuna "
-"akaunti iliyopo kwa anwani ya barua pepe uliyotumia. Unapaswa kuzipokea hivi "
-"karibuni."
+"akaunti iliyopo kwa anwani ya barua pepe uliyotumia. Unapaswa kuzipokea hivi"
+" karibuni."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
@@ -942,10 +939,9 @@ msgid "Thanks for using our site!"
 msgstr "Asante kwa kutumia tovuti yetu!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Timu ya Suchar Overflow"
+msgstr "Jamaa ya Suchar Overflow"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -981,20 +977,19 @@ msgstr ""
 "kipeti chako na ubofye kiungo ili uwezeshe akaunti yako."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
 msgstr ""
-"Tunasherehekea mambo bora na yenye matokeo makubwa zaidi ambayo yamefanywa "
-"na jamii yetu."
+"Heshima kwa watazamaji bora zaidi na zilizopatikana kutokana na jamii yetu."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktiviti"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "kwa wote"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1173,21 +1168,23 @@ msgstr "Mpya zaidi"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Filters aktivi:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Tafuta..."
+msgstr ""
+"Kuelewa! Unataka uanzishwa la kesi ya \"Search:\" katika faili ya suchar_list.html, inayohusiana na UI ya Django. Hapa ni tafsiri ya Swahili:\n"
+"\n"
+"Mfalme:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Mwandishi"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Hapana wote"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1200,10 +1197,9 @@ msgstr "Hariri"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Ingia"
+msgstr "jifunze kutuma kura"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1270,17 +1266,13 @@ msgstr "Angalia masanduku yote mawili ya barua pepe!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Tumesenda ujumbe kwa <strong>ANVANI MPYA</strong> yako yenye kiungo cha "
-"uanzishaji.\n"
+"Tumesenda ujumbe kwa <strong>ANVANI MPYA</strong> yako yenye kiungo cha uanzishaji.\n"
 "<br />\n"
-"Lakini pia tumesenda onyo kwa <strong>ANVANI YAKO YA ZAMANI</strong>, ili "
-"ujue kwamba ni wewe kweli."
+"Lakini pia tumesenda onyo kwa <strong>ANVANI YAKO YA ZAMANI</strong>, ili ujue kwamba ni wewe kweli."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""

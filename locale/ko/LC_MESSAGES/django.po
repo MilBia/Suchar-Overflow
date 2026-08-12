@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "에스토니아어"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "개인 정보"
+msgstr "페르시아어"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -254,6 +253,7 @@ msgstr "투표 완료"
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
 msgstr ""
+"앞으로의 작업에 대한 맥락을 제공해 주셔서 감사합니다만, 직접적인 코드나 파일 내용이 아닌 UI 문자열만 번역해 드리는 것이 원칙입니다."
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +289,7 @@ msgstr "편광 필터"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "프런트엔드 이벤트"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -485,8 +485,7 @@ msgid ""
 "We track these errors automatically, but if the problem persists feel free "
 "to contact us. In the meantime, try refreshing."
 msgstr ""
-"저희는 이러한 오류를 자동으로 추적하지만 문제가 지속되면 언제든지 저희에게 연"
-"락해 주세요. 그동안 새로 고침을 시도해 보세요."
+"저희는 이러한 오류를 자동으로 추적하지만 문제가 지속되면 언제든지 저희에게 연락해 주세요. 그동안 새로 고침을 시도해 보세요."
 
 #: suchar_overflow/templates/achievements/inbox.html:6
 #: suchar_overflow/templates/achievements/inbox.html:17
@@ -541,10 +540,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "업적이 잠겨 있습니다. 플레이를 통해 그 비밀을 밝혀보세요!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "업적 보기"
+msgstr "모든 업적 둘러보기"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -566,37 +564,32 @@ msgstr "순위표"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "게시글"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "검색..."
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
 msgstr "알림"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "업적 보기"
+msgstr "신규 업적"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "업적 보기"
+msgstr "신규 업적이 없습니다."
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "내 성과"
+msgstr "모든 업적 보기"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -676,12 +669,11 @@ msgstr "미션"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
-"Suchar Overflow의 목표는 수신자에게 육체적 고통을 유발하는 가장 큰 농담 모음"
-"을 모으는 것입니다. 저희는 훌륭한 말장난은 어색한 침묵과 배경에서 귀뚜라미 소"
-"리가 들리는 것으로 완성된다고 믿습니다."
+"Suchar Overflow의 목표는 수신자에게 육체적 고통을 유발하는 가장 큰 농담 모음을 모으는 것입니다. 저희는 훌륭한 말장난은 "
+"어색한 침묵과 배경에서 귀뚜라미 소리가 들리는 것으로 완성된다고 믿습니다."
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -689,11 +681,11 @@ msgstr "기술"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
-"저희 사이트는 최신 기술(Django + 커스텀 CSS)을 사용하여 빠르고 안정적인 방식"
-"으로 재미있는 콘텐츠를 여러분의 화면으로 전달합니다."
+"저희 사이트는 최신 기술(Django + 커스텀 CSS)을 사용하여 빠르고 안정적인 방식으로 재미있는 콘텐츠를 여러분의 화면으로 "
+"전달합니다."
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -704,13 +696,12 @@ msgid ""
 "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
 "you need a drink."
 msgstr ""
-"<strong>Suchar Overflow</strong>에 오신 것을 환영합니다. 이곳은 유머가 너무 "
-"건조해서 음료수가 필요할 정도입니다."
+"<strong>Suchar Overflow</strong>에 오신 것을 환영합니다. 이곳은 유머가 너무 건조해서 음료수가 필요할 "
+"정도입니다."
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."
-msgstr ""
-"최고의 유머에 투표하고, 여러분의 유머를 추가하여 사무실의 전설이 되세요."
+msgstr "최고의 유머에 투표하고, 여러분의 유머를 추가하여 사무실의 전설이 되세요."
 
 #: suchar_overflow/templates/pages/home.html:15
 msgid "Browse Jokes"
@@ -725,10 +716,9 @@ msgid "Vote"
 msgstr "투표"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
-msgstr ""
-"다른 사람들의 유머를 평가하세요. 무엇이 재미있는지 (그리고 무엇이 가치 없는"
-"지) 판단해 보세요."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr "다른 사람들의 유머를 평가하세요. 무엇이 재미있는지 (그리고 무엇이 가치 없는지) 판단해 보세요."
 
 #: suchar_overflow/templates/pages/home.html:39
 #: suchar_overflow/templates/suchary/suchar_list.html:68
@@ -745,9 +735,7 @@ msgstr "웃음 (선택 사항)"
 
 #: suchar_overflow/templates/pages/home.html:48
 msgid "We guarantee a pity smile or your money back (the site is free)."
-msgstr ""
-"저희는 만족스러운 경험을 보장하며, 그렇지 않다면 환불해 드립니다 (사이트 이용"
-"은 무료입니다)."
+msgstr "저희는 만족스러운 경험을 보장하며, 그렇지 않다면 환불해 드립니다 (사이트 이용은 무료입니다)."
 
 #: suchar_overflow/templates/registration/activation_complete.html:6
 msgid "Activation Complete"
@@ -761,9 +749,7 @@ msgstr "계정이 활성화되었습니다!"
 msgid ""
 "Your account has been activated successfully. You can now log in and start "
 "using Suchar Overflow."
-msgstr ""
-"계정이 성공적으로 활성화되었습니다. 지금 로그인하여 Suchar Overflow를 사용해 "
-"보세요."
+msgstr "계정이 성공적으로 활성화되었습니다. 지금 로그인하여 Suchar Overflow를 사용해 보세요."
 
 #: suchar_overflow/templates/registration/activation_complete.html:28
 #: suchar_overflow/templates/registration/password_reset_complete.html:19
@@ -780,17 +766,13 @@ msgstr "안녕하세요, %(username)s님!"
 #: suchar_overflow/templates/registration/activation_email.txt:5
 msgid ""
 "Welcome to Suchar Overflow - a place where air humidity drops below zero."
-msgstr ""
-"Suchar Overflow에 오신 것을 환영합니다. 이곳은 공기 습도가 0도 아래로 떨어지"
-"는 곳입니다."
+msgstr "Suchar Overflow에 오신 것을 환영합니다. 이곳은 공기 습도가 0도 아래로 떨어지는 곳입니다."
 
 #: suchar_overflow/templates/registration/activation_email.txt:6
 msgid ""
 "To make sure you're not a bot (or a person without a sense of humor), you "
 "need to activate your account."
-msgstr ""
-"봇이 아니거나 유머 감각이 없는 사용자가 아닌지 확인하기 위해 계정을 활성화해"
-"야 합니다."
+msgstr "봇이 아니거나 유머 감각이 없는 사용자가 아닌지 확인하기 위해 계정을 활성화해야 합니다."
 
 #: suchar_overflow/templates/registration/activation_email.txt:8
 msgid "Click this link before it dries out:"
@@ -813,9 +795,7 @@ msgstr "활성화 실패"
 msgid ""
 "The activation link is invalid or has expired. Please try registering again "
 "or contact support."
-msgstr ""
-"활성화 링크가 유효하지 않거나 만료되었습니다. 다시 등록해 보시거나 지원팀에 "
-"문의하십시오."
+msgstr "활성화 링크가 유효하지 않거나 만료되었습니다. 다시 등록해 보시거나 지원팀에 문의하십시오."
 
 #: suchar_overflow/templates/registration/activation_failed.html:29
 msgid "Sign Up Again"
@@ -885,9 +865,7 @@ msgstr "비밀번호 변경"
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
-msgstr ""
-"비밀번호 재설정 링크가 유효하지 않습니다. 이미 사용되었을 수 있습니다. 새 비"
-"밀번호 재설정을 요청하십시오."
+msgstr "비밀번호 재설정 링크가 유효하지 않습니다. 이미 사용되었을 수 있습니다. 새 비밀번호 재설정을 요청하십시오."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:6
 #: suchar_overflow/templates/registration/password_reset_done.html:12
@@ -904,24 +882,19 @@ msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
-"입력하신 이메일 주소로 등록된 계정이 있는 경우, 비밀번호 설정 방법을 담은 안"
-"내 메일을 보내드렸습니다. 곧 수신하실 수 있습니다."
+"입력하신 이메일 주소로 등록된 계정이 있는 경우, 비밀번호 설정 방법을 담은 안내 메일을 보내드렸습니다. 곧 수신하실 수 있습니다."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
-msgstr ""
-"이메일을 받지 못하신 경우, 등록하신 주소를 정확하게 입력했는지 확인하고 스팸 "
-"폴더를 확인해 주세요."
+msgstr "이메일을 받지 못하신 경우, 등록하신 주소를 정확하게 입력했는지 확인하고 스팸 폴더를 확인해 주세요."
 
 #: suchar_overflow/templates/registration/password_reset_email.html:4
 msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
-msgstr ""
-"이 이메일을 받는 이유는 귀하의 사용자 계정에 대한 비밀번호 재설정을 요청했기 "
-"때문입니다."
+msgstr "이 이메일을 받는 이유는 귀하의 사용자 계정에 대한 비밀번호 재설정을 요청했기 때문입니다."
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -936,10 +909,9 @@ msgid "Thanks for using our site!"
 msgstr "저희 사이트를 이용해 주셔서 감사합니다!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Suchar 오버플로우 팀"
+msgstr "Suchar Overflow 팀"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -950,9 +922,7 @@ msgstr "비밀번호 재설정"
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
-msgstr ""
-"비밀번호를 잊으셨나요? 아래에 이메일 주소를 입력하시면 새 비밀번호 설정 방법"
-"을 안내해 드리는 이메일을 보내드리겠습니다."
+msgstr "비밀번호를 잊으셨나요? 아래에 이메일 주소를 입력하시면 새 비밀번호 설정 방법을 안내해 드리는 이메일을 보내드리겠습니다."
 
 #: suchar_overflow/templates/registration/password_reset_form.html:22
 msgid "Reset my password"
@@ -970,24 +940,21 @@ msgstr "확인 메시지 전송됨"
 msgid ""
 "We have sent you an email to confirm your registration. Please check your "
 "inbox and click the link to activate your account."
-msgstr ""
-"등록을 확인하기 위해 이메일을 보내드렸습니다. 받은 편지함을 확인하시고 계정"
-"을 활성화하기 위한 링크를 클릭해 주세요."
+msgstr "등록을 확인하기 위해 이메일을 보내드렸습니다. 받은 편지함을 확인하시고 계정을 활성화하기 위한 링크를 클릭해 주세요."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr ""
-"저희 커뮤니티가 만들어낸 최고의 순간들과 재미있는 이야기들을 함께 기념합니다."
+msgstr "커뮤니티에서 일어난 가장 뛰어난(그리고 가장 건조한) 것들을 축하합니다."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "활동"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "전체 시간"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1069,9 +1036,7 @@ msgstr "이미 늦었습니다!"
 msgid ""
 "This joke has already been published. You can't polish a diamond (or a dry "
 "biscuit) once it's been served."
-msgstr ""
-"이 농담은 이미 게시되었습니다. 다이아몬드(또는 마른 비스킷)를 한 번 제공하면 "
-"다시 다듬을 수 없습니다."
+msgstr "이 농담은 이미 게시되었습니다. 다이아몬드(또는 마른 비스킷)를 한 번 제공하면 다시 다듬을 수 없습니다."
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
 msgid "Time creates jokes, but it also seals them."
@@ -1166,21 +1131,20 @@ msgstr "최신"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "활성 필터:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "검색..."
+msgstr "검색:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "작성자"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "모두 삭제하기"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1193,10 +1157,9 @@ msgstr "편집"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "로그인"
+msgstr "로그인하여 투표하세요"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1245,9 +1208,7 @@ msgstr "성공했습니다!"
 #: suchar_overflow/templates/users/email_change_complete.html:25
 msgid ""
 "Your email address has been changed. You can now sleep peacefully (or not)."
-msgstr ""
-"이메일 주소가 변경되었습니다. 이제 편안하게 잠자리에 들 수 있습니다 (아니면 "
-"그렇지 않을 수도 있습니다)."
+msgstr "이메일 주소가 변경되었습니다. 이제 편안하게 잠자리에 들 수 있습니다 (아니면 그렇지 않을 수도 있습니다)."
 
 #: suchar_overflow/templates/users/email_change_complete.html:28
 msgid "Back to settings"
@@ -1263,24 +1224,19 @@ msgstr "두 개의 받은 편지함을 확인하세요!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
 "<strong>새로운</strong> 주소로 활성화 링크가 포함된 메시지를 보냈습니다.\n"
 "<br />\n"
-"하지만 <strong>기존</strong> 주소로도 경고 메시지를 보내서 실제로 본인임을 확"
-"인시켜 드립니다."
+"하지만 <strong>기존</strong> 주소로도 경고 메시지를 보내서 실제로 본인임을 확인시켜 드립니다."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
 "If you don't click the link, nothing will change. Your account will remain "
 "as dry as our jokes."
-msgstr ""
-"링크를 클릭하지 않으면 아무것도 바뀌지 않습니다. 계정은 저희 농담만큼이나 건"
-"조하게 유지됩니다."
+msgstr "링크를 클릭하지 않으면 아무것도 바뀌지 않습니다. 계정은 저희 농담만큼이나 건조하게 유지됩니다."
 
 #: suchar_overflow/templates/users/email_change_done.html:34
 #: suchar_overflow/templates/users/email_change_revoked.html:43
@@ -1315,9 +1271,7 @@ msgstr "이메일 주소 변경"
 msgid ""
 "Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
 "judge."
-msgstr ""
-"기존 주소가 지겹거나, 혹시라도 세금 회피를 시도하시는 건가요? 저희는 판단하"
-"지 않습니다."
+msgstr "기존 주소가 지겹거나, 혹시라도 세금 회피를 시도하시는 건가요? 저희는 판단하지 않습니다."
 
 #: suchar_overflow/templates/users/email_change_form.html:25
 msgid "Send a pigeon with the link"
@@ -1358,8 +1312,7 @@ msgstr "모든 활성 이메일 변경 링크가 비활성화되었습니다."
 msgid ""
 "If it wasn't you who tried to change the email, we recommend changing your "
 "password."
-msgstr ""
-"이메일 변경 시도가 본인이 아닌 경우, 비밀번호를 변경하는 것이 좋습니다."
+msgstr "이메일 변경 시도가 본인이 아닌 경우, 비밀번호를 변경하는 것이 좋습니다."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:41
 msgid "Change password (just in case)"
@@ -1374,9 +1327,7 @@ msgstr "귀하의 이메일 주소를 %(email)s로 변경하는 요청을 받았
 msgid ""
 "If it was you - great, you don't need to do anything here (just check that "
 "other inbox)."
-msgstr ""
-"만약 본인이라면 좋습니다. 여기서는 아무것도 할 필요가 없습니다(다른 받은 편지"
-"함도 확인해 주세요)."
+msgstr "만약 본인이라면 좋습니다. 여기서는 아무것도 할 필요가 없습니다(다른 받은 편지함도 확인해 주세요)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:9
 msgid "BUT IF IT WASN'T YOU:"
@@ -1386,16 +1337,13 @@ msgstr "하지만 만약 당신이 아니라면:"
 msgid ""
 "Someone might be trying to take over your account (or you just have a split "
 "personality)."
-msgstr ""
-"누군가 귀하의 계정을 탈취하려고 시도하거나 (또는 단순히 여러 인격을 가지고 있"
-"을 수도 있습니다)."
+msgstr "누군가 귀하의 계정을 탈취하려고 시도하거나 (또는 단순히 여러 인격을 가지고 있을 수도 있습니다)."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:11
 msgid ""
 "Click this link to IMMEDIATELY CANCEL this request and invalidate the link "
 "sent to the new address:"
-msgstr ""
-"이 링크를 클릭하면 즉시 요청을 취소하고 새 주소로 전송된 링크를 무효화합니다."
+msgstr "이 링크를 클릭하면 즉시 요청을 취소하고 새 주소로 전송된 링크를 무효화합니다."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:15
 msgid "We also recommend changing your password if you suspect a breach."
@@ -1411,9 +1359,7 @@ msgstr "Suchar Overflow"
 msgid ""
 "We received a request to change your email address to this one you're "
 "reading (%(email)s)."
-msgstr ""
-"귀하의 이메일 주소를 현재 읽고 계신 주소(%(email)s)로 변경하는 요청을 받았습"
-"니다."
+msgstr "귀하의 이메일 주소를 현재 읽고 계신 주소(%(email)s)로 변경하는 요청을 받았습니다."
 
 #: suchar_overflow/templates/users/email_verify_email.txt:7
 msgid "If it's you, click the link below to confirm the change:"
@@ -1427,9 +1373,7 @@ msgstr "이 링크는 24시간 동안 유효합니다 (또는 만료될 때까�
 msgid ""
 "If it wasn't you, ignore this message. We sent instructions on how to block "
 "the intruder to your old address."
-msgstr ""
-"만약 본인이 아니시라면 이 메시지를 무시하십시오. 침입자를 차단하는 방법에 대"
-"한 안내를 이전 주소로 보냈습니다."
+msgstr "만약 본인이 아니시라면 이 메시지를 무시하십시오. 침입자를 차단하는 방법에 대한 안내를 이전 주소로 보냈습니다."
 
 #: suchar_overflow/templates/users/user_detail.html:6
 #: suchar_overflow/users/models.py:48
@@ -1607,9 +1551,7 @@ msgstr "본인 확인 (이메일 변경)"
 
 #: suchar_overflow/users/tasks.py:41
 msgid "Someone wants to change your email address (We hope it's you)"
-msgstr ""
-"누군가 귀하의 이메일 주소를 변경하려고 합니다(저희는 그것이 귀하라고 생각합니"
-"다)."
+msgstr "누군가 귀하의 이메일 주소를 변경하려고 합니다(저희는 그것이 귀하라고 생각합니다)."
 
 #: suchar_overflow/users/views.py:386
 msgid "The link has already been used or cancelled."

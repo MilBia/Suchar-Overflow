@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Estone"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Informazioni personali"
+msgstr "Persian"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Voto registrato"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Anteverso"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Polarizzatore"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Evento Frontend"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -547,10 +546,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Obiettivo sbloccato. Scopri il suo segreto giocando!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Visualizza i risultati"
+msgstr "Esplora tutte le realizzazioni"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -572,37 +570,32 @@ msgstr "Classifica"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Post"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Cerca..."
+msgstr "Ricerca…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Notifica"
+msgstr "Notifiche"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Visualizza i risultati"
+msgstr "Nuovi risultati"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Visualizza i risultati"
+msgstr "Nessun nuovo risultato"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "I miei risultati"
+msgstr "Visualizza tutti i miei risultati"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -682,8 +675,8 @@ msgstr "Missione"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "L'obiettivo di Suchar Overflow è raccogliere la più grande collezione di "
 "barzellette che causano dolore fisico al destinatario. Crediamo che una "
@@ -696,8 +689,8 @@ msgstr "Tecnologia"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Il sito è costruito con le ultime tecnologie (Django + CSS personalizzato) "
 "per garantire una consegna rapida e affidabile di contenuti divertenti "
@@ -734,7 +727,8 @@ msgid "Vote"
 msgstr "Vota"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Valuta le battute degli altri utenti. Decidi cosa è divertente (e cosa no)."
 
@@ -789,8 +783,8 @@ msgstr "Ciao %(username)s!"
 msgid ""
 "Welcome to Suchar Overflow - a place where air humidity drops below zero."
 msgstr ""
-"Benvenuti su Suchar Overflow, un luogo dove l'umidità dell'aria scende sotto "
-"lo zero."
+"Benvenuti su Suchar Overflow, un luogo dove l'umidità dell'aria scende sotto"
+" lo zero."
 
 #: suchar_overflow/templates/registration/activation_email.txt:6
 msgid ""
@@ -932,8 +926,8 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
 msgstr ""
-"Ricevi questa email perché hai richiesto il ripristino della password per il "
-"tuo account utente su"
+"Ricevi questa email perché hai richiesto il ripristino della password per il"
+" tuo account utente su"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -949,7 +943,6 @@ msgid "Thanks for using our site!"
 msgstr "Grazie per aver utilizzato il nostro sito!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
 msgstr "Il team di Suchar Overflow"
@@ -964,8 +957,8 @@ msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
 msgstr ""
-"Hai dimenticato la password? Inserisci il tuo indirizzo email qui sotto e ti "
-"invieremo le istruzioni per impostarne una nuova."
+"Hai dimenticato la password? Inserisci il tuo indirizzo email qui sotto e ti"
+" invieremo le istruzioni per impostarne una nuova."
 
 #: suchar_overflow/templates/registration/password_reset_form.html:22
 msgid "Reset my password"
@@ -988,20 +981,18 @@ msgstr ""
 "tua casella di posta e clicca sul link per attivare il tuo account."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr ""
-"Celebriamo i migliori (e i più divertenti) contenuti creati dalla nostra "
-"comunità."
+msgstr "Celebriamo i migliori (e i più secchi) causati dalla nostra comunità."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Attività"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "tutto il tempo"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1084,8 +1075,8 @@ msgid ""
 "This joke has already been published. You can't polish a diamond (or a dry "
 "biscuit) once it's been served."
 msgstr ""
-"Questa battuta è già stata pubblicata. Non si può lucidare un diamante (o un "
-"biscotto secco) una volta che è stato servito."
+"Questa battuta è già stata pubblicata. Non si può lucidare un diamante (o un"
+" biscotto secco) una volta che è stato servito."
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
 msgid "Time creates jokes, but it also seals them."
@@ -1180,21 +1171,20 @@ msgstr "Più recenti"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Filtri attivi:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Cerca..."
+msgstr "Ricerca:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Autore:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Cancella tutto"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1207,10 +1197,9 @@ msgstr "Modifica"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Accedi"
+msgstr "Accedi per votare"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1277,17 +1266,13 @@ msgstr "Controlla entrambe le caselle di posta!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Abbiamo inviato un messaggio al tuo nuovo indirizzo con un link di "
-"attivazione.\n"
+"Abbiamo inviato un messaggio al tuo nuovo indirizzo con un link di attivazione.\n"
 "          <br />\n"
-"          Abbiamo anche inviato un avviso al tuo vecchio indirizzo, così sai "
-"che sei proprio tu."
+"          Abbiamo anche inviato un avviso al tuo vecchio indirizzo, così sai che sei proprio tu."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""

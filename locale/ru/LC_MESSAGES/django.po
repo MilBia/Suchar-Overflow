@@ -16,9 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
-"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: config/settings/base.py:34
 msgid "Arabic"
@@ -65,10 +63,9 @@ msgid "Estonian"
 msgstr "Эстонский"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Личная информация"
+msgstr "Персидский"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -256,6 +253,9 @@ msgstr "Голос отдан"
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
 msgstr ""
+"Перевод строки интерфейса на русский язык:\n"
+"\n"
+"frontend"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -291,7 +291,7 @@ msgstr "Поляризатор"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Передний событие"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -397,7 +397,8 @@ msgstr "Секретное достижение"
 
 #: suchar_overflow/achievements/models.py:81
 msgid "If checked, name and description are hidden until unlocked."
-msgstr "Если этот параметр установлен, имя и описание скрыты до разблокировки."
+msgstr ""
+"Если этот параметр установлен, имя и описание скрыты до разблокировки."
 
 #: suchar_overflow/achievements/models.py:85
 msgid "Achievement"
@@ -549,10 +550,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Достижение заблокировано. Узнайте, как его получить, играя!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Просмотреть достижения"
+msgstr "Просмотреть все достижения"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -574,37 +574,32 @@ msgstr "Таблица лидеров"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Пост"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Поиск..."
+msgstr "Поиск…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Уведомление"
+msgstr "Уведомления"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Просмотреть достижения"
+msgstr "Новые достижения"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Просмотреть достижения"
+msgstr "Новых достижений нет"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Мои достижения"
+msgstr "Посмотреть все мои достижения"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -684,13 +679,13 @@ msgstr "Миссия"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Цель проекта \"Suchar Overflow\" - собрать самую большую коллекцию шуток, "
 "которые вызывают физическую боль у слушателя. Мы считаем, что хорошая сухая "
-"шутка – это та, за которой следует неловкая тишина и стрекотание сверчков на "
-"заднем плане."
+"шутка – это та, за которой следует неловкая тишина и стрекотание сверчков на"
+" заднем плане."
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -698,8 +693,8 @@ msgstr "Технологии"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Этот сайт создан с использованием новейших технологий (Django + собственные "
 "стили CSS), чтобы обеспечить быструю и надежную доставку \"мемов\" прямо на "
@@ -734,7 +729,8 @@ msgid "Vote"
 msgstr "Голосовать"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Оценивайте шутки других пользователей. Решайте, что смешно (а что — нелепо)."
 
@@ -788,8 +784,8 @@ msgstr "Здравствуйте, %(username)s!"
 msgid ""
 "Welcome to Suchar Overflow - a place where air humidity drops below zero."
 msgstr ""
-"Добро пожаловать в Suchar Overflow — место, где влажность воздуха опускается "
-"ниже нуля."
+"Добро пожаловать в Suchar Overflow — место, где влажность воздуха опускается"
+" ниже нуля."
 
 #: suchar_overflow/templates/registration/activation_email.txt:6
 msgid ""
@@ -914,8 +910,8 @@ msgid ""
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
 "Мы отправили вам инструкции по сбросу пароля на указанный вами адрес "
-"электронной почты, если существует учетная запись с таким адресом. Вы должны "
-"получить их в ближайшее время."
+"электронной почты, если существует учетная запись с таким адресом. Вы должны"
+" получить их в ближайшее время."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
@@ -930,8 +926,8 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at"
 msgstr ""
-"Вы получаете это письмо, потому что запросили сброс пароля для вашей учетной "
-"записи на сайте."
+"Вы получаете это письмо, потому что запросили сброс пароля для вашей учетной"
+" записи на сайте."
 
 #: suchar_overflow/templates/registration/password_reset_email.html:6
 msgid "Please go to the following page and choose a new password:"
@@ -946,7 +942,6 @@ msgid "Thanks for using our site!"
 msgstr "Спасибо, что пользуетесь нашим сайтом!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
 msgstr "Команда Suchar Overflow"
@@ -981,22 +976,22 @@ msgid ""
 "We have sent you an email to confirm your registration. Please check your "
 "inbox and click the link to activate your account."
 msgstr ""
-"Мы отправили вам письмо для подтверждения регистрации. Пожалуйста, проверьте "
-"свою почту и перейдите по ссылке, чтобы активировать свой аккаунт."
+"Мы отправили вам письмо для подтверждения регистрации. Пожалуйста, проверьте"
+" свою почту и перейдите по ссылке, чтобы активировать свой аккаунт."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "Празднуем лучшее (и самое интересное), созданное нашим сообществом."
+msgstr "Празднуем лучших (и сухих) благодаря нашей общественности."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Деятельность"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "все времена"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1175,21 +1170,20 @@ msgstr "Новейшие"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Активные фильтры:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Поиск..."
+msgstr "Поиск:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Автор:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "очистить все"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1202,10 +1196,9 @@ msgstr "Редактировать"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Войти"
+msgstr "Войдите, чтобы голосовать"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1272,17 +1265,13 @@ msgstr "Проверьте оба почтовых ящика!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Мы отправили сообщение на ваш <strong>НОВЫЙ</strong> адрес со ссылкой для "
-"активации.\n"
+"Мы отправили сообщение на ваш <strong>НОВЫЙ</strong> адрес со ссылкой для активации.\n"
 "          <br />\n"
-"          Но мы также отправили предупреждение на ваш <strong>СТАРЫЙ</"
-"strong> адрес, чтобы вы знали, что это действительно вы."
+"          Но мы также отправили предупреждение на ваш <strong>СТАРЫЙ</strong> адрес, чтобы вы знали, что это действительно вы."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1326,8 +1315,8 @@ msgid ""
 "Bored of your old address? Or maybe it's a tax evasion attempt? We don't "
 "judge."
 msgstr ""
-"Надоело ваше старое местоположение? Или, может быть, вы пытаетесь уклониться "
-"от налогов? Мы не осуждаем."
+"Надоело ваше старое местоположение? Или, может быть, вы пытаетесь уклониться"
+" от налогов? Мы не осуждаем."
 
 #: suchar_overflow/templates/users/email_change_form.html:25
 msgid "Send a pigeon with the link"
@@ -1356,7 +1345,8 @@ msgstr ""
 
 #: suchar_overflow/templates/users/email_change_revoked.html:19
 msgid "You can breathe a sigh of relief. We recommend changing your password."
-msgstr "Вы можете выдохнуть с облегчением. Мы рекомендуем изменить ваш пароль."
+msgstr ""
+"Вы можете выдохнуть с облегчением. Мы рекомендуем изменить ваш пароль."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:32
 msgid "Change cancelled"
@@ -1371,8 +1361,8 @@ msgid ""
 "If it wasn't you who tried to change the email, we recommend changing your "
 "password."
 msgstr ""
-"Если это не вы пытались изменить адрес электронной почты, мы рекомендуем вам "
-"сменить пароль."
+"Если это не вы пытались изменить адрес электронной почты, мы рекомендуем вам"
+" сменить пароль."
 
 #: suchar_overflow/templates/users/email_change_revoked.html:41
 msgid "Change password (just in case)"
@@ -1446,8 +1436,8 @@ msgid ""
 "If it wasn't you, ignore this message. We sent instructions on how to block "
 "the intruder to your old address."
 msgstr ""
-"Если это не вы, проигнорируйте это сообщение. Мы отправили инструкции о том, "
-"как заблокировать злоумышленника, на ваш старый адрес."
+"Если это не вы, проигнорируйте это сообщение. Мы отправили инструкции о том,"
+" как заблокировать злоумышленника, на ваш старый адрес."
 
 #: suchar_overflow/templates/users/user_detail.html:6
 #: suchar_overflow/users/models.py:48

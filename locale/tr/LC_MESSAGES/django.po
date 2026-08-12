@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Estonya"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Kişisel bilgiler"
+msgstr "Farsça"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Oy Verildi"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Ön Yüz"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Polarize Filtre"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Uluslararası Olay"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -487,8 +486,8 @@ msgid ""
 "We track these errors automatically, but if the problem persists feel free "
 "to contact us. In the meantime, try refreshing."
 msgstr ""
-"Bu hataları otomatik olarak takip ediyoruz, ancak sorun devam ederse bizimle "
-"iletişime geçmekten çekinmeyin. Bu arada, sayfayı yenileyerek deneyin."
+"Bu hataları otomatik olarak takip ediyoruz, ancak sorun devam ederse bizimle"
+" iletişime geçmekten çekinmeyin. Bu arada, sayfayı yenileyerek deneyin."
 
 #: suchar_overflow/templates/achievements/inbox.html:6
 #: suchar_overflow/templates/achievements/inbox.html:17
@@ -544,10 +543,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Başarı kilitli. Gizemini oyun oynayarak keşfedin!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Başarıları Gözden Geçir"
+msgstr "Tüm başarıları göster"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -569,37 +567,32 @@ msgstr "Lider Tablosu"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Yazı"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "Ara..."
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Bildirim"
+msgstr "Uyarılar"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Başarıları Gözden Geçir"
+msgstr "Yeni başarılar"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Başarıları Gözden Geçir"
+msgstr "Yeni başarı yok"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Başarılarım"
+msgstr "bütün başarılarımı görüntüle"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -679,12 +672,13 @@ msgstr "Görev"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Suchar Overflow'un amacı, alıcıya fiziksel acı veren en geniş şaka "
-"koleksiyonunu bir araya getirmektir. İyi bir kuru şakanın, ardından rahatsız "
-"edici sessizlik ve arka planda çıyan sesleri gelmesi gerektiğine inanıyoruz."
+"koleksiyonunu bir araya getirmektir. İyi bir kuru şakanın, ardından rahatsız"
+" edici sessizlik ve arka planda çıyan sesleri gelmesi gerektiğine "
+"inanıyoruz."
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -692,8 +686,8 @@ msgstr "Teknoloji"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Bu site, en son teknolojilerle (Django + Özel CSS) oluşturulmuştur ve bu "
 "sayede komik içeriklerin hızlı ve güvenilir bir şekilde ekranınıza "
@@ -708,6 +702,8 @@ msgid ""
 "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
 "you need a drink."
 msgstr ""
+"Selam Suchar Overflow'a. Burada gülümseme sıfır derecede kurak; bir içecek "
+"ihtiyacınız olacak."
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."
@@ -728,7 +724,8 @@ msgid "Vote"
 msgstr "Oy Ver"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Diğer kullanıcıların şakalarını değerlendirin. Neyin komik olduğunu (ve "
 "neyin acınası olduğunu) belirleyin."
@@ -792,8 +789,8 @@ msgid ""
 "To make sure you're not a bot (or a person without a sense of humor), you "
 "need to activate your account."
 msgstr ""
-"Bir bot olmadığınızdan (veya mizah anlayışı olmayan bir kişi olmadığınızdan) "
-"emin olmak için, hesabınızı etkinleştirmeniz gerekiyor."
+"Bir bot olmadığınızdan (veya mizah anlayışı olmayan bir kişi olmadığınızdan)"
+" emin olmak için, hesabınızı etkinleştirmeniz gerekiyor."
 
 #: suchar_overflow/templates/registration/activation_email.txt:8
 msgid "Click this link before it dries out:"
@@ -918,8 +915,8 @@ msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
 msgstr ""
-"E-posta almadıysanız, lütfen kayıt olduğunuz adresi doğru girdiğinizden emin "
-"olun ve spam klasörünüzü kontrol edin."
+"E-posta almadıysanız, lütfen kayıt olduğunuz adresi doğru girdiğinizden emin"
+" olun ve spam klasörünüzü kontrol edin."
 
 #: suchar_overflow/templates/registration/password_reset_email.html:4
 msgid ""
@@ -942,10 +939,9 @@ msgid "Thanks for using our site!"
 msgstr "Sitemizi kullandığınız için teşekkür ederiz!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Suchar Overflow Ekibi"
+msgstr "Suchar Overflow ekibi"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -981,18 +977,18 @@ msgstr ""
 "kontrol edin ve hesabınızı etkinleştirmek için bağlantıya tıklayın."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "Topluluğumuzun yarattığı en iyiyi (ve en komik olanları) kutlayalım."
+msgstr "En iyi ve en kurak olanları kutlayan topluluk bizimle."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktivite"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "Her zaman"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1171,21 +1167,20 @@ msgstr "En Yeni"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktif filtreler:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Ara..."
+msgstr "Ara:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "Yazar:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Tümünü temizle"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1198,10 +1193,9 @@ msgstr "Düzenle"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Giriş Yap"
+msgstr "Giriş yaparak oy verin"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1268,17 +1262,13 @@ msgstr "Her iki gelen kutusunu da kontrol edin!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
-"Aktivasyon bağlantısı içeren bir mesajı <strong>YENİ</strong> adresinize "
-"gönderdik.\n"
+"Aktivasyon bağlantısı içeren bir mesajı <strong>YENİ</strong> adresinize gönderdik.\n"
 "          <br />\n"
-"          Ayrıca, gerçekten siz olduğunuzu bilmeniz için <strong>ESKİ</"
-"strong> adresinize de bir uyarı gönderdik."
+"          Ayrıca, gerçekten siz olduğunuzu bilmeniz için <strong>ESKİ</strong> adresinize de bir uyarı gönderdik."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""

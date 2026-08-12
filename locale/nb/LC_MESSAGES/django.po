@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "Estisk"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "Personlig informasjon"
+msgstr "persianspraak"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "Stemt"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "Utfroende"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "Polarisator"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "Frontend-eksemplet"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -544,10 +543,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "Ferdighet låst. Oppdag hemmeligheten ved å spille!"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "Bla gjennom merker"
+msgstr "Blåser gjennom alle innskaps"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -569,37 +567,32 @@ msgstr "Ledertavle"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "Innlegg"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
-msgstr "Søk..."
+msgstr "Søk…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
-msgstr "Varsling"
+msgstr "Notifiseringer"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "Bla gjennom merker"
+msgstr "nye innsikter"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "Bla gjennom merker"
+msgstr "Ingen nye innsikter"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "Mine prestasjoner"
+msgstr "Se alle mine innsatsgjeveleter"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -679,8 +672,8 @@ msgstr "Oppdrag"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "Målet med Suchar Overflow er å samle den største samlingen av vitser som "
 "forårsaker fysisk smerte hos mottakeren. Vi tror en god tørrvits er en som "
@@ -692,8 +685,8 @@ msgstr "Teknologi"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
 "Nettstedet er bygget med de nyeste teknologiene (Django + egendefinert CSS) "
 "for å sikre rask og pålitelig levering av morsomt innhold direkte til "
@@ -729,8 +722,10 @@ msgid "Vote"
 msgstr "Stem"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
-msgstr "Vurder andres vitser. Bestem hva som er morsomt (og hva som er trist)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgstr ""
+"Vurder andres vitser. Bestem hva som er morsomt (og hva som er trist)."
 
 #: suchar_overflow/templates/pages/home.html:39
 #: suchar_overflow/templates/suchary/suchar_list.html:68
@@ -791,8 +786,8 @@ msgid ""
 "To make sure you're not a bot (or a person without a sense of humor), you "
 "need to activate your account."
 msgstr ""
-"For å bekrefte at du ikke er en robot (eller en person uten sans for humor), "
-"må du aktivere kontoen din."
+"For å bekrefte at du ikke er en robot (eller en person uten sans for humor),"
+" må du aktivere kontoen din."
 
 #: suchar_overflow/templates/registration/activation_email.txt:8
 msgid "Click this link before it dries out:"
@@ -878,8 +873,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Vennligst skriv inn din nye passord to ganger, slik at vi kan bekrefte at du "
-"har skrevet det riktig."
+"Vennligst skriv inn din nye passord to ganger, slik at vi kan bekrefte at du"
+" har skrevet det riktig."
 
 #: suchar_overflow/templates/registration/password_reset_confirm.html:20
 msgid "Change password"
@@ -909,8 +904,8 @@ msgid ""
 "exists with the email you entered. You should receive them shortly."
 msgstr ""
 "Vi har sendt deg en e-post med instruksjoner for å tilbakestille passordet "
-"ditt, hvis det finnes en konto med e-postadressen du oppga. Du bør motta den "
-"om kort tid."
+"ditt, hvis det finnes en konto med e-postadressen du oppga. Du bør motta den"
+" om kort tid."
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
@@ -941,10 +936,9 @@ msgid "Thanks for using our site!"
 msgstr "Takk for at du bruker siden vår!"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Suchar-teamet"
+msgstr "The Suchar Overflow-team"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -980,18 +974,18 @@ msgstr ""
 "sjekk innboksen og klikk på lenken for å aktivere kontoen din."
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "Feirer det beste (og det tørreste) som skapes av fellesskapet vårt."
+msgstr "Feirer de beste (og torreste) gjort av vår samfunn."
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "Aktivitet"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "alle tidene"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1170,21 +1164,23 @@ msgstr "Nyeste"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "Aktive filter:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "Søk..."
+msgstr "Søk:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
 msgstr ""
+"For å gi en korrekt oversettelse, trenger jeg å se på den faktiske strengen som skal oversettes i filen `suchar_list.html`. Du har kun angitt konteksten og at \"Author\" er navnet på den som skrev strengen. \n"
+"\n"
+"Vennligst"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "Oppryd alle"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1197,10 +1193,9 @@ msgstr "Rediger"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "Logg inn"
+msgstr "Logg inn for å stemme"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1265,24 +1260,21 @@ msgstr "Sjekk begge innboksene!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
 "Vi har sendt en melding til din nye adresse med en aktiveringslenke.\n"
 "          <br />\n"
-"          Vi har også sendt en advarsel til din gamle adresse, slik at du "
-"vet at det virkelig er deg."
+"          Vi har også sendt en advarsel til din gamle adresse, slik at du vet at det virkelig er deg."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
 "If you don't click the link, nothing will change. Your account will remain "
 "as dry as our jokes."
 msgstr ""
-"Hvis du ikke klikker på lenken, vil ingenting endres. Kontoen din vil forbli "
-"like tørr som vitsene våre."
+"Hvis du ikke klikker på lenken, vil ingenting endres. Kontoen din vil forbli"
+" like tørr som vitsene våre."
 
 #: suchar_overflow/templates/users/email_change_done.html:34
 #: suchar_overflow/templates/users/email_change_revoked.html:43
@@ -1421,8 +1413,8 @@ msgid ""
 "We received a request to change your email address to this one you're "
 "reading (%(email)s)."
 msgstr ""
-"Vi har mottatt en forespørsel om å endre e-postadressen din til den du leser "
-"nå (%(email)s)."
+"Vi har mottatt en forespørsel om å endre e-postadressen din til den du leser"
+" nå (%(email)s)."
 
 #: suchar_overflow/templates/users/email_verify_email.txt:7
 msgid "If it's you, click the link below to confirm the change:"

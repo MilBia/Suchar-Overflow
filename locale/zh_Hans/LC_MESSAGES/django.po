@@ -63,10 +63,9 @@ msgid "Estonian"
 msgstr "爱沙尼亚语"
 
 #: config/settings/base.py:45
-#, fuzzy
 #| msgid "Personal info"
 msgid "Persian"
-msgstr "个人信息"
+msgstr "波斯语"
 
 #: config/settings/base.py:46
 msgid "Finnish"
@@ -253,7 +252,7 @@ msgstr "已投票"
 
 #: suchar_overflow/achievements/models.py:16
 msgid "Frontend"
-msgstr ""
+msgstr "前端"
 
 #: suchar_overflow/achievements/models.py:19
 msgid "Suchar Count"
@@ -289,7 +288,7 @@ msgstr "偏振片"
 
 #: suchar_overflow/achievements/models.py:27
 msgid "Frontend Event"
-msgstr ""
+msgstr "前端事件"
 
 #: suchar_overflow/achievements/models.py:30
 msgid "None"
@@ -484,9 +483,7 @@ msgstr "好像出错了！"
 msgid ""
 "We track these errors automatically, but if the problem persists feel free "
 "to contact us. In the meantime, try refreshing."
-msgstr ""
-"我们会自动跟踪这些错误，但如果问题仍然存在，请随时联系我们。在此期间，请尝试"
-"刷新页面。"
+msgstr "我们会自动跟踪这些错误，但如果问题仍然存在，请随时联系我们。在此期间，请尝试刷新页面。"
 
 #: suchar_overflow/templates/achievements/inbox.html:6
 #: suchar_overflow/templates/achievements/inbox.html:17
@@ -541,10 +538,9 @@ msgid "Achievement locked. Discover its secret by playing!"
 msgstr "成就已锁定。通过游戏探索其秘密！"
 
 #: suchar_overflow/templates/achievements/mine.html:20
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "Browse all achievements"
-msgstr "查看成就"
+msgstr "浏览所有成就"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
@@ -566,37 +562,32 @@ msgstr "排行榜"
 
 #: suchar_overflow/templates/base.html:124
 msgid "Post"
-msgstr ""
+msgstr "帖子"
 
 #: suchar_overflow/templates/base.html:146
-#, fuzzy
 #| msgid "Search..."
 msgid "Search…"
 msgstr "搜索…"
 
 #: suchar_overflow/templates/base.html:174
-#, fuzzy
 #| msgid "Notification"
 msgid "Notifications"
 msgstr "通知"
 
 #: suchar_overflow/templates/base.html:182
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "New achievements"
-msgstr "查看成就"
+msgstr "新成就"
 
 #: suchar_overflow/templates/base.html:198
-#, fuzzy
 #| msgid "Browse achievements"
 msgid "No new achievements"
-msgstr "查看成就"
+msgstr "没有新成就"
 
 #: suchar_overflow/templates/base.html:201
-#, fuzzy
 #| msgid "My Achievements"
 msgid "View all my achievements"
-msgstr "我的成就"
+msgstr "查看我的所有成就"
 
 #: suchar_overflow/templates/base.html:210
 #: suchar_overflow/templates/base.html:294
@@ -676,11 +667,11 @@ msgstr "任务"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one "
-"followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one"
+" followed by awkward silence and crickets chirping in the background."
 msgstr ""
-"Suchar Overflow 的目标是收集尽可能多的笑话，这些笑话会给收件人带来身体上的痛"
-"苦。我们认为一个好的冷笑话应该伴随着尴尬的沉默和背景中的蟋蟀叫声。"
+"Suchar Overflow "
+"的目标是收集尽可能多的笑话，这些笑话会给收件人带来身体上的痛苦。我们认为一个好的冷笑话应该伴随着尴尬的沉默和背景中的蟋蟀叫声。"
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -688,11 +679,9 @@ msgstr "技术"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure "
-"fast and reliable delivery of cringe content straight to your screen."
-msgstr ""
-"本网站采用最新的技术（Django + 自定义CSS）构建，以确保快速可靠地将各种有趣"
-"的、令人捧腹的内容直接呈现到您的屏幕上。"
+"The site is built on the latest technologies (Django + Custom CSS) to ensure"
+" fast and reliable delivery of cringe content straight to your screen."
+msgstr "本网站采用最新的技术（Django + 自定义CSS）构建，以确保快速可靠地将各种有趣的、令人捧腹的内容直接呈现到您的屏幕上。"
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -702,9 +691,7 @@ msgstr "马粮"
 msgid ""
 "Welcome to <strong>Suchar Overflow</strong>. A place where humor is so dry, "
 "you need a drink."
-msgstr ""
-"欢迎来到 <strong>Suchar Overflow</strong>。这里是幽默的聚集地，笑点干到需要来"
-"一杯饮品。"
+msgstr "欢迎来到 <strong>Suchar Overflow</strong>。这里是幽默的聚集地，笑点干到需要来一杯饮品。"
 
 #: suchar_overflow/templates/pages/home.html:11
 msgid "Vote for the best jokes, add your own, and become an office legend."
@@ -723,7 +710,8 @@ msgid "Vote"
 msgstr "投票"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid ""
+"Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr "评价其他人的笑话。判断什么好笑（以及什么很无聊）。"
 
 #: suchar_overflow/templates/pages/home.html:39
@@ -887,17 +875,13 @@ msgstr "请查看您的收件箱"
 msgid ""
 "We've emailed you instructions for setting your password, if an account "
 "exists with the email you entered. You should receive them shortly."
-msgstr ""
-"如果您输入的邮箱地址已注册，我们已经向您发送了重置密码的说明。请稍后查看您的"
-"收件箱。"
+msgstr "如果您输入的邮箱地址已注册，我们已经向您发送了重置密码的说明。请稍后查看您的收件箱。"
 
 #: suchar_overflow/templates/registration/password_reset_done.html:20
 msgid ""
 "If you don't receive an email, please make sure you've entered the address "
 "you registered with, and check your spam folder."
-msgstr ""
-"如果您没有收到电子邮件，请确保您已输入注册时使用的地址，并检查您的垃圾邮件文"
-"件夹。"
+msgstr "如果您没有收到电子邮件，请确保您已输入注册时使用的地址，并检查您的垃圾邮件文件夹。"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:4
 msgid ""
@@ -918,10 +902,9 @@ msgid "Thanks for using our site!"
 msgstr "感谢您使用我们的网站！"
 
 #: suchar_overflow/templates/registration/password_reset_email.html:13
-#, fuzzy
 #| msgid "The Suchar Overflow Team"
 msgid "The Suchar Overflow team"
-msgstr "Suchar Overflow 团队"
+msgstr "The Suchar Overflow 团队"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:6
 #: suchar_overflow/templates/registration/password_reset_form.html:12
@@ -932,8 +915,7 @@ msgstr "重置密码"
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
-msgstr ""
-"忘记密码？ 在下方输入您的电子邮件地址，我们将发送有关如何设置新密码的说明。"
+msgstr "忘记密码？ 在下方输入您的电子邮件地址，我们将发送有关如何设置新密码的说明。"
 
 #: suchar_overflow/templates/registration/password_reset_form.html:22
 msgid "Reset my password"
@@ -951,23 +933,21 @@ msgstr "已发送确认邮件"
 msgid ""
 "We have sent you an email to confirm your registration. Please check your "
 "inbox and click the link to activate your account."
-msgstr ""
-"我们已向您发送一封电子邮件以确认您的注册。请查看收件箱并点击链接激活您的帐"
-"户。"
+msgstr "我们已向您发送一封电子邮件以确认您的注册。请查看收件箱并点击链接激活您的帐户。"
 
 #: suchar_overflow/templates/stats/leaderboard.html:13
-#, fuzzy
-#| msgid "Celebreating the best (and the driest) caused by our community."
+#| msgid ""
+#| "Celebreating the best (and the driest) caused by our community."
 msgid "Celebrating the best (and the driest) caused by our community."
-msgstr "庆祝我们社区带来的最佳（和最有趣）时刻。"
+msgstr "庆祝我们社区造成的最佳（和最干燥）成就。"
 
 #: suchar_overflow/templates/stats/leaderboard.html:20
 msgid "Activity"
-msgstr ""
+msgstr "活动"
 
 #: suchar_overflow/templates/stats/leaderboard.html:29
 msgid "All time"
-msgstr ""
+msgstr "全部时间"
 
 #: suchar_overflow/templates/stats/leaderboard.html:48
 msgid "Overall"
@@ -1049,9 +1029,7 @@ msgstr "时机已错过！"
 msgid ""
 "This joke has already been published. You can't polish a diamond (or a dry "
 "biscuit) once it's been served."
-msgstr ""
-"这个笑话已经发表过了。你不能对一块已经展示过的钻石（或者一块干饼干）进行打"
-"磨。"
+msgstr "这个笑话已经发表过了。你不能对一块已经展示过的钻石（或者一块干饼干）进行打磨。"
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:21
 msgid "Time creates jokes, but it also seals them."
@@ -1146,21 +1124,20 @@ msgstr "最新"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:77
 msgid "Active filters:"
-msgstr ""
+msgstr "活动过滤器:"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:89
-#, fuzzy
 #| msgid "Search..."
 msgid "Search:"
-msgstr "搜索…"
+msgstr "搜索："
 
 #: suchar_overflow/templates/suchary/suchar_list.html:97
 msgid "Author:"
-msgstr ""
+msgstr "作者"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:104
 msgid "Clear all"
-msgstr ""
+msgstr "清除所有"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:117
 msgid "Scheduled"
@@ -1173,10 +1150,9 @@ msgstr "编辑"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:148
 #: suchar_overflow/templates/suchary/suchar_list.html:161
-#, fuzzy
 #| msgid "Log in"
 msgid "Log in to vote"
-msgstr "登录"
+msgstr "登录投票"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:173
 msgid "So dry here..."
@@ -1241,12 +1217,12 @@ msgstr "请同时查看两个收件箱！"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation "
-"link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, "
-"so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
 msgstr ""
+"我们已向您的<strong>新</strong>地址发送了一条包含激活链接的消息。  \n"
+"<br />但我们还向您的<strong>旧</strong>地址发送了一条警告，以确保是您本人。"
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1343,8 +1319,7 @@ msgstr "我们刚刚收到一个请求，将您的电子邮件地址更改为：
 msgid ""
 "If it was you - great, you don't need to do anything here (just check that "
 "other inbox)."
-msgstr ""
-"如果是您，那就太好了，您不需要在这里做任何操作（只需检查一下其他收件箱）。"
+msgstr "如果是您，那就太好了，您不需要在这里做任何操作（只需检查一下其他收件箱）。"
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:9
 msgid "BUT IF IT WASN'T YOU:"
@@ -1376,9 +1351,7 @@ msgstr "Suchar Overflow"
 msgid ""
 "We received a request to change your email address to this one you're "
 "reading (%(email)s)."
-msgstr ""
-"我们收到了一项请求，将您的电子邮件地址更改为当前您正在阅读的此地址"
-"（%(email)s）。"
+msgstr "我们收到了一项请求，将您的电子邮件地址更改为当前您正在阅读的此地址（%(email)s）。"
 
 #: suchar_overflow/templates/users/email_verify_email.txt:7
 msgid "If it's you, click the link below to confirm the change:"
@@ -1392,8 +1365,7 @@ msgstr "此链接有效期为24小时（或直到失效）。"
 msgid ""
 "If it wasn't you, ignore this message. We sent instructions on how to block "
 "the intruder to your old address."
-msgstr ""
-"如果不是您操作的，请忽略此消息。我们已将阻止入侵者的说明发送到您的旧地址。"
+msgstr "如果不是您操作的，请忽略此消息。我们已将阻止入侵者的说明发送到您的旧地址。"
 
 #: suchar_overflow/templates/users/user_detail.html:6
 #: suchar_overflow/users/models.py:48
