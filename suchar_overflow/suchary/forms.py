@@ -95,7 +95,11 @@ class SucharForm(forms.ModelForm):
                 _base_save_m2m()
                 self._save_tags(instance)
 
-            self.save_m2m = save_m2m
+            # BaseModelForm.save(commit=False) itself sets self.save_m2m as an
+            # instance attribute (not a real method) — django-stubs types it as
+            # a method for autocomplete purposes, so mypy sees this as
+            # reassigning a method. Matches Django's own implementation pattern.
+            self.save_m2m = save_m2m  # type: ignore[method-assign]
         return instance
 
     def _save_tags(self, instance):

@@ -15,7 +15,7 @@ from suchar_overflow.users.tests.factories import UserFactory
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
 async def test_user_update_get(async_client):
-    user = await sync_to_async(UserFactory)()
+    user = await sync_to_async(UserFactory.create)()
     await async_client.aforce_login(user)
     response = await async_client.get(reverse("users:update"))
     assert response.status_code == HTTPStatus.OK
@@ -24,7 +24,7 @@ async def test_user_update_get(async_client):
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
 async def test_user_update_post_redirects_to_profile(async_client):
-    user = await sync_to_async(UserFactory)()
+    user = await sync_to_async(UserFactory.create)()
     await async_client.aforce_login(user)
     response = await async_client.post(reverse("users:update"), {"name": "New Name"})
     assert response.status_code == HTTPStatus.FOUND
@@ -36,8 +36,8 @@ async def test_user_update_post_redirects_to_profile(async_client):
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
 async def test_user_detail_authenticated(async_client):
-    target = await sync_to_async(UserFactory)()
-    viewer = await sync_to_async(UserFactory)()
+    target = await sync_to_async(UserFactory.create)()
+    viewer = await sync_to_async(UserFactory.create)()
     await async_client.aforce_login(viewer)
     response = await async_client.get(
         reverse("users:detail", kwargs={"username": target.username}),
@@ -48,7 +48,7 @@ async def test_user_detail_authenticated(async_client):
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
 async def test_user_detail_not_authenticated(async_client):
-    target = await sync_to_async(UserFactory)()
+    target = await sync_to_async(UserFactory.create)()
     response = await async_client.get(
         reverse("users:detail", kwargs={"username": target.username}),
     )
@@ -60,11 +60,11 @@ async def test_user_detail_not_authenticated(async_client):
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
 async def test_user_detail_stats_calculation(async_client):
-    user = await sync_to_async(UserFactory)()
+    user = await sync_to_async(UserFactory.create)()
     s1 = await Suchar.objects.acreate(text="Joke 1", author=user)
     await Vote.objects.acreate(suchar=s1, user=user, is_funny=True)
 
-    other_user = await sync_to_async(UserFactory)()
+    other_user = await sync_to_async(UserFactory.create)()
     s2 = await Suchar.objects.acreate(text="Joke 2", author=user)
     await Vote.objects.acreate(suchar=s2, user=other_user, is_dry=True)
 

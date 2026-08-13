@@ -81,6 +81,11 @@ class Achievement(models.Model):
         help_text=_("If checked, name and description are hidden until unlocked."),
     )
 
+    # django-modeltranslation's @register(Achievement) swaps in a
+    # MultilingualManager at runtime (see translation.py) — django-stubs
+    # can't see that dynamic registration, so declare the base type explicitly.
+    objects: models.Manager["Achievement"]
+
     class Meta:
         verbose_name = _("Achievement")
         verbose_name_plural = _("Achievements")
