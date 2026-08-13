@@ -319,6 +319,14 @@
     background-color: var(--color-primary) !important;
 }
 
+/* #86 follow-up: suchar_form.html's header avatar icon uses this class,
+   expecting the same brand gradient already applied via `background:
+   var(--gradient-primary)` on `.btn-primary` (components/buttons.css) —
+   reuse that token rather than invent a second gradient. */
+.bg-gradient-primary {
+    background: var(--gradient-primary) !important;
+}
+
 .bg-warning {
     background-color: hsl(var(--hue-warning), 80%, 50%) !important;
 }
@@ -339,6 +347,25 @@
 
 .bg-warning.bg-opacity-10 {
     background-color: hsla(var(--hue-warning), 80%, 50%, 0.1) !important;
+}
+
+/* .bg-light itself IS `--bg-surface` (the card/page background), so blending
+   it with itself at 10% is a no-op in both themes — unlike the primary/warning
+   cases above, there's no separate hue/sat/lig decomposition for it to tint
+   toward. Mix toward `--text-main` instead: it's near-black in light mode and
+   near-white in dark mode, so this reads as a faint theme-appropriate shade
+   (darker-than-surface in light, lighter-than-surface in dark) in both themes,
+   matching the surface-overlay technique already used in components/voting.css. */
+.bg-light.bg-opacity-10 {
+    background-color: color-mix(in srgb, var(--text-main) 10%, transparent) !important;
+}
+
+/* #86 follow-up: also on suchar_form.html's scheduling section (line 68).
+   Continues the project's existing radius scale one step below .rounded-4
+   (--radius-lg), matching how it already sits between .rounded-4 and the
+   0-radius default rather than reusing either endpoint. */
+.rounded-3 {
+    border-radius: var(--radius-md);
 }
 
 .rounded-4 {
@@ -508,6 +535,27 @@
     border: 1px solid hsl(var(--hue-warning), 80%, 50%) !important;
 }
 
+/* #86 follow-up: same full-shorthand reasoning as `.border-warning` above
+   (needed so the border actually renders on `.badge`, which sets no border
+   of its own — see stats/_leaderboard_author_card.html). */
+.border-secondary {
+    border: 1px solid var(--color-secondary) !important;
+}
+
+/* achievements/list.html and mine.html pair `border-bottom border-secondary`
+   to get a single secondary-colored divider under the header. Without this,
+   the full-shorthand `.border-secondary` above would also draw new top/
+   left/right borders on an element that previously had none. This
+   two-class selector's higher specificity guarantees it wins over both
+   `.border-bottom` and `.border-secondary` above for every side —
+   including the bottom edge, which it re-declares explicitly rather than
+   leaving to a same-specificity, source-order tiebreak between those two
+   single-class rules. */
+.border-bottom.border-secondary {
+    border: none !important;
+    border-bottom: 1px solid var(--color-secondary) !important;
+}
+
 /* Opacity modifiers — only meaningful combined with a matching .border-* class */
 .border-warning.border-opacity-25 {
     border: 1px solid hsla(var(--hue-warning), 80%, 50%, 0.25) !important;
@@ -515,6 +563,10 @@
 
 .border-primary.border-opacity-25 {
     border: 1px solid hsla(var(--hue-primary), var(--sat-primary), var(--lig-primary), 0.25) !important;
+}
+
+.border-secondary.border-opacity-25 {
+    border: 1px solid hsla(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary), 0.25) !important;
 }
 
 .fs-sm {
