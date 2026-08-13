@@ -7,6 +7,10 @@
     text-align: center;
 }
 
+.text-nowrap {
+    white-space: nowrap;
+}
+
 .d-flex {
     display: flex;
 }
@@ -17,6 +21,14 @@
 
 .d-none {
     display: none;
+}
+
+.d-grid {
+    display: grid;
+}
+
+.d-inline-flex {
+    display: inline-flex;
 }
 
 .align-items-center {
@@ -57,6 +69,14 @@
 
 .me-auto {
     margin-right: auto;
+}
+
+.ms-auto {
+    margin-left: auto;
+}
+
+.mx-auto {
+    margin-inline: auto;
 }
 
 .mb-0 {
@@ -136,6 +156,10 @@
 }
 
 /* Spacing Utilities */
+.mb-1 {
+    margin-bottom: 0.25rem;
+}
+
 .mb-2 {
     margin-bottom: 0.5rem;
 }
@@ -150,6 +174,10 @@
 
 .mb-5 {
     margin-bottom: 3rem;
+}
+
+.mt-1 {
+    margin-top: 0.25rem;
 }
 
 .mt-2 {
@@ -170,6 +198,14 @@
 
 .py-0 {
     padding-block: 0;
+}
+
+.py-2 {
+    padding-block: 0.5rem;
+}
+
+.py-3 {
+    padding-block: 1rem;
 }
 
 .py-4 {
@@ -208,8 +244,20 @@
     padding-inline: 0;
 }
 
+.px-3 {
+    padding-inline: 1rem;
+}
+
 .px-4 {
     padding-inline: 1.5rem;
+}
+
+.px-5 {
+    padding-inline: 3rem;
+}
+
+.pt-3 {
+    padding-top: 1rem;
 }
 
 .pt-4 {
@@ -222,6 +270,10 @@
 
 .pb-3 {
     padding-bottom: 1rem;
+}
+
+.pb-4 {
+    padding-bottom: 1.5rem;
 }
 
 .pb-5 {
@@ -248,6 +300,10 @@
     margin-right: 1.5rem;
 }
 
+.ms-1 {
+    margin-left: 0.25rem;
+}
+
 .ms-2 {
     margin-left: 0.5rem;
 }
@@ -258,6 +314,10 @@
 
 .ps-0 {
     padding-left: 0;
+}
+
+.ps-2 {
+    padding-left: 0.5rem;
 }
 
 /* Color & Text Utilities */
@@ -275,6 +335,19 @@
 
 .text-success {
     color: hsl(var(--hue-success), 70%, 45%) !important;
+}
+
+/* #66 follow-up: no `--hue-danger`-backed color utility exists yet, but
+   `--bs-danger` (variables.css) is already the project's established danger
+   token — reused by `.alert-danger`/`.error-bubble`/`.toast-error`. */
+.text-danger {
+    color: var(--bs-danger) !important;
+}
+
+/* Same literal-hue reasoning as `.bg-info` below: no `--hue-info` variable
+   exists yet, so this mirrors that class's cyan hue for consistency. */
+.text-info {
+    color: hsl(200, 70%, 40%) !important;
 }
 
 .text-white {
@@ -339,6 +412,13 @@
     background-color: hsl(var(--hue-warning), 80%, 50%) !important;
 }
 
+/* #66 follow-up: mirrors .text-success's existing hue/sat/lig so the
+   "Votes" badge's background/text/border stay visually consistent
+   (stats/_leaderboard_suchar_card.html). */
+.bg-success {
+    background-color: hsl(var(--hue-success), 70%, 45%) !important;
+}
+
 /* Not part of issue #86's original 7 classes, but added at the repo owner's
    request during review: without it, `bg-info text-white` badges (e.g. the
    "D" dry-count badge next to the #86-fixed "F" badge) render invisible
@@ -359,6 +439,10 @@
 
 .bg-secondary.bg-opacity-10 {
     background-color: hsla(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary), 0.1) !important;
+}
+
+.bg-success.bg-opacity-10 {
+    background-color: hsla(var(--hue-success), 70%, 45%, 0.1) !important;
 }
 
 /* .bg-light itself IS `--bg-surface` (the card/page background), so blending
@@ -396,6 +480,10 @@
     box-shadow: var(--shadow-sm);
 }
 
+.shadow-md {
+    box-shadow: var(--shadow-md);
+}
+
 .shadow-lg {
     box-shadow: var(--shadow-lg);
 }
@@ -426,8 +514,16 @@
     overflow: hidden;
 }
 
+.min-vh-75 {
+    min-height: 75vh;
+}
+
 .opacity-25 {
     opacity: 0.25;
+}
+
+.opacity-50 {
+    opacity: 0.5;
 }
 
 .opacity-75 {
@@ -497,6 +593,24 @@
 }
 
 /* Responsive Utilities */
+@media (min-width: 576px) {
+    .d-sm-flex {
+        display: flex !important;
+    }
+
+    .d-sm-inline {
+        display: inline !important;
+    }
+
+    .justify-content-sm-center {
+        justify-content: center !important;
+    }
+
+    .mt-sm-0 {
+        margin-top: 0 !important;
+    }
+}
+
 @media (min-width: 768px) {
     .d-md-block {
         display: block !important;
@@ -514,6 +628,18 @@
 @media (min-width: 992px) {
     .px-lg-5 {
         padding-inline: 3rem !important;
+    }
+
+    .justify-content-lg-start {
+        justify-content: flex-start !important;
+    }
+
+    .text-lg-start {
+        text-align: left !important;
+    }
+
+    .mb-lg-0 {
+        margin-bottom: 0 !important;
     }
 }
 
@@ -554,6 +680,20 @@
     border: 1px solid var(--color-secondary) !important;
 }
 
+/* #66 follow-up: same full-shorthand reasoning, "Votes" badge in
+   stats/_leaderboard_suchar_card.html. Matches .bg-success/.text-success's
+   hue/sat/lig. */
+.border-success {
+    border: 1px solid hsl(var(--hue-success), 70%, 45%) !important;
+}
+
+/* #66 follow-up: same reasoning, "Dry" badge in
+   stats/_leaderboard_author_card.html. Literal hue matches .bg-info/.text-info
+   above (no --hue-info variable exists yet). */
+.border-info {
+    border: 1px solid hsl(200, 70%, 50%) !important;
+}
+
 /* achievements/list.html and mine.html pair `border-bottom border-secondary`
    to get a single secondary-colored divider under the header. Without this,
    the full-shorthand `.border-secondary` above would also draw new top/
@@ -579,6 +719,10 @@
 
 .border-secondary.border-opacity-25 {
     border: 1px solid hsla(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary), 0.25) !important;
+}
+
+.border-info.border-opacity-25 {
+    border: 1px solid hsla(200, 70%, 50%, 0.25) !important;
 }
 
 .fs-sm {

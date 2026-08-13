@@ -39,11 +39,15 @@
 
 .col,
 .col-lg-3,
+.col-lg-4,
+.col-lg-5,
 .col-lg-6,
 .col-lg-9,
+.col-lg-10,
 .col-md-4,
 .col-md-6,
 .col-md-8,
+.col-8,
 .col-12,
 .col-lg-8,
 .col-xl-3,
@@ -55,6 +59,13 @@
 
 .col {
     flex: 1 0 0%;
+}
+
+/* #66 follow-up: unlike the breakpoint-gated .col-lg-*/.col-md-* variants,
+   .col-8 has no infix (applies at every width), same as .col-12 above. */
+.col-8 {
+    flex: 0 0 66.6667%;
+    max-width: 66.6667%;
 }
 
 /* Grid Gaps */
@@ -86,6 +97,24 @@
     padding-top: var(--space-lg);
 }
 
+.g-5 {
+    margin-top: calc(var(--space-xl) * -1);
+    margin-left: calc(var(--space-xl) * -1);
+}
+
+.g-5>* {
+    padding-top: var(--space-xl);
+    padding-left: var(--space-xl);
+}
+
+.gx-5 {
+    margin-left: calc(var(--space-xl) * -1);
+}
+
+.gx-5>* {
+    padding-left: var(--space-xl);
+}
+
 /* Breakpoints for Grid */
 @media (min-width: 768px) {
     .col-md-4 {
@@ -110,6 +139,16 @@
         max-width: 25%;
     }
 
+    .col-lg-4 {
+        flex: 0 0 33.3333%;
+        max-width: 33.3333%;
+    }
+
+    .col-lg-5 {
+        flex: 0 0 41.6667%;
+        max-width: 41.6667%;
+    }
+
     .col-lg-6 {
         flex: 0 0 50%;
         max-width: 50%;
@@ -123,6 +162,11 @@
     .col-lg-9 {
         flex: 0 0 75%;
         max-width: 75%;
+    }
+
+    .col-lg-10 {
+        flex: 0 0 83.3333%;
+        max-width: 83.3333%;
     }
 }
 
