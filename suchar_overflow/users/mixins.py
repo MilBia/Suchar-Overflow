@@ -58,3 +58,7 @@ class AsyncUserPassesTestMixin(UserPassesTestMixin):
             messages.error(request, gettext("You don't have permission to do that."))
             return redirect(self.get_login_url())
         return await View.dispatch(self, request, *args, **kwargs)
+
+    async def test_func(self) -> bool:  # type: ignore[override]
+        msg = f"{type(self).__name__} is missing implementation of test_func method."
+        raise NotImplementedError(msg)
