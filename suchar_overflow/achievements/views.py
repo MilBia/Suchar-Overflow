@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.http import StreamingHttpResponse
 from django.shortcuts import render
-from django.views import View
 
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 
@@ -38,7 +37,7 @@ async def achievement_stream(request):
     return response
 
 
-class MyAchievementsView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class MyAchievementsView(AsyncLoginRequiredMixin):
     template_name = "achievements/mine.html"
 
     async def get(self, request, *args, **kwargs):
@@ -61,7 +60,7 @@ class MyAchievementsView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
         )
 
 
-class AchievementListView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class AchievementListView(AsyncLoginRequiredMixin):
     template_name = "achievements/list.html"
 
     async def get(self, request, *args, **kwargs):

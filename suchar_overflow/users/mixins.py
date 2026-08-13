@@ -9,7 +9,7 @@ from django.utils.translation import gettext
 from django.views.generic import View
 
 
-class AsyncLoginRequiredMixin(LoginRequiredMixin):
+class AsyncLoginRequiredMixin(LoginRequiredMixin, View):
     """LoginRequiredMixin that works with async view handlers."""
 
     # django-stubs types `dispatch` as sync-returning `HttpResponseBase`; it has
@@ -41,7 +41,7 @@ class AsyncLoginRequiredMixin(LoginRequiredMixin):
         return await View.dispatch(self, request, *args, **kwargs)
 
 
-class AsyncUserPassesTestMixin(UserPassesTestMixin):
+class AsyncUserPassesTestMixin(UserPassesTestMixin, View):
     """UserPassesTestMixin that works with async view handlers and async test_func."""
 
     # See AsyncLoginRequiredMixin.dispatch above: django-stubs has no async

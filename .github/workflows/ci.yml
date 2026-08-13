@@ -64,17 +64,20 @@ jobs:
         run: docker compose -f docker-compose.local.yml build django
 
 
-      # Advisory only: known baseline of pre-existing mypy errors is not yet
-      # fixed, so this must not block merges. See issue #144.
-      - name: Run mypy (advisory)
-        continue-on-error: true
-        run: docker compose -f docker-compose.local.yml run --rm django python -m mypy .
-
       - name: Check DB Migrations
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py makemigrations --check
 
       - name: Run DB Migrations
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
+
+      # Advisory only: known baseline of pre-existing mypy errors is not yet
+      # fixed, so this must not block merges. See issue #144. Runs after
+      # migrations: the django-stubs plugin calls django.setup(), which
+      # starts the achievements app's background scheduler thread — it
+      # needs django_apscheduler's tables to already exist.
+      - name: Run mypy (advisory)
+        continue-on-error: true
+        run: docker compose -f docker-compose.local.yml run --rm django python -m mypy .
 
       - name: Run Django Tests
         run: docker compose -f docker-compose.local.yml run --rm django pytest -vv -m "not e2e" --junitxml=root_junit.xml

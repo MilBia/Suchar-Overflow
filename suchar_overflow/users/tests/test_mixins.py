@@ -9,7 +9,6 @@ from django.contrib.messages.storage.cookie import CookieStorage
 from django.http import HttpResponse
 from django.test import AsyncRequestFactory
 from django.utils.translation import gettext
-from django.views import View
 
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 from suchar_overflow.users.mixins import AsyncUserPassesTestMixin
@@ -17,15 +16,20 @@ from suchar_overflow.users.mixins import AsyncUserPassesTestMixin
 User = get_user_model()
 
 
-class _SimpleAsyncView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class _SimpleAsyncView(AsyncLoginRequiredMixin):
     async def get(self, request, *args, **kwargs):
         return HttpResponse("ok")
 
 
-class _PassesTestView(AsyncUserPassesTestMixin, View):  # type: ignore[misc]
+class _PassesTestView(AsyncUserPassesTestMixin):
     async def test_func(self):  # type: ignore[override]
         return self.request.user.username == "allowed"
 
+    async def get(self, request, *args, **kwargs):
+        return HttpResponse("ok")
+
+
+class _NoTestFuncView(AsyncUserPassesTestMixin):
     async def get(self, request, *args, **kwargs):
         return HttpResponse("ok")
 
@@ -88,3 +92,10 @@ async def test_async_user_passes_test_allows_passing_user(django_user_model):
     view = _PassesTestView.as_view()
     response = await view(request)
     assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.anyio
+async def test_async_user_passes_test_default_test_func_raises():
+    view = _NoTestFuncView()
+    with pytest.raises(NotImplementedError, match="_NoTestFuncView"):
+        await view.test_func()

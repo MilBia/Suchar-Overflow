@@ -95,7 +95,7 @@ class SucharListView(View):
         return await sync_to_async(_paginate_and_render)()
 
 
-class SucharCreateView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class SucharCreateView(AsyncLoginRequiredMixin):
     template_name = "suchary/suchar_form.html"
     success_url = reverse_lazy("suchary:list")
 
@@ -126,11 +126,7 @@ class SucharCreateView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
         return redirect(self.success_url)
 
 
-class SucharUpdateView(  # type: ignore[misc]
-    AsyncLoginRequiredMixin,
-    AsyncUserPassesTestMixin,
-    View,
-):
+class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin):  # type: ignore[misc]
     template_name = "suchary/suchar_form.html"
     success_url = reverse_lazy("suchary:list")
 

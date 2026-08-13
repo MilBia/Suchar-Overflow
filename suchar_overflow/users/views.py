@@ -28,7 +28,7 @@ from .tasks import send_activation_email
 from .tasks import send_email_change_emails
 
 
-class UserDetailView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class UserDetailView(AsyncLoginRequiredMixin):
     template_name = "users/user_detail.html"
 
     async def get(self, request, username, *args, **kwargs):
@@ -196,7 +196,7 @@ class UserDetailView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
 user_detail_view = UserDetailView.as_view()
 
 
-class UserUpdateView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class UserUpdateView(AsyncLoginRequiredMixin):
     model = User
     fields = ["name"]
     template_name = "users/user_form.html"
@@ -230,7 +230,7 @@ class UserUpdateView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
 user_update_view = UserUpdateView.as_view()
 
 
-class UserRedirectView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class UserRedirectView(AsyncLoginRequiredMixin):
     async def get(self, request, *args, **kwargs):
         user = await request.auser()
         return redirect(
@@ -309,7 +309,7 @@ class ActivateAccountView(View):
 activate_view = ActivateAccountView.as_view()
 
 
-class EmailChangeInitiateView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class EmailChangeInitiateView(AsyncLoginRequiredMixin):
     template_name = "users/email_change_form.html"
 
     async def get(self, request, *args, **kwargs):
@@ -362,7 +362,7 @@ class EmailChangeInitiateView(AsyncLoginRequiredMixin, View):  # type: ignore[mi
 email_change_initiate_view = EmailChangeInitiateView.as_view()
 
 
-class EmailChangeDoneView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class EmailChangeDoneView(AsyncLoginRequiredMixin):
     async def get(self, request, *args, **kwargs):
         return await sync_to_async(render)(request, "users/email_change_done.html")
 
@@ -383,7 +383,7 @@ async def _aget_email_change_request(
         return None
 
 
-class EmailChangeConfirmView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class EmailChangeConfirmView(AsyncLoginRequiredMixin):
     async def get(self, request, token):
         email_request = await _aget_email_change_request(token, "verification_token")
         if email_request is None:
@@ -432,7 +432,7 @@ class EmailChangeConfirmView(AsyncLoginRequiredMixin, View):  # type: ignore[mis
 email_change_confirm_view = EmailChangeConfirmView.as_view()
 
 
-class EmailChangeRevokeView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
+class EmailChangeRevokeView(AsyncLoginRequiredMixin):
     async def get(self, request, token):
         email_request = await _aget_email_change_request(token, "revocation_token")
         if email_request is None:
