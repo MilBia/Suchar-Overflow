@@ -59,7 +59,7 @@ async def test_async_login_required_allows_authenticated(django_user_model):
     request = arf.get("/fake-path/")
     request.user = user
     view = _SimpleAsyncView.as_view()
-    response = await view(request)  # type: ignore[misc]
+    response = await view(request)  # type: ignore[misc]  # see comment above
     assert response.status_code == HTTPStatus.OK
 
 
@@ -75,7 +75,7 @@ async def test_async_user_passes_test_blocks_failing_user(django_user_model):
     request.user = user
     request._messages = CookieStorage(request)  # type: ignore[attr-defined]  # noqa: SLF001
     view = _PassesTestView.as_view()
-    response = await view(request)  # type: ignore[misc]
+    response = await view(request)  # type: ignore[misc]  # see comment above
     assert response.status_code == HTTPStatus.FOUND
     messages = list(get_messages(request))
     assert len(messages) == 1
@@ -93,7 +93,7 @@ async def test_async_user_passes_test_allows_passing_user(django_user_model):
     request = arf.get("/fake-path/")
     request.user = user
     view = _PassesTestView.as_view()
-    response = await view(request)  # type: ignore[misc]
+    response = await view(request)  # type: ignore[misc]  # see comment above
     assert response.status_code == HTTPStatus.OK
 
 
