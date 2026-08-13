@@ -27,6 +27,11 @@ class AchievementsConfig(AppConfig):
 
         if "pytest" in sys.modules:
             return
+        # django-stubs' mypy plugin calls django.setup(), which runs this
+        # method outside of any real serving process — skip starting a
+        # scheduler thread that would write to the DB as a side effect.
+        if "mypy" in sys.modules:
+            return
         if len(sys.argv) > 1 and sys.argv[1] in _NO_SCHEDULER:
             return
 
