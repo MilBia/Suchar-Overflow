@@ -319,6 +319,14 @@
     background-color: var(--color-primary) !important;
 }
 
+/* #86 follow-up: stats/_leaderboard_author_card.html's total-score badge
+   uses this class (paired with .bg-opacity-10 below) — same undefined-class
+   bug as suchar_form.html, on a page the original audit already marked
+   fixed. Mirrors .bg-primary. */
+.bg-secondary {
+    background-color: var(--color-secondary) !important;
+}
+
 /* #86 follow-up: suchar_form.html's header avatar icon uses this class,
    expecting the same brand gradient already applied via `background:
    var(--gradient-primary)` on `.btn-primary` (components/buttons.css) —
@@ -347,6 +355,10 @@
 
 .bg-warning.bg-opacity-10 {
     background-color: hsla(var(--hue-warning), 80%, 50%, 0.1) !important;
+}
+
+.bg-secondary.bg-opacity-10 {
+    background-color: hsla(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary), 0.1) !important;
 }
 
 /* .bg-light itself IS `--bg-surface` (the card/page background), so blending
