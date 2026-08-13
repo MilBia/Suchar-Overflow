@@ -41,7 +41,10 @@ async def test_async_login_required_redirects_anonymous():
     request = arf.get("/fake-path/")
     request.user = type("Anon", (), {"is_authenticated": False})()
     view = _SimpleAsyncView.as_view()
-    response = await view(request)
+    # View.as_view() is typed as a sync-returning Callable; at runtime it
+    # returns a coroutine for async view handlers (same stub gap as
+    # AsyncLoginRequiredMixin.dispatch — see users/mixins.py).
+    response = await view(request)  # type: ignore[misc]
     assert response.status_code == HTTPStatus.FOUND
 
 
@@ -56,7 +59,7 @@ async def test_async_login_required_allows_authenticated(django_user_model):
     request = arf.get("/fake-path/")
     request.user = user
     view = _SimpleAsyncView.as_view()
-    response = await view(request)
+    response = await view(request)  # type: ignore[misc]
     assert response.status_code == HTTPStatus.OK
 
 
@@ -70,9 +73,9 @@ async def test_async_user_passes_test_blocks_failing_user(django_user_model):
     arf = AsyncRequestFactory()
     request = arf.get("/fake-path/")
     request.user = user
-    request._messages = CookieStorage(request)  # noqa: SLF001
+    request._messages = CookieStorage(request)  # type: ignore[attr-defined]  # noqa: SLF001
     view = _PassesTestView.as_view()
-    response = await view(request)
+    response = await view(request)  # type: ignore[misc]
     assert response.status_code == HTTPStatus.FOUND
     messages = list(get_messages(request))
     assert len(messages) == 1
@@ -90,7 +93,7 @@ async def test_async_user_passes_test_allows_passing_user(django_user_model):
     request = arf.get("/fake-path/")
     request.user = user
     view = _PassesTestView.as_view()
-    response = await view(request)
+    response = await view(request)  # type: ignore[misc]
     assert response.status_code == HTTPStatus.OK
 
 

@@ -53,9 +53,12 @@ class Command(BaseCommand):
             return
 
         winner = best_suchar.author
+        # vote_count comes from find_best_suchar's .annotate(vote_count=...) —
+        # not a static attribute of Suchar, so django-stubs can't see it.
+        vote_count = best_suchar.vote_count  # type: ignore[attr-defined]
         self.stdout.write(
             f"Best Suchar found: '{best_suchar.text[:20]}...' "
-            f"by {winner.username} with {best_suchar.vote_count} votes.",
+            f"by {winner.username} with {vote_count} votes.",
         )
 
         # Award Achievement
