@@ -148,7 +148,7 @@ dev = [
     "djlint==1.44.2",
     "factory-boy==3.3.3",
     "ipdb==0.13.13",
-    "mypy==1.19.1",
+    "mypy==2.3.0",
     "pre-commit==4.6.1",
     "pytest==9.1.1",
     "pytest-django==4.13.0",
