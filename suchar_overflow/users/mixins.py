@@ -38,7 +38,10 @@ class AsyncLoginRequiredMixin(LoginRequiredMixin, View):
             cls_dispatch = cls.__dict__.get("dispatch")
             if cls_dispatch and asyncio.iscoroutinefunction(cls_dispatch):
                 return await cls_dispatch(self, request, *args, **kwargs)
-        return await View.dispatch(self, request, *args, **kwargs)
+        # View.dispatch is typed as sync-returning HttpResponseBase, but at
+        # runtime it returns a coroutine for async view handlers (Django
+        # inspects view_is_async) — same stub gap as the dispatch override above.
+        return await View.dispatch(self, request, *args, **kwargs)  # type: ignore[misc]
 
 
 class AsyncUserPassesTestMixin(UserPassesTestMixin, View):
@@ -57,7 +60,8 @@ class AsyncUserPassesTestMixin(UserPassesTestMixin, View):
         if not await self.test_func():
             messages.error(request, gettext("You don't have permission to do that."))
             return redirect(self.get_login_url())
-        return await View.dispatch(self, request, *args, **kwargs)
+        # See the comment on AsyncLoginRequiredMixin.dispatch's final line above.
+        return await View.dispatch(self, request, *args, **kwargs)  # type: ignore[misc]
 
     async def test_func(self) -> bool:  # type: ignore[override]
         msg = f"{type(self).__name__} is missing implementation of test_func method."
