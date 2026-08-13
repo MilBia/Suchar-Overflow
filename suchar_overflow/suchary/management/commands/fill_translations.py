@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-import polib  # type: ignore[import-untyped]
+import polib
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from openai import OpenAI

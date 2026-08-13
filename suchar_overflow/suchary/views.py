@@ -95,7 +95,7 @@ class SucharListView(View):
         return await sync_to_async(_paginate_and_render)()
 
 
-class SucharCreateView(AsyncLoginRequiredMixin, View):
+class SucharCreateView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
     template_name = "suchary/suchar_form.html"
     success_url = reverse_lazy("suchary:list")
 
@@ -126,7 +126,11 @@ class SucharCreateView(AsyncLoginRequiredMixin, View):
         return redirect(self.success_url)
 
 
-class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin, View):
+class SucharUpdateView(  # type: ignore[misc]
+    AsyncLoginRequiredMixin,
+    AsyncUserPassesTestMixin,
+    View,
+):
     template_name = "suchary/suchar_form.html"
     success_url = reverse_lazy("suchary:list")
 
@@ -136,7 +140,7 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin, View):
         except Suchar.DoesNotExist as exc:
             raise Http404 from exc
 
-    async def test_func(self):
+    async def test_func(self):  # type: ignore[override]
         suchar = await self._get_suchar(self.kwargs["pk"])
         return suchar.author == self.request.user
 

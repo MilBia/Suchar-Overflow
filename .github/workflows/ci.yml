@@ -64,6 +64,12 @@ jobs:
         run: docker compose -f docker-compose.local.yml build django
 
 
+      # Advisory only: known baseline of pre-existing mypy errors is not yet
+      # fixed, so this must not block merges. See issue #144.
+      - name: Run mypy (advisory)
+        continue-on-error: true
+        run: docker compose -f docker-compose.local.yml run --rm django python -m mypy .
+
       - name: Check DB Migrations
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py makemigrations --check
 

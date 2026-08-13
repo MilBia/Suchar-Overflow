@@ -38,7 +38,7 @@ async def achievement_stream(request):
     return response
 
 
-class MyAchievementsView(AsyncLoginRequiredMixin, View):
+class MyAchievementsView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
     template_name = "achievements/mine.html"
 
     async def get(self, request, *args, **kwargs):
@@ -61,7 +61,7 @@ class MyAchievementsView(AsyncLoginRequiredMixin, View):
         )
 
 
-class AchievementListView(AsyncLoginRequiredMixin, View):
+class AchievementListView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
     template_name = "achievements/list.html"
 
     async def get(self, request, *args, **kwargs):

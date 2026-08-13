@@ -3,6 +3,7 @@ import asyncio
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import HttpResponseBase
 from django.shortcuts import redirect
 from django.utils.translation import gettext
 from django.views.generic import View
@@ -11,7 +12,14 @@ from django.views.generic import View
 class AsyncLoginRequiredMixin(LoginRequiredMixin):
     """LoginRequiredMixin that works with async view handlers."""
 
-    async def dispatch(self, request, *args, **kwargs):
+    # django-stubs types `dispatch` as sync-returning `HttpResponseBase`; it has
+    # no async variant, even though Django supports async dispatch at runtime.
+    async def dispatch(  # type: ignore[override]
+        self,
+        request,
+        *args,
+        **kwargs,
+    ) -> HttpResponseBase:
         if callable(getattr(request, "auser", None)):
             user = await request.auser()
             request.user = user
@@ -36,7 +44,14 @@ class AsyncLoginRequiredMixin(LoginRequiredMixin):
 class AsyncUserPassesTestMixin(UserPassesTestMixin):
     """UserPassesTestMixin that works with async view handlers and async test_func."""
 
-    async def dispatch(self, request, *args, **kwargs):
+    # See AsyncLoginRequiredMixin.dispatch above: django-stubs has no async
+    # variant of `dispatch`/`test_func`.
+    async def dispatch(  # type: ignore[override]
+        self,
+        request,
+        *args,
+        **kwargs,
+    ) -> HttpResponseBase:
         if callable(getattr(request, "auser", None)):
             request.user = await request.auser()
         if not await self.test_func():

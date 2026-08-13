@@ -17,13 +17,13 @@ from suchar_overflow.users.mixins import AsyncUserPassesTestMixin
 User = get_user_model()
 
 
-class _SimpleAsyncView(AsyncLoginRequiredMixin, View):
+class _SimpleAsyncView(AsyncLoginRequiredMixin, View):  # type: ignore[misc]
     async def get(self, request, *args, **kwargs):
         return HttpResponse("ok")
 
 
-class _PassesTestView(AsyncUserPassesTestMixin, View):
-    async def test_func(self):
+class _PassesTestView(AsyncUserPassesTestMixin, View):  # type: ignore[misc]
+    async def test_func(self):  # type: ignore[override]
         return self.request.user.username == "allowed"
 
     async def get(self, request, *args, **kwargs):
