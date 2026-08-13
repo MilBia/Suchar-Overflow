@@ -182,7 +182,7 @@ dependencies = [
     "django-compressor==4.5.1",
     "rcssmin==1.1.2",
     "rjsmin==1.2.2",
-    "redis==5.2.1",
+    "redis==8.1.0",
     # Open ranges below are intentional, not pinning drift: each package ships
     # frequent patch/minor releases we want automatically, and none has broken
     # our usage across a minor bump so far.
