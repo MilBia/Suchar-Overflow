@@ -175,7 +175,7 @@ def test_odkrywca_achievement_awarded_after_five_visits(
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_zbieracz_sucharow_awarded_after_five_list_visits(  # noqa: PLR0913
+def test_zbieracz_sucharow_awarded_after_five_list_visits(  # noqa: PLR0913, PLR0917
     page,
     live_server,
     login,
@@ -249,7 +249,7 @@ def test_niecierpliwy_awarded_after_three_short_submissions(
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_stluczona_mysz_awarded_after_five_clicks_on_same_button(  # noqa: PLR0913
+def test_stluczona_mysz_awarded_after_five_clicks_on_same_button(  # noqa: PLR0913, PLR0917
     page,
     live_server,
     login,

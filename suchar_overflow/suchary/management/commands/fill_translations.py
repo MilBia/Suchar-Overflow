@@ -455,7 +455,7 @@ class Command(BaseCommand):
 
         return path
 
-    def _translate_file(  # noqa: PLR0913, C901
+    def _translate_file(  # noqa: PLR0913, PLR0917, C901
         self,
         openai_client: OpenAI | None,
         http_client: httpx.Client | None,
@@ -541,7 +541,7 @@ class Command(BaseCommand):
 
         return translated
 
-    def _translate_entry(  # noqa: PLR0913
+    def _translate_entry(  # noqa: PLR0913, PLR0917
         self,
         openai_client: OpenAI | None,
         http_client: httpx.Client | None,
@@ -618,7 +618,7 @@ class Command(BaseCommand):
             return None
         return result
 
-    def _translate_via_httpx(  # noqa: PLR0913
+    def _translate_via_httpx(  # noqa: PLR0913, PLR0917
         self,
         client: httpx.Client,
         model: str,
@@ -655,7 +655,7 @@ class Command(BaseCommand):
         data = response.json()
         return data["choices"][0]["text"].strip()
 
-    def _translate_via_openai(  # noqa: PLR0913
+    def _translate_via_openai(  # noqa: PLR0913, PLR0917
         self,
         client: OpenAI,
         model: str,
