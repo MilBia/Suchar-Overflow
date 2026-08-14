@@ -42,6 +42,23 @@
     color: var(--text-main);
 }
 
+/* #66 follow-up: destructive actions (Log Out, revoke pending email change)
+   use this class; reuses --hue-danger (the same hue --bs-danger is built
+   from) rather than inventing a new color. Doesn't reuse --bs-danger's own
+   60% lightness directly — white text on that fails WCAG AA (~3.7:1); 45%
+   clears it comfortably (~5.5:1) while staying the same hue/saturation as
+   .alert-danger/.error-bubble/.toast-error. */
+.btn-danger {
+    background-color: hsl(var(--hue-danger), 80%, 45%);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: hsl(var(--hue-danger), 80%, 38%);
+    color: white;
+    box-shadow: 0 4px 12px hsla(var(--hue-danger), 80%, 50%, 0.25);
+}
+
 /* Outline Button */
 .btn-outline,
 .btn-outline-primary {
@@ -58,6 +75,19 @@
     color: white;
     box-shadow: 0 4px 12px hsla(var(--hue-primary), 80%, 50%, 0.2);
 }
+
+/* .btn-outline-secondary intentionally left undefined here — see #151.
+   Still referenced by activation_failed.html, email_change_form.html and
+   email_change_revoked.html, but never defined in this project's own CSS
+   (checked the full history: `git log --all -p -S` finds no commit that
+   ever added a base rule for it — only an orphaned dark-theme override,
+   dating back to when the project used real Bootstrap, survived until
+   commit 3807067 removed it too). A straight mirror of .btn-outline-primary
+   with --color-secondary swapped in computes to ~3.57:1 text/border
+   contrast against white — below WCAG AA — because --color-secondary's hue
+   is simply darker-appearing at the same 60% lightness than --color-primary
+   (~5.92:1). Needs a real color decision (e.g. a lower lightness), not a
+   mechanical mirror. */
 
 .btn-sm {
     padding: 0.35rem 0.85rem;

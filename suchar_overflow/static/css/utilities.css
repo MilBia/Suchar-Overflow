@@ -7,6 +7,10 @@
     text-align: center;
 }
 
+.text-nowrap {
+    white-space: nowrap;
+}
+
 .d-flex {
     display: flex;
 }
@@ -17,6 +21,14 @@
 
 .d-none {
     display: none;
+}
+
+.d-grid {
+    display: grid;
+}
+
+.d-inline-flex {
+    display: inline-flex;
 }
 
 .align-items-center {
@@ -57,6 +69,20 @@
 
 .me-auto {
     margin-right: auto;
+}
+
+/* !important on these (and the other #66 follow-up spacing utilities below):
+   utilities.css is @imported before components/*.css and project.css in
+   base.css, so any component that sets margin/padding as a shorthand (.btn,
+   .badge, .list-group-item, etc.) would otherwise win the cascade at equal
+   specificity and silently cancel these out wherever combined — the exact
+   "class defined but has no visible effect" bug this PR exists to fix. */
+.ms-auto {
+    margin-left: auto !important;
+}
+
+.mx-auto {
+    margin-inline: auto !important;
 }
 
 .mb-0 {
@@ -136,6 +162,10 @@
 }
 
 /* Spacing Utilities */
+.mb-1 {
+    margin-bottom: 0.25rem !important;
+}
+
 .mb-2 {
     margin-bottom: 0.5rem;
 }
@@ -150,6 +180,10 @@
 
 .mb-5 {
     margin-bottom: 3rem;
+}
+
+.mt-1 {
+    margin-top: 0.25rem !important;
 }
 
 .mt-2 {
@@ -170,6 +204,14 @@
 
 .py-0 {
     padding-block: 0;
+}
+
+.py-2 {
+    padding-block: 0.5rem !important;
+}
+
+.py-3 {
+    padding-block: 1rem !important;
 }
 
 .py-4 {
@@ -208,8 +250,20 @@
     padding-inline: 0;
 }
 
+.px-3 {
+    padding-inline: 1rem !important;
+}
+
 .px-4 {
     padding-inline: 1.5rem;
+}
+
+.px-5 {
+    padding-inline: 3rem !important;
+}
+
+.pt-3 {
+    padding-top: 1rem !important;
 }
 
 .pt-4 {
@@ -222,6 +276,10 @@
 
 .pb-3 {
     padding-bottom: 1rem;
+}
+
+.pb-4 {
+    padding-bottom: 1.5rem !important;
 }
 
 .pb-5 {
@@ -248,6 +306,10 @@
     margin-right: 1.5rem;
 }
 
+.ms-1 {
+    margin-left: 0.25rem !important;
+}
+
 .ms-2 {
     margin-left: 0.5rem;
 }
@@ -258,6 +320,10 @@
 
 .ps-0 {
     padding-left: 0;
+}
+
+.ps-2 {
+    padding-left: 0.5rem !important;
 }
 
 /* Color & Text Utilities */
@@ -276,6 +342,19 @@
 .text-success {
     color: hsl(var(--hue-success), 70%, 45%) !important;
 }
+
+/* .text-danger and .text-info intentionally left undefined here — see #151.
+   Both are foreground-text-on-variable-background utilities, so a single
+   fixed lightness can't clear WCAG AA (4.5:1) against every background they
+   might land on in both themes: `--bs-danger`'s 60%/50% lightness computes
+   to ~3.7:1/~3.5:1 against white/dark-surface, and even the darker 45%
+   .btn-danger below uses (chosen for a *button's own* background, not an
+   arbitrary page background) computes to only ~3.1:1 against the dark-theme
+   surface. .text-info at .bg-info's 50% lightness computes to ~3.0:1 on
+   white — and is a net regression versus its previous undefined state,
+   where it inherited --text-muted (~5.3:1, passing). Needs a real
+   per-theme color decision (like .text-warning-emphasis's dark-mode
+   override), not a mechanical mirror of an existing token. */
 
 .text-white {
     color: #fff !important;
@@ -339,13 +418,22 @@
     background-color: hsl(var(--hue-warning), 80%, 50%) !important;
 }
 
+/* .bg-success/.border-success (and .bg-success.bg-opacity-10 below)
+   intentionally left undefined here — see #151. The pre-existing
+   .text-success (hsl(var(--hue-success), 70%, 45%)) it would pair with on
+   stats/_leaderboard_suchar_card.html's "Votes" badge computes to only
+   ~2.3:1 against white, already failing WCAG AA on its own — completing the
+   badge's background/border would ship a fully-styled, still-illegible
+   badge rather than fixing the underlying color choice, which isn't
+   something to change unilaterally since .text-success is used elsewhere
+   too. Needs a real color decision, not a mechanical mirror. */
+
 /* Not part of issue #86's original 7 classes, but added at the repo owner's
    request during review: without it, `bg-info text-white` badges (e.g. the
    "D" dry-count badge next to the #86-fixed "F" badge) render invisible
-   white-on-transparent text in light mode. No `--hue-info` variable exists
-   yet, so this uses a literal cyan hue distinct from the other named hues. */
+   white-on-transparent text in light mode. */
 .bg-info {
-    background-color: hsl(200, 70%, 50%) !important;
+    background-color: hsl(var(--hue-info), 70%, 50%) !important;
 }
 
 /* Opacity modifiers — only meaningful combined with a matching .bg-* class */
@@ -396,6 +484,10 @@
     box-shadow: var(--shadow-sm);
 }
 
+.shadow-md {
+    box-shadow: var(--shadow-md);
+}
+
 .shadow-lg {
     box-shadow: var(--shadow-lg);
 }
@@ -426,8 +518,16 @@
     overflow: hidden;
 }
 
+.min-vh-75 {
+    min-height: 75vh;
+}
+
 .opacity-25 {
     opacity: 0.25;
+}
+
+.opacity-50 {
+    opacity: 0.5;
 }
 
 .opacity-75 {
@@ -497,9 +597,33 @@
 }
 
 /* Responsive Utilities */
+@media (min-width: 576px) {
+    .d-sm-flex {
+        display: flex !important;
+    }
+
+    .d-sm-inline {
+        display: inline !important;
+    }
+
+    .justify-content-sm-center {
+        justify-content: center !important;
+    }
+
+    .mt-sm-0 {
+        margin-top: 0 !important;
+    }
+}
+
 @media (min-width: 768px) {
     .d-md-block {
         display: block !important;
+    }
+
+    /* #66 follow-up: suchar_form.html's card body — mirrors .px-lg-5 below,
+       reusing .p-5's value. */
+    .p-md-5 {
+        padding: 3rem !important;
     }
 
     .flex-lg-grow-0 {
@@ -514,6 +638,18 @@
 @media (min-width: 992px) {
     .px-lg-5 {
         padding-inline: 3rem !important;
+    }
+
+    .justify-content-lg-start {
+        justify-content: flex-start !important;
+    }
+
+    .text-lg-start {
+        text-align: left !important;
+    }
+
+    .mb-lg-0 {
+        margin-bottom: 0 !important;
     }
 }
 
@@ -554,6 +690,18 @@
     border: 1px solid var(--color-secondary) !important;
 }
 
+/* .border-success intentionally left undefined here — see #151, same
+   reasoning as .bg-success above (stats/_leaderboard_suchar_card.html's
+   "Votes" badge). */
+
+/* #66 follow-up: "Dry" badge in stats/_leaderboard_author_card.html, paired
+   with the pre-existing .bg-info/.text-white (not .text-info, left
+   undefined above) — a border color, not foreground text, so WCAG's 4.5:1
+   text-contrast requirement doesn't apply the same way. Matches .bg-info. */
+.border-info {
+    border: 1px solid hsl(var(--hue-info), 70%, 50%) !important;
+}
+
 /* achievements/list.html and mine.html pair `border-bottom border-secondary`
    to get a single secondary-colored divider under the header. Without this,
    the full-shorthand `.border-secondary` above would also draw new top/
@@ -579,6 +727,10 @@
 
 .border-secondary.border-opacity-25 {
     border: 1px solid hsla(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary), 0.25) !important;
+}
+
+.border-info.border-opacity-25 {
+    border: 1px solid hsla(var(--hue-info), 70%, 50%, 0.25) !important;
 }
 
 .fs-sm {
