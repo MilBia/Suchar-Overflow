@@ -1,0 +1,39 @@
+/* =========================================
+   Suchar Card — author avatar & meta
+   ========================================= */
+
+/* #151: used on suchar_list.html and suchar_form.html's live preview
+   without any composed sizing/shape utilities (unlike the header .avatar,
+   which builds its look from .rounded-circle/.p-3/.bg-gradient-primary),
+   so this needs to be a fully self-contained small avatar. Soft tint
+   matches the .bg-primary.bg-opacity-10 formula already used elsewhere,
+   rather than the header avatar's bold gradient — this repeats once per
+   joke in a list, so a quieter treatment fits better. */
+.avatar-sm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: hsla(var(--hue-primary), var(--sat-primary), var(--lig-primary), 0.1);
+    color: var(--color-primary);
+}
+
+.avatar-sm svg {
+    width: 55%;
+    height: 55%;
+}
+
+/* #151: timestamp under the author name on each suchar card. */
+.suchar-meta {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* #151: "Clear all" link (suchar_list.html) — muted by default, brand color
+   on hover. */
+.hover-primary:hover {
+    color: var(--color-primary) !important;
+}

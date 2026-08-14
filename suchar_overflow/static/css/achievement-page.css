@@ -199,3 +199,28 @@
     background: #b9f2ff;
     color: #000;
 }
+
+/* #151: tints .achievement-icon-wrapper's background per tier, reusing the
+   same hex as .tier-color-N above so the card border, badge, and icon wash
+   all read as one tier signal. tier-icon-0 (Common) is intentionally left
+   undefined, matching .tier-color-0's own precedent above. */
+.tier-icon-1 {
+    background: color-mix(in srgb, #cd7f32 20%, transparent);
+}
+
+.tier-icon-2 {
+    background: color-mix(in srgb, #c0c0c0 20%, transparent);
+}
+
+.tier-icon-3 {
+    background: color-mix(in srgb, #ffd700 20%, transparent);
+}
+
+.tier-icon-4 {
+    background: color-mix(in srgb, #e5e4e2 25%, transparent);
+}
+
+.tier-icon-5 {
+    background: color-mix(in srgb, #b9f2ff 25%, transparent);
+    box-shadow: 0 0 15px rgba(185, 242, 255, 0.3);
+}
