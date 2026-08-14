@@ -76,27 +76,18 @@
     box-shadow: 0 4px 12px hsla(var(--hue-primary), 80%, 50%, 0.2);
 }
 
-/* #66 follow-up: still referenced by activation_failed.html,
-   email_change_form.html and email_change_revoked.html, but never defined
-   in this project's own CSS — checked the full history (`git log --all -p
-   -S`) and no commit ever added a base rule for it here. Only an orphaned
-   dark-theme override survived until commit 3807067 removed it too; that
-   override presumably dates back to when the project used real Bootstrap
-   (removed much earlier, in f4c0528), so this isn't a restoration — it's a
-   new rule, mirroring .btn-outline-primary with the secondary token instead
-   of the primary one. */
-.btn-outline-secondary {
-    background: transparent;
-    border: 2px solid var(--color-secondary);
-    color: var(--color-secondary);
-    padding: 0.5rem 1.1rem;
-}
-
-.btn-outline-secondary:hover {
-    background: var(--color-secondary);
-    color: white;
-    box-shadow: 0 4px 12px hsla(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary), 0.2);
-}
+/* .btn-outline-secondary intentionally left undefined here — see #151.
+   Still referenced by activation_failed.html, email_change_form.html and
+   email_change_revoked.html, but never defined in this project's own CSS
+   (checked the full history: `git log --all -p -S` finds no commit that
+   ever added a base rule for it — only an orphaned dark-theme override,
+   dating back to when the project used real Bootstrap, survived until
+   commit 3807067 removed it too). A straight mirror of .btn-outline-primary
+   with --color-secondary swapped in computes to ~3.57:1 text/border
+   contrast against white — below WCAG AA — because --color-secondary's hue
+   is simply darker-appearing at the same 60% lightness than --color-primary
+   (~5.92:1). Needs a real color decision (e.g. a lower lightness), not a
+   mechanical mirror. */
 
 .btn-sm {
     padding: 0.35rem 0.85rem;
