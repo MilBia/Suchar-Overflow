@@ -26,3 +26,14 @@
     font-weight: 600;
     color: var(--text-main);
 }
+
+/* #151: reuses the existing glassmorphism tokens (variables.css) already
+   used by achievement-badge.css's popover. Deliberately doesn't set
+   border/box-shadow — suchar_form.html's usage already pairs this with
+   .border-0/.shadow-lg, and staying out of those properties avoids fighting
+   that cascade. */
+.glass-card {
+    background: var(--bg-surface-glass);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+}

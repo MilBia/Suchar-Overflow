@@ -339,22 +339,43 @@
     color: hsl(var(--hue-warning), 80%, 50%) !important;
 }
 
+/* #151: 45% lightness (still used in dark mode below) only clears ~2.3:1
+   against a white light-mode surface — failing WCAG AA. Lightness lowered
+   for light mode only; dark mode's value already passed (~7.4:1) and stays
+   unchanged. */
 .text-success {
+    color: hsl(var(--hue-success), 70%, 28%) !important;
+    /* ~5.4:1 vs white */
+}
+
+[data-theme='dark'] .text-success {
     color: hsl(var(--hue-success), 70%, 45%) !important;
 }
 
-/* .text-danger and .text-info intentionally left undefined here — see #151.
-   Both are foreground-text-on-variable-background utilities, so a single
-   fixed lightness can't clear WCAG AA (4.5:1) against every background they
-   might land on in both themes: `--bs-danger`'s 60%/50% lightness computes
-   to ~3.7:1/~3.5:1 against white/dark-surface, and even the darker 45%
-   .btn-danger below uses (chosen for a *button's own* background, not an
-   arbitrary page background) computes to only ~3.1:1 against the dark-theme
-   surface. .text-info at .bg-info's 50% lightness computes to ~3.0:1 on
-   white — and is a net regression versus its previous undefined state,
-   where it inherited --text-muted (~5.3:1, passing). Needs a real
-   per-theme color decision (like .text-warning-emphasis's dark-mode
-   override), not a mechanical mirror of an existing token. */
+/* #151: .text-danger/.text-info need a per-theme lightness distinct from
+   --bs-danger/--bg-info's own button/badge-background tuned values (see the
+   old comment this replaces — those fail 4.5:1 as plain text). Computed with
+   the WCAG relative-luminance formula against --bg-surface (white light /
+   hsl(220,25%,12%) dark). */
+.text-danger {
+    color: hsl(var(--hue-danger), 80%, 45%) !important;
+    /* ~5.5:1 vs white */
+}
+
+[data-theme='dark'] .text-danger {
+    color: hsl(var(--hue-danger), 70%, 70%) !important;
+    /* ~6.3:1 vs dark surface */
+}
+
+.text-info {
+    color: hsl(var(--hue-info), 70%, 35%) !important;
+    /* ~5.63:1 vs white */
+}
+
+[data-theme='dark'] .text-info {
+    color: hsl(var(--hue-info), 70%, 65%) !important;
+    /* ~7.94:1 vs dark surface */
+}
 
 .text-white {
     color: #fff !important;
@@ -418,15 +439,24 @@
     background-color: hsl(var(--hue-warning), 80%, 50%) !important;
 }
 
-/* .bg-success/.border-success (and .bg-success.bg-opacity-10 below)
-   intentionally left undefined here — see #151. The pre-existing
-   .text-success (hsl(var(--hue-success), 70%, 45%)) it would pair with on
-   stats/_leaderboard_suchar_card.html's "Votes" badge computes to only
-   ~2.3:1 against white, already failing WCAG AA on its own — completing the
-   badge's background/border would ship a fully-styled, still-illegible
-   badge rather than fixing the underlying color choice, which isn't
-   something to change unilaterally since .text-success is used elsewhere
-   too. Needs a real color decision, not a mechanical mirror. */
+/* #151: mirrors .bg-primary/.border-secondary, using the same corrected
+   .text-success lightness above so the "Votes" badge (bg + text + border)
+   is legible as a set. */
+.bg-success {
+    background-color: hsl(var(--hue-success), 70%, 28%) !important;
+}
+
+[data-theme='dark'] .bg-success {
+    background-color: hsl(var(--hue-success), 70%, 45%) !important;
+}
+
+.border-success {
+    border: 1px solid hsl(var(--hue-success), 70%, 28%) !important;
+}
+
+[data-theme='dark'] .border-success {
+    border: 1px solid hsl(var(--hue-success), 70%, 45%) !important;
+}
 
 /* Not part of issue #86's original 7 classes, but added at the repo owner's
    request during review: without it, `bg-info text-white` badges (e.g. the
@@ -447,6 +477,14 @@
 
 .bg-secondary.bg-opacity-10 {
     background-color: hsla(var(--hue-secondary), var(--sat-secondary), var(--lig-secondary), 0.1) !important;
+}
+
+.bg-success.bg-opacity-10 {
+    background-color: hsla(var(--hue-success), 70%, 28%, 0.1) !important;
+}
+
+[data-theme='dark'] .bg-success.bg-opacity-10 {
+    background-color: hsla(var(--hue-success), 70%, 45%, 0.1) !important;
 }
 
 /* .bg-light itself IS `--bg-surface` (the card/page background), so blending
@@ -575,6 +613,38 @@
 
 .h6 {
     font-size: 1rem;
+}
+
+/* #151: hero-size display headings, matching Bootstrap 5's default scale
+   (same convention as .h1-.h6 above). No font-weight here — every usage
+   already pairs the class with .fw-bold explicitly in the template. */
+.display-1 {
+    font-size: 5rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.display-3 {
+    font-size: 4rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.display-4 {
+    font-size: 3.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.display-5 {
+    font-size: 3rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.lead {
+    font-size: 1.25rem;
+    line-height: 1.6;
 }
 
 /* Helper Utilities */

@@ -29,6 +29,14 @@ select {
     outline: none;
 }
 
+/* #151: .form-control-lg used only by suchar_form.html's main textarea —
+   the app's primary input, sized up from the base .form-control above. */
+.form-control-lg {
+    padding: 0.9rem 1.25rem;
+    font-size: 1.15rem;
+    border-radius: var(--radius-lg);
+}
+
 label {
     display: block;
     margin-bottom: var(--space-sm);
@@ -36,6 +44,12 @@ label {
     color: var(--text-main);
     font-size: 0.9rem;
 }
+
+/* #151: .form-label intentionally gets no rule of its own — every usage is
+   on a <label> element, and the bare `label` selector above already applies
+   the full styling (weight/color/spacing). Confirmed by the repo owner as
+   the resolution for this audit item; adding a distinct look was considered
+   and declined. */
 
 .input-group {
     position: relative;
@@ -172,4 +186,18 @@ label {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* #151: used on suchar_form.html's schedule-date error message, toggled via
+   .d-none by JS. Deliberately doesn't set `display` — this file loads after
+   utilities.css in base.css's @import order, so a `display: block` here
+   would win the cascade over .d-none's `display: none` even while .d-none
+   is still present (same bug utilities.css documents elsewhere). The <div>
+   is block-level by default anyway, so no rule is needed for the visible
+   state. */
+.invalid-feedback {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--bs-danger);
 }

@@ -97,15 +97,45 @@
     padding-top: var(--space-lg);
 }
 
-/* .g-5/.gx-5 (stats/leaderboard.html, suchar_form.html) intentionally left
-   undefined here — see #151. .g-2/.g-4's negative-margin/compensating-padding
-   technique already overflows past .container by design at any magnitude
-   larger than --space-md (.container's own padding), just subtly (1rem) at
-   .g-4's size. Naively making it symmetric doesn't fix that: it overflows
-   both sides instead of one. Fixing it properly (e.g. switching to
-   `gap` instead of negative margins) needs visual verification against the
-   columns' own existing padding-inline to avoid over-widening the gutter —
-   a design call, not a mechanical mirror of an existing pattern. */
+/* #151: unlike .g-2/.g-4 above, .g-5/.gx-5 use real flexbox `gap` instead of
+   the negative-margin/compensating-padding technique — at --space-xl's size
+   that technique overflows .container visibly (not just the ~1rem subtle
+   case at .g-4). `gap` can't overflow the row's own box. The `> *` rules
+   zero out the columns' shared base padding-inline (layout.css, top of this
+   file) so the gutter isn't doubled (gap + leftover padding-inline). */
+.g-5 {
+    margin-inline: 0;
+    gap: var(--space-xl);
+}
+
+.g-5>* {
+    padding-inline: 0;
+}
+
+.gx-5 {
+    margin-inline: 0;
+    column-gap: var(--space-xl);
+}
+
+.gx-5>* {
+    padding-inline: 0;
+}
+
+/* #151: `gap` is real box-model space, so flexbox adds it to the space a
+   line needs — and .col-lg-6's flex-basis/max-width (50%, flex-shrink: 0
+   from the breakpoint block below) don't account for that, so both g-5
+   usages (stats/leaderboard.html) wrapped their second column onto a new
+   line instead of sitting beside the first (50% + 50% + 4rem gap > 100% of
+   the row). Both current consumers only ever pair .g-5/.gx-5 with
+   .col-lg-6, so narrow the fix to that combination rather than touching the
+   shared .col-lg-6 rule (used elsewhere without a gap to subtract). */
+@media (min-width: 992px) {
+    .g-5>.col-lg-6,
+    .gx-5>.col-lg-6 {
+        flex-basis: calc(50% - var(--space-xl) / 2);
+        max-width: calc(50% - var(--space-xl) / 2);
+    }
+}
 
 /* Breakpoints for Grid */
 @media (min-width: 768px) {
