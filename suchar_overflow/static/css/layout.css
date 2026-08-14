@@ -97,33 +97,15 @@
     padding-top: var(--space-lg);
 }
 
-/* Horizontal is deliberately symmetric (unlike .g-2/.g-4 above, which only
-   override margin-left, so their margin-right stays at .row's smaller
-   -1rem): at --space-xl's larger magnitude, that left-only shape caused
-   real horizontal overflow past .container on stats/leaderboard.html (used
-   3x via `row g-5`). Vertical stays top-only, matching .g-2/.g-4/.gy-4 —
-   there's no .row margin-bottom baseline to restore symmetry against, and
-   these classes are only ever used to gap wrapped rows from what precedes
-   them, not to reserve space below. */
-.g-5 {
-    margin-top: calc(var(--space-xl) * -1);
-    margin-inline: calc(var(--space-xl) * -1);
-}
-
-.g-5>* {
-    padding-top: var(--space-xl);
-    padding-inline: var(--space-xl);
-}
-
-/* "x" means horizontal-only (both sides), unlike .g-5 above which also
-   touches vertical — symmetric for the same overflow reason. */
-.gx-5 {
-    margin-inline: calc(var(--space-xl) * -1);
-}
-
-.gx-5>* {
-    padding-inline: var(--space-xl);
-}
+/* .g-5/.gx-5 (stats/leaderboard.html, suchar_form.html) intentionally left
+   undefined here — see #151. .g-2/.g-4's negative-margin/compensating-padding
+   technique already overflows past .container by design at any magnitude
+   larger than --space-md (.container's own padding), just subtly (1rem) at
+   .g-4's size. Naively making it symmetric doesn't fix that: it overflows
+   both sides instead of one. Fixing it properly (e.g. switching to
+   `gap` instead of negative margins) needs visual verification against the
+   columns' own existing padding-inline to avoid over-widening the gutter —
+   a design call, not a mechanical mirror of an existing pattern. */
 
 /* Breakpoints for Grid */
 @media (min-width: 768px) {

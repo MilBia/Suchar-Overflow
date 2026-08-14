@@ -350,13 +350,12 @@
     color: var(--bs-danger) !important;
 }
 
-/* Same literal-hue reasoning as `.bg-info`/`.border-info` below: no
-   `--hue-info` variable exists yet. Matches their exact hsl() value —
-   `.text-warning`/`.bg-warning` and `.text-success`/`.bg-success` both keep
-   the same hue/sat/lig pair between their text and background variants, so
+/* Matches `.bg-info`/`.border-info` below exactly — `.text-warning`/
+   `.bg-warning` and `.text-success`/`.bg-success` both keep the same
+   hue/sat/lig pair between their text and background variants, so
    `.text-info` does too, rather than picking an unrelated shade. */
 .text-info {
-    color: hsl(200, 70%, 50%) !important;
+    color: hsl(var(--hue-info), 70%, 50%) !important;
 }
 
 .text-white {
@@ -431,10 +430,9 @@
 /* Not part of issue #86's original 7 classes, but added at the repo owner's
    request during review: without it, `bg-info text-white` badges (e.g. the
    "D" dry-count badge next to the #86-fixed "F" badge) render invisible
-   white-on-transparent text in light mode. No `--hue-info` variable exists
-   yet, so this uses a literal cyan hue distinct from the other named hues. */
+   white-on-transparent text in light mode. */
 .bg-info {
-    background-color: hsl(200, 70%, 50%) !important;
+    background-color: hsl(var(--hue-info), 70%, 50%) !important;
 }
 
 /* Opacity modifiers — only meaningful combined with a matching .bg-* class */
@@ -703,10 +701,9 @@
 }
 
 /* #66 follow-up: same reasoning, "Dry" badge in
-   stats/_leaderboard_author_card.html. Literal hue matches .bg-info/.text-info
-   above (no --hue-info variable exists yet). */
+   stats/_leaderboard_author_card.html. Matches .bg-info/.text-info above. */
 .border-info {
-    border: 1px solid hsl(200, 70%, 50%) !important;
+    border: 1px solid hsl(var(--hue-info), 70%, 50%) !important;
 }
 
 /* achievements/list.html and mine.html pair `border-bottom border-secondary`
@@ -737,7 +734,7 @@
 }
 
 .border-info.border-opacity-25 {
-    border: 1px solid hsla(200, 70%, 50%, 0.25) !important;
+    border: 1px solid hsla(var(--hue-info), 70%, 50%, 0.25) !important;
 }
 
 .fs-sm {
