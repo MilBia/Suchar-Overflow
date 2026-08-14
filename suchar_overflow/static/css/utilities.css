@@ -71,12 +71,18 @@
     margin-right: auto;
 }
 
+/* !important on these (and the other #66 follow-up spacing utilities below):
+   utilities.css is @imported before components/*.css and project.css in
+   base.css, so any component that sets margin/padding as a shorthand (.btn,
+   .badge, .list-group-item, etc.) would otherwise win the cascade at equal
+   specificity and silently cancel these out wherever combined — the exact
+   "class defined but has no visible effect" bug this PR exists to fix. */
 .ms-auto {
-    margin-left: auto;
+    margin-left: auto !important;
 }
 
 .mx-auto {
-    margin-inline: auto;
+    margin-inline: auto !important;
 }
 
 .mb-0 {
@@ -157,7 +163,7 @@
 
 /* Spacing Utilities */
 .mb-1 {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.25rem !important;
 }
 
 .mb-2 {
@@ -177,7 +183,7 @@
 }
 
 .mt-1 {
-    margin-top: 0.25rem;
+    margin-top: 0.25rem !important;
 }
 
 .mt-2 {
@@ -201,11 +207,11 @@
 }
 
 .py-2 {
-    padding-block: 0.5rem;
+    padding-block: 0.5rem !important;
 }
 
 .py-3 {
-    padding-block: 1rem;
+    padding-block: 1rem !important;
 }
 
 .py-4 {
@@ -245,7 +251,7 @@
 }
 
 .px-3 {
-    padding-inline: 1rem;
+    padding-inline: 1rem !important;
 }
 
 .px-4 {
@@ -253,11 +259,11 @@
 }
 
 .px-5 {
-    padding-inline: 3rem;
+    padding-inline: 3rem !important;
 }
 
 .pt-3 {
-    padding-top: 1rem;
+    padding-top: 1rem !important;
 }
 
 .pt-4 {
@@ -273,7 +279,7 @@
 }
 
 .pb-4 {
-    padding-bottom: 1.5rem;
+    padding-bottom: 1.5rem !important;
 }
 
 .pb-5 {
@@ -301,7 +307,7 @@
 }
 
 .ms-1 {
-    margin-left: 0.25rem;
+    margin-left: 0.25rem !important;
 }
 
 .ms-2 {
@@ -317,7 +323,7 @@
 }
 
 .ps-2 {
-    padding-left: 0.5rem;
+    padding-left: 0.5rem !important;
 }
 
 /* Color & Text Utilities */
@@ -344,10 +350,13 @@
     color: var(--bs-danger) !important;
 }
 
-/* Same literal-hue reasoning as `.bg-info` below: no `--hue-info` variable
-   exists yet, so this mirrors that class's cyan hue for consistency. */
+/* Same literal-hue reasoning as `.bg-info`/`.border-info` below: no
+   `--hue-info` variable exists yet. Matches their exact hsl() value —
+   `.text-warning`/`.bg-warning` and `.text-success`/`.bg-success` both keep
+   the same hue/sat/lig pair between their text and background variants, so
+   `.text-info` does too, rather than picking an unrelated shade. */
 .text-info {
-    color: hsl(200, 70%, 40%) !important;
+    color: hsl(200, 70%, 50%) !important;
 }
 
 .text-white {
@@ -614,6 +623,12 @@
 @media (min-width: 768px) {
     .d-md-block {
         display: block !important;
+    }
+
+    /* #66 follow-up: suchar_form.html's card body — mirrors .px-lg-5 below,
+       reusing .p-5's value. */
+    .p-md-5 {
+        padding: 3rem !important;
     }
 
     .flex-lg-grow-0 {

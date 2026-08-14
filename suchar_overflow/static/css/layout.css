@@ -61,7 +61,7 @@
     flex: 1 0 0%;
 }
 
-/* #66 follow-up: unlike the breakpoint-gated .col-lg-*/.col-md-* variants,
+/* #66 follow-up: unlike the breakpoint-gated col-lg / col-md variants,
    .col-8 has no infix (applies at every width), same as .col-12 above. */
 .col-8 {
     flex: 0 0 66.6667%;
@@ -97,22 +97,32 @@
     padding-top: var(--space-lg);
 }
 
+/* Horizontal is deliberately symmetric (unlike .g-2/.g-4 above, which only
+   override margin-left, so their margin-right stays at .row's smaller
+   -1rem): at --space-xl's larger magnitude, that left-only shape caused
+   real horizontal overflow past .container on stats/leaderboard.html (used
+   3x via `row g-5`). Vertical stays top-only, matching .g-2/.g-4/.gy-4 —
+   there's no .row margin-bottom baseline to restore symmetry against, and
+   these classes are only ever used to gap wrapped rows from what precedes
+   them, not to reserve space below. */
 .g-5 {
     margin-top: calc(var(--space-xl) * -1);
-    margin-left: calc(var(--space-xl) * -1);
+    margin-inline: calc(var(--space-xl) * -1);
 }
 
 .g-5>* {
     padding-top: var(--space-xl);
-    padding-left: var(--space-xl);
+    padding-inline: var(--space-xl);
 }
 
+/* "x" means horizontal-only (both sides), unlike .g-5 above which also
+   touches vertical — symmetric for the same overflow reason. */
 .gx-5 {
-    margin-left: calc(var(--space-xl) * -1);
+    margin-inline: calc(var(--space-xl) * -1);
 }
 
 .gx-5>* {
-    padding-left: var(--space-xl);
+    padding-inline: var(--space-xl);
 }
 
 /* Breakpoints for Grid */
