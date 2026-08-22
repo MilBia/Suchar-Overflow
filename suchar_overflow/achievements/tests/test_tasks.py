@@ -12,6 +12,7 @@ from suchar_overflow.achievements.tasks import award_best_suchar
 from suchar_overflow.achievements.tasks import award_winners
 from suchar_overflow.achievements.tasks import compute_period_range
 from suchar_overflow.achievements.tasks import due_monthly_run_at
+from suchar_overflow.achievements.tasks import due_yearly_run_at
 from suchar_overflow.achievements.tasks import find_best_suchary
 from suchar_overflow.achievements.tests.conftest import freeze_to_first_of_current_month
 from suchar_overflow.achievements.tests.conftest import last_month_mid
@@ -665,6 +666,69 @@ def test_due_monthly_run_at_january_rolls_back_to_december():
     now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2023, 12, 1, 0, 5, tzinfo=datetime.UTC)
     assert due_monthly_run_at(now, last_ran_at) is None
+
+
+# ---------------------------------------------------------------------------
+# due_yearly_run_at — catch-up detection for the in-memory jobstore (#168)
+# ---------------------------------------------------------------------------
+
+
+def test_due_yearly_run_at_returns_due_date_when_never_run():
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    assert due_yearly_run_at(now, None) == datetime.datetime(
+        2024,
+        1,
+        1,
+        0,
+        5,
+        tzinfo=datetime.UTC,
+    )
+
+
+def test_due_yearly_run_at_returns_due_date_when_last_run_before_it():
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=datetime.UTC)
+    assert due_yearly_run_at(now, last_ran_at) == datetime.datetime(
+        2024,
+        1,
+        1,
+        0,
+        5,
+        tzinfo=datetime.UTC,
+    )
+
+
+def test_due_yearly_run_at_none_when_last_run_on_due_date():
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    last_ran_at = datetime.datetime(2024, 1, 1, 0, 5, tzinfo=datetime.UTC)
+    assert due_yearly_run_at(now, last_ran_at) is None
+
+
+def test_due_yearly_run_at_none_when_last_run_after_due_date():
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    last_ran_at = datetime.datetime(2024, 1, 1, 0, 6, tzinfo=datetime.UTC)
+    assert due_yearly_run_at(now, last_ran_at) is None
+
+
+def test_due_yearly_run_at_before_first_of_year_fire_uses_previous_year():
+    """On Jan 1, before 00:05 UTC, this year's cron hasn't fired yet — the
+    due date falls back to the previous year's fire time."""
+    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.UTC)
+    last_ran_at = datetime.datetime(2023, 1, 1, 0, 5, tzinfo=datetime.UTC)
+    assert due_yearly_run_at(now, last_ran_at) is None
+
+
+def test_due_yearly_run_at_before_first_of_year_fire_still_detects_gap():
+    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.UTC)
+    last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=datetime.UTC)
+    assert due_yearly_run_at(now, last_ran_at) == datetime.datetime(
+        2023,
+        1,
+        1,
+        0,
+        5,
+        tzinfo=datetime.UTC,
+    )
 
 
 @pytest.mark.django_db
