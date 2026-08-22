@@ -195,7 +195,7 @@ dependencies = [
     # our usage across a minor bump so far.
     "polib>=1.2.0",
     "django-modeltranslation>=0.20.3",
-    "uvicorn[standard]>=0.52.1",
+    "uvicorn[standard]>=0.52.3",
     "apscheduler>=3.11.3,<4",
     "django-apscheduler>=0.7",
 ]
