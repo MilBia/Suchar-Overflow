@@ -49,6 +49,30 @@ def compute_period_range(
     return start_dt, end_dt, suffix
 
 
+def due_monthly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime | None:
+    """Return the monthly cron fire (day=1, 00:05 UTC) due at or before
+    ``now`` if it was never recorded by ``award_best_suchar``, else ``None``.
+
+    Used at process startup to detect a run missed while the process was
+    down: apscheduler's default in-memory jobstore only knows about future
+    fire times, so a restart silently skips any fire that should already
+    have happened rather than catching it up on its own (see #169).
+    """
+    due_at = now.replace(day=1, hour=0, minute=5, second=0, microsecond=0)
+    if due_at > now:
+        previous_month_end = due_at - timedelta(days=1)
+        due_at = previous_month_end.replace(
+            day=1,
+            hour=0,
+            minute=5,
+            second=0,
+            microsecond=0,
+        )
+    if last_ran_at is None or last_ran_at < due_at:
+        return due_at
+    return None
+
+
 def find_best_suchar(start_dt: datetime, end_dt: datetime) -> Suchar | None:
     """Return the Suchar with the most votes created within [start_dt, end_dt)."""
     return (
@@ -62,11 +86,16 @@ def find_best_suchar(start_dt: datetime, end_dt: datetime) -> Suchar | None:
     )
 
 
-def award_best_suchar(period: str) -> None:
+def award_best_suchar(period: str, reference_date: date | None = None) -> None:
     """Award the best-suchar achievement for the given period ('month' or 'year').
 
-    Uses yesterday as the reference date so when called on the 1st of a new
-    period the previous period is evaluated (same logic as the management command).
+    Defaults ``reference_date`` to yesterday so when called on the 1st of a
+    new period the previous period is evaluated (same logic as the
+    management command). Pass an explicit ``reference_date`` to evaluate a
+    different period — e.g. the catch-up path in
+    ``AchievementsConfig._catch_up_missed_monthly_run`` uses it to award a
+    period that was missed while the process was down, rather than
+    whatever period "yesterday" falls in at the time the process restarts.
 
     Runs in a long-lived daemon thread rather than a request cycle, so Django
     never closes its thread-local DB connection for us — this cron job runs
@@ -77,7 +106,8 @@ def award_best_suchar(period: str) -> None:
     kill the connection the caller's transaction depends on.
     """
     try:
-        reference_date = timezone.now().date() - timedelta(days=1)
+        if reference_date is None:
+            reference_date = timezone.now().date() - timedelta(days=1)
         start_dt, end_dt, suffix = compute_period_range(period, reference_date)
 
         best_suchar = find_best_suchar(start_dt, end_dt)
