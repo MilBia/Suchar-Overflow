@@ -78,6 +78,22 @@ def due_monthly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime 
     return None
 
 
+def due_yearly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime | None:
+    """Return the yearly cron fire (Jan 1, 00:05 UTC) due at or before
+    ``now`` if it was never recorded by ``award_best_suchar``, else ``None``.
+
+    Used at process startup to detect a run missed while the process was
+    down — see ``due_monthly_run_at`` for why the in-memory jobstore needs
+    this at all (#169; extended to the yearly job in #168).
+    """
+    due_at = now.replace(month=1, day=1, hour=0, minute=5, second=0, microsecond=0)
+    if due_at > now:
+        due_at = due_at.replace(year=due_at.year - 1)
+    if last_ran_at is None or last_ran_at < due_at:
+        return due_at
+    return None
+
+
 def find_best_suchary(start_dt: datetime, end_dt: datetime) -> list[Suchar]:
     """Return all Suchary tied for the most votes created within [start_dt, end_dt).
 
