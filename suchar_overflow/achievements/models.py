@@ -84,7 +84,7 @@ class Achievement(models.Model):
     # django-modeltranslation's @register(Achievement) swaps in a
     # MultilingualManager at runtime (see translation.py) — django-stubs
     # can't see that dynamic registration, so declare the base type explicitly.
-    objects: models.Manager["Achievement"]
+    objects: models.Manager[Achievement]
 
     class Meta:
         verbose_name = _("Achievement")

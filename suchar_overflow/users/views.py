@@ -379,7 +379,7 @@ async def _aget_email_change_request(
         return await EmailChangeRequest.objects.select_related("user").aget(
             **{token_field: token},
         )
-    except (EmailChangeRequest.DoesNotExist, ValueError):
+    except EmailChangeRequest.DoesNotExist, ValueError:
         return None
 
 
