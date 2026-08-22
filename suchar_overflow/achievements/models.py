@@ -138,6 +138,7 @@ class SchedulerRun(models.Model):
     ran_at = models.DateTimeField(_("Ran At"))
 
     class Meta:
+        ordering = ("job_id",)
         verbose_name = _("Scheduler Run")
         verbose_name_plural = _("Scheduler Runs")
 

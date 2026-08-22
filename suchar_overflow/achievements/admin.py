@@ -145,7 +145,6 @@ class UserAchievementAdmin(admin.ModelAdmin):
 @admin.register(SchedulerRun)
 class SchedulerRunAdmin(admin.ModelAdmin):
     list_display = ("job_id", "ran_at")
-    ordering = ("job_id",)
 
     def has_add_permission(self, request):
         return False
