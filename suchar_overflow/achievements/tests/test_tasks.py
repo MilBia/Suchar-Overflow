@@ -1,10 +1,12 @@
 import datetime
+import logging
 from unittest.mock import patch
 
 import pytest
 from django.contrib.auth import get_user_model
 
 from suchar_overflow.achievements.models import Achievement
+from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.achievements.tasks import award_best_suchar
 from suchar_overflow.achievements.tasks import compute_period_range
@@ -204,3 +206,117 @@ def test_award_best_suchar_raises_on_unknown_period(periodic_achievements):
         pytest.raises(ValueError, match="Unknown period"),
     ):
         award_best_suchar("week")
+
+
+# ---------------------------------------------------------------------------
+# award_best_suchar records a SchedulerRun (replaces django-apscheduler's
+# DjangoJobStore visibility now that the scheduler uses an in-memory jobstore)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_award_best_suchar_records_scheduler_run(periodic_achievements):
+    frozen_now = freeze_to_first_of_current_month()
+    with patch(
+        "suchar_overflow.achievements.tasks.timezone.now",
+        return_value=frozen_now,
+    ):
+        award_best_suchar("month")
+
+    run = SchedulerRun.objects.get(job_id="award-best-suchar-month")
+    assert run.ran_at == frozen_now
+
+
+@pytest.mark.django_db
+def test_award_best_suchar_updates_existing_scheduler_run(periodic_achievements):
+    frozen_now = freeze_to_first_of_current_month()
+    with patch(
+        "suchar_overflow.achievements.tasks.timezone.now",
+        return_value=frozen_now,
+    ):
+        award_best_suchar("month")
+        award_best_suchar("month")
+
+    assert SchedulerRun.objects.filter(job_id="award-best-suchar-month").count() == 1
+
+
+# ---------------------------------------------------------------------------
+# award_best_suchar closes stale ORM connections (it runs in a long-lived
+# daemon thread, not a request cycle, so Django never closes them for us)
+# and logs when the expected Achievement is missing from the DB.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db(transaction=True)
+def test_award_best_suchar_closes_old_connections():
+    frozen_now = freeze_to_first_of_current_month()
+    with (
+        patch(
+            "suchar_overflow.achievements.tasks.timezone.now",
+            return_value=frozen_now,
+        ),
+        patch(
+            "suchar_overflow.achievements.tasks.close_old_connections",
+        ) as mock_close_old_connections,
+    ):
+        award_best_suchar("month")
+
+    assert mock_close_old_connections.called
+
+
+@pytest.mark.django_db
+def test_award_best_suchar_skips_close_old_connections_inside_atomic_block():
+    """Inside an atomic block (e.g. this test's own transaction), closing the
+    connection would kill the transaction the caller depends on — see the
+    ``connection.in_atomic_block`` guard in ``award_best_suchar``."""
+    frozen_now = freeze_to_first_of_current_month()
+    with (
+        patch(
+            "suchar_overflow.achievements.tasks.timezone.now",
+            return_value=frozen_now,
+        ),
+        patch(
+            "suchar_overflow.achievements.tasks.close_old_connections",
+        ) as mock_close_old_connections,
+    ):
+        award_best_suchar("month")
+
+    mock_close_old_connections.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_award_best_suchar_logs_warning_when_achievement_missing(
+    periodic_achievements,
+    caplog,
+):
+    frozen_now = freeze_to_first_of_current_month()
+    winner = User.objects.create_user(
+        username="w3",
+        email="w3@example.com",
+        password="pw",  # noqa: S106
+    )
+    mid = last_month_mid()
+    s = Suchar.objects.create(text="Joke", author=winner)
+    s.created_at = mid
+    s.save()
+    voter = User.objects.create_user(
+        username="vw3",
+        email="vw3@example.com",
+        password="pw",  # noqa: S106
+    )
+    Vote.objects.create(suchar=s, user=voter, is_funny=True)
+
+    with (
+        patch(
+            "suchar_overflow.achievements.tasks.timezone.now",
+            return_value=frozen_now,
+        ),
+        patch(
+            "suchar_overflow.achievements.tasks.Achievement.objects.get",
+            side_effect=Achievement.DoesNotExist,
+        ),
+        caplog.at_level(logging.WARNING, logger="suchar_overflow.achievements.tasks"),
+    ):
+        award_best_suchar("month")  # should not raise
+
+    assert "best-suchar-month" in caplog.text

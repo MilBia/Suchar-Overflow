@@ -56,7 +56,7 @@ cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowa
 | **REST API**     | Django Ninja                                       |
 | **Baza danych**  | PostgreSQL 18                                      |
 | **Cache**        | Redis 7 (django-redis)                             |
-| **Harmonogram zadań** | APScheduler + django-apscheduler (wbudowany w Django) |
+| **Harmonogram zadań** | APScheduler (wbudowany w Django)                     |
 | **Serwer WSGI** | Gunicorn                                           |
 | **Reverse Proxy** | Traefik 3 (produkcja)                             |
 | **Media Proxy**  | Nginx (produkcja)                                  |

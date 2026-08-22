@@ -32,22 +32,37 @@ class AchievementsConfig(AppConfig):
         # scheduler thread that would write to the DB as a side effect.
         if "mypy" in sys.modules:
             return
-        if len(sys.argv) > 1 and sys.argv[1] in _NO_SCHEDULER:
+        if self._is_no_scheduler_command(sys.argv):
             return
 
-        # DjangoJobStore uses sync ORM; run in a plain thread so there is
-        # no running asyncio loop (uvicorn sets one up before importing asgi.py).
+        # The scheduled job uses the sync Django ORM; run it in a plain thread
+        # so there is no running asyncio loop (uvicorn sets one up before
+        # importing asgi.py).
         threading.Thread(target=self._start_scheduler, daemon=True).start()
+
+    @staticmethod
+    def _is_no_scheduler_command(argv: list[str]) -> bool:
+        """True if argv invokes a management command in ``_NO_SCHEDULER``.
+
+        The command name is the first non-flag token after ``argv[0]``, so a
+        global flag before it (e.g. ``--settings=...``) doesn't defeat the
+        check — but unlike a blanket membership scan across all of ``argv``,
+        this won't misfire on a command whose own argument happens to spell
+        one of these words (e.g. ``manage.py test -k check``).
+        """
+        command = next((arg for arg in argv[1:] if not arg.startswith("-")), None)
+        return command in _NO_SCHEDULER
 
     @staticmethod
     def _start_scheduler():
         from apscheduler.schedulers.background import BackgroundScheduler
-        from django_apscheduler.jobstores import DjangoJobStore
 
         from suchar_overflow.achievements.tasks import award_best_suchar
 
+        # In-memory jobstore (apscheduler's default): the job re-registers on
+        # every process start, so it doesn't need DB-backed persistence.
+        # See SchedulerRun (achievements/models.py) for last-run visibility.
         scheduler = BackgroundScheduler(timezone="UTC")
-        scheduler.add_jobstore(DjangoJobStore(), "default")
         scheduler.add_job(
             award_best_suchar,
             "cron",
@@ -56,7 +71,5 @@ class AchievementsConfig(AppConfig):
             hour=0,
             minute=5,
             id="award-best-suchar-month",
-            replace_existing=True,
-            jobstore="default",
         )
         scheduler.start()

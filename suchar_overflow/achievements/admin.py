@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from modeltranslation.admin import TabbedTranslationAdmin
 
 from .models import Achievement
+from .models import SchedulerRun
 from .models import UserAchievement
 
 
@@ -139,3 +140,14 @@ class UserAchievementAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "user__email", "achievement__name")
     autocomplete_fields = ("user", "achievement")
     readonly_fields = ("awarded_at",)
+
+
+@admin.register(SchedulerRun)
+class SchedulerRunAdmin(admin.ModelAdmin):
+    list_display = ("job_id", "ran_at")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False

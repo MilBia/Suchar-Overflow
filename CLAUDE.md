@@ -166,11 +166,14 @@ gated by an allowlist of slugs in `VALID_FRONTEND_SLUGS`).
 
 Django-RQ has been removed entirely. `AchievementsConfig.ready()`
 (`suchar_overflow/achievements/apps.py`) starts an in-process `BackgroundScheduler`
-(`apscheduler` + `django_apscheduler.jobstores.DjangoJobStore`) on a plain thread,
+(raw `apscheduler` 3.x, default in-memory jobstore — `django-apscheduler` was dropped,
+see issue #159: semi-abandoned, no declared Django 6.x support) on a plain thread,
 scheduling `award_best_suchar` as a monthly cron job. The scheduler is skipped under
 pytest and for management commands in `_NO_SCHEDULER` (`migrate`, `makemigrations`,
 `collectstatic`, `compress`, `check`, `shell`, `createsuperuser`) to avoid starting
-duplicate/unwanted schedulers.
+duplicate/unwanted schedulers. Since the jobstore is in-memory (no DB persistence
+across restarts), `award_best_suchar` records its own last-run marker in the
+`SchedulerRun` model (`achievements/models.py`), visible read-only in the admin.
 
 ### Content Security Policy
 
@@ -241,7 +244,7 @@ After adding dependencies, rebuild the Docker image before running tests in the 
 just build
 ```
 
-Notable non-obvious dependencies already in use: `apscheduler` + `django-apscheduler`
+Notable non-obvious dependencies already in use: `apscheduler`
 (in-process job scheduling, see Architecture notes), `django-ninja` (the `/api/`
 router), `django-modeltranslation` (model-field translation for `Achievement`, distinct
 from the template-level `i18n` used elsewhere).

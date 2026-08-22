@@ -122,7 +122,6 @@ DJANGO_APPS = [
     "django.forms",
 ]
 THIRD_PARTY_APPS = [
-    "django_apscheduler",
     "compressor",
 ]
 

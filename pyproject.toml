@@ -197,5 +197,4 @@ dependencies = [
     "django-modeltranslation>=0.20.3",
     "uvicorn[standard]>=0.52.3",
     "apscheduler>=3.11.3,<4",
-    "django-apscheduler>=0.7",
 ]
