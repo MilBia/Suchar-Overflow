@@ -178,7 +178,7 @@ dependencies = [
     # openai 3.0.0 stops auto-installing httpx and defaults to HTTPX2's OS trust
     # store instead of certifi (see issue #156) — capped until fill_translations
     # is verified end-to-end against 3.x.
-    "openai>=2.53.0,<3",
+    "openai>=3.1.0,<4",
     "psycopg[c]==3.3.4",
     "python-slugify==8.0.4",
     "whitenoise==6.12.0",
