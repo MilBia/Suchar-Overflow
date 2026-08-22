@@ -28,6 +28,28 @@ def periodic_achievements(db):
             "icon_content": "<svg></svg>",
         },
     )
+    Achievement.objects.get_or_create(
+        slug="best-suchar-month-tie",
+        defaults={
+            "name": "Tie of the Month",
+            "category": "PERIODIC",
+            "metric": "SUM_SCORE",
+            "threshold": 0,
+            "icon_content": "<svg></svg>",
+            "is_secret": True,
+        },
+    )
+    Achievement.objects.get_or_create(
+        slug="best-suchar-year-tie",
+        defaults={
+            "name": "Tie of the Year",
+            "category": "PERIODIC",
+            "metric": "SUM_SCORE",
+            "threshold": 0,
+            "icon_content": "<svg></svg>",
+            "is_secret": True,
+        },
+    )
 
 
 def last_month_mid() -> datetime.datetime:

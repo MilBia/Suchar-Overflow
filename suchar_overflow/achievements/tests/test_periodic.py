@@ -96,6 +96,45 @@ def test_award_periodic_month_no_suchars_does_not_crash(periodic_achievements):
 
 
 @pytest.mark.django_db
+def test_award_periodic_month_tie_awards_all_tied_authors(periodic_achievements):
+    """When different authors tie for the top vote count, every one of them
+    gets the main achievement plus the hidden tie achievement (#171)."""
+    author_a = User.objects.create_user(
+        username="cmd-tie-a",
+        email="cmd-tie-a@example.com",
+        password="password",  # noqa: S106
+    )
+    author_b = User.objects.create_user(
+        username="cmd-tie-b",
+        email="cmd-tie-b@example.com",
+        password="password",  # noqa: S106
+    )
+
+    mid_last_month = last_month_mid()
+    s_a = Suchar.objects.create(text="Tie joke A", author=author_a)
+    s_a.created_at = mid_last_month
+    s_a.save()
+    s_b = Suchar.objects.create(text="Tie joke B", author=author_b)
+    s_b.created_at = mid_last_month
+    s_b.save()
+
+    Vote.objects.create(suchar=s_a, user=author_b, is_funny=True)
+    Vote.objects.create(suchar=s_b, user=author_a, is_funny=True)
+
+    call_command("award_periodic", period="month", date=last_month_end())
+
+    for author in (author_a, author_b):
+        assert UserAchievement.objects.filter(
+            user=author,
+            achievement__slug="best-suchar-month",
+        ).exists()
+        assert UserAchievement.objects.filter(
+            user=author,
+            achievement__slug="best-suchar-month-tie",
+        ).exists()
+
+
+@pytest.mark.django_db
 def test_award_periodic_month_winner_is_highest_vote_getter(periodic_achievements):
     """When multiple authors post in the same period, the one with more votes wins."""
     authors = [
