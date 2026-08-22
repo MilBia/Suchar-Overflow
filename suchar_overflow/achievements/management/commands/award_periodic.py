@@ -4,10 +4,9 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from suchar_overflow.achievements.models import Achievement
-from suchar_overflow.achievements.models import UserAchievement
+from suchar_overflow.achievements.tasks import award_winners
 from suchar_overflow.achievements.tasks import compute_period_range
-from suchar_overflow.achievements.tasks import find_best_suchar
+from suchar_overflow.achievements.tasks import find_best_suchary
 
 
 class Command(BaseCommand):
@@ -46,42 +45,44 @@ class Command(BaseCommand):
             reference_date,
         )
 
-        best_suchar = find_best_suchar(start_dt, end_dt)
+        best_suchary = find_best_suchary(start_dt, end_dt)
 
-        if not best_suchar:
+        if not best_suchary:
             self.stdout.write("No suchars found for this period.")
             return
 
-        winner = best_suchar.author
-        # vote_count comes from find_best_suchar's .annotate(vote_count=...) —
+        # vote_count comes from find_best_suchary's .annotate(vote_count=...) —
         # not a static attribute of Suchar, so django-stubs can't see it.
-        vote_count = best_suchar.vote_count  # type: ignore[attr-defined]
-        self.stdout.write(
-            f"Best Suchar found: '{best_suchar.text[:20]}...' "
-            f"by {winner.username} with {vote_count} votes.",
-        )
+        vote_count = best_suchary[0].vote_count  # type: ignore[attr-defined]
+        authors = sorted({s.author for s in best_suchary}, key=lambda u: u.username)
 
-        # Award Achievement
-        # Slug convention: best-suchar-[period] e.g. best-suchar-month
-        slug = f"best-suchar-{achievement_slug_suffix}"
-
-        try:
-            achievement = Achievement.objects.get(slug=slug)
-        except Achievement.DoesNotExist:
+        if len(authors) > 1:
+            usernames = ", ".join(author.username for author in authors)
             self.stdout.write(
-                self.style.ERROR(f"Achievement with slug '{slug}' not found!"),
+                f"Tie detected: {len(authors)} authors tied with "
+                f"{vote_count} votes: {usernames}.",
+            )
+        else:
+            self.stdout.write(
+                f"Best Suchar found: '{best_suchary[0].text[:20]}...' "
+                f"by {authors[0].username} with {vote_count} votes.",
+            )
+
+        # Slug convention: best-suchar-[period] e.g. best-suchar-month,
+        # plus best-suchar-[period]-tie when the winners are tied.
+        main_slug = f"best-suchar-{achievement_slug_suffix}"
+        results = award_winners(best_suchary, achievement_slug_suffix)
+
+        if not any(slug == main_slug for slug, _user, _created in results):
+            self.stdout.write(
+                self.style.ERROR(f"Achievement with slug '{main_slug}' not found!"),
             )
             return
 
-        _, created = UserAchievement.objects.get_or_create(
-            user=winner,
-            achievement=achievement,
-        )
-        if created:
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"Awarded '{achievement.name}' to {winner.username}",
-                ),
-            )
-        else:
-            self.stdout.write(f"{winner.username} already has '{achievement.name}'.")
+        for slug, user, created in results:
+            if created:
+                self.stdout.write(
+                    self.style.SUCCESS(f"Awarded '{slug}' to {user.username}"),
+                )
+            else:
+                self.stdout.write(f"{user.username} already has '{slug}'.")

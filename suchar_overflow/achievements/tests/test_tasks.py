@@ -9,8 +9,10 @@ from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.achievements.tasks import award_best_suchar
+from suchar_overflow.achievements.tasks import award_winners
 from suchar_overflow.achievements.tasks import compute_period_range
 from suchar_overflow.achievements.tasks import due_monthly_run_at
+from suchar_overflow.achievements.tasks import find_best_suchary
 from suchar_overflow.achievements.tests.conftest import freeze_to_first_of_current_month
 from suchar_overflow.achievements.tests.conftest import last_month_mid
 from suchar_overflow.suchary.models import Suchar
@@ -56,6 +58,237 @@ def test_compute_period_range_year():
 def test_compute_period_range_unknown_period_raises():
     with pytest.raises(ValueError, match="Unknown period"):
         compute_period_range("week", datetime.date(2024, 6, 1))
+
+
+# ---------------------------------------------------------------------------
+# find_best_suchary — returns ALL Suchary tied for the top vote count (#171)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_find_best_suchary_returns_single_winner_when_no_tie():
+    mid = last_month_mid()
+    author = User.objects.create_user(
+        username="solo",
+        email="solo@example.com",
+        password="pw",  # noqa: S106
+    )
+    other = User.objects.create_user(
+        username="solo-other",
+        email="solo-other@example.com",
+        password="pw",  # noqa: S106
+    )
+    s_win = Suchar.objects.create(text="Winner", author=author)
+    s_win.created_at = mid
+    s_win.save()
+    s_lose = Suchar.objects.create(text="Loser", author=other)
+    s_lose.created_at = mid
+    s_lose.save()
+    Vote.objects.create(suchar=s_win, user=other, is_funny=True)
+
+    start_dt, end_dt, _suffix = compute_period_range("month", mid.date())
+    winners = find_best_suchary(start_dt, end_dt)
+
+    assert [s.pk for s in winners] == [s_win.pk]
+
+
+@pytest.mark.django_db
+def test_find_best_suchary_returns_all_suchary_tied_for_top_vote_count():
+    mid = last_month_mid()
+    author_a = User.objects.create_user(
+        username="tie-a",
+        email="tie-a@example.com",
+        password="pw",  # noqa: S106
+    )
+    author_b = User.objects.create_user(
+        username="tie-b",
+        email="tie-b@example.com",
+        password="pw",  # noqa: S106
+    )
+    author_c = User.objects.create_user(
+        username="tie-c",
+        email="tie-c@example.com",
+        password="pw",  # noqa: S106
+    )
+    s_a = Suchar.objects.create(text="A", author=author_a)
+    s_a.created_at = mid
+    s_a.save()
+    s_b = Suchar.objects.create(text="B", author=author_b)
+    s_b.created_at = mid
+    s_b.save()
+    s_c = Suchar.objects.create(text="C, fewer votes", author=author_c)
+    s_c.created_at = mid
+    s_c.save()
+
+    # s_a and s_b each get 2 votes, s_c gets 1 — s_a and s_b tie for the top spot.
+    Vote.objects.create(suchar=s_a, user=author_b, is_funny=True)
+    Vote.objects.create(suchar=s_a, user=author_c, is_funny=True)
+    Vote.objects.create(suchar=s_b, user=author_a, is_funny=True)
+    Vote.objects.create(suchar=s_b, user=author_c, is_funny=True)
+    Vote.objects.create(suchar=s_c, user=author_a, is_funny=True)
+
+    start_dt, end_dt, _suffix = compute_period_range("month", mid.date())
+    winners = find_best_suchary(start_dt, end_dt)
+
+    assert {s.pk for s in winners} == {s_a.pk, s_b.pk}
+
+
+@pytest.mark.django_db
+def test_find_best_suchary_returns_empty_list_when_no_suchars():
+    mid = last_month_mid()
+    start_dt, end_dt, _suffix = compute_period_range("month", mid.date())
+
+    assert find_best_suchary(start_dt, end_dt) == []
+
+
+@pytest.mark.django_db
+def test_find_best_suchary_returns_empty_list_when_all_suchary_have_zero_votes():
+    """A period where Suchary were posted but none received any votes has no
+    winner — the max vote count of 0 doesn't count as a "best" tie (#171)."""
+    mid = last_month_mid()
+    author_a = User.objects.create_user(
+        username="zero-a",
+        email="zero-a@example.com",
+        password="pw",  # noqa: S106
+    )
+    author_b = User.objects.create_user(
+        username="zero-b",
+        email="zero-b@example.com",
+        password="pw",  # noqa: S106
+    )
+    for author in (author_a, author_b):
+        s = Suchar.objects.create(text=f"No votes for {author.username}", author=author)
+        s.created_at = mid
+        s.save()
+
+    start_dt, end_dt, _suffix = compute_period_range("month", mid.date())
+
+    assert find_best_suchary(start_dt, end_dt) == []
+
+
+# ---------------------------------------------------------------------------
+# award_winners — awards every distinct tied author, plus the hidden
+# "-tie" achievement when more than one distinct author tied (#171)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_award_winners_single_winner_gets_no_tie_achievement(periodic_achievements):
+    winner = User.objects.create_user(
+        username="award-solo",
+        email="award-solo@example.com",
+        password="pw",  # noqa: S106
+    )
+    s = Suchar.objects.create(text="Solo joke", author=winner)
+
+    award_winners([s], "month")
+
+    assert UserAchievement.objects.filter(
+        user=winner,
+        achievement__slug="best-suchar-month",
+    ).exists()
+    assert not UserAchievement.objects.filter(
+        user=winner,
+        achievement__slug="best-suchar-month-tie",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_award_winners_different_authors_tied_both_get_main_and_tie_achievement(
+    periodic_achievements,
+):
+    author_a = User.objects.create_user(
+        username="award-tie-a",
+        email="award-tie-a@example.com",
+        password="pw",  # noqa: S106
+    )
+    author_b = User.objects.create_user(
+        username="award-tie-b",
+        email="award-tie-b@example.com",
+        password="pw",  # noqa: S106
+    )
+    s_a = Suchar.objects.create(text="Tie A", author=author_a)
+    s_b = Suchar.objects.create(text="Tie B", author=author_b)
+
+    award_winners([s_a, s_b], "month")
+
+    for author in (author_a, author_b):
+        assert UserAchievement.objects.filter(
+            user=author,
+            achievement__slug="best-suchar-month",
+        ).exists()
+        assert UserAchievement.objects.filter(
+            user=author,
+            achievement__slug="best-suchar-month-tie",
+        ).exists()
+
+
+@pytest.mark.django_db
+def test_award_winners_results_are_ordered_by_username(periodic_achievements):
+    """award_winners dedupes authors into a set, whose iteration order is
+    unspecified — results must be sorted by username so CLI/log output is
+    deterministic across runs (PR #172 review nit)."""
+    author_z = User.objects.create_user(
+        username="zzz-order",
+        email="zzz-order@example.com",
+        password="pw",  # noqa: S106
+    )
+    author_a = User.objects.create_user(
+        username="aaa-order",
+        email="aaa-order@example.com",
+        password="pw",  # noqa: S106
+    )
+    s_z = Suchar.objects.create(text="Z", author=author_z)
+    s_a = Suchar.objects.create(text="A", author=author_a)
+
+    results = award_winners([s_z, s_a], "month")
+
+    # Two award_winners calls happen here (main + tie achievement), each
+    # producing its own sorted run — check ordering within each, not across
+    # the concatenated list.
+    main_usernames = [
+        user.username for slug, user, _created in results if slug == "best-suchar-month"
+    ]
+    tie_usernames = [
+        user.username
+        for slug, user, _created in results
+        if slug == "best-suchar-month-tie"
+    ]
+    assert main_usernames == sorted(main_usernames)
+    assert tie_usernames == sorted(tie_usernames)
+
+
+@pytest.mark.django_db
+def test_award_winners_same_author_tied_with_self_gets_no_tie_achievement(
+    periodic_achievements,
+):
+    """Two Suchary by the same author tied for the top spot, no other author
+    involved — this is a plain win, not a tie between different people."""
+    author = User.objects.create_user(
+        username="award-self-tie",
+        email="award-self-tie@example.com",
+        password="pw",  # noqa: S106
+    )
+    s1 = Suchar.objects.create(text="Self A", author=author)
+    s2 = Suchar.objects.create(text="Self B", author=author)
+
+    award_winners([s1, s2], "month")
+
+    assert UserAchievement.objects.filter(
+        user=author,
+        achievement__slug="best-suchar-month",
+    ).exists()
+    assert not UserAchievement.objects.filter(
+        user=author,
+        achievement__slug="best-suchar-month-tie",
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_award_winners_empty_list_does_nothing(periodic_achievements):
+    award_winners([], "month")
+
+    assert UserAchievement.objects.count() == 0
 
 
 # ---------------------------------------------------------------------------
@@ -108,6 +341,51 @@ def test_award_best_suchar_month_awards_winner(periodic_achievements):
         user=loser,
         achievement__slug="best-suchar-month",
     ).exists()
+
+
+@pytest.mark.django_db
+def test_award_best_suchar_month_tie_awards_all_tied_authors(periodic_achievements):
+    """When different authors tie for the top vote count in the period,
+    every one of them gets the main achievement plus the hidden tie
+    achievement (#171)."""
+    frozen_now = freeze_to_first_of_current_month()
+    author_a = User.objects.create_user(
+        username="task-tie-a",
+        email="task-tie-a@example.com",
+        password="pw",  # noqa: S106
+    )
+    author_b = User.objects.create_user(
+        username="task-tie-b",
+        email="task-tie-b@example.com",
+        password="pw",  # noqa: S106
+    )
+
+    mid = last_month_mid()
+    s_a = Suchar.objects.create(text="Tie A", author=author_a)
+    s_a.created_at = mid
+    s_a.save()
+    s_b = Suchar.objects.create(text="Tie B", author=author_b)
+    s_b.created_at = mid
+    s_b.save()
+
+    Vote.objects.create(suchar=s_a, user=author_b, is_funny=True)
+    Vote.objects.create(suchar=s_b, user=author_a, is_funny=True)
+
+    with patch(
+        "suchar_overflow.achievements.tasks.timezone.now",
+        return_value=frozen_now,
+    ):
+        award_best_suchar("month")
+
+    for author in (author_a, author_b):
+        assert UserAchievement.objects.filter(
+            user=author,
+            achievement__slug="best-suchar-month",
+        ).exists()
+        assert UserAchievement.objects.filter(
+            user=author,
+            achievement__slug="best-suchar-month-tie",
+        ).exists()
 
 
 @pytest.mark.django_db

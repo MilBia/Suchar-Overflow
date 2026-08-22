@@ -1,7 +1,10 @@
+import io
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 
+from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.achievements.tests.conftest import last_month_end
 from suchar_overflow.achievements.tests.conftest import last_month_mid
@@ -93,6 +96,86 @@ def test_award_periodic_month_no_suchars_does_not_crash(periodic_achievements):
     """Running the command on an empty period should exit gracefully."""
     call_command("award_periodic", period="month", date=last_month_end())
     assert UserAchievement.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_award_periodic_month_tie_awards_all_tied_authors(periodic_achievements):
+    """When different authors tie for the top vote count, every one of them
+    gets the main achievement plus the hidden tie achievement (#171)."""
+    author_a = User.objects.create_user(
+        username="cmd-tie-a",
+        email="cmd-tie-a@example.com",
+        password="password",  # noqa: S106
+    )
+    author_b = User.objects.create_user(
+        username="cmd-tie-b",
+        email="cmd-tie-b@example.com",
+        password="password",  # noqa: S106
+    )
+
+    mid_last_month = last_month_mid()
+    s_a = Suchar.objects.create(text="Tie joke A", author=author_a)
+    s_a.created_at = mid_last_month
+    s_a.save()
+    s_b = Suchar.objects.create(text="Tie joke B", author=author_b)
+    s_b.created_at = mid_last_month
+    s_b.save()
+
+    Vote.objects.create(suchar=s_a, user=author_b, is_funny=True)
+    Vote.objects.create(suchar=s_b, user=author_a, is_funny=True)
+
+    call_command("award_periodic", period="month", date=last_month_end())
+
+    for author in (author_a, author_b):
+        assert UserAchievement.objects.filter(
+            user=author,
+            achievement__slug="best-suchar-month",
+        ).exists()
+        assert UserAchievement.objects.filter(
+            user=author,
+            achievement__slug="best-suchar-month-tie",
+        ).exists()
+
+
+@pytest.mark.django_db
+def test_award_periodic_month_missing_main_achievement_reports_error_even_with_tie(
+    periodic_achievements,
+):
+    """If the main best-suchar-month Achievement row is missing but the
+    hidden tie achievement exists, the command must still report the
+    missing achievement rather than silently treating award_winners'
+    non-empty results (from the tie achievement) as success (#171 review)."""
+    Achievement.objects.filter(slug="best-suchar-month").delete()
+
+    author_a = User.objects.create_user(
+        username="missing-main-a",
+        email="missing-main-a@example.com",
+        password="password",  # noqa: S106
+    )
+    author_b = User.objects.create_user(
+        username="missing-main-b",
+        email="missing-main-b@example.com",
+        password="password",  # noqa: S106
+    )
+
+    mid_last_month = last_month_mid()
+    s_a = Suchar.objects.create(text="A", author=author_a)
+    s_a.created_at = mid_last_month
+    s_a.save()
+    s_b = Suchar.objects.create(text="B", author=author_b)
+    s_b.created_at = mid_last_month
+    s_b.save()
+    Vote.objects.create(suchar=s_a, user=author_b, is_funny=True)
+    Vote.objects.create(suchar=s_b, user=author_a, is_funny=True)
+
+    out = io.StringIO()
+    call_command("award_periodic", period="month", date=last_month_end(), stdout=out)
+
+    assert "best-suchar-month" in out.getvalue()
+    assert "not found" in out.getvalue()
+    assert not UserAchievement.objects.filter(
+        achievement__slug="best-suchar-month",
+    ).exists()
 
 
 @pytest.mark.django_db

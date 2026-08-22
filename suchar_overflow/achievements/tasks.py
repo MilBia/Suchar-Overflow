@@ -2,16 +2,21 @@ import logging
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 from django.db import close_old_connections
 from django.db import connection
 from django.db.models import Count
+from django.db.models import Max
 from django.utils import timezone
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.suchary.models import Suchar
+
+if TYPE_CHECKING:
+    from suchar_overflow.users.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -73,17 +78,69 @@ def due_monthly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime 
     return None
 
 
-def find_best_suchar(start_dt: datetime, end_dt: datetime) -> Suchar | None:
-    """Return the Suchar with the most votes created within [start_dt, end_dt)."""
-    return (
+def find_best_suchary(start_dt: datetime, end_dt: datetime) -> list[Suchar]:
+    """Return all Suchary tied for the most votes created within [start_dt, end_dt).
+
+    Postgres doesn't guarantee row order among ties on a plain
+    ``.order_by("-vote_count")``, so rather than picking an arbitrary single
+    "winner" (see #171) this returns every Suchar at the top vote count —
+    ``award_winners`` decides what to do with a tie. Empty list if no Suchar
+    was posted in the range, or if every Suchar posted has zero votes (a
+    0-vote max doesn't count as a "best" — nobody actually won anything).
+    """
+    candidates = (
         Suchar.objects.filter(
             created_at__gte=start_dt,
             created_at__lt=end_dt,
         )
         .annotate(vote_count=Count("votes"))
-        .order_by("-vote_count")
-        .first()
+        .select_related("author")
     )
+    max_votes = candidates.aggregate(max_votes=Max("vote_count"))["max_votes"]
+    if not max_votes:
+        return []
+    return list(candidates.filter(vote_count=max_votes).order_by("id"))
+
+
+def award_winners(winners: list[Suchar], suffix: str) -> list[tuple[str, User, bool]]:
+    """Award the periodic best-suchar achievement (slug ``best-suchar-{suffix}``)
+    to every distinct author among ``winners``. When the winners span more
+    than one distinct author (a genuine tie), also award the hidden
+    ``best-suchar-{suffix}-tie`` achievement to each of them.
+
+    Returns a ``(achievement_slug, user, created)`` tuple per award attempt,
+    for callers (e.g. the ``award_periodic`` management command) that want to
+    report what happened.
+    """
+    if not winners:
+        return []
+
+    authors = {suchar.author for suchar in winners}
+    results = _award_achievement(f"best-suchar-{suffix}", authors)
+    if len(authors) > 1:
+        results += _award_achievement(f"best-suchar-{suffix}-tie", authors)
+    return results
+
+
+def _award_achievement(slug: str, users: set[User]) -> list[tuple[str, User, bool]]:
+    try:
+        achievement = Achievement.objects.get(slug=slug)
+    except Achievement.DoesNotExist:
+        logger.warning(
+            "Achievement with slug '%s' not found; skipping award for %s",
+            slug,
+            [user.pk for user in users],
+        )
+        return []
+
+    results = []
+    for user in sorted(users, key=lambda u: u.username):
+        _, created = UserAchievement.objects.get_or_create(
+            user=user,
+            achievement=achievement,
+        )
+        results.append((slug, user, created))
+    return results
 
 
 def award_best_suchar(period: str, reference_date: date | None = None) -> None:
@@ -110,23 +167,8 @@ def award_best_suchar(period: str, reference_date: date | None = None) -> None:
             reference_date = timezone.now().date() - timedelta(days=1)
         start_dt, end_dt, suffix = compute_period_range(period, reference_date)
 
-        best_suchar = find_best_suchar(start_dt, end_dt)
-        if best_suchar:
-            winner = best_suchar.author
-            slug = f"best-suchar-{suffix}"
-            try:
-                achievement = Achievement.objects.get(slug=slug)
-            except Achievement.DoesNotExist:
-                logger.warning(
-                    "Achievement with slug '%s' not found; skipping award for %s",
-                    slug,
-                    winner,
-                )
-            else:
-                UserAchievement.objects.get_or_create(
-                    user=winner,
-                    achievement=achievement,
-                )
+        winners = find_best_suchary(start_dt, end_dt)
+        award_winners(winners, suffix)
 
         SchedulerRun.objects.update_or_create(
             job_id=f"award-best-suchar-{suffix}",
