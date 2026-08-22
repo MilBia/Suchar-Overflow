@@ -35,19 +35,21 @@ class AchievementsConfig(AppConfig):
         if len(sys.argv) > 1 and sys.argv[1] in _NO_SCHEDULER:
             return
 
-        # DjangoJobStore uses sync ORM; run in a plain thread so there is
-        # no running asyncio loop (uvicorn sets one up before importing asgi.py).
+        # The scheduled job uses the sync Django ORM; run it in a plain thread
+        # so there is no running asyncio loop (uvicorn sets one up before
+        # importing asgi.py).
         threading.Thread(target=self._start_scheduler, daemon=True).start()
 
     @staticmethod
     def _start_scheduler():
         from apscheduler.schedulers.background import BackgroundScheduler
-        from django_apscheduler.jobstores import DjangoJobStore
 
         from suchar_overflow.achievements.tasks import award_best_suchar
 
+        # In-memory jobstore (apscheduler's default): the job re-registers on
+        # every process start, so it doesn't need DB-backed persistence.
+        # See SchedulerRun (achievements/models.py) for last-run visibility.
         scheduler = BackgroundScheduler(timezone="UTC")
-        scheduler.add_jobstore(DjangoJobStore(), "default")
         scheduler.add_job(
             award_best_suchar,
             "cron",
@@ -56,7 +58,5 @@ class AchievementsConfig(AppConfig):
             hour=0,
             minute=5,
             id="award-best-suchar-month",
-            replace_existing=True,
-            jobstore="default",
         )
         scheduler.start()

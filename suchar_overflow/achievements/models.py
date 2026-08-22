@@ -125,3 +125,21 @@ class UserAchievement(models.Model):
             else f"Achievement #{self.achievement_id}"
         )
         return f"{user_name} - {achievement_name}"
+
+
+class SchedulerRun(models.Model):
+    """Last-run marker for an in-process apscheduler job.
+
+    Replaces the admin visibility django-apscheduler's DjangoJobStore used to
+    provide, now that the scheduler runs with its default in-memory jobstore.
+    """
+
+    job_id = models.CharField(_("Job ID"), max_length=100, unique=True)
+    ran_at = models.DateTimeField(_("Ran At"))
+
+    class Meta:
+        verbose_name = _("Scheduler Run")
+        verbose_name_plural = _("Scheduler Runs")
+
+    def __str__(self):
+        return f"{self.job_id} @ {self.ran_at}"

@@ -5,6 +5,7 @@ import pytest
 from django.contrib.auth import get_user_model
 
 from suchar_overflow.achievements.models import Achievement
+from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.achievements.tasks import award_best_suchar
 from suchar_overflow.achievements.tasks import compute_period_range
@@ -204,3 +205,35 @@ def test_award_best_suchar_raises_on_unknown_period(periodic_achievements):
         pytest.raises(ValueError, match="Unknown period"),
     ):
         award_best_suchar("week")
+
+
+# ---------------------------------------------------------------------------
+# award_best_suchar records a SchedulerRun (replaces django-apscheduler's
+# DjangoJobStore visibility now that the scheduler uses an in-memory jobstore)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_award_best_suchar_records_scheduler_run(periodic_achievements):
+    frozen_now = freeze_to_first_of_current_month()
+    with patch(
+        "suchar_overflow.achievements.tasks.timezone.now",
+        return_value=frozen_now,
+    ):
+        award_best_suchar("month")
+
+    run = SchedulerRun.objects.get(job_id="award-best-suchar-month")
+    assert run.ran_at == frozen_now
+
+
+@pytest.mark.django_db
+def test_award_best_suchar_updates_existing_scheduler_run(periodic_achievements):
+    frozen_now = freeze_to_first_of_current_month()
+    with patch(
+        "suchar_overflow.achievements.tasks.timezone.now",
+        return_value=frozen_now,
+    ):
+        award_best_suchar("month")
+        award_best_suchar("month")
+
+    assert SchedulerRun.objects.filter(job_id="award-best-suchar-month").count() == 1

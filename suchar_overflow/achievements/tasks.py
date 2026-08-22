@@ -6,6 +6,7 @@ from django.db.models import Count
 from django.utils import timezone
 
 from suchar_overflow.achievements.models import Achievement
+from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.suchary.models import Suchar
 
@@ -66,15 +67,17 @@ def award_best_suchar(period: str) -> None:
     start_dt, end_dt, suffix = compute_period_range(period, reference_date)
 
     best_suchar = find_best_suchar(start_dt, end_dt)
-    if not best_suchar:
-        return
+    if best_suchar:
+        winner = best_suchar.author
+        slug = f"best-suchar-{suffix}"
+        try:
+            achievement = Achievement.objects.get(slug=slug)
+        except Achievement.DoesNotExist:
+            pass
+        else:
+            UserAchievement.objects.get_or_create(user=winner, achievement=achievement)
 
-    winner = best_suchar.author
-    slug = f"best-suchar-{suffix}"
-
-    try:
-        achievement = Achievement.objects.get(slug=slug)
-    except Achievement.DoesNotExist:
-        return
-
-    UserAchievement.objects.get_or_create(user=winner, achievement=achievement)
+    SchedulerRun.objects.update_or_create(
+        job_id=f"award-best-suchar-{suffix}",
+        defaults={"ran_at": timezone.now()},
+    )
