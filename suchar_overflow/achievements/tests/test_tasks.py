@@ -224,6 +224,41 @@ def test_award_winners_different_authors_tied_both_get_main_and_tie_achievement(
 
 
 @pytest.mark.django_db
+def test_award_winners_results_are_ordered_by_username(periodic_achievements):
+    """award_winners dedupes authors into a set, whose iteration order is
+    unspecified — results must be sorted by username so CLI/log output is
+    deterministic across runs (PR #172 review nit)."""
+    author_z = User.objects.create_user(
+        username="zzz-order",
+        email="zzz-order@example.com",
+        password="pw",  # noqa: S106
+    )
+    author_a = User.objects.create_user(
+        username="aaa-order",
+        email="aaa-order@example.com",
+        password="pw",  # noqa: S106
+    )
+    s_z = Suchar.objects.create(text="Z", author=author_z)
+    s_a = Suchar.objects.create(text="A", author=author_a)
+
+    results = award_winners([s_z, s_a], "month")
+
+    # Two award_winners calls happen here (main + tie achievement), each
+    # producing its own sorted run — check ordering within each, not across
+    # the concatenated list.
+    main_usernames = [
+        user.username for slug, user, _created in results if slug == "best-suchar-month"
+    ]
+    tie_usernames = [
+        user.username
+        for slug, user, _created in results
+        if slug == "best-suchar-month-tie"
+    ]
+    assert main_usernames == sorted(main_usernames)
+    assert tie_usernames == sorted(tie_usernames)
+
+
+@pytest.mark.django_db
 def test_award_winners_same_author_tied_with_self_gets_no_tie_achievement(
     periodic_achievements,
 ):

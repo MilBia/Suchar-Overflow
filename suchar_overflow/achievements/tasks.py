@@ -134,7 +134,7 @@ def _award_achievement(slug: str, users: set[User]) -> list[tuple[str, User, boo
         return []
 
     results = []
-    for user in users:
+    for user in sorted(users, key=lambda u: u.username):
         _, created = UserAchievement.objects.get_or_create(
             user=user,
             achievement=achievement,
