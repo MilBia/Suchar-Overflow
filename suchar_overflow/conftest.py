@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING
+
 import pytest
 
-from suchar_overflow.users.models import User
 from suchar_overflow.users.tests.factories import UserFactory
+
+if TYPE_CHECKING:
+    from suchar_overflow.users.models import User
 
 
 @pytest.fixture(autouse=True)

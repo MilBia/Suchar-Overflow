@@ -51,7 +51,7 @@ cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowa
 
 | Warstwa          | Technologia                                        |
 | ---------------- | -------------------------------------------------- |
-| **Język**        | Python 3.13                                        |
+| **Język**        | Python 3.14                                        |
 | **Framework**    | Django 6.0                                         |
 | **REST API**     | Django Ninja                                       |
 | **Baza danych**  | PostgreSQL 18                                      |
@@ -416,7 +416,7 @@ Wyniki testów w formacie JUnit XML są generowane w CI automatycznie.
 Projekt zawiera konfigurację [VS Code Dev Container](https://code.visualstudio.com/docs/devcontainers/containers) (`.devcontainer/`).
 Po otwarciu projektu w VS Code z zainstalowanym rozszerzeniem Dev Containers środowisko uruchomi się automatycznie z:
 
-- Python 3.13, uv, Ruff, Pylance, mypy
+- Python 3.14, uv, Ruff, Pylance, mypy
 - podłączonym do lokalnego `docker-compose.local.yml`
 - zamontowanym `.ssh` i historią bash
 
