@@ -141,6 +141,31 @@ def test_find_best_suchary_returns_empty_list_when_no_suchars():
     assert find_best_suchary(start_dt, end_dt) == []
 
 
+@pytest.mark.django_db
+def test_find_best_suchary_returns_empty_list_when_all_suchary_have_zero_votes():
+    """A period where Suchary were posted but none received any votes has no
+    winner — the max vote count of 0 doesn't count as a "best" tie (#171)."""
+    mid = last_month_mid()
+    author_a = User.objects.create_user(
+        username="zero-a",
+        email="zero-a@example.com",
+        password="pw",  # noqa: S106
+    )
+    author_b = User.objects.create_user(
+        username="zero-b",
+        email="zero-b@example.com",
+        password="pw",  # noqa: S106
+    )
+    for author in (author_a, author_b):
+        s = Suchar.objects.create(text=f"No votes for {author.username}", author=author)
+        s.created_at = mid
+        s.save()
+
+    start_dt, end_dt, _suffix = compute_period_range("month", mid.date())
+
+    assert find_best_suchary(start_dt, end_dt) == []
+
+
 # ---------------------------------------------------------------------------
 # award_winners — awards every distinct tied author, plus the hidden
 # "-tie" achievement when more than one distinct author tied (#171)

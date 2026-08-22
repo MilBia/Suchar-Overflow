@@ -70,14 +70,12 @@ class Command(BaseCommand):
 
         # Slug convention: best-suchar-[period] e.g. best-suchar-month,
         # plus best-suchar-[period]-tie when the winners are tied.
+        main_slug = f"best-suchar-{achievement_slug_suffix}"
         results = award_winners(best_suchary, achievement_slug_suffix)
 
-        if not results:
+        if not any(slug == main_slug for slug, _user, _created in results):
             self.stdout.write(
-                self.style.ERROR(
-                    f"Achievement with slug 'best-suchar-{achievement_slug_suffix}' "
-                    "not found!",
-                ),
+                self.style.ERROR(f"Achievement with slug '{main_slug}' not found!"),
             )
             return
 

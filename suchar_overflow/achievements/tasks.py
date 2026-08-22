@@ -81,7 +81,8 @@ def find_best_suchary(start_dt: datetime, end_dt: datetime) -> list[Suchar]:
     ``.order_by("-vote_count")``, so rather than picking an arbitrary single
     "winner" (see #171) this returns every Suchar at the top vote count —
     ``award_winners`` decides what to do with a tie. Empty list if no Suchar
-    was posted in the range.
+    was posted in the range, or if every Suchar posted has zero votes (a
+    0-vote max doesn't count as a "best" — nobody actually won anything).
     """
     candidates = (
         Suchar.objects.filter(
@@ -92,7 +93,7 @@ def find_best_suchary(start_dt: datetime, end_dt: datetime) -> list[Suchar]:
         .select_related("author")
     )
     max_votes = candidates.aggregate(max_votes=Max("vote_count"))["max_votes"]
-    if max_votes is None:
+    if not max_votes:
         return []
     return list(candidates.filter(vote_count=max_votes).order_by("id"))
 
