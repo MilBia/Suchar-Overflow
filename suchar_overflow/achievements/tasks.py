@@ -2,6 +2,7 @@ import logging
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 from django.db import close_old_connections
 from django.db import connection
@@ -13,6 +14,9 @@ from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.suchary.models import Suchar
+
+if TYPE_CHECKING:
+    from suchar_overflow.users.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +102,7 @@ def find_best_suchary(start_dt: datetime, end_dt: datetime) -> list[Suchar]:
     return list(candidates.filter(vote_count=max_votes).order_by("id"))
 
 
-def award_winners(winners: list[Suchar], suffix: str) -> list[tuple[str, object, bool]]:
+def award_winners(winners: list[Suchar], suffix: str) -> list[tuple[str, User, bool]]:
     """Award the periodic best-suchar achievement (slug ``best-suchar-{suffix}``)
     to every distinct author among ``winners``. When the winners span more
     than one distinct author (a genuine tie), also award the hidden
@@ -118,7 +122,7 @@ def award_winners(winners: list[Suchar], suffix: str) -> list[tuple[str, object,
     return results
 
 
-def _award_achievement(slug: str, users: set) -> list[tuple[str, object, bool]]:
+def _award_achievement(slug: str, users: set[User]) -> list[tuple[str, User, bool]]:
     try:
         achievement = Achievement.objects.get(slug=slug)
     except Achievement.DoesNotExist:
