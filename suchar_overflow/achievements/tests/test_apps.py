@@ -1,4 +1,5 @@
 import datetime
+import logging
 from unittest.mock import patch
 
 import pytest
@@ -137,3 +138,30 @@ def test_catch_up_missed_monthly_run_awards_the_missed_period_not_current(
         user=june_poster,
         achievement__slug="best-suchar-month",
     ).exists()
+
+
+# ---------------------------------------------------------------------------
+# _start_scheduler must still start the recurring job even if catch-up fails
+# (e.g. a transient DB error) — a broken catch-up shouldn't take down the
+# whole scheduler thread before scheduler.start() runs (PR #170 review).
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_start_scheduler_starts_even_if_catch_up_raises(caplog):
+    with (
+        patch(
+            "suchar_overflow.achievements.apps.AchievementsConfig"
+            "._catch_up_missed_monthly_run",
+            side_effect=RuntimeError("boom"),
+        ),
+        patch(
+            "apscheduler.schedulers.background.BackgroundScheduler",
+        ) as mock_scheduler_cls,
+        caplog.at_level(logging.ERROR, logger="suchar_overflow.achievements.apps"),
+    ):
+        AchievementsConfig._start_scheduler()  # noqa: SLF001
+
+    mock_scheduler_cls.return_value.add_job.assert_called_once()
+    mock_scheduler_cls.return_value.start.assert_called_once()
+    assert "boom" in caplog.text

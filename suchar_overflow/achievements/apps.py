@@ -95,7 +95,15 @@ class AchievementsConfig(AppConfig):
 
         from suchar_overflow.achievements.tasks import award_best_suchar
 
-        AchievementsConfig._catch_up_missed_monthly_run()
+        # A transient failure here (e.g. a DB hiccup during startup) must not
+        # prevent the recurring job below from being registered.
+        try:
+            AchievementsConfig._catch_up_missed_monthly_run()
+        except Exception:
+            logger.exception(
+                "Failed to catch up missed monthly scheduler run; "
+                "continuing to start the scheduler",
+            )
 
         # In-memory jobstore (apscheduler's default): the job re-registers on
         # every process start, so it doesn't need DB-backed persistence.
