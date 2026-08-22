@@ -1,8 +1,11 @@
+import logging
 import sys
 import threading
 
 from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
+
+logger = logging.getLogger(__name__)
 
 _NO_SCHEDULER = frozenset(
     {
@@ -54,14 +57,51 @@ class AchievementsConfig(AppConfig):
         return command in _NO_SCHEDULER
 
     @staticmethod
+    def _catch_up_missed_monthly_run():
+        """Run ``award_best_suchar`` immediately if the last due monthly
+        cron fire was never recorded (e.g. the process was down when the
+        in-memory jobstore would have fired it — see #169).
+
+        Passes the missed fire's own date as ``reference_date`` rather than
+        letting ``award_best_suchar`` default to "yesterday" — at catch-up
+        time "yesterday" is relative to whenever the process happens to
+        restart, not to the period that was actually missed.
+        """
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        from suchar_overflow.achievements.models import SchedulerRun
+        from suchar_overflow.achievements.tasks import award_best_suchar
+        from suchar_overflow.achievements.tasks import due_monthly_run_at
+
+        job_id = "award-best-suchar-month"
+        last_run = (
+            SchedulerRun.objects.filter(job_id=job_id)
+            .values_list("ran_at", flat=True)
+            .first()
+        )
+        due_at = due_monthly_run_at(timezone.now(), last_run)
+        if due_at is not None:
+            logger.info(
+                "Missed scheduler run detected for %s; catching up now",
+                job_id,
+            )
+            award_best_suchar("month", reference_date=due_at.date() - timedelta(days=1))
+
+    @staticmethod
     def _start_scheduler():
         from apscheduler.schedulers.background import BackgroundScheduler
 
         from suchar_overflow.achievements.tasks import award_best_suchar
 
+        AchievementsConfig._catch_up_missed_monthly_run()
+
         # In-memory jobstore (apscheduler's default): the job re-registers on
         # every process start, so it doesn't need DB-backed persistence.
         # See SchedulerRun (achievements/models.py) for last-run visibility.
+        # _catch_up_missed_monthly_run() above covers a run missed while the
+        # process was down.
         scheduler = BackgroundScheduler(timezone="UTC")
         scheduler.add_job(
             award_best_suchar,

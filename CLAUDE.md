@@ -175,6 +175,22 @@ duplicate/unwanted schedulers. Since the jobstore is in-memory (no DB persistenc
 across restarts), `award_best_suchar` records its own last-run marker in the
 `SchedulerRun` model (`achievements/models.py`), visible read-only in the admin.
 
+Because the jobstore only knows about *future* fire times, a process restart alone
+does not catch up a cron fire that was due while the process was down (see #169).
+`AchievementsConfig._catch_up_missed_monthly_run()` covers this: on every scheduler
+start it compares `SchedulerRun.ran_at` for `award-best-suchar-month` against the
+most recent due fire time (`due_monthly_run_at()` in `achievements/tasks.py`, day=1
+00:05 UTC) and, if that fire was never recorded, calls `award_best_suchar("month",
+reference_date=...)` synchronously before `scheduler.start()` — `reference_date` is
+the missed fire's own date, not "yesterday" relative to whatever day the process
+happens to restart (`award_best_suchar` defaults `reference_date` to yesterday only
+when the caller omits it, which is what the normal cron path does). Idempotent —
+`award_best_suchar` itself updates `SchedulerRun.ran_at`, so later restarts within
+the same period don't re-trigger it. Only the single most recent missed period is
+caught up — a gap spanning multiple months (e.g. down from April through mid-June)
+still permanently loses April; a brand-new deployment with no `SchedulerRun` row yet
+also triggers one harmless catch-up run for the previous complete month.
+
 ### Content Security Policy
 
 Django 6.0's `django.middleware.csp.ContentSecurityPolicyMiddleware` is enabled in
