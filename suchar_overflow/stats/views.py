@@ -1,10 +1,13 @@
+from datetime import datetime
+from datetime import time
 from datetime import timedelta
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.db.models import Count
-from django.db.models import Min
 from django.db.models import Q
+from django.db.models import prefetch_related_objects
 from django.db.models.functions import TruncDay
 from django.db.models.functions import TruncMonth
 from django.shortcuts import render
@@ -15,14 +18,22 @@ from suchar_overflow.suchary.models import Suchar
 
 User = get_user_model()
 
+LEADERBOARD_CACHE_KEY = "leaderboard:context"
+LEADERBOARD_CACHE_TTL = 60 * 5
 
-def get_daily_activity_data(start_of_today, now, days):
-    start_date = (start_of_today - timedelta(days=days)).date()
-    end_date = now.date()
+
+def _fetch_daily_counts_map(start_date, end_date):
+    # Raw datetime bounds (not created_at__date__gte/lte): the __date lookup
+    # wraps the column in DATE(...), which can't use a plain B-tree index on
+    # created_at. A half-open [start, end) range on the bare column can.
+    range_start = timezone.make_aware(datetime.combine(start_date, time.min))
+    range_end = timezone.make_aware(
+        datetime.combine(end_date + timedelta(days=1), time.min),
+    )
     db_data = (
         Suchar.objects.filter(
-            created_at__date__gte=start_date,
-            created_at__date__lte=end_date,
+            created_at__gte=range_start,
+            created_at__lt=range_end,
         )
         .annotate(date=TruncDay("created_at"))
         .values("date")
@@ -32,6 +43,14 @@ def get_daily_activity_data(start_of_today, now, days):
     for entry in db_data:
         d = entry["date"].date() if hasattr(entry["date"], "date") else entry["date"]
         counts_map[d] = entry["count"]
+    return counts_map
+
+
+def get_daily_activity_data(start_of_today, now, days, counts_map=None):
+    start_date = (start_of_today - timedelta(days=days)).date()
+    end_date = now.date()
+    if counts_map is None:
+        counts_map = _fetch_daily_counts_map(start_date, end_date)
 
     labels = []
     values = []
@@ -63,15 +82,6 @@ def get_daily_activity_data(start_of_today, now, days):
 
 
 def get_all_time_activity_data(start_of_today, now):
-    earliest = Suchar.objects.aggregate(min_date=Min("created_at"))
-    min_date = earliest.get("min_date")
-    twelve_months_ago = (start_of_today - timedelta(days=365)).date().replace(day=1)
-    if min_date:
-        start_date = min(min_date.date().replace(day=1), twelve_months_ago)
-    else:
-        start_date = twelve_months_ago
-    end_date = now.date().replace(day=1)
-
     db_data = (
         Suchar.objects.annotate(month=TruncMonth("created_at"))
         .values("month")
@@ -82,6 +92,11 @@ def get_all_time_activity_data(start_of_today, now):
         m = entry["month"].date() if hasattr(entry["month"], "date") else entry["month"]
         m_start = m.replace(day=1)
         counts_map[m_start] = entry["count"]
+
+    twelve_months_ago = (start_of_today - timedelta(days=365)).date().replace(day=1)
+    start_date = min(counts_map, default=twelve_months_ago)
+    start_date = min(start_date, twelve_months_ago)
+    end_date = now.date().replace(day=1)
 
     labels = []
     values = []
@@ -111,73 +126,112 @@ def get_all_time_activity_data(start_of_today, now):
     return {"labels": labels, "values": values}
 
 
-def _top_n(queryset, annotate_kwargs, order_field, limit=10):
-    """Annotate, drop zero scores, and return the top `limit` by `order_field` desc."""
-    return list(
-        queryset.annotate(**annotate_kwargs)
-        .exclude(**{order_field: 0})
-        .order_by(f"-{order_field}")[:limit],
-    )
+def _top_n_from_iterable(items, order_field, limit=10):
+    """Drop zero scores and return the top `limit` by `order_field` desc.
+
+    Ties break by ascending pk — deterministic regardless of the order the
+    DB happened to return `items` in (which, without an explicit secondary
+    ORDER BY, is not guaranteed stable across query plans).
+    """
+    filtered = [item for item in items if getattr(item, order_field) != 0]
+    filtered.sort(key=lambda item: (-getattr(item, order_field), item.pk))
+    return filtered[:limit]
 
 
 class LeaderboardView(View):
     template_name = "stats/leaderboard.html"
 
     async def get(self, request, *args, **kwargs):
-        context = await sync_to_async(self._build_context)()
+        context = await sync_to_async(self._get_cached_context)()
         return await sync_to_async(render)(request, self.template_name, context)
+
+    def _get_cached_context(self):
+        return cache.get_or_set(
+            LEADERBOARD_CACHE_KEY,
+            self._build_context,
+            LEADERBOARD_CACHE_TTL,
+        )
 
     def _build_context(self):
         now = timezone.now()
         start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-        suchary = Suchar.objects.select_related("author").prefetch_related("tags")
+        # select_related("author") only — no prefetch_related("tags") here.
+        # Tags are prefetched further down, scoped to only the ~30 suchary
+        # that actually end up rendered, not the whole materialized queryset.
+        suchary = Suchar.objects.select_related("author")
 
-        # Each tab's card only ever renders the fields it annotates here — the
-        # "overall" card is the only one showing a funny/dry breakdown
-        # alongside its primary metric, so only its queryset needs all three.
         suchar_count = Count("suchary", distinct=True)
         total_score = Count("suchary__votes")
         funny_score = Count("suchary__votes", filter=Q(suchary__votes__is_funny=True))
         dry_score = Count("suchary__votes", filter=Q(suchary__votes__is_dry=True))
 
-        top_authors_overall = _top_n(
-            User.objects,
-            {
-                "total_score": total_score,
-                "funny_score": funny_score,
-                "dry_score": dry_score,
-                "suchar_count": suchar_count,
-            },
-            "total_score",
+        # filter(suchary__isnull=False): a user with no suchary can never have a
+        # nonzero total/funny/dry score, so exclude them before materializing —
+        # otherwise a cache miss would pull every registered user into memory.
+        # defer("password"): this queryset is cached whole (see LEADERBOARD_CACHE_KEY
+        # below) — password hashes have no business sitting in the cache backend.
+        authors = list(
+            User.objects.filter(suchary__isnull=False)
+            .defer("password")
+            .annotate(
+                total_score=total_score,
+                funny_score=funny_score,
+                dry_score=dry_score,
+                suchar_count=suchar_count,
+            ),
         )
-        top_authors_funny = _top_n(
-            User.objects,
-            {"funny_score": funny_score, "suchar_count": suchar_count},
-            "funny_score",
-        )
-        top_authors_dry = _top_n(
-            User.objects,
-            {"dry_score": dry_score, "suchar_count": suchar_count},
-            "dry_score",
-        )
+        top_authors_overall = _top_n_from_iterable(authors, "total_score")
+        top_authors_funny = _top_n_from_iterable(authors, "funny_score")
+        top_authors_dry = _top_n_from_iterable(authors, "dry_score")
 
         score = Count("votes")
         funny_count = Count("votes", filter=Q(votes__is_funny=True))
         dry_count = Count("votes", filter=Q(votes__is_dry=True))
 
-        top_suchars_overall = _top_n(
-            suchary,
-            {"score": score, "funny_count": funny_count, "dry_count": dry_count},
-            "score",
+        # filter(votes__isnull=False): same reasoning as authors above — a
+        # suchar with no votes can never have a nonzero score/funny/dry count.
+        all_suchary = list(
+            suchary.filter(votes__isnull=False).annotate(
+                score=score,
+                funny_count=funny_count,
+                dry_count=dry_count,
+            ),
         )
-        top_suchars_funny = _top_n(suchary, {"funny_count": funny_count}, "funny_count")
-        top_suchars_dry = _top_n(suchary, {"dry_count": dry_count}, "dry_count")
+        top_suchars_overall = _top_n_from_iterable(all_suchary, "score")
+        top_suchars_funny = _top_n_from_iterable(all_suchary, "funny_count")
+        top_suchars_dry = _top_n_from_iterable(all_suchary, "dry_count")
 
+        # Scoped prefetch: only the suchary that actually get rendered (the
+        # union of the three top-10 lists, deduped — they share instances).
+        # The template must read tags via `tags.all.0`, not `tags.first`:
+        # `.first()` clones the manager's queryset via `order_by("pk")`,
+        # which drops this prefetch cache and re-hits the DB every time.
+        rendered_suchary = list(
+            {
+                s.pk: s
+                for s in [*top_suchars_overall, *top_suchars_funny, *top_suchars_dry]
+            }.values(),
+        )
+        prefetch_related_objects(rendered_suchary, "tags")
+
+        widest_days = 90
+        widest_start_date = (start_of_today - timedelta(days=widest_days)).date()
+        counts_map = _fetch_daily_counts_map(widest_start_date, now.date())
         chart_datasets = {
-            "7": get_daily_activity_data(start_of_today, now, 7),
-            "30": get_daily_activity_data(start_of_today, now, 30),
-            "90": get_daily_activity_data(start_of_today, now, 90),
+            "7": get_daily_activity_data(start_of_today, now, 7, counts_map=counts_map),
+            "30": get_daily_activity_data(
+                start_of_today,
+                now,
+                30,
+                counts_map=counts_map,
+            ),
+            "90": get_daily_activity_data(
+                start_of_today,
+                now,
+                widest_days,
+                counts_map=counts_map,
+            ),
             "all": get_all_time_activity_data(start_of_today, now),
         }
 
