@@ -50,7 +50,11 @@ class UserDetailView(AsyncLoginRequiredMixin):
         context["object"] = user
         return await sync_to_async(render)(request, self.template_name, context)
 
-    def _build_context(self, user: User, is_owner: bool) -> dict:  # noqa: FBT001
+    def _build_context(
+        self,
+        user: User,
+        is_owner: bool,  # noqa: FBT001
+    ) -> dict[str, Any]:
         context: dict[str, Any] = {}
 
         # 1. Latest Suchary

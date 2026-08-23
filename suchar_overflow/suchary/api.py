@@ -48,7 +48,11 @@ def list_tags(request: HttpRequest, q: str | None = None) -> QuerySet[Tag]:  # n
 
 
 @router.post("/{suchar_id}/vote", auth=django_auth, response=VoteResponse)
-def vote_suchar(request: HttpRequest, suchar_id: int, payload: VoteSchema) -> dict:
+def vote_suchar(
+    request: HttpRequest,
+    suchar_id: int,
+    payload: VoteSchema,
+) -> dict[str, int | bool]:
     suchar = get_object_or_404(Suchar, pk=suchar_id)
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests

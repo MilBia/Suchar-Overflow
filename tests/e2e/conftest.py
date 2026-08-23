@@ -8,6 +8,8 @@ from django.utils import timezone
 from suchar_overflow.suchary.models import Suchar
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from playwright.sync_api import Page
     from pytest_django.live_server_helper import LiveServer
 
@@ -20,7 +22,9 @@ TEST_PASSWORD = "e2e-test-password-123"  # noqa: S105
 
 
 @pytest.fixture(scope="session")
-def browser_type_launch_args(browser_type_launch_args: dict) -> dict:
+def browser_type_launch_args(
+    browser_type_launch_args: dict[str, Any],
+) -> dict[str, Any]:
     # Required in Docker/CI where kernel namespaces for sandboxing are restricted.
     return {
         **browser_type_launch_args,
@@ -29,7 +33,7 @@ def browser_type_launch_args(browser_type_launch_args: dict) -> dict:
 
 
 @pytest.fixture(scope="session")
-def browser_context_args(browser_context_args: dict) -> dict:
+def browser_context_args(browser_context_args: dict[str, Any]) -> dict[str, Any]:
     return {
         **browser_context_args,
         "viewport": {"width": 1280, "height": 800},

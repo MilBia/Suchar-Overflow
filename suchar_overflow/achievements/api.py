@@ -75,7 +75,7 @@ def list_unseen_achievements(request: HttpRequest) -> list[dict]:
 
 
 @router.post("/mark-seen", auth=django_auth)
-def mark_achievements_seen(request: HttpRequest) -> dict:
+def mark_achievements_seen(request: HttpRequest) -> dict[str, bool]:
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
     UserAchievement.objects.filter(
@@ -98,7 +98,10 @@ def list_frontend_owned(request: HttpRequest) -> list[str]:
 
 
 @router.post("/frontend-event", auth=django_auth)
-def record_frontend_event(request: HttpRequest, payload: FrontendEventSchema) -> dict:
+def record_frontend_event(
+    request: HttpRequest,
+    payload: FrontendEventSchema,
+) -> dict[str, bool]:
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
     if payload.event_slug not in VALID_FRONTEND_SLUGS:
