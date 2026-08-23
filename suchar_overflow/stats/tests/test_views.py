@@ -2,17 +2,24 @@ from datetime import timedelta
 from http import HTTPStatus
 
 import pytest
+from django.core.cache import cache
+from django.db import connection
 from django.db.models import Count
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
 
 from suchar_overflow.conftest import make_user
+from suchar_overflow.stats.views import LeaderboardView
 from suchar_overflow.stats.views import _top_n
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
 LEADERBOARD_URL = "stats:leaderboard"
+# 1 authors query, 1 suchary query, 1 widest-window daily chart query,
+# 1 all-time monthly chart query — down from 10.
+MAX_UNCACHED_QUERIES = 4
 
 
 # ---------------------------------------------------------------------------
@@ -263,3 +270,73 @@ def test_chart_ignores_old_suchars(client):
     datasets = response.context["chart_datasets"]
     assert sum(datasets["30"]["values"]) == 0
     assert sum(datasets["all"]["values"]) >= 1
+
+
+# ---------------------------------------------------------------------------
+# Query count and caching (issue #179)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_build_context_executes_at_most_four_queries():
+    author = make_user("query_count_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    voter = make_user("query_count_voter")
+    Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+
+    with CaptureQueriesContext(connection) as ctx:
+        LeaderboardView()._build_context()  # noqa: SLF001
+
+    assert len(ctx.captured_queries) <= MAX_UNCACHED_QUERIES
+
+
+@pytest.mark.django_db
+def test_get_cached_context_second_call_within_ttl_does_not_query_db():
+    author = make_user("cache_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    voter = make_user("cache_voter")
+    Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+
+    view = LeaderboardView()
+    view._get_cached_context()  # noqa: SLF001
+
+    with CaptureQueriesContext(connection) as ctx:
+        view._get_cached_context()  # noqa: SLF001
+
+    assert len(ctx.captured_queries) == 0
+
+
+@pytest.mark.django_db
+def test_leaderboard_second_request_within_ttl_issues_no_aggregating_queries(client):
+    author = make_user("cache_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    voter = make_user("cache_voter")
+    Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+
+    client.get(reverse(LEADERBOARD_URL))
+
+    with CaptureQueriesContext(connection) as ctx:
+        client.get(reverse(LEADERBOARD_URL))
+
+    assert not any("GROUP BY" in q["sql"] for q in ctx.captured_queries)
+
+
+@pytest.mark.django_db
+def test_leaderboard_cache_repopulates_after_cache_clear(client):
+    """Not a TTL test: `cache.clear()` stands in for expiry, since the view
+    itself has no lever to expire the cache early. This only proves a fresh
+    `_build_context` call re-reads current DB state, not that TTL fires.
+    """
+    author = make_user("ttl_author")
+    Suchar.objects.create(text="Old", author=author)
+    client.get(reverse(LEADERBOARD_URL))
+
+    cache.clear()
+
+    suchar2 = Suchar.objects.create(text="New", author=author)
+    voter = make_user("ttl_voter")
+    Vote.objects.create(suchar=suchar2, user=voter, is_funny=True)
+
+    response = client.get(reverse(LEADERBOARD_URL))
+    texts = [s.text for s in response.context["top_suchars_overall"]]
+    assert "New" in texts
