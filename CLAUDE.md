@@ -2,7 +2,7 @@
 
 ## Project overview
 
-Django 6.0 web app (joke aggregator). Backend: Python 3.14, PostgreSQL, Redis.
+Django 6.1 web app (joke aggregator). Backend: Python 3.14, PostgreSQL, Redis.
 Frontend: Django templates (DjangoTemplates backend), vanilla JS, CSS custom properties.
 Package manager: `uv`. Local dev and CI both run inside Docker Compose.
 Compose services: `django`, `postgres`, `redis`, `mailpit` (catches outgoing dev email at

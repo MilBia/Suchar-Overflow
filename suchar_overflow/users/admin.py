@@ -52,7 +52,6 @@ class UserAdmin(auth_admin.UserAdmin):
         (
             None,
             {
-                "classes": ("wide",),
                 "fields": ("username", "email", "password1", "password2"),
             },
         ),

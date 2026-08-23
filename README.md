@@ -52,7 +52,7 @@ cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowa
 | Warstwa          | Technologia                                        |
 | ---------------- | -------------------------------------------------- |
 | **Język**        | Python 3.14                                        |
-| **Framework**    | Django 6.0                                         |
+| **Framework**    | Django 6.1                                         |
 | **REST API**     | Django Ninja                                       |
 | **Baza danych**  | PostgreSQL 18                                      |
 | **Cache**        | Redis 7 (django-redis)                             |
