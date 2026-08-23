@@ -54,6 +54,27 @@ The CI workflow runs them as separate steps with `-m "not e2e"` and `-m e2e` res
 **Never** run plain `pytest` (no `-m` filter) — it will collect E2E tests under the wrong
 settings and fail with CSRF errors or missing browser fixtures.
 
+### Coverage — unit suite only, blocking in CI
+
+CI wraps the unit-test step in `coverage run` (config lives in `pyproject.toml`
+under `[tool.coverage.run]`/`[tool.coverage.report]`), then runs `coverage report`
+and `coverage xml`, uploading `coverage.xml` as an artifact alongside the junit
+reports. `[tool.coverage.report] fail_under = 90` makes a coverage regression fail
+the build even when every test passes — check locally with `just coverage` before
+pushing, since neither `just test` nor `pre-commit` enforce this gate.
+
+E2E tests are **not** instrumented and coverage from the two suites is never
+combined — Playwright's E2E profile doesn't map cleanly onto the same
+statement/template counts as the unit suite, so combining without a separate check
+was deliberately skipped (issue #180).
+
+`[tool.coverage.run] core = "ctrace"` is required, not incidental: Python 3.12+
+switched coverage's default core to `sysmon`, which silently drops
+`django_coverage_plugin`'s template file tracer (only a `CoverageWarning`, no
+error) — measured coverage without `core = "ctrace"` was 88% counting Python
+statements only, vs. 92% with template lines included. Do not remove this setting
+when touching the coverage config.
+
 ## Running pre-commit
 
 Pre-commit runs in the **local `.venv`**, not inside the container:

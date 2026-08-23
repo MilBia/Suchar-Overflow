@@ -15,6 +15,17 @@ markers = [
 include = ["suchar_overflow/**"]
 omit = ["*/migrations/*", "*/tests/*"]
 plugins = ["django_coverage_plugin"]
+# Python 3.12+ defaults coverage to the "sysmon" core, which doesn't support
+# plugin file tracers (django_coverage_plugin instruments templates) — force
+# the C tracer so template coverage is actually collected instead of silently
+# dropped with a CoverageWarning.
+core = "ctrace"
+
+[tool.coverage.report]
+show_missing = true
+# Baseline measured 2026-08-23 was 92% (with template coverage via
+# django_coverage_plugin). Leaves a couple points of buffer for noise.
+fail_under = 90
 
 # ==== mypy ====
 [tool.mypy]
