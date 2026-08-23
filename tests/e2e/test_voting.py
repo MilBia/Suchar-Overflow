@@ -42,7 +42,7 @@ def test_authenticated_user_can_cast_funny_vote(
 
     assert int(funny_btn.locator(".vote-count").inner_text()) == initial_count + 1
     assert funny_btn.get_attribute("aria-pressed") == "true"
-    assert "active" in funny_btn.get_attribute("class")
+    assert "active" in (funny_btn.get_attribute("class") or "")
 
 
 @pytest.mark.e2e

@@ -27,7 +27,7 @@ def test_mobile_nav_toggle_opens_menu(page: Page, live_server: LiveServer) -> No
 
     page.click("#navbar-toggler")
 
-    assert "active" in menu.get_attribute("class")
+    assert "active" in (menu.get_attribute("class") or "")
 
 
 @pytest.mark.e2e
@@ -39,10 +39,10 @@ def test_mobile_nav_toggle_closes_menu(page: Page, live_server: LiveServer) -> N
     page.wait_for_load_state("networkidle")
 
     page.click("#navbar-toggler")
-    assert "active" in page.locator("#navbar-menu").get_attribute("class")
+    assert "active" in (page.locator("#navbar-menu").get_attribute("class") or "")
 
     page.click("#navbar-toggler")
-    assert "active" not in page.locator("#navbar-menu").get_attribute("class")
+    assert "active" not in (page.locator("#navbar-menu").get_attribute("class") or "")
 
 
 # ---------------------------------------------------------------------------
@@ -157,7 +157,7 @@ def test_sort_dropdown_opens_on_trigger_click(
 
     page.locator("#sortDropdown .dropdown-trigger").click()
 
-    assert "show" in dropdown.get_attribute("class")
+    assert "show" in (dropdown.get_attribute("class") or "")
 
 
 @pytest.mark.e2e
@@ -171,12 +171,12 @@ def test_sort_dropdown_closes_on_outside_click(
     page.wait_for_load_state("networkidle")
 
     page.locator("#sortDropdown .dropdown-trigger").click()
-    assert "show" in page.locator("#sortDropdown").get_attribute("class")
+    assert "show" in (page.locator("#sortDropdown").get_attribute("class") or "")
 
     # Click the page heading — well outside the dropdown.
     page.locator("h1").click()
 
-    assert "show" not in page.locator("#sortDropdown").get_attribute("class")
+    assert "show" not in (page.locator("#sortDropdown").get_attribute("class") or "")
 
 
 @pytest.mark.e2e
