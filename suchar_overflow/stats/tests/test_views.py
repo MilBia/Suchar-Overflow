@@ -1,5 +1,6 @@
 from datetime import timedelta
 from http import HTTPStatus
+from types import SimpleNamespace
 
 import pytest
 from django.core.cache import cache
@@ -11,15 +12,18 @@ from django.utils import timezone
 from django.utils.translation import gettext
 
 from suchar_overflow.conftest import make_user
+from suchar_overflow.stats.views import LEADERBOARD_CACHE_KEY
 from suchar_overflow.stats.views import LeaderboardView
-from suchar_overflow.stats.views import _top_n
+from suchar_overflow.stats.views import _top_n_from_iterable
 from suchar_overflow.suchary.models import Suchar
+from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
 
 LEADERBOARD_URL = "stats:leaderboard"
-# 1 authors query, 1 suchary query, 1 widest-window daily chart query,
-# 1 all-time monthly chart query — down from 10.
-MAX_UNCACHED_QUERIES = 4
+# 1 authors query, 1 suchary query, 1 scoped tags prefetch (only the ~30
+# rendered suchary, not the full table — see issue #183), 1 widest-window
+# daily chart query, 1 all-time monthly chart query — down from 10.
+MAX_UNCACHED_QUERIES = 5
 
 
 # ---------------------------------------------------------------------------
@@ -87,7 +91,11 @@ def test_top_authors_overall_capped_at_ten(client):
         Vote.objects.create(suchar=s, user=v, is_funny=True)
 
     response = client.get(reverse(LEADERBOARD_URL))
-    assert len(list(response.context["top_authors_overall"])) <= 10  # noqa: PLR2004
+    num_authors_with_votes = 15
+    assert len(list(response.context["top_authors_overall"])) == min(
+        num_authors_with_votes,
+        10,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -176,12 +184,12 @@ def test_top_suchars_overall_excludes_zero_score(client):
 
 
 # ---------------------------------------------------------------------------
-# _top_n
+# _top_n_from_iterable
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.django_db
-def test_top_n_orders_descending_and_caps_at_limit():
+def test_top_n_from_iterable_orders_descending_and_caps_at_limit():
     author = make_user("top_n_author")
     for i in range(5):
         Suchar.objects.create(text=f"Joke {i}", author=author)
@@ -191,12 +199,8 @@ def test_top_n_orders_descending_and_caps_at_limit():
             voter = make_user(f"voter_{suchar.pk}_{j}")
             Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
 
-    result = _top_n(
-        Suchar.objects.all(),
-        {"score": Count("votes")},
-        "score",
-        limit=3,
-    )
+    items = list(Suchar.objects.annotate(score=Count("votes")))
+    result = _top_n_from_iterable(items, "score", limit=3)
 
     assert len(result) == 3  # noqa: PLR2004
     scores = [s.score for s in result]
@@ -204,16 +208,34 @@ def test_top_n_orders_descending_and_caps_at_limit():
 
 
 @pytest.mark.django_db
-def test_top_n_excludes_zero_order_field():
+def test_top_n_from_iterable_excludes_zero_order_field():
     author = make_user("top_n_zero_author")
     scored = Suchar.objects.create(text="Scored", author=author)
     Suchar.objects.create(text="Unscored", author=author)
     voter = make_user("top_n_zero_voter")
     Vote.objects.create(suchar=scored, user=voter, is_funny=True)
 
-    result = _top_n(Suchar.objects.all(), {"score": Count("votes")}, "score")
+    items = list(Suchar.objects.annotate(score=Count("votes")))
+    result = _top_n_from_iterable(items, "score")
 
     assert [s.pk for s in result] == [scored.pk]
+
+
+def test_top_n_from_iterable_breaks_ties_by_pk_ascending():
+    """Tie-break must be deterministic and independent of input order —
+    Python's stable sort alone would just preserve whatever order the
+    caller passed in, which for a DB-materialized list is not guaranteed
+    stable across query plans.
+    """
+    items = [
+        SimpleNamespace(pk=3, score=5),
+        SimpleNamespace(pk=1, score=5),
+        SimpleNamespace(pk=2, score=5),
+    ]
+
+    result = _top_n_from_iterable(items, "score")
+
+    assert [item.pk for item in result] == [1, 2, 3]
 
 
 # ---------------------------------------------------------------------------
@@ -278,7 +300,7 @@ def test_chart_ignores_old_suchars(client):
 
 
 @pytest.mark.django_db
-def test_build_context_executes_at_most_four_queries():
+def test_build_context_executes_at_most_five_queries():
     author = make_user("query_count_author")
     suchar = Suchar.objects.create(text="Joke", author=author)
     voter = make_user("query_count_voter")
@@ -288,6 +310,31 @@ def test_build_context_executes_at_most_four_queries():
         LeaderboardView()._build_context()  # noqa: SLF001
 
     assert len(ctx.captured_queries) <= MAX_UNCACHED_QUERIES
+
+
+@pytest.mark.django_db
+def test_full_page_render_does_not_n_plus_one_on_tags(client):
+    """Regression test for issue #183: `tags.first()` in the suchar card
+    template used to hit the DB twice per card (once for `.slug`, once for
+    `.name`) regardless of prefetching, because `.first()` clones the
+    queryset via `order_by("pk")` and drops any prefetch cache. Rendering
+    must stay bounded regardless of how many suchary/tags are on the page.
+    """
+    author = make_user("render_author")
+    tag = Tag.objects.create(name="Programming", slug="programming")
+    for i in range(10):
+        suchar = Suchar.objects.create(text=f"Joke {i}", author=author)
+        suchar.tags.add(tag)
+        voter = make_user(f"render_voter_{i}")
+        Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+
+    with CaptureQueriesContext(connection) as ctx:
+        response = client.get(reverse(LEADERBOARD_URL))
+
+    assert response.status_code == HTTPStatus.OK
+    tag_queries = [q for q in ctx.captured_queries if "suchary_tag" in q["sql"]]
+    max_tag_queries = 2  # one prefetch query, generously allow one more
+    assert len(tag_queries) <= max_tag_queries
 
 
 @pytest.mark.django_db
@@ -323,15 +370,15 @@ def test_leaderboard_second_request_within_ttl_issues_no_aggregating_queries(cli
 
 @pytest.mark.django_db
 def test_leaderboard_cache_repopulates_after_cache_clear(client):
-    """Not a TTL test: `cache.clear()` stands in for expiry, since the view
-    itself has no lever to expire the cache early. This only proves a fresh
-    `_build_context` call re-reads current DB state, not that TTL fires.
+    """Not a TTL test: deleting the cache key stands in for expiry, since the
+    view itself has no lever to expire the cache early. This only proves a
+    fresh `_build_context` call re-reads current DB state, not that TTL fires.
     """
     author = make_user("ttl_author")
     Suchar.objects.create(text="Old", author=author)
     client.get(reverse(LEADERBOARD_URL))
 
-    cache.clear()
+    cache.delete(LEADERBOARD_CACHE_KEY)
 
     suchar2 = Suchar.objects.create(text="New", author=author)
     voter = make_user("ttl_voter")
