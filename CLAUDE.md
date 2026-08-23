@@ -244,7 +244,7 @@ dependency review** (see #176-style project reviews). To check current vs. lates
 ```bash
 head -5 suchar_overflow/static/js/chart.umd.min.js   # vendored version, in the banner comment
 curl -s https://registry.npmjs.org/chart.js/latest | grep -o '"version":"[^"]*"'
-head -3 suchar_overflow/static/js/flatpickr.min.js
+head -1 suchar_overflow/static/js/flatpickr.min.js   # whole file is 2 lines — line 2 is the minified bundle, head -1 only
 curl -s https://registry.npmjs.org/flatpickr/latest | grep -o '"version":"[^"]*"'
 ```
 
@@ -257,6 +257,11 @@ curl -sSfL -o suchar_overflow/static/js/chart.umd.min.js \
 curl -sSfL -o suchar_overflow/static/js/flatpickr.min.js \
   https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.js
 ```
+
+Flatpickr also vendors a stylesheet at `suchar_overflow/static/css/pages/flatpickr.min.css`
+— when bumping `flatpickr.min.js`, refresh the CSS from the same release too
+(`https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.css`), or the JS
+and CSS builds can drift out of sync.
 
 After swapping either file, check the upstream changelog for breaking changes in the
 APIs this project actually uses, then manually verify in a browser (console clean, no
