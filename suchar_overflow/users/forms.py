@@ -31,7 +31,7 @@ class UserAdminCreationForm(UserCreationForm):
 class EmailChangeForm(forms.Form):
     email = forms.EmailField(label=_("New Email Address"), required=True)
 
-    def clean_email(self):
+    def clean_email(self) -> str:
         email = self.cleaned_data["email"]
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError(_("This email is already currently used."))

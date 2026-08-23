@@ -8,7 +8,7 @@ from suchar_overflow.suchary.models import Vote
 
 
 @pytest.fixture
-def ensure_achievements():
+def ensure_achievements() -> None:
     if not Achievement.objects.filter(slug="first-suchar").exists():
         Achievement.objects.create(
             name="First Suchar",
@@ -50,7 +50,8 @@ def ensure_achievements():
 
 
 @pytest.mark.django_db
-def test_first_suchar_achievement(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_first_suchar_achievement() -> None:
     user = make_user("joker")
     assert not UserAchievement.objects.filter(
         user=user,
@@ -66,7 +67,8 @@ def test_first_suchar_achievement(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_first_suchar_achievement_not_awarded_twice(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_first_suchar_achievement_not_awarded_twice() -> None:
     user = make_user("joker")
     Suchar.objects.create(text="First joke", author=user)
     Suchar.objects.create(text="Second joke", author=user)
@@ -86,7 +88,8 @@ def test_first_suchar_achievement_not_awarded_twice(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_first_vote_achievement_funny(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_first_vote_achievement_funny() -> None:
     author = make_user("author")
     voter = make_user("voter")
     suchar = Suchar.objects.create(text="Knock knock", author=author)
@@ -110,7 +113,8 @@ def test_first_vote_achievement_funny(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_first_vote_achievement_dry(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_first_vote_achievement_dry() -> None:
     """Casting a dry vote (not funny) should also award the first-vote achievement."""
     author = make_user("author")
     voter = make_user("voter")
@@ -125,7 +129,8 @@ def test_first_vote_achievement_dry(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_first_vote_achievement_not_awarded_twice(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_first_vote_achievement_not_awarded_twice() -> None:
     author = make_user("author")
     voter = make_user("voter")
     s1 = Suchar.objects.create(text="Joke 1", author=author)
@@ -149,7 +154,8 @@ def test_first_vote_achievement_not_awarded_twice(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_rising_star_not_awarded_before_threshold(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_rising_star_not_awarded_before_threshold() -> None:
     author = make_user("popular_author")
     suchar = Suchar.objects.create(text="Very funny joke", author=author)
 
@@ -164,7 +170,8 @@ def test_rising_star_not_awarded_before_threshold(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_rising_star_awarded_on_fifth_vote(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_rising_star_awarded_on_fifth_vote() -> None:
     author = make_user("popular_author")
     suchar = Suchar.objects.create(text="Very funny joke", author=author)
 
@@ -182,7 +189,8 @@ def test_rising_star_awarded_on_fifth_vote(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_rising_star_dry_votes_count_negatively(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_rising_star_dry_votes_count_negatively() -> None:
     """Dry votes subtract from SUM_SCORE so 5 dry-only votes must NOT award rising-star."""  # noqa: E501
     author = make_user("popular_author")
     suchar = Suchar.objects.create(text="A controversial classic", author=author)
@@ -199,7 +207,8 @@ def test_rising_star_dry_votes_count_negatively(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_rising_star_net_score_reaches_threshold(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_rising_star_net_score_reaches_threshold() -> None:
     """Net score (funny +1, dry -1) must reach threshold=5 to award rising-star."""
     author = make_user("popular_author")
     suchar = Suchar.objects.create(text="A mixed joke", author=author)
@@ -219,7 +228,8 @@ def test_rising_star_net_score_reaches_threshold(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_rising_star_counts_votes_across_multiple_suchars(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_rising_star_counts_votes_across_multiple_suchars() -> None:
     """Votes spread across multiple suchars by the same author should accumulate."""
     author = make_user("popular_author")
     s1 = Suchar.objects.create(text="Joke A", author=author)
@@ -240,7 +250,8 @@ def test_rising_star_counts_votes_across_multiple_suchars(ensure_achievements):
 
 
 @pytest.mark.django_db
-def test_rising_star_not_awarded_twice(ensure_achievements):
+@pytest.mark.usefixtures("ensure_achievements")
+def test_rising_star_not_awarded_twice() -> None:
     author = make_user("popular_author")
     suchar = Suchar.objects.create(text="Very funny joke", author=author)
 

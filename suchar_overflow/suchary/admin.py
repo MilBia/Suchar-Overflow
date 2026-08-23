@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.contrib import admin
 from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
@@ -5,6 +7,10 @@ from django.utils.translation import gettext_lazy as _
 from .models import Suchar
 from .models import Tag
 from .models import Vote
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+    from django.http import HttpRequest
 
 
 @admin.register(Tag)
@@ -20,7 +26,11 @@ class VoteInline(admin.TabularInline):
     readonly_fields = ["user", "is_funny", "is_dry"]
     can_delete = True
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(
+        self,
+        _request: HttpRequest,
+        _obj: Suchar | None = None,
+    ) -> bool:
         return False
 
 
@@ -33,18 +43,18 @@ class SucharAdmin(admin.ModelAdmin):
     inlines = [VoteInline]
     date_hierarchy = "created_at"
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Suchar]:
         queryset = super().get_queryset(request)
         return queryset.annotate(_total_votes=Count("votes"))
 
     @admin.display(description=_("Text"))
-    def short_text_display(self, obj):
+    def short_text_display(self, obj: Suchar) -> str:
         limit = 75
         return (obj.text[:limit] + "...") if len(obj.text) > limit else obj.text
 
     @admin.display(description=_("Votes"), ordering="_total_votes")
-    def total_votes(self, obj):
-        return obj._total_votes  # noqa: SLF001
+    def total_votes(self, obj: Suchar) -> int:
+        return obj._total_votes  # type: ignore[attr-defined] # noqa: SLF001
 
 
 @admin.register(Vote)

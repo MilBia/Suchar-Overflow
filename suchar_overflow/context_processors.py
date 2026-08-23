@@ -1,9 +1,15 @@
+from typing import TYPE_CHECKING
+from typing import Any
+
 from django.conf import settings
 
 import suchar_overflow
 
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
-def site_settings(request):
+
+def site_settings(request: HttpRequest) -> dict[str, Any]:
     """Expose configurable site-level settings to all templates."""
     theme = request.COOKIES.get("theme", "")
     if theme not in ("dark", "light"):

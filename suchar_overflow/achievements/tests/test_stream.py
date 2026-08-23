@@ -1,6 +1,7 @@
 """Tests for the achievement SSE stream endpoint."""
 
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from asgiref.sync import sync_to_async
@@ -9,12 +10,15 @@ from django.urls import reverse
 
 from suchar_overflow.conftest import make_user
 
+if TYPE_CHECKING:
+    from django.test import AsyncClient
+
 STREAM_URL = "achievements:stream"
 
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_stream_requires_login(async_client):
+async def test_stream_requires_login(async_client: AsyncClient) -> None:
     response = await async_client.get(reverse(STREAM_URL))
     assert response.status_code == HTTPStatus.FOUND
     assert "/accounts/login/" in response["Location"]
@@ -22,7 +26,7 @@ async def test_stream_requires_login(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_stream_content_type_is_event_stream(async_client):
+async def test_stream_content_type_is_event_stream(async_client: AsyncClient) -> None:
     user = await sync_to_async(make_user)("u1")
     await async_client.aforce_login(user)
     response = await async_client.get(reverse(STREAM_URL))
@@ -31,7 +35,7 @@ async def test_stream_content_type_is_event_stream(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_stream_sets_cache_control_no_cache(async_client):
+async def test_stream_sets_cache_control_no_cache(async_client: AsyncClient) -> None:
     user = await sync_to_async(make_user)("u1")
     await async_client.aforce_login(user)
     response = await async_client.get(reverse(STREAM_URL))
@@ -40,7 +44,7 @@ async def test_stream_sets_cache_control_no_cache(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_stream_sets_x_accel_buffering_no(async_client):
+async def test_stream_sets_x_accel_buffering_no(async_client: AsyncClient) -> None:
     user = await sync_to_async(make_user)("u1")
     await async_client.aforce_login(user)
     response = await async_client.get(reverse(STREAM_URL))
@@ -49,14 +53,14 @@ async def test_stream_sets_x_accel_buffering_no(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_stream_sends_retry_when_no_pending(async_client):
+async def test_stream_sends_retry_when_no_pending(async_client: AsyncClient) -> None:
     user = await sync_to_async(make_user)("u1")
     await async_client.aforce_login(user)
     await cache.adelete(f"achievements_pending:{user.pk}")
 
     response = await async_client.get(reverse(STREAM_URL))
     content = ""
-    async for chunk in response.streaming_content:
+    async for chunk in response.streaming_content:  # type: ignore[attr-defined]
         content += chunk.decode()
         if "retry:" in content:
             break
@@ -65,7 +69,7 @@ async def test_stream_sends_retry_when_no_pending(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_stream_sends_data_new_when_pending(async_client):
+async def test_stream_sends_data_new_when_pending(async_client: AsyncClient) -> None:
     user = await sync_to_async(make_user)("u1")
     await async_client.aforce_login(user)
     cache_key = f"achievements_pending:{user.pk}"
@@ -73,7 +77,7 @@ async def test_stream_sends_data_new_when_pending(async_client):
 
     response = await async_client.get(reverse(STREAM_URL))
     content = ""
-    async for chunk in response.streaming_content:
+    async for chunk in response.streaming_content:  # type: ignore[attr-defined]
         content += chunk.decode()
         if "data: new" in content:
             break
@@ -82,14 +86,16 @@ async def test_stream_sends_data_new_when_pending(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_stream_does_not_send_data_without_cache_flag(async_client):
+async def test_stream_does_not_send_data_without_cache_flag(
+    async_client: AsyncClient,
+) -> None:
     user = await sync_to_async(make_user)("u1")
     await async_client.aforce_login(user)
     await cache.adelete(f"achievements_pending:{user.pk}")
 
     response = await async_client.get(reverse(STREAM_URL))
     content = ""
-    async for chunk in response.streaming_content:
+    async for chunk in response.streaming_content:  # type: ignore[attr-defined]
         content += chunk.decode()
         break
     assert "data: new" not in content

@@ -1,6 +1,7 @@
 """Tests for async auth mixins."""
 
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -13,30 +14,35 @@ from django.utils.translation import gettext
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 from suchar_overflow.users.mixins import AsyncUserPassesTestMixin
 
+if TYPE_CHECKING:
+    from django.http import HttpRequest
+
+    from suchar_overflow.users.models import User as UserModel
+
 User = get_user_model()
 
 
 class _SimpleAsyncView(AsyncLoginRequiredMixin):
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:  # noqa: ARG002
         return HttpResponse("ok")
 
 
 class _PassesTestView(AsyncUserPassesTestMixin):
-    async def test_func(self):  # type: ignore[override]
+    async def test_func(self) -> bool:  # type: ignore[override]
         return self.request.user.username == "allowed"
 
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:  # noqa: ARG002
         return HttpResponse("ok")
 
 
 class _NoTestFuncView(AsyncUserPassesTestMixin):
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:  # noqa: ARG002
         return HttpResponse("ok")
 
 
 @pytest.mark.anyio
 @pytest.mark.django_db
-async def test_async_login_required_redirects_anonymous():
+async def test_async_login_required_redirects_anonymous() -> None:
     arf = AsyncRequestFactory()
     request = arf.get("/fake-path/")
     request.user = type("Anon", (), {"is_authenticated": False})()
@@ -50,7 +56,9 @@ async def test_async_login_required_redirects_anonymous():
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_async_login_required_allows_authenticated(django_user_model):
+async def test_async_login_required_allows_authenticated(
+    django_user_model: type[UserModel],
+) -> None:
     user = await django_user_model.objects.acreate_user(
         username="u",
         password="pw",  # noqa: S106
@@ -65,7 +73,9 @@ async def test_async_login_required_allows_authenticated(django_user_model):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_async_user_passes_test_blocks_failing_user(django_user_model):
+async def test_async_user_passes_test_blocks_failing_user(
+    django_user_model: type[UserModel],
+) -> None:
     user = await django_user_model.objects.acreate_user(
         username="blocked",
         password="pw",  # noqa: S106
@@ -84,7 +94,9 @@ async def test_async_user_passes_test_blocks_failing_user(django_user_model):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_async_user_passes_test_allows_passing_user(django_user_model):
+async def test_async_user_passes_test_allows_passing_user(
+    django_user_model: type[UserModel],
+) -> None:
     user = await django_user_model.objects.acreate_user(
         username="allowed",
         password="pw",  # noqa: S106
@@ -98,7 +110,7 @@ async def test_async_user_passes_test_allows_passing_user(django_user_model):
 
 
 @pytest.mark.anyio
-async def test_async_user_passes_test_default_test_func_raises():
+async def test_async_user_passes_test_default_test_func_raises() -> None:
     view = _NoTestFuncView()
     with pytest.raises(NotImplementedError, match="_NoTestFuncView"):
         await view.test_func()

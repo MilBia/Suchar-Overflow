@@ -1,5 +1,6 @@
 import json
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -7,6 +8,9 @@ from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
+
+if TYPE_CHECKING:
+    from django.test import Client
 
 TAGS_URL = "/api/suchary/tags"
 VOTE_URL = "/api/suchary/{pk}/vote"
@@ -17,7 +21,7 @@ VOTE_URL = "/api/suchary/{pk}/vote"
 # ---------------------------------------------------------------------------
 
 
-def vote_url(pk):
+def vote_url(pk: int) -> str:
     return VOTE_URL.format(pk=pk)
 
 
@@ -27,14 +31,14 @@ def vote_url(pk):
 
 
 @pytest.mark.django_db
-def test_list_tags_empty(client):
+def test_list_tags_empty(client: Client) -> None:
     response = client.get(TAGS_URL)
     assert response.status_code == HTTPStatus.OK
     assert response.json() == []
 
 
 @pytest.mark.django_db
-def test_list_tags_returns_all(client):
+def test_list_tags_returns_all(client: Client) -> None:
     Tag.objects.create(name="IT", slug="it")
     Tag.objects.create(name="Programowanie", slug="programowanie")
 
@@ -47,7 +51,7 @@ def test_list_tags_returns_all(client):
 
 
 @pytest.mark.django_db
-def test_list_tags_filtered_by_q(client):
+def test_list_tags_filtered_by_q(client: Client) -> None:
     Tag.objects.create(name="IT", slug="it")
     Tag.objects.create(name="Python", slug="python")
     Tag.objects.create(name="Programowanie", slug="programowanie")
@@ -62,7 +66,7 @@ def test_list_tags_filtered_by_q(client):
 
 
 @pytest.mark.django_db
-def test_list_tags_q_empty_string_returns_all(client):
+def test_list_tags_q_empty_string_returns_all(client: Client) -> None:
     Tag.objects.create(name="IT", slug="it")
     Tag.objects.create(name="Python", slug="python")
 
@@ -72,7 +76,7 @@ def test_list_tags_q_empty_string_returns_all(client):
 
 
 @pytest.mark.django_db
-def test_list_tags_capped_at_ten(client):
+def test_list_tags_capped_at_ten(client: Client) -> None:
     for i in range(15):
         Tag.objects.create(name=f"Tag{i}", slug=f"tag{i}")
 
@@ -82,7 +86,7 @@ def test_list_tags_capped_at_ten(client):
 
 
 @pytest.mark.django_db
-def test_list_tags_schema_fields(client):
+def test_list_tags_schema_fields(client: Client) -> None:
     Tag.objects.create(name="IT", slug="it")
 
     response = client.get(TAGS_URL)
@@ -97,7 +101,7 @@ def test_list_tags_schema_fields(client):
 
 
 @pytest.mark.django_db
-def test_vote_requires_authentication(client):
+def test_vote_requires_authentication(client: Client) -> None:
     author = make_user("author")
     suchar = Suchar.objects.create(text="Joke", author=author)
 
@@ -115,7 +119,7 @@ def test_vote_requires_authentication(client):
 
 
 @pytest.mark.django_db
-def test_vote_funny_toggle_on(client):
+def test_vote_funny_toggle_on(client: Client) -> None:
     author = make_user("author")
     voter = make_user("voter")
     suchar = Suchar.objects.create(text="Joke", author=author)
@@ -136,7 +140,7 @@ def test_vote_funny_toggle_on(client):
 
 
 @pytest.mark.django_db
-def test_vote_funny_toggle_off(client):
+def test_vote_funny_toggle_off(client: Client) -> None:
     author = make_user("author")
     voter = make_user("voter")
     suchar = Suchar.objects.create(text="Joke", author=author)
@@ -157,7 +161,7 @@ def test_vote_funny_toggle_off(client):
 
 
 @pytest.mark.django_db
-def test_vote_dry_toggle_on(client):
+def test_vote_dry_toggle_on(client: Client) -> None:
     author = make_user("author")
     voter = make_user("voter")
     suchar = Suchar.objects.create(text="Joke", author=author)
@@ -178,7 +182,7 @@ def test_vote_dry_toggle_on(client):
 
 
 @pytest.mark.django_db
-def test_vote_both_flags_then_toggle_off_one_keeps_vote(client):
+def test_vote_both_flags_then_toggle_off_one_keeps_vote(client: Client) -> None:
     """Toggling off one flag while the other stays True must preserve the Vote row."""
     author = make_user("author")
     voter = make_user("voter")
@@ -200,7 +204,7 @@ def test_vote_both_flags_then_toggle_off_one_keeps_vote(client):
 
 
 @pytest.mark.django_db
-def test_vote_both_flags_off_deletes_vote_row(client):
+def test_vote_both_flags_off_deletes_vote_row(client: Client) -> None:
     """Toggling the last active flag must delete the Vote row entirely."""
     author = make_user("author")
     voter = make_user("voter")
@@ -227,7 +231,7 @@ def test_vote_both_flags_off_deletes_vote_row(client):
 
 
 @pytest.mark.django_db
-def test_vote_response_counts_multiple_voters(client):
+def test_vote_response_counts_multiple_voters(client: Client) -> None:
     author = make_user("author")
     voter1 = make_user("voter1")
     voter2 = make_user("voter2")
@@ -255,7 +259,7 @@ def test_vote_response_counts_multiple_voters(client):
 
 
 @pytest.mark.django_db
-def test_vote_nonexistent_suchar_returns_404(client):
+def test_vote_nonexistent_suchar_returns_404(client: Client) -> None:
     voter = make_user("voter")
     client.force_login(voter)
 
@@ -268,7 +272,7 @@ def test_vote_nonexistent_suchar_returns_404(client):
 
 
 @pytest.mark.django_db
-def test_vote_invalid_vote_type_returns_422(client):
+def test_vote_invalid_vote_type_returns_422(client: Client) -> None:
     author = make_user("author")
     voter = make_user("voter")
     suchar = Suchar.objects.create(text="Joke", author=author)
@@ -283,7 +287,7 @@ def test_vote_invalid_vote_type_returns_422(client):
 
 
 @pytest.mark.django_db
-def test_vote_missing_payload_returns_422(client):
+def test_vote_missing_payload_returns_422(client: Client) -> None:
     author = make_user("author")
     voter = make_user("voter")
     suchar = Suchar.objects.create(text="Joke", author=author)

@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
@@ -7,6 +9,9 @@ from modeltranslation.admin import TabbedTranslationAdmin
 from .models import Achievement
 from .models import SchedulerRun
 from .models import UserAchievement
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 class AchievementAdminForm(forms.ModelForm):
@@ -78,7 +83,7 @@ class AchievementAdmin(TabbedTranslationAdmin):
     )
 
     @admin.display(description="Icon")
-    def icon_preview(self, obj):
+    def icon_preview(self, obj: Achievement) -> str:
         if obj.icon_content:
             # We wrap the SVG in a div with fixed size for the admin list
             return format_html(
@@ -87,7 +92,13 @@ class AchievementAdmin(TabbedTranslationAdmin):
             )
         return "-"
 
-    def save_model(self, request, obj, form, change):
+    def save_model(
+        self,
+        request: HttpRequest,
+        obj: Achievement,
+        form: AchievementAdminForm,
+        change: bool,  # noqa: FBT001
+    ) -> None:
         if not change and form.cleaned_data.get("generate_tiers"):
             thresholds_str = form.cleaned_data.get("tier_thresholds", "")
             if thresholds_str:
@@ -146,8 +157,12 @@ class UserAchievementAdmin(admin.ModelAdmin):
 class SchedulerRunAdmin(admin.ModelAdmin):
     list_display = ("job_id", "ran_at")
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, _request: HttpRequest) -> bool:
         return False
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(
+        self,
+        _request: HttpRequest,
+        _obj: SchedulerRun | None = None,
+    ) -> bool:
         return False

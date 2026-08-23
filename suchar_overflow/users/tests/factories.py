@@ -11,7 +11,12 @@ class UserFactory(DjangoModelFactory[User]):
     name = Faker("name")
 
     @post_generation
-    def password(self: User, create: bool, extracted: str | None, **kwargs):  # noqa: FBT001
+    def password(
+        self: User,
+        create: bool,  # noqa: FBT001, ARG002
+        extracted: str | None,
+        **kwargs: object,  # noqa: ARG002
+    ) -> None:
         password = (
             extracted
             if extracted
@@ -27,7 +32,12 @@ class UserFactory(DjangoModelFactory[User]):
         self.set_password(password)
 
     @classmethod
-    def _after_postgeneration(cls, instance, create, results=None):
+    def _after_postgeneration(
+        cls,
+        instance: User,
+        create: bool,  # noqa: FBT001
+        results: dict | None = None,
+    ) -> None:
         """Save again the instance if creating and at least one hook ran."""
         # skip_postgeneration_save is registered dynamically by DjangoOptions
         # via OptionDefault, not a static attribute factory-boy's stubs declare.

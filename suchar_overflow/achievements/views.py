@@ -1,4 +1,5 @@
 import asyncio
+from typing import TYPE_CHECKING
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth.decorators import login_required
@@ -7,17 +8,24 @@ from django.http import StreamingHttpResponse
 from django.shortcuts import render
 
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
+from suchar_overflow.users.models import User
 
 from .models import Achievement
 from .models import UserAchievement
 
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
+
+    from django.http import HttpRequest
+    from django.http import HttpResponse
+
 
 @login_required
-async def achievement_stream(request):
+async def achievement_stream(request: HttpRequest) -> StreamingHttpResponse:
     """SSE: check for pending achievements in a loop, keeping connection open."""
     user = await request.auser()
 
-    async def event_stream():
+    async def event_stream() -> AsyncGenerator[str]:
         cache_key = f"achievements_pending:{user.pk}"
         yield "retry: 5000\n\n"
         while True:
@@ -40,8 +48,10 @@ async def achievement_stream(request):
 class MyAchievementsView(AsyncLoginRequiredMixin):
     template_name = "achievements/mine.html"
 
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         user = await request.auser()
+        # AsyncLoginRequiredMixin already rejects anonymous requests.
+        assert isinstance(user, User)
         await UserAchievement.objects.filter(
             user=user,
             is_seen=False,
@@ -63,8 +73,10 @@ class MyAchievementsView(AsyncLoginRequiredMixin):
 class AchievementListView(AsyncLoginRequiredMixin):
     template_name = "achievements/list.html"
 
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         user = await request.auser()
+        # AsyncLoginRequiredMixin already rejects anonymous requests.
+        assert isinstance(user, User)
         user_achs = {
             pk
             async for pk in UserAchievement.objects.filter(

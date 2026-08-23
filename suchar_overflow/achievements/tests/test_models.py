@@ -8,7 +8,7 @@ from suchar_overflow.achievements.models import SchedulerRun
 
 
 @pytest.mark.django_db
-def test_scheduler_run_default_ordering_is_by_job_id():
+def test_scheduler_run_default_ordering_is_by_job_id() -> None:
     """job_id__in isolates from the "award-best-suchar-year" row seeded by
     migration 0015 (baseline data present in every test, like the migration-
     seeded Achievement rows — see CLAUDE.md Test patterns)."""
@@ -24,7 +24,7 @@ def test_scheduler_run_default_ordering_is_by_job_id():
 
 
 @pytest.mark.django_db
-def test_migration_0015_seeds_yearly_scheduler_marker():
+def test_migration_0015_seeds_yearly_scheduler_marker() -> None:
     """Migration 0015 seeds this marker so a fresh deploy's catch-up doesn't
     retroactively award the previous calendar year (see #168). Exercises the
     migration's own function directly (rather than asserting on ambient

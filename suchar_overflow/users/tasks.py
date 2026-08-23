@@ -4,7 +4,12 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
 
-def send_activation_email(user_pk, domain, token, protocol):
+def send_activation_email(
+    user_pk: int,
+    domain: str,
+    token: str,
+    protocol: str,
+) -> None:
     from suchar_overflow.users.models import User  # noqa: PLC0415
 
     user = User.objects.get(pk=user_pk)
@@ -21,7 +26,13 @@ def send_activation_email(user_pk, domain, token, protocol):
     send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 
-def send_email_change_emails(user_pk, old_email, new_email, verify_link, revoke_link):
+def send_email_change_emails(
+    user_pk: int,
+    old_email: str,
+    new_email: str,
+    verify_link: str,
+    revoke_link: str,
+) -> None:
     from suchar_overflow.users.models import User  # noqa: PLC0415
 
     user = User.objects.get(pk=user_pk)

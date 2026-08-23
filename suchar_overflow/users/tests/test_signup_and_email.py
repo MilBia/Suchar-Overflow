@@ -5,6 +5,7 @@ Tests for user signup, account activation, and email-change flows.
 import datetime
 import uuid
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -15,6 +16,9 @@ from django.utils import timezone
 from suchar_overflow.conftest import make_user
 from suchar_overflow.users.models import ActivationToken
 from suchar_overflow.users.models import EmailChangeRequest
+
+if TYPE_CHECKING:
+    from django.test import Client
 
 User = get_user_model()
 
@@ -27,13 +31,13 @@ User = get_user_model()
 
 
 @pytest.mark.django_db
-def test_signup_get_renders_form(client):
+def test_signup_get_renders_form(client: Client) -> None:
     response = client.get(reverse("users:signup"))
     assert response.status_code == HTTPStatus.OK
 
 
 @pytest.mark.django_db
-def test_signup_creates_inactive_user(client):
+def test_signup_creates_inactive_user(client: Client) -> None:
     response = client.post(
         reverse("users:signup"),
         {
@@ -49,7 +53,7 @@ def test_signup_creates_inactive_user(client):
 
 
 @pytest.mark.django_db
-def test_signup_creates_activation_token(client):
+def test_signup_creates_activation_token(client: Client) -> None:
     client.post(
         reverse("users:signup"),
         {
@@ -64,7 +68,7 @@ def test_signup_creates_activation_token(client):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_signup_sends_activation_email(client):
+def test_signup_sends_activation_email(client: Client) -> None:
     client.post(
         reverse("users:signup"),
         {
@@ -79,7 +83,7 @@ def test_signup_sends_activation_email(client):
 
 
 @pytest.mark.django_db
-def test_signup_redirects_to_done_page(client):
+def test_signup_redirects_to_done_page(client: Client) -> None:
     response = client.post(
         reverse("users:signup"),
         {
@@ -94,7 +98,7 @@ def test_signup_redirects_to_done_page(client):
 
 
 @pytest.mark.django_db
-def test_signup_duplicate_username_shows_error(client):
+def test_signup_duplicate_username_shows_error(client: Client) -> None:
     make_user("existing")
     response = client.post(
         reverse("users:signup"),
@@ -110,7 +114,7 @@ def test_signup_duplicate_username_shows_error(client):
 
 
 @pytest.mark.django_db
-def test_signup_duplicate_email_shows_error(client):
+def test_signup_duplicate_email_shows_error(client: Client) -> None:
     make_user("existing", email="taken@example.com")
     response = client.post(
         reverse("users:signup"),
@@ -131,7 +135,7 @@ def test_signup_duplicate_email_shows_error(client):
 
 
 @pytest.mark.django_db
-def test_activate_valid_token_activates_user(client):
+def test_activate_valid_token_activates_user(client: Client) -> None:
     user = make_user("inactive", is_active=False)
     token = ActivationToken.objects.create(user=user)
 
@@ -145,7 +149,7 @@ def test_activate_valid_token_activates_user(client):
 
 
 @pytest.mark.django_db
-def test_activate_valid_token_is_deleted_after_use(client):
+def test_activate_valid_token_is_deleted_after_use(client: Client) -> None:
     user = make_user("inactive", is_active=False)
     token = ActivationToken.objects.create(user=user)
 
@@ -155,7 +159,7 @@ def test_activate_valid_token_is_deleted_after_use(client):
 
 
 @pytest.mark.django_db
-def test_activate_invalid_token_does_not_activate(client):
+def test_activate_invalid_token_does_not_activate(client: Client) -> None:
     user = make_user("inactive", is_active=False)
 
     response = client.get(
@@ -168,7 +172,7 @@ def test_activate_invalid_token_does_not_activate(client):
 
 
 @pytest.mark.django_db
-def test_activate_expired_token_does_not_activate(client):
+def test_activate_expired_token_does_not_activate(client: Client) -> None:
     user = make_user("inactive", is_active=False)
     token = ActivationToken.objects.create(user=user)
     # Backdate beyond the 72-hour expiry window.
@@ -193,14 +197,14 @@ def test_activate_expired_token_does_not_activate(client):
 
 
 @pytest.mark.django_db
-def test_email_change_initiate_requires_login(client):
+def test_email_change_initiate_requires_login(client: Client) -> None:
     response = client.get(reverse("users:email_change_initiate"))
     assert response.status_code == HTTPStatus.FOUND
     assert "/accounts/login/" in response["Location"]
 
 
 @pytest.mark.django_db
-def test_email_change_initiate_get_renders_form(client):
+def test_email_change_initiate_get_renders_form(client: Client) -> None:
     user = make_user("user1")
     client.force_login(user)
     response = client.get(reverse("users:email_change_initiate"))
@@ -208,7 +212,7 @@ def test_email_change_initiate_get_renders_form(client):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_email_change_creates_request_and_sends_emails(client):
+def test_email_change_creates_request_and_sends_emails(client: Client) -> None:
     user = make_user("user1", email="old@example.com")
     client.force_login(user)
 
@@ -230,7 +234,7 @@ def test_email_change_creates_request_and_sends_emails(client):
 
 
 @pytest.mark.django_db
-def test_email_change_rejects_already_taken_email(client):
+def test_email_change_rejects_already_taken_email(client: Client) -> None:
     make_user("other", email="taken@example.com")
     user = make_user("user1", email="mine@example.com")
     client.force_login(user)
@@ -250,7 +254,7 @@ def test_email_change_rejects_already_taken_email(client):
 
 
 @pytest.mark.django_db
-def test_email_change_confirm_success(client):
+def test_email_change_confirm_success(client: Client) -> None:
     user = make_user("user1", email="old@example.com")
     email_req = EmailChangeRequest.objects.create(
         user=user,
@@ -274,7 +278,7 @@ def test_email_change_confirm_success(client):
 
 
 @pytest.mark.django_db
-def test_email_change_confirm_expired_token(client):
+def test_email_change_confirm_expired_token(client: Client) -> None:
     user = make_user("user1", email="old@example.com")
     email_req = EmailChangeRequest.objects.create(
         user=user,
@@ -301,7 +305,7 @@ def test_email_change_confirm_expired_token(client):
 
 
 @pytest.mark.django_db
-def test_email_change_confirm_already_used_token(client):
+def test_email_change_confirm_already_used_token(client: Client) -> None:
     user = make_user("user1", email="old@example.com")
     email_req = EmailChangeRequest.objects.create(
         user=user,
@@ -324,7 +328,7 @@ def test_email_change_confirm_already_used_token(client):
 
 
 @pytest.mark.django_db
-def test_email_change_confirm_invalid_token(client):
+def test_email_change_confirm_invalid_token(client: Client) -> None:
     user = make_user("user1")
     client.force_login(user)
 
@@ -335,7 +339,7 @@ def test_email_change_confirm_invalid_token(client):
 
 
 @pytest.mark.django_db
-def test_email_change_confirm_rejects_duplicate_email(client):
+def test_email_change_confirm_rejects_duplicate_email(client: Client) -> None:
     """If the new email is taken by the time the link is clicked, it should fail."""
     user = make_user("user1", email="old@example.com")
     email_req = EmailChangeRequest.objects.create(
@@ -364,7 +368,7 @@ def test_email_change_confirm_rejects_duplicate_email(client):
 
 
 @pytest.mark.django_db
-def test_email_change_revoke_pending_cancels(client):
+def test_email_change_revoke_pending_cancels(client: Client) -> None:
     user = make_user("user1", email="old@example.com")
     email_req = EmailChangeRequest.objects.create(
         user=user,
@@ -389,7 +393,7 @@ def test_email_change_revoke_pending_cancels(client):
 
 
 @pytest.mark.django_db
-def test_email_change_revoke_verified_undoes_change(client):
+def test_email_change_revoke_verified_undoes_change(client: Client) -> None:
     """Revoking a VERIFIED request should revert the email back to old_email."""
     user = make_user("user1", email="new@example.com")
     email_req = EmailChangeRequest.objects.create(
@@ -415,7 +419,7 @@ def test_email_change_revoke_verified_undoes_change(client):
 
 
 @pytest.mark.django_db
-def test_email_change_revoke_invalid_token_is_graceful(client):
+def test_email_change_revoke_invalid_token_is_graceful(client: Client) -> None:
     user = make_user("user1")
     client.force_login(user)
 

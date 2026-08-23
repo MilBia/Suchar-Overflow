@@ -1,18 +1,22 @@
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from django.urls import reverse
 
 from suchar_overflow.users.models import User
 
+if TYPE_CHECKING:
+    from django.test import Client
+
 
 class TestUserAdmin:
-    def test_changelist(self, admin_client):
+    def test_changelist(self, admin_client: Client) -> None:
         url = reverse("admin:users_user_changelist")
         response = admin_client.get(url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_search_by_username(self, admin_client):
+    def test_search_by_username(self, admin_client: Client) -> None:
         User.objects.create_user(
             username="searchable",
             email="searchable@example.com",
@@ -23,17 +27,17 @@ class TestUserAdmin:
         assert response.status_code == HTTPStatus.OK
         assert b"searchable" in response.content
 
-    def test_search_no_match_returns_empty(self, admin_client):
+    def test_search_no_match_returns_empty(self, admin_client: Client) -> None:
         url = reverse("admin:users_user_changelist")
         response = admin_client.get(url, data={"q": "zzznomatch"})
         assert response.status_code == HTTPStatus.OK
 
-    def test_add_get_renders_form(self, admin_client):
+    def test_add_get_renders_form(self, admin_client: Client) -> None:
         url = reverse("admin:users_user_add")
         response = admin_client.get(url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_add_valid_user_creates_and_redirects(self, admin_client):
+    def test_add_valid_user_creates_and_redirects(self, admin_client: Client) -> None:
         url = reverse("admin:users_user_add")
         response = admin_client.post(
             url,
@@ -51,7 +55,7 @@ class TestUserAdmin:
         assert response.status_code == HTTPStatus.FOUND
         assert User.objects.filter(username="newadminuser").exists()
 
-    def test_add_duplicate_username_shows_error(self, admin_client):
+    def test_add_duplicate_username_shows_error(self, admin_client: Client) -> None:
         User.objects.create_user(
             username="duplicate",
             email="dup@example.com",
@@ -75,7 +79,7 @@ class TestUserAdmin:
         assert response.status_code == HTTPStatus.OK
         assert User.objects.filter(username="duplicate").count() == 1
 
-    def test_add_password_mismatch_shows_error(self, admin_client):
+    def test_add_password_mismatch_shows_error(self, admin_client: Client) -> None:
         url = reverse("admin:users_user_add")
         response = admin_client.post(
             url,
@@ -93,19 +97,19 @@ class TestUserAdmin:
         assert response.status_code == HTTPStatus.OK
         assert not User.objects.filter(username="mismatch").exists()
 
-    def test_view_user_detail(self, admin_client):
+    def test_view_user_detail(self, admin_client: Client) -> None:
         user = User.objects.get(username="admin")
         url = reverse("admin:users_user_change", kwargs={"object_id": user.pk})
         response = admin_client.get(url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_view_user_detail_contains_username(self, admin_client):
+    def test_view_user_detail_contains_username(self, admin_client: Client) -> None:
         user = User.objects.get(username="admin")
         url = reverse("admin:users_user_change", kwargs={"object_id": user.pk})
         response = admin_client.get(url)
         assert b"admin" in response.content
 
-    def test_update_user_name(self, admin_client):
+    def test_update_user_name(self, admin_client: Client) -> None:
         user = User.objects.get(username="admin")
         url = reverse("admin:users_user_change", kwargs={"object_id": user.pk})
         response = admin_client.post(
@@ -130,7 +134,7 @@ class TestUserAdmin:
         assert user.name == "Updated Name"
 
     @pytest.mark.django_db
-    def test_delete_user(self, admin_client):
+    def test_delete_user(self, admin_client: Client) -> None:
         user = User.objects.create_user(
             username="to_delete",
             email="to_delete@example.com",

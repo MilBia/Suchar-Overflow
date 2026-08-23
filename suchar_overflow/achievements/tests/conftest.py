@@ -7,7 +7,7 @@ from suchar_overflow.achievements.models import Achievement
 
 
 @pytest.fixture
-def periodic_achievements(db):
+def periodic_achievements(db: None) -> None:  # noqa: ARG001
     Achievement.objects.get_or_create(
         slug="best-suchar-month",
         defaults={

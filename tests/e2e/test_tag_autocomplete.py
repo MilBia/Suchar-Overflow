@@ -1,13 +1,23 @@
 """E2E tests for the tag autocomplete in the suchar form (suchar_form.js)."""
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 from suchar_overflow.suchary.models import Tag
 
+if TYPE_CHECKING:
+    from playwright.sync_api import Page
+    from pytest_django.live_server_helper import LiveServer
+
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_typing_shows_matching_tag_suggestions(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_typing_shows_matching_tag_suggestions(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Typing ≥2 chars in the tags input triggers the API and shows a dropdown."""
     Tag.objects.create(name="programowanie", slug="programowanie")
     Tag.objects.create(name="python", slug="python")
@@ -36,7 +46,11 @@ def test_typing_shows_matching_tag_suggestions(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_clicking_suggestion_inserts_tag_and_closes_dropdown(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_clicking_suggestion_inserts_tag_and_closes_dropdown(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Clicking a suggestion inserts the tag name and hides the dropdown."""
     Tag.objects.create(name="it", slug="it")
 

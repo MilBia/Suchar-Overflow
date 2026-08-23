@@ -1,6 +1,12 @@
 """E2E tests for navigation, modals, toasts, and the sort dropdown (project.js)."""
 
+from typing import TYPE_CHECKING
+
 import pytest
+
+if TYPE_CHECKING:
+    from playwright.sync_api import Page
+    from pytest_django.live_server_helper import LiveServer
 
 # ---------------------------------------------------------------------------
 # Mobile navigation toggle
@@ -9,7 +15,7 @@ import pytest
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_mobile_nav_toggle_opens_menu(page, live_server):
+def test_mobile_nav_toggle_opens_menu(page: Page, live_server: LiveServer) -> None:
     """Clicking the hamburger button adds .active to #navbar-menu."""
     # Use a narrow viewport so the hamburger button is actually visible.
     page.set_viewport_size({"width": 375, "height": 812})
@@ -21,22 +27,22 @@ def test_mobile_nav_toggle_opens_menu(page, live_server):
 
     page.click("#navbar-toggler")
 
-    assert "active" in menu.get_attribute("class")
+    assert "active" in (menu.get_attribute("class") or "")
 
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_mobile_nav_toggle_closes_menu(page, live_server):
+def test_mobile_nav_toggle_closes_menu(page: Page, live_server: LiveServer) -> None:
     """Clicking the hamburger button a second time removes .active."""
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(f"{live_server.url}/")
     page.wait_for_load_state("networkidle")
 
     page.click("#navbar-toggler")
-    assert "active" in page.locator("#navbar-menu").get_attribute("class")
+    assert "active" in (page.locator("#navbar-menu").get_attribute("class") or "")
 
     page.click("#navbar-toggler")
-    assert "active" not in page.locator("#navbar-menu").get_attribute("class")
+    assert "active" not in (page.locator("#navbar-menu").get_attribute("class") or "")
 
 
 # ---------------------------------------------------------------------------
@@ -46,7 +52,11 @@ def test_mobile_nav_toggle_closes_menu(page, live_server):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_logout_modal_opens_on_button_click(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_logout_modal_opens_on_button_click(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Clicking #logout-button removes the hidden attribute from #logoutModal."""
     page.goto(f"{live_server.url}/")
     page.wait_for_load_state("networkidle")
@@ -61,7 +71,11 @@ def test_logout_modal_opens_on_button_click(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_logout_modal_closes_via_cancel_button(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_logout_modal_closes_via_cancel_button(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Clicking .modal-close inside the modal sets hidden back to true."""
     page.goto(f"{live_server.url}/")
     page.wait_for_load_state("networkidle")
@@ -78,7 +92,11 @@ def test_logout_modal_closes_via_cancel_button(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_logout_modal_closes_on_overlay_click(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_logout_modal_closes_on_overlay_click(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Clicking the overlay backdrop (not the modal card) closes the modal."""
     page.goto(f"{live_server.url}/")
     page.wait_for_load_state("networkidle")
@@ -98,7 +116,10 @@ def test_logout_modal_closes_on_overlay_click(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_toast_manual_close_removes_it_from_dom(page, live_server):
+def test_toast_manual_close_removes_it_from_dom(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Clicking a toast's close button removes it from the DOM."""
     page.goto(f"{live_server.url}/")
     # Wait until project.js has finished registering window.showToast.
@@ -123,7 +144,10 @@ def test_toast_manual_close_removes_it_from_dom(page, live_server):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_sort_dropdown_opens_on_trigger_click(page, live_server):
+def test_sort_dropdown_opens_on_trigger_click(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Clicking the sort dropdown trigger adds .show to #sortDropdown."""
     page.goto(f"{live_server.url}/suchary/")
     page.wait_for_load_state("networkidle")
@@ -133,28 +157,34 @@ def test_sort_dropdown_opens_on_trigger_click(page, live_server):
 
     page.locator("#sortDropdown .dropdown-trigger").click()
 
-    assert "show" in dropdown.get_attribute("class")
+    assert "show" in (dropdown.get_attribute("class") or "")
 
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_sort_dropdown_closes_on_outside_click(page, live_server):
+def test_sort_dropdown_closes_on_outside_click(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Clicking outside the sort dropdown removes .show."""
     page.goto(f"{live_server.url}/suchary/")
     page.wait_for_load_state("networkidle")
 
     page.locator("#sortDropdown .dropdown-trigger").click()
-    assert "show" in page.locator("#sortDropdown").get_attribute("class")
+    assert "show" in (page.locator("#sortDropdown").get_attribute("class") or "")
 
     # Click the page heading — well outside the dropdown.
     page.locator("h1").click()
 
-    assert "show" not in page.locator("#sortDropdown").get_attribute("class")
+    assert "show" not in (page.locator("#sortDropdown").get_attribute("class") or "")
 
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_sort_dropdown_selecting_top_submits_form(page, live_server):
+def test_sort_dropdown_selecting_top_submits_form(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Selecting 'Top' from the sort dropdown navigates to ?sort=top."""
     page.goto(f"{live_server.url}/suchary/")
     page.wait_for_load_state("networkidle")

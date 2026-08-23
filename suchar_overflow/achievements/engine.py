@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.core.cache import cache
 from django.db.models import Case
 from django.db.models import Count
@@ -15,12 +17,20 @@ from suchar_overflow.suchary.models import Vote
 from .models import Achievement
 from .models import UserAchievement
 
+if TYPE_CHECKING:
+    from suchar_overflow.users.models import User
+
 
 class AchievementRule:
     metric: Achievement.Metric | None = None
 
     @classmethod
-    def evaluate(cls, user, threshold, instance=None):
+    def evaluate(
+        cls,
+        user: User,
+        threshold: int,
+        instance: Suchar | Vote | None = None,
+    ) -> bool:
         raise NotImplementedError
 
 
@@ -28,7 +38,12 @@ class SucharCountRule(AchievementRule):
     metric = Achievement.Metric.COUNT_SUCHAR
 
     @classmethod
-    def evaluate(cls, user, threshold, instance=None):
+    def evaluate(
+        cls,
+        user: User,
+        threshold: int,
+        instance: Suchar | Vote | None = None,  # noqa: ARG003
+    ) -> bool:
         return user.suchary.count() >= threshold
 
 
@@ -36,7 +51,12 @@ class VoteFunnyCountRule(AchievementRule):
     metric = Achievement.Metric.COUNT_VOTE_FUNNY
 
     @classmethod
-    def evaluate(cls, user, threshold, instance=None):
+    def evaluate(
+        cls,
+        user: User,
+        threshold: int,
+        instance: Suchar | Vote | None = None,  # noqa: ARG003
+    ) -> bool:
         return user.suchar_votes.filter(is_funny=True).count() >= threshold
 
 
@@ -44,7 +64,12 @@ class VoteDryCountRule(AchievementRule):
     metric = Achievement.Metric.COUNT_VOTE_DRY
 
     @classmethod
-    def evaluate(cls, user, threshold, instance=None):
+    def evaluate(
+        cls,
+        user: User,
+        threshold: int,
+        instance: Suchar | Vote | None = None,  # noqa: ARG003
+    ) -> bool:
         return user.suchar_votes.filter(is_dry=True).count() >= threshold
 
 
@@ -52,7 +77,12 @@ class VoteCastCountRule(AchievementRule):
     metric = Achievement.Metric.COUNT_VOTE_CAST
 
     @classmethod
-    def evaluate(cls, user, threshold, instance=None):
+    def evaluate(
+        cls,
+        user: User,
+        threshold: int,
+        instance: Suchar | Vote | None = None,  # noqa: ARG003
+    ) -> bool:
         return user.suchar_votes.count() >= threshold
 
 
@@ -60,7 +90,12 @@ class SumScoreRule(AchievementRule):
     metric = Achievement.Metric.SUM_SCORE
 
     @classmethod
-    def evaluate(cls, user, threshold, instance=None):
+    def evaluate(
+        cls,
+        user: User,
+        threshold: int,
+        instance: Suchar | Vote | None = None,  # noqa: ARG003
+    ) -> bool:
         total_score = (
             Vote.objects.filter(suchar__author=user).aggregate(
                 score=Sum(
@@ -81,7 +116,12 @@ class NightOwlRule(AchievementRule):
     metric = Achievement.Metric.NIGHT_OWL
 
     @classmethod
-    def evaluate(cls, user, threshold, instance=None):
+    def evaluate(
+        cls,
+        user: User,
+        threshold: int,
+        instance: Suchar | Vote | None = None,
+    ) -> bool:
         if not (isinstance(instance, Suchar) and instance.author == user):
             return False
         hour = instance.created_at.astimezone(timezone.get_current_timezone()).hour
@@ -102,7 +142,12 @@ class PolarizerRule(AchievementRule):
     metric = Achievement.Metric.POLARIZER
 
     @classmethod
-    def evaluate(cls, user, threshold, instance=None):
+    def evaluate(
+        cls,
+        user: User,
+        threshold: int,
+        instance: Suchar | Vote | None = None,  # noqa: ARG003
+    ) -> bool:
         return (
             Suchar.objects.filter(author=user)
             .annotate(
@@ -118,7 +163,12 @@ class StreakLoginRule(AchievementRule):
     metric = Achievement.Metric.STREAK_LOGIN
 
     @classmethod
-    def evaluate(cls, user, threshold, instance=None):
+    def evaluate(
+        cls,
+        user: User,
+        threshold: int,
+        instance: Suchar | Vote | None = None,  # noqa: ARG003
+    ) -> bool:
         # .dates() truncates to day in the DB and returns distinct date objects,
         # avoiding loading every suchar datetime into Python memory.
         dates = set(
@@ -145,14 +195,18 @@ class AchievementEngine:
     _rules: dict[str, type[AchievementRule]] = {}
 
     @classmethod
-    def register_rules(cls):
+    def register_rules(cls) -> None:
         if not cls._rules:
             for rule_cls in AchievementRule.__subclasses__():
                 if rule_cls.metric:
                     cls._rules[rule_cls.metric] = rule_cls
 
     @staticmethod
-    def check_achievements(user, event_type, instance=None):
+    def check_achievements(
+        user: User,
+        event_type: Achievement.EventType,
+        instance: Suchar | Vote | None = None,
+    ) -> None:
         """
         Checks and awards achievements for a given user and event type.
         """

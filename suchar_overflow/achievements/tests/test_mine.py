@@ -1,6 +1,7 @@
 """Tests for the My Achievements view (/achievements/mine/)."""
 
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from django.urls import reverse
@@ -9,8 +10,15 @@ from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
 
+if TYPE_CHECKING:
+    from django.test import Client
 
-def make_achievement(slug, name="Achievement", tier=Achievement.Tier.NONE):
+
+def make_achievement(
+    slug: str,
+    name: str = "Achievement",
+    tier: Achievement.Tier = Achievement.Tier.NONE,
+) -> Achievement:
     ach, _ = Achievement.objects.get_or_create(
         slug=slug,
         defaults={
@@ -33,14 +41,14 @@ def make_achievement(slug, name="Achievement", tier=Achievement.Tier.NONE):
 
 
 @pytest.mark.django_db
-def test_mine_requires_login(client):
+def test_mine_requires_login(client: Client) -> None:
     response = client.get(reverse("achievements:mine"))
     assert response.status_code == HTTPStatus.FOUND
     assert "/accounts/login/" in response["Location"]
 
 
 @pytest.mark.django_db
-def test_inbox_redirects_to_mine(client):
+def test_inbox_redirects_to_mine(client: Client) -> None:
     user = make_user("redirect_user")
     client.force_login(user)
     response = client.get(reverse("achievements:inbox"))
@@ -49,7 +57,7 @@ def test_inbox_redirects_to_mine(client):
 
 
 @pytest.mark.django_db
-def test_mine_authenticated_returns_200(client):
+def test_mine_authenticated_returns_200(client: Client) -> None:
     user = make_user("alice")
     client.force_login(user)
     response = client.get(reverse("achievements:mine"))
@@ -62,7 +70,7 @@ def test_mine_authenticated_returns_200(client):
 
 
 @pytest.mark.django_db
-def test_mine_shows_users_achievements(client):
+def test_mine_shows_users_achievements(client: Client) -> None:
     user = make_user("alice")
     ach = make_achievement("first-suchar", "First Suchar")
     UserAchievement.objects.create(user=user, achievement=ach)
@@ -76,7 +84,7 @@ def test_mine_shows_users_achievements(client):
 
 
 @pytest.mark.django_db
-def test_mine_shows_tier_label(client):
+def test_mine_shows_tier_label(client: Client) -> None:
     user = make_user("alice")
     ach = make_achievement("gold-ach", "Gold Achievement", tier=Achievement.Tier.GOLD)
     UserAchievement.objects.create(user=user, achievement=ach)
@@ -88,7 +96,7 @@ def test_mine_shows_tier_label(client):
 
 
 @pytest.mark.django_db
-def test_mine_empty_for_user_without_achievements(client):
+def test_mine_empty_for_user_without_achievements(client: Client) -> None:
     user = make_user("alice")
     client.force_login(user)
     response = client.get(reverse("achievements:mine"))
@@ -97,7 +105,7 @@ def test_mine_empty_for_user_without_achievements(client):
 
 
 @pytest.mark.django_db
-def test_mine_does_not_show_other_users_achievements(client):
+def test_mine_does_not_show_other_users_achievements(client: Client) -> None:
     alice = make_user("alice")
     bob = make_user("bob")
     ach = make_achievement("first-vote")
@@ -110,7 +118,7 @@ def test_mine_does_not_show_other_users_achievements(client):
 
 
 @pytest.mark.django_db
-def test_mine_ordered_newest_first(client):
+def test_mine_ordered_newest_first(client: Client) -> None:
     user = make_user("alice")
     ach1 = make_achievement("ach-one", "First")
     ach2 = make_achievement("ach-two", "Second")
@@ -131,7 +139,7 @@ def test_mine_ordered_newest_first(client):
 
 
 @pytest.mark.django_db
-def test_mine_marks_unseen_achievements_as_seen(client):
+def test_mine_marks_unseen_achievements_as_seen(client: Client) -> None:
     user = make_user("alice")
     ach = make_achievement("unseen-ach", "Unseen Achievement")
     ua = UserAchievement.objects.create(user=user, achievement=ach, is_seen=False)
@@ -144,7 +152,7 @@ def test_mine_marks_unseen_achievements_as_seen(client):
 
 
 @pytest.mark.django_db
-def test_mine_leaves_already_seen_achievements_untouched(client):
+def test_mine_leaves_already_seen_achievements_untouched(client: Client) -> None:
     user = make_user("alice")
     ach = make_achievement("seen-ach", "Seen Achievement")
     ua = UserAchievement.objects.create(user=user, achievement=ach, is_seen=True)

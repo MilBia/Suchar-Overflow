@@ -1,4 +1,5 @@
 import datetime
+from typing import TYPE_CHECKING
 
 from asgiref.sync import sync_to_async
 from django.contrib import messages
@@ -27,11 +28,19 @@ from .models import EmailChangeRequest
 from .tasks import send_activation_email
 from .tasks import send_email_change_emails
 
+if TYPE_CHECKING:
+    import uuid
+    from typing import Any
+
+    from django import forms
+    from django.http import HttpRequest
+    from django.http import HttpResponse
+
 
 class UserDetailView(AsyncLoginRequiredMixin):
     template_name = "users/user_detail.html"
 
-    async def get(self, request, username, *args, **kwargs):
+    async def get(self, request: HttpRequest, username: str) -> HttpResponse:
         user = await sync_to_async(get_object_or_404)(User, username=username)
         if callable(getattr(request, "auser", None)):
             current_user = await request.auser()
@@ -41,8 +50,12 @@ class UserDetailView(AsyncLoginRequiredMixin):
         context["object"] = user
         return await sync_to_async(render)(request, self.template_name, context)
 
-    def _build_context(self, user, is_owner):
-        context = {}
+    def _build_context(
+        self,
+        user: User,
+        is_owner: bool,  # noqa: FBT001
+    ) -> dict[str, Any]:
+        context: dict[str, Any] = {}
 
         # 1. Latest Suchary
         context["latest_suchary"] = (
@@ -68,7 +81,9 @@ class UserDetailView(AsyncLoginRequiredMixin):
             dry_score=Count("votes", filter=Q(votes__is_dry=True)),
             total_count=Count("id", distinct=True),
         )
-        user.total_score = stats["total_score"] or 0
+        # Stashed on the instance (not a model field) purely to pass the total
+        # into the queryset filter below without a second aggregate query.
+        user.total_score = stats["total_score"] or 0  # type: ignore[attr-defined]
         context["total_funny_score"] = stats["funny_score"] or 0
         context["total_dry_score"] = stats["dry_score"] or 0
         context["suchar_count"] = stats["total_count"] or 0
@@ -78,7 +93,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
             User.objects.annotate(
                 score=Count("suchary__votes", filter=Q(suchary__votes__is_funny=True)),
             )
-            .filter(score__gt=user.total_score)
+            .filter(score__gt=user.total_score)  # type: ignore[attr-defined]
             .count()
         )
         context["global_rank"] = higher_ranking_users + 1
@@ -112,7 +127,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
         context["heatmap_weeks"] = self._get_heatmap_weeks(user)
         return context
 
-    def _get_heatmap_weeks(self, user):
+    def _get_heatmap_weeks(self, user: User) -> list[dict]:
         today = timezone.now().date()
         # Go back approx 1 year
         start_date = today - datetime.timedelta(days=365)
@@ -201,10 +216,10 @@ class UserUpdateView(AsyncLoginRequiredMixin):
     fields = ["name"]
     template_name = "users/user_form.html"
 
-    def _form_class(self):
+    def _form_class(self) -> type[forms.ModelForm]:
         return modelform_factory(self.model, fields=self.fields)
 
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         user = await request.auser()
         form = self._form_class()(instance=user)
         return await sync_to_async(render)(
@@ -213,8 +228,10 @@ class UserUpdateView(AsyncLoginRequiredMixin):
             {"form": form, "object": user},
         )
 
-    async def post(self, request, *args, **kwargs):
+    async def post(self, request: HttpRequest) -> HttpResponse:
         user = await request.auser()
+        # AsyncLoginRequiredMixin already rejects anonymous requests.
+        assert isinstance(user, User)
         form = self._form_class()(request.POST, instance=user)
         if not await sync_to_async(form.is_valid)():
             return await sync_to_async(render)(
@@ -231,7 +248,7 @@ user_update_view = UserUpdateView.as_view()
 
 
 class UserRedirectView(AsyncLoginRequiredMixin):
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         user = await request.auser()
         return redirect(
             reverse("users:detail", kwargs={"username": user.username}),
@@ -244,11 +261,11 @@ user_redirect_view = UserRedirectView.as_view()
 class SignupView(View):
     template_name = "registration/signup.html"
 
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         form = UserCreationForm()
         return await sync_to_async(render)(request, self.template_name, {"form": form})
 
-    async def post(self, request, *args, **kwargs):
+    async def post(self, request: HttpRequest) -> HttpResponse:
         form = UserCreationForm(request.POST)
         valid = await sync_to_async(form.is_valid)()
         if not valid:
@@ -278,7 +295,7 @@ signup_view = SignupView.as_view()
 
 
 class ActivateAccountView(View):
-    async def get(self, request, token):
+    async def get(self, request: HttpRequest, token: uuid.UUID) -> HttpResponse:
         try:
             activation = await ActivationToken.objects.select_related("user").aget(
                 token=token,
@@ -312,11 +329,11 @@ activate_view = ActivateAccountView.as_view()
 class EmailChangeInitiateView(AsyncLoginRequiredMixin):
     template_name = "users/email_change_form.html"
 
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         form = EmailChangeForm()
         return await sync_to_async(render)(request, self.template_name, {"form": form})
 
-    async def post(self, request, *args, **kwargs):
+    async def post(self, request: HttpRequest) -> HttpResponse:
         form = EmailChangeForm(request.POST)
         valid = await sync_to_async(form.is_valid)()
         if not valid:
@@ -327,6 +344,8 @@ class EmailChangeInitiateView(AsyncLoginRequiredMixin):
             )
 
         user = await request.auser()
+        # AsyncLoginRequiredMixin already rejects anonymous requests.
+        assert isinstance(user, User)
         new_email = form.cleaned_data["email"]
         old_email = user.email
 
@@ -363,7 +382,7 @@ email_change_initiate_view = EmailChangeInitiateView.as_view()
 
 
 class EmailChangeDoneView(AsyncLoginRequiredMixin):
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         return await sync_to_async(render)(request, "users/email_change_done.html")
 
 
@@ -384,7 +403,7 @@ async def _aget_email_change_request(
 
 
 class EmailChangeConfirmView(AsyncLoginRequiredMixin):
-    async def get(self, request, token):
+    async def get(self, request: HttpRequest, token: str) -> HttpResponse:
         email_request = await _aget_email_change_request(token, "verification_token")
         if email_request is None:
             return await sync_to_async(render)(
@@ -433,7 +452,7 @@ email_change_confirm_view = EmailChangeConfirmView.as_view()
 
 
 class EmailChangeRevokeView(AsyncLoginRequiredMixin):
-    async def get(self, request, token):
+    async def get(self, request: HttpRequest, token: str) -> HttpResponse:
         email_request = await _aget_email_change_request(token, "revocation_token")
         if email_request is None:
             return await sync_to_async(render)(

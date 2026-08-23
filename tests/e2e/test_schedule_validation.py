@@ -2,13 +2,19 @@
 
 from datetime import datetime
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from playwright.sync_api import Page
+    from pytest_django.live_server_helper import LiveServer
 
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_past_date_shows_error_message(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_past_date_shows_error_message(page: Page, live_server: LiveServer) -> None:
     """Past scheduled date shows the server-provided validation error on submit."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
@@ -44,7 +50,11 @@ def test_past_date_shows_error_message(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_future_date_passes_client_validation(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_future_date_passes_client_validation(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """A valid future date passes client-side validation and the form submits."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")

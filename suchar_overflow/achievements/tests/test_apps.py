@@ -14,25 +14,25 @@ from suchar_overflow.suchary.models import Vote
 User = get_user_model()
 
 
-def test_is_no_scheduler_command_detects_plain_management_command():
+def test_is_no_scheduler_command_detects_plain_management_command() -> None:
     assert AchievementsConfig._is_no_scheduler_command(  # noqa: SLF001
         ["manage.py", "migrate"],
     )
 
 
-def test_is_no_scheduler_command_detects_command_after_global_flags():
+def test_is_no_scheduler_command_detects_command_after_global_flags() -> None:
     assert AchievementsConfig._is_no_scheduler_command(  # noqa: SLF001
         ["manage.py", "--settings=config.settings.test", "migrate"],
     )
 
 
-def test_is_no_scheduler_command_false_for_runserver():
+def test_is_no_scheduler_command_false_for_runserver() -> None:
     assert not AchievementsConfig._is_no_scheduler_command(  # noqa: SLF001
         ["manage.py", "runserver"],
     )
 
 
-def test_is_no_scheduler_command_does_not_misfire_on_unrelated_argument():
+def test_is_no_scheduler_command_does_not_misfire_on_unrelated_argument() -> None:
     """A _NO_SCHEDULER word (e.g. "check") appearing as some other command's
     own argument, rather than as the command name itself, must not match."""
     assert not AchievementsConfig._is_no_scheduler_command(  # noqa: SLF001
@@ -46,7 +46,7 @@ def test_is_no_scheduler_command_does_not_misfire_on_unrelated_argument():
 
 
 @pytest.mark.django_db
-def test_catch_up_missed_monthly_run_calls_award_when_never_run():
+def test_catch_up_missed_monthly_run_calls_award_when_never_run() -> None:
     frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     with (
         patch("django.utils.timezone.now", return_value=frozen_now),
@@ -61,7 +61,7 @@ def test_catch_up_missed_monthly_run_calls_award_when_never_run():
 
 
 @pytest.mark.django_db
-def test_catch_up_missed_monthly_run_calls_award_when_run_is_stale():
+def test_catch_up_missed_monthly_run_calls_award_when_run_is_stale() -> None:
     frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     SchedulerRun.objects.create(
         job_id="award-best-suchar-month",
@@ -80,7 +80,7 @@ def test_catch_up_missed_monthly_run_calls_award_when_run_is_stale():
 
 
 @pytest.mark.django_db
-def test_catch_up_missed_monthly_run_skips_award_when_run_is_current():
+def test_catch_up_missed_monthly_run_skips_award_when_run_is_current() -> None:
     frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     SchedulerRun.objects.create(
         job_id="award-best-suchar-month",
@@ -96,9 +96,8 @@ def test_catch_up_missed_monthly_run_skips_award_when_run_is_current():
 
 
 @pytest.mark.django_db
-def test_catch_up_missed_monthly_run_awards_the_missed_period_not_current(
-    periodic_achievements,
-):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_catch_up_missed_monthly_run_awards_the_missed_period_not_current() -> None:
     """A restart on June 15 with May's fire missed must award May's best
     suchar, not evaluate the (incomplete) current month (see #169)."""
     frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
@@ -146,7 +145,7 @@ def test_catch_up_missed_monthly_run_awards_the_missed_period_not_current(
 
 
 @pytest.mark.django_db
-def test_catch_up_missed_yearly_run_calls_award_when_never_run():
+def test_catch_up_missed_yearly_run_calls_award_when_never_run() -> None:
     """Migration 0015 seeds a real "award-best-suchar-year" SchedulerRun row
     at test-db build time so a fresh deploy doesn't retroactively award the
     previous year; delete it here to exercise the true "never run" case."""
@@ -165,7 +164,7 @@ def test_catch_up_missed_yearly_run_calls_award_when_never_run():
 
 
 @pytest.mark.django_db
-def test_catch_up_missed_yearly_run_calls_award_when_run_is_stale():
+def test_catch_up_missed_yearly_run_calls_award_when_run_is_stale() -> None:
     frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     SchedulerRun.objects.update_or_create(
         job_id="award-best-suchar-year",
@@ -184,7 +183,7 @@ def test_catch_up_missed_yearly_run_calls_award_when_run_is_stale():
 
 
 @pytest.mark.django_db
-def test_catch_up_missed_yearly_run_skips_award_when_run_is_current():
+def test_catch_up_missed_yearly_run_skips_award_when_run_is_current() -> None:
     frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     SchedulerRun.objects.update_or_create(
         job_id="award-best-suchar-year",
@@ -200,9 +199,8 @@ def test_catch_up_missed_yearly_run_skips_award_when_run_is_current():
 
 
 @pytest.mark.django_db
-def test_catch_up_missed_yearly_run_awards_the_missed_period_not_current(
-    periodic_achievements,
-):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_catch_up_missed_yearly_run_awards_the_missed_period_not_current() -> None:
     """A restart in June 2024 with the 2023 fire missed must award 2023's
     best suchar, not evaluate the (incomplete) current year (see #168)."""
     SchedulerRun.objects.filter(job_id="award-best-suchar-year").delete()
@@ -270,7 +268,9 @@ def test_catch_up_missed_yearly_run_awards_the_missed_period_not_current(
 
 
 @pytest.mark.django_db
-def test_start_scheduler_starts_even_if_monthly_catch_up_raises(caplog):
+def test_start_scheduler_starts_even_if_monthly_catch_up_raises(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     with (
         patch(
             "suchar_overflow.achievements.apps.AchievementsConfig"
@@ -290,7 +290,9 @@ def test_start_scheduler_starts_even_if_monthly_catch_up_raises(caplog):
 
 
 @pytest.mark.django_db
-def test_start_scheduler_starts_even_if_yearly_catch_up_raises(caplog):
+def test_start_scheduler_starts_even_if_yearly_catch_up_raises(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     with (
         patch(
             "suchar_overflow.achievements.apps.AchievementsConfig"
@@ -310,7 +312,7 @@ def test_start_scheduler_starts_even_if_yearly_catch_up_raises(caplog):
 
 
 @pytest.mark.django_db
-def test_start_scheduler_registers_month_and_year_jobs():
+def test_start_scheduler_registers_month_and_year_jobs() -> None:
     with (
         patch(
             "suchar_overflow.achievements.apps.AchievementsConfig"

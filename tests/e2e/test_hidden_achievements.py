@@ -11,6 +11,7 @@ Strategy per achievement:
 """
 
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -19,6 +20,13 @@ from django.utils import timezone
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.suchary.models import Suchar
+
+if TYPE_CHECKING:
+    from playwright.sync_api import Page
+    from pytest_django.live_server_helper import LiveServer
+
+    from suchar_overflow.suchary.models import Suchar as SucharModel
+    from suchar_overflow.users.models import User as UserModel
 
 User = get_user_model()
 
@@ -63,7 +71,7 @@ _DIRECT_AWARD_JS = """
 """
 
 
-def _wait_for_award(page, slug, timeout=12_000):
+def _wait_for_award(page: Page, slug: str, timeout: int = 12_000) -> None:
     """Poll the frontend-owned endpoint until *slug* appears, or raise on timeout."""
     page.wait_for_function(
         _POLL_JS.format(slug=slug),
@@ -87,7 +95,7 @@ _FRONTEND_ACHIEVEMENT_DEFS = [
 
 
 @pytest.fixture
-def frontend_achievements(db):
+def frontend_achievements(db: None) -> list[Achievement]:  # noqa: ARG001
     """Ensure all 5 hidden frontend achievements exist in the test DB.
 
     transaction=True tests truncate tables between runs, wiping the data
@@ -113,7 +121,7 @@ def frontend_achievements(db):
 
 
 @pytest.fixture
-def other_user(db):
+def other_user(db: None) -> UserModel:  # noqa: ARG001
     """A second user who authors suchars so the test user can vote on them."""
     return User.objects.create_user(
         username="other_e2e_user",
@@ -123,7 +131,7 @@ def other_user(db):
 
 
 @pytest.fixture
-def suchar_by_other(db, other_user):
+def suchar_by_other(db: None, other_user: UserModel) -> SucharModel:  # noqa: ARG001
     """One published suchar authored by *other_user*."""
     return Suchar.objects.create(
         text="Dlaczego programiści nie lubią lasu? Bo drzewa mają za dużo gałęzi.",
@@ -140,13 +148,12 @@ def suchar_by_other(db, other_user):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login", "frontend_achievements")
 def test_odkrywca_achievement_awarded_after_five_visits(
-    page,
-    live_server,
-    login,
-    e2e_user,
-    frontend_achievements,
-):
+    page: Page,
+    live_server: LiveServer,
+    e2e_user: UserModel,
+) -> None:
     """Visiting /achievements/ 5 times earns the Odkrywca achievement."""
     # Navigate once so localStorage is available for the right origin.
     page.goto(f"{live_server.url}/achievements/")
@@ -175,14 +182,12 @@ def test_odkrywca_achievement_awarded_after_five_visits(
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_zbieracz_sucharow_awarded_after_five_list_visits(  # noqa: PLR0913, PLR0917
-    page,
-    live_server,
-    login,
-    e2e_user,
-    suchar_by_other,
-    frontend_achievements,
-):
+@pytest.mark.usefixtures("login", "suchar_by_other", "frontend_achievements")
+def test_zbieracz_sucharow_awarded_after_five_list_visits(
+    page: Page,
+    live_server: LiveServer,
+    e2e_user: UserModel,
+) -> None:
     """Browsing /suchary/ 5 times without voting earns Zbieracz Sucharów."""
     # Navigate once so sessionStorage is available for the right origin.
     page.goto(f"{live_server.url}/suchary/")
@@ -210,13 +215,12 @@ def test_zbieracz_sucharow_awarded_after_five_list_visits(  # noqa: PLR0913, PLR
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login", "frontend_achievements")
 def test_niecierpliwy_awarded_after_three_short_submissions(
-    page,
-    live_server,
-    login,
-    e2e_user,
-    frontend_achievements,
-):
+    page: Page,
+    live_server: LiveServer,
+    e2e_user: UserModel,
+) -> None:
     """Submitting the suchar form with <10 chars 3 times earns Niecierpliwy."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
@@ -249,14 +253,13 @@ def test_niecierpliwy_awarded_after_three_short_submissions(
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_stluczona_mysz_awarded_after_five_clicks_on_same_button(  # noqa: PLR0913, PLR0917
-    page,
-    live_server,
-    login,
-    e2e_user,
-    suchar_by_other,
-    frontend_achievements,
-):
+@pytest.mark.usefixtures("login", "frontend_achievements")
+def test_stluczona_mysz_awarded_after_five_clicks_on_same_button(
+    page: Page,
+    live_server: LiveServer,
+    e2e_user: UserModel,
+    suchar_by_other: SucharModel,
+) -> None:
     """Clicking a vote button on the same suchar 5 times earns Stłuczona Mysz."""
     page.goto(f"{live_server.url}/suchary/")
     page.wait_for_load_state("networkidle")
@@ -293,13 +296,12 @@ def test_stluczona_mysz_awarded_after_five_clicks_on_same_button(  # noqa: PLR09
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login", "frontend_achievements")
 def test_recenzent_totalny_awarded_via_direct_api_post(
-    page,
-    live_server,
-    login,
-    e2e_user,
-    frontend_achievements,
-):
+    page: Page,
+    live_server: LiveServer,
+    e2e_user: UserModel,
+) -> None:
     """Posting recenzent-totalny from an authenticated browser creates the DB award."""
     # Navigate to any page to establish CSRF cookie in the browser.
     page.goto(f"{live_server.url}/suchary/")

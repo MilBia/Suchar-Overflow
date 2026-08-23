@@ -2,6 +2,7 @@
 
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 from typing import Any
 
 import httpx
@@ -9,6 +10,9 @@ import polib
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from openai import OpenAI
+
+if TYPE_CHECKING:
+    from argparse import ArgumentParser
 
 LANGUAGE_NAMES: dict[str, str] = {
     "ar": "Arabic",
@@ -282,7 +286,7 @@ def _has_format_specifier_corruption(msgid: str, response: str) -> bool:
 class Command(BaseCommand):
     help = "Fill empty .po translation strings using a local OpenAI-compatible AI model"
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
             "--url",
             type=str,
@@ -333,7 +337,11 @@ class Command(BaseCommand):
             help="API key for the endpoint (default: 'nokey' for local models).",
         )
 
-    def handle(self, *args, **options):
+    def handle(
+        self,
+        *args: object,  # noqa: ARG002
+        **options: Any,  # noqa: ANN401
+    ) -> None:
         locale_dir = self._resolve_locale_dir(options["locale_dir"])
         if locale_dir is None:
             return

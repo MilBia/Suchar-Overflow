@@ -17,7 +17,8 @@ User = get_user_model()
 
 
 @pytest.mark.django_db
-def test_award_periodic_month(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_periodic_month() -> None:
     winner = User.objects.create_user(
         username="winner",
         email="winner@example.com",
@@ -65,7 +66,8 @@ def test_award_periodic_month(periodic_achievements):
 
 
 @pytest.mark.django_db
-def test_award_periodic_year(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_periodic_year() -> None:
     winner = User.objects.create_user(
         username="year_winner",
         email="year_winner@example.com",
@@ -92,14 +94,16 @@ def test_award_periodic_year(periodic_achievements):
 
 
 @pytest.mark.django_db
-def test_award_periodic_month_no_suchars_does_not_crash(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_periodic_month_no_suchars_does_not_crash() -> None:
     """Running the command on an empty period should exit gracefully."""
     call_command("award_periodic", period="month", date=last_month_end())
     assert UserAchievement.objects.count() == 0
 
 
 @pytest.mark.django_db
-def test_award_periodic_month_tie_awards_all_tied_authors(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_periodic_month_tie_awards_all_tied_authors() -> None:
     """When different authors tie for the top vote count, every one of them
     gets the main achievement plus the hidden tie achievement (#171)."""
     author_a = User.objects.create_user(
@@ -138,8 +142,9 @@ def test_award_periodic_month_tie_awards_all_tied_authors(periodic_achievements)
 
 
 @pytest.mark.django_db
-def test_award_periodic_month_missing_main_achievement_reports_error_even_with_tie(
-    periodic_achievements,
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_periodic_month_missing_main_achievement_reports_error_even_with_tie() -> (  # noqa: E501
+    None
 ):
     """If the main best-suchar-month Achievement row is missing but the
     hidden tie achievement exists, the command must still report the
@@ -179,7 +184,8 @@ def test_award_periodic_month_missing_main_achievement_reports_error_even_with_t
 
 
 @pytest.mark.django_db
-def test_award_periodic_month_winner_is_highest_vote_getter(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_periodic_month_winner_is_highest_vote_getter() -> None:
     """When multiple authors post in the same period, the one with more votes wins."""
     authors = [
         User.objects.create_user(

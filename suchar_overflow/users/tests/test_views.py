@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from asgiref.sync import sync_to_async
@@ -11,10 +12,13 @@ from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 from suchar_overflow.users.tests.factories import UserFactory
 
+if TYPE_CHECKING:
+    from django.test import AsyncClient
+
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_user_update_get(async_client):
+async def test_user_update_get(async_client: AsyncClient) -> None:
     user = await sync_to_async(UserFactory.create)()
     await async_client.aforce_login(user)
     response = await async_client.get(reverse("users:update"))
@@ -23,19 +27,21 @@ async def test_user_update_get(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_user_update_post_redirects_to_profile(async_client):
+async def test_user_update_post_redirects_to_profile(async_client: AsyncClient) -> None:
     user = await sync_to_async(UserFactory.create)()
     await async_client.aforce_login(user)
     response = await async_client.post(reverse("users:update"), {"name": "New Name"})
     assert response.status_code == HTTPStatus.FOUND
-    assert response.url == f"/users/{user.username}/"
+    # django-stubs' ASGI test-client response stub doesn't declare `.url`,
+    # even though Django's HttpResponseRedirectBase sets it at runtime.
+    assert response.url == f"/users/{user.username}/"  # type: ignore[attr-defined]
     messages = list(get_messages(response.asgi_request))
     assert [str(m) for m in messages] == [gettext("Profile updated.")]
 
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_user_detail_authenticated(async_client):
+async def test_user_detail_authenticated(async_client: AsyncClient) -> None:
     target = await sync_to_async(UserFactory.create)()
     viewer = await sync_to_async(UserFactory.create)()
     await async_client.aforce_login(viewer)
@@ -47,19 +53,20 @@ async def test_user_detail_authenticated(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_user_detail_not_authenticated(async_client):
+async def test_user_detail_not_authenticated(async_client: AsyncClient) -> None:
     target = await sync_to_async(UserFactory.create)()
     response = await async_client.get(
         reverse("users:detail", kwargs={"username": target.username}),
     )
     login_url = reverse(settings.LOGIN_URL)
     assert response.status_code == HTTPStatus.FOUND
-    assert response.url.startswith(login_url)
+    # See the `.url` type:ignore comment in test_user_update_post_redirects_to_profile.
+    assert response.url.startswith(login_url)  # type: ignore[attr-defined]
 
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_user_detail_stats_calculation(async_client):
+async def test_user_detail_stats_calculation(async_client: AsyncClient) -> None:
     user = await sync_to_async(UserFactory.create)()
     s1 = await Suchar.objects.acreate(text="Joke 1", author=user)
     await Vote.objects.acreate(suchar=s1, user=user, is_funny=True)

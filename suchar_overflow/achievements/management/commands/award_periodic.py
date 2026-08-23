@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -8,11 +9,15 @@ from suchar_overflow.achievements.tasks import award_winners
 from suchar_overflow.achievements.tasks import compute_period_range
 from suchar_overflow.achievements.tasks import find_best_suchary
 
+if TYPE_CHECKING:
+    from argparse import ArgumentParser
+    from typing import Any
+
 
 class Command(BaseCommand):
     help = "Awards periodic achievements (Best of Month, Best of Year)"
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
             "--period",
             type=str,
@@ -26,7 +31,11 @@ class Command(BaseCommand):
             help="Reference date (YYYY-MM-DD). Defaults to yesterday.",
         )
 
-    def handle(self, *args, **options):
+    def handle(
+        self,
+        *args: object,  # noqa: ARG002
+        **options: Any,  # noqa: ANN401
+    ) -> None:
         period = options["period"]
         date_str = options.get("date")
 

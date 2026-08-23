@@ -1,6 +1,12 @@
 """E2E tests for the suchar form's live UI behaviors (suchar_form.js)."""
 
+from typing import TYPE_CHECKING
+
 import pytest
+
+if TYPE_CHECKING:
+    from playwright.sync_api import Page
+    from pytest_django.live_server_helper import LiveServer
 
 # ---------------------------------------------------------------------------
 # Live text preview
@@ -9,7 +15,11 @@ import pytest
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_text_preview_updates_as_user_types(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_text_preview_updates_as_user_types(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Typing in #id_text updates #previewText in real time."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
@@ -26,7 +36,11 @@ def test_text_preview_updates_as_user_types(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_text_preview_shows_placeholder_when_cleared(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_text_preview_shows_placeholder_when_cleared(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Clearing the textarea restores the Polish placeholder text in #previewText."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
@@ -52,7 +66,11 @@ def test_text_preview_shows_placeholder_when_cleared(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_tags_preview_creates_badges_for_each_tag(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_tags_preview_creates_badges_for_each_tag(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Typing comma-separated tags in #id_tags_input creates badge elements."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
@@ -70,7 +88,11 @@ def test_tags_preview_creates_badges_for_each_tag(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_tags_preview_clears_when_input_is_emptied(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_tags_preview_clears_when_input_is_emptied(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Clearing the tags input removes all badges from the preview."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
@@ -92,7 +114,11 @@ def test_tags_preview_clears_when_input_is_emptied(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_schedule_checkbox_shows_date_container(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_schedule_checkbox_shows_date_container(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Checking #scheduleCheck removes .d-none from #scheduleContainer."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
@@ -108,7 +134,11 @@ def test_schedule_checkbox_shows_date_container(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_schedule_checkbox_hides_date_container(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_schedule_checkbox_hides_date_container(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """Unchecking #scheduleCheck adds .d-none back to #scheduleContainer."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
@@ -130,7 +160,11 @@ def test_schedule_checkbox_hides_date_container(page, live_server, login):
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
-def test_schedule_error_clears_when_date_input_is_changed(page, live_server, login):
+@pytest.mark.usefixtures("login")
+def test_schedule_error_clears_when_date_input_is_changed(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
     """After a past-date validation error, editing the input hides #dateError."""
     page.goto(f"{live_server.url}/suchary/add/")
     page.wait_for_load_state("networkidle")
