@@ -83,7 +83,11 @@ Always run a second time after auto-fixes to confirm all hooks pass.
   migrations (e.g. "First Suchar", "Królowa/Król Sucharów"). Tests that create
   `Suchar` or `Vote` objects will trigger the achievement engine and award these.
   When asserting `UserAchievement` state, always filter by the specific achievement
-  being tested, never assert on all `UserAchievement` for a user.
+  being tested, never assert on all `UserAchievement` for a user. Similarly, a
+  `SchedulerRun(job_id="award-best-suchar-year")` row is baseline data seeded by
+  migration `0015_seed_yearly_scheduler_run` (see Background scheduling below) —
+  tests exercising `_catch_up_missed_yearly_run` must delete or `update_or_create`
+  it first rather than assuming no marker exists.
 - **Streaming responses**: the only streaming endpoint is the SSE stream, whose
   generator never completes. Do **not** use `b"".join(response.streaming_content)`
   — it hangs. Use `async for chunk in response.streaming_content` + `break`
@@ -168,28 +172,48 @@ Django-RQ has been removed entirely. `AchievementsConfig.ready()`
 (`suchar_overflow/achievements/apps.py`) starts an in-process `BackgroundScheduler`
 (raw `apscheduler` 3.x, default in-memory jobstore — `django-apscheduler` was dropped,
 see issue #159: semi-abandoned, no declared Django 6.x support) on a plain thread,
-scheduling `award_best_suchar` as a monthly cron job. The scheduler is skipped under
-pytest and for management commands in `_NO_SCHEDULER` (`migrate`, `makemigrations`,
-`collectstatic`, `compress`, `check`, `shell`, `createsuperuser`) to avoid starting
-duplicate/unwanted schedulers. Since the jobstore is in-memory (no DB persistence
-across restarts), `award_best_suchar` records its own last-run marker in the
-`SchedulerRun` model (`achievements/models.py`), visible read-only in the admin.
+scheduling `award_best_suchar` as two cron jobs: `award-best-suchar-month` (day=1,
+00:05 UTC) and `award-best-suchar-year` (month=1, day=1, 00:05 UTC — see #168). The
+scheduler is skipped under pytest and for management commands in `_NO_SCHEDULER`
+(`migrate`, `makemigrations`, `collectstatic`, `compress`, `check`, `shell`,
+`createsuperuser`) to avoid starting duplicate/unwanted schedulers. Since the
+jobstore is in-memory (no DB persistence across restarts), `award_best_suchar`
+records its own last-run marker in the `SchedulerRun` model
+(`achievements/models.py`), visible read-only in the admin — one row per job id.
 
 Because the jobstore only knows about *future* fire times, a process restart alone
 does not catch up a cron fire that was due while the process was down (see #169).
-`AchievementsConfig._catch_up_missed_monthly_run()` covers this: on every scheduler
-start it compares `SchedulerRun.ran_at` for `award-best-suchar-month` against the
-most recent due fire time (`due_monthly_run_at()` in `achievements/tasks.py`, day=1
-00:05 UTC) and, if that fire was never recorded, calls `award_best_suchar("month",
-reference_date=...)` synchronously before `scheduler.start()` — `reference_date` is
-the missed fire's own date, not "yesterday" relative to whatever day the process
-happens to restart (`award_best_suchar` defaults `reference_date` to yesterday only
-when the caller omits it, which is what the normal cron path does). Idempotent —
-`award_best_suchar` itself updates `SchedulerRun.ran_at`, so later restarts within
-the same period don't re-trigger it. Only the single most recent missed period is
-caught up — a gap spanning multiple months (e.g. down from April through mid-June)
-still permanently loses April; a brand-new deployment with no `SchedulerRun` row yet
-also triggers one harmless catch-up run for the previous complete month.
+`AchievementsConfig._catch_up_missed_monthly_run()` and
+`_catch_up_missed_yearly_run()` cover this, one per job: on every scheduler start
+each compares `SchedulerRun.ran_at` for its job id against the most recent due fire
+time (`due_monthly_run_at()` / `due_yearly_run_at()` in `achievements/tasks.py`) and,
+if that fire was never recorded, calls `award_best_suchar(period, reference_date=...)`
+synchronously before `scheduler.start()` — `reference_date` is the missed fire's own
+date, not "yesterday" relative to whatever day the process happens to restart
+(`award_best_suchar` defaults `reference_date` to yesterday only when the caller
+omits it, which is what the normal cron path does). Each catch-up runs in its own
+`try/except` in `_start_scheduler` so a failure in one (e.g. a transient DB error)
+never blocks the other catch-up or the recurring jobs from being registered.
+Idempotent — `award_best_suchar` itself updates `SchedulerRun.ran_at`, so later
+restarts within the same period don't re-trigger it. Only the single most recent
+missed period is caught up per job — a gap spanning multiple months/years still
+permanently loses the older ones; a brand-new deployment with no `SchedulerRun` row
+yet also triggers one harmless catch-up run for the previous complete month.
+
+The yearly job doesn't get that same free pass: unlike the monthly job (which was
+already live before catch-up existed), the yearly job and its catch-up shipped
+together (#168), and `award_periodic` — the pre-existing manual command — never
+wrote a `SchedulerRun` marker (it calls `award_winners` directly, not
+`award_best_suchar`). Without a marker, the first deploy's catch-up would
+retroactively award the entire previous calendar year to whoever led it, the moment
+the process started. Migration `0015_seed_yearly_scheduler_run` seeds a
+`SchedulerRun(job_id="award-best-suchar-year")` row at migrate time specifically to
+suppress that one-time retroactive award — the first *real* automatic yearly award
+lands at the next actual Jan 1 cron fire. This seeded row is baseline data present
+in every test (like the migration-seeded `Achievement` rows — see Test patterns
+below), which is why several `achievements/tests/test_apps.py` /
+`achievements/tests/test_models.py` tests delete or `update_or_create` it before
+asserting on `SchedulerRun` state.
 
 ### Content Security Policy
 

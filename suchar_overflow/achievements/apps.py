@@ -90,13 +90,42 @@ class AchievementsConfig(AppConfig):
             award_best_suchar("month", reference_date=due_at.date() - timedelta(days=1))
 
     @staticmethod
+    def _catch_up_missed_yearly_run():
+        """Run ``award_best_suchar`` immediately if the last due yearly cron
+        fire was never recorded — the yearly counterpart of
+        ``_catch_up_missed_monthly_run`` (see #169, extended in #168).
+        """
+        from datetime import timedelta
+
+        from django.utils import timezone
+
+        from suchar_overflow.achievements.models import SchedulerRun
+        from suchar_overflow.achievements.tasks import award_best_suchar
+        from suchar_overflow.achievements.tasks import due_yearly_run_at
+
+        job_id = "award-best-suchar-year"
+        last_run = (
+            SchedulerRun.objects.filter(job_id=job_id)
+            .values_list("ran_at", flat=True)
+            .first()
+        )
+        due_at = due_yearly_run_at(timezone.now(), last_run)
+        if due_at is not None:
+            logger.info(
+                "Missed scheduler run detected for %s; catching up now",
+                job_id,
+            )
+            award_best_suchar("year", reference_date=due_at.date() - timedelta(days=1))
+
+    @staticmethod
     def _start_scheduler():
         from apscheduler.schedulers.background import BackgroundScheduler
 
         from suchar_overflow.achievements.tasks import award_best_suchar
 
-        # A transient failure here (e.g. a DB hiccup during startup) must not
-        # prevent the recurring job below from being registered.
+        # A transient failure in either catch-up (e.g. a DB hiccup during
+        # startup) must not prevent the other catch-up or the recurring jobs
+        # below from being registered.
         try:
             AchievementsConfig._catch_up_missed_monthly_run()
         except Exception:
@@ -104,12 +133,19 @@ class AchievementsConfig(AppConfig):
                 "Failed to catch up missed monthly scheduler run; "
                 "continuing to start the scheduler",
             )
+        try:
+            AchievementsConfig._catch_up_missed_yearly_run()
+        except Exception:
+            logger.exception(
+                "Failed to catch up missed yearly scheduler run; "
+                "continuing to start the scheduler",
+            )
 
-        # In-memory jobstore (apscheduler's default): the job re-registers on
-        # every process start, so it doesn't need DB-backed persistence.
+        # In-memory jobstore (apscheduler's default): jobs re-register on
+        # every process start, so they don't need DB-backed persistence.
         # See SchedulerRun (achievements/models.py) for last-run visibility.
-        # _catch_up_missed_monthly_run() above covers a run missed while the
-        # process was down.
+        # The _catch_up_missed_*_run() calls above cover a run missed while
+        # the process was down.
         scheduler = BackgroundScheduler(timezone="UTC")
         scheduler.add_job(
             award_best_suchar,
@@ -119,5 +155,15 @@ class AchievementsConfig(AppConfig):
             hour=0,
             minute=5,
             id="award-best-suchar-month",
+        )
+        scheduler.add_job(
+            award_best_suchar,
+            "cron",
+            args=["year"],
+            month=1,
+            day=1,
+            hour=0,
+            minute=5,
+            id="award-best-suchar-year",
         )
         scheduler.start()
