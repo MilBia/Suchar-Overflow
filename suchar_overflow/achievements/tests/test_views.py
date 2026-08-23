@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from asgiref.sync import sync_to_async
@@ -9,17 +10,20 @@ from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
 
+if TYPE_CHECKING:
+    from django.test import AsyncClient
+
 ACHIEVEMENT_LIST_URL = "achievements:list"
 
 
 def make_achievement(
-    slug,
-    name="Achievement",
+    slug: str,
+    name: str = "Achievement",
     *,
-    is_secret=False,
-    theme="",
-    tier=Achievement.Tier.NONE,
-):
+    is_secret: bool = False,
+    theme: str = "",
+    tier: Achievement.Tier = Achievement.Tier.NONE,
+) -> Achievement:
     return Achievement.objects.create(
         slug=slug,
         name=name,
@@ -37,7 +41,7 @@ def make_achievement(
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_achievement_list_requires_login(async_client):
+async def test_achievement_list_requires_login(async_client: AsyncClient) -> None:
     response = await async_client.get(reverse(ACHIEVEMENT_LIST_URL))
     assert response.status_code == HTTPStatus.FOUND
     assert "/accounts/login/" in response["Location"]
@@ -45,7 +49,9 @@ async def test_achievement_list_requires_login(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_achievement_list_renders_for_authenticated_user(async_client):
+async def test_achievement_list_renders_for_authenticated_user(
+    async_client: AsyncClient,
+) -> None:
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)
     response = await async_client.get(reverse(ACHIEVEMENT_LIST_URL))
@@ -54,7 +60,9 @@ async def test_achievement_list_renders_for_authenticated_user(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_achievement_list_shows_all_non_grouped_achievements(async_client):
+async def test_achievement_list_shows_all_non_grouped_achievements(
+    async_client: AsyncClient,
+) -> None:
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)
     await sync_to_async(make_achievement)("ach-1", name="Achievement One")
@@ -69,7 +77,7 @@ async def test_achievement_list_shows_all_non_grouped_achievements(async_client)
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_achievement_list_shows_tier_labels(async_client):
+async def test_achievement_list_shows_tier_labels(async_client: AsyncClient) -> None:
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)
     await sync_to_async(make_achievement)(
@@ -91,7 +99,7 @@ async def test_achievement_list_shows_tier_labels(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_user_achievements_set_in_context(async_client):
+async def test_user_achievements_set_in_context(async_client: AsyncClient) -> None:
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)
     ach = await sync_to_async(make_achievement)("ach-1")
@@ -103,7 +111,9 @@ async def test_user_achievements_set_in_context(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_unearned_achievement_not_in_user_achievements(async_client):
+async def test_unearned_achievement_not_in_user_achievements(
+    async_client: AsyncClient,
+) -> None:
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)
     ach = await sync_to_async(make_achievement)("ach-1")
@@ -114,7 +124,9 @@ async def test_unearned_achievement_not_in_user_achievements(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_series_first_locked_achievement_is_visible(async_client):
+async def test_series_first_locked_achievement_is_visible(
+    async_client: AsyncClient,
+) -> None:
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)
 
@@ -138,7 +150,9 @@ async def test_series_first_locked_achievement_is_visible(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_series_locked_second_tier_hidden_until_first_earned(async_client):
+async def test_series_locked_second_tier_hidden_until_first_earned(
+    async_client: AsyncClient,
+) -> None:
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)
 
@@ -162,7 +176,9 @@ async def test_series_locked_second_tier_hidden_until_first_earned(async_client)
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_series_second_tier_visible_after_first_earned(async_client):
+async def test_series_second_tier_visible_after_first_earned(
+    async_client: AsyncClient,
+) -> None:
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)
 
@@ -187,7 +203,9 @@ async def test_series_second_tier_visible_after_first_earned(async_client):
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
-async def test_achievement_list_user_has_no_earned_achievements(async_client):
+async def test_achievement_list_user_has_no_earned_achievements(
+    async_client: AsyncClient,
+) -> None:
     user = await sync_to_async(make_user)("user1")
     await async_client.aforce_login(user)
     response = await async_client.get(reverse(ACHIEVEMENT_LIST_URL))

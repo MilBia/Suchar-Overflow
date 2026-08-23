@@ -53,7 +53,7 @@ class ActivationToken(models.Model):
         verbose_name = _("Activation Token")
         verbose_name_plural = _("Activation Tokens")
 
-    def __str__(self):
+    def __str__(self) -> str:
         user_name = (
             self.user.username
             if "user" in self._state.fields_cache
@@ -61,7 +61,7 @@ class ActivationToken(models.Model):
         )
         return f"ActivationToken({user_name})"
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return timezone.now() < self.created_at + datetime.timedelta(
             hours=self.EXPIRY_HOURS,
         )
@@ -93,7 +93,7 @@ class EmailChangeRequest(models.Model):
         verbose_name = _("Email Change Request")
         verbose_name_plural = _("Email Change Requests")
 
-    def __str__(self):
+    def __str__(self) -> str:
         user_name = (
             self.user.username
             if "user" in self._state.fields_cache

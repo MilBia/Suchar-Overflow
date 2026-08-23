@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 from django.db.models import Count
@@ -8,6 +10,10 @@ from .forms import UserAdminCreationForm
 from .models import EmailChangeRequest
 from .models import User
 
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+    from django.http import HttpRequest
+
 
 class EmailChangeRequestInline(admin.TabularInline):
     model = EmailChangeRequest
@@ -15,7 +21,11 @@ class EmailChangeRequestInline(admin.TabularInline):
     readonly_fields = ["old_email", "new_email", "status", "created_at"]
     can_delete = False
 
-    def has_add_permission(self, request, obj=None):
+    def has_add_permission(
+        self,
+        _request: HttpRequest,
+        _obj: EmailChangeRequest | None = None,
+    ) -> bool:
         return False
 
 
@@ -60,10 +70,10 @@ class UserAdmin(auth_admin.UserAdmin):
     search_fields = ["name", "username", "email"]
     inlines = [EmailChangeRequestInline]
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest) -> QuerySet[User]:
         queryset = super().get_queryset(request)
         return queryset.annotate(_suchar_count=Count("suchary"))
 
     @admin.display(description=_("Jokes"), ordering="_suchar_count")
-    def suchar_count(self, obj):
-        return obj._suchar_count  # noqa: SLF001
+    def suchar_count(self, obj: User) -> int:
+        return obj._suchar_count  # type: ignore[attr-defined] # noqa: SLF001

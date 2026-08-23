@@ -1,6 +1,8 @@
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from typing import TYPE_CHECKING
+from typing import Any
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
@@ -16,13 +18,22 @@ from django.views import View
 
 from suchar_overflow.suchary.models import Suchar
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+    from datetime import date
+
+    from django.http import HttpRequest
+    from django.http import HttpResponse
+
+    from suchar_overflow.users.models import User as UserModel
+
 User = get_user_model()
 
 LEADERBOARD_CACHE_KEY = "leaderboard:context"
 LEADERBOARD_CACHE_TTL = 60 * 5
 
 
-def _fetch_daily_counts_map(start_date, end_date):
+def _fetch_daily_counts_map(start_date: date, end_date: date) -> dict[date, int]:
     # Raw datetime bounds (not created_at__date__gte/lte): the __date lookup
     # wraps the column in DATE(...), which can't use a plain B-tree index on
     # created_at. A half-open [start, end) range on the bare column can.
@@ -39,21 +50,26 @@ def _fetch_daily_counts_map(start_date, end_date):
         .values("date")
         .annotate(count=Count("id"))
     )
-    counts_map = {}
+    counts_map: dict[date, int] = {}
     for entry in db_data:
         d = entry["date"].date() if hasattr(entry["date"], "date") else entry["date"]
         counts_map[d] = entry["count"]
     return counts_map
 
 
-def get_daily_activity_data(start_of_today, now, days, counts_map=None):
+def get_daily_activity_data(
+    start_of_today: datetime,
+    now: datetime,
+    days: int,
+    counts_map: dict[date, int] | None = None,
+) -> dict[str, list]:
     start_date = (start_of_today - timedelta(days=days)).date()
     end_date = now.date()
     if counts_map is None:
         counts_map = _fetch_daily_counts_map(start_date, end_date)
 
-    labels = []
-    values = []
+    labels: list[str] = []
+    values: list[int] = []
     curr = start_date
     last_month = None
     last_year = None
@@ -81,13 +97,16 @@ def get_daily_activity_data(start_of_today, now, days, counts_map=None):
     return {"labels": labels, "values": values}
 
 
-def get_all_time_activity_data(start_of_today, now):
+def get_all_time_activity_data(
+    start_of_today: datetime,
+    now: datetime,
+) -> dict[str, list]:
     db_data = (
         Suchar.objects.annotate(month=TruncMonth("created_at"))
         .values("month")
         .annotate(count=Count("id"))
     )
-    counts_map = {}
+    counts_map: dict[date, int] = {}
     for entry in db_data:
         m = entry["month"].date() if hasattr(entry["month"], "date") else entry["month"]
         m_start = m.replace(day=1)
@@ -98,8 +117,8 @@ def get_all_time_activity_data(start_of_today, now):
     start_date = min(start_date, twelve_months_ago)
     end_date = now.date().replace(day=1)
 
-    labels = []
-    values = []
+    labels: list[str] = []
+    values: list[int] = []
     curr = start_date
     last_year = None
     first = True
@@ -126,7 +145,11 @@ def get_all_time_activity_data(start_of_today, now):
     return {"labels": labels, "values": values}
 
 
-def _top_n_from_iterable(items, order_field, limit=10):
+def _top_n_from_iterable(
+    items: Sequence[Suchar | UserModel],
+    order_field: str,
+    limit: int = 10,
+) -> list[Suchar | UserModel]:
     """Drop zero scores and return the top `limit` by `order_field` desc.
 
     Ties break by ascending pk — deterministic regardless of the order the
@@ -141,18 +164,21 @@ def _top_n_from_iterable(items, order_field, limit=10):
 class LeaderboardView(View):
     template_name = "stats/leaderboard.html"
 
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         context = await sync_to_async(self._get_cached_context)()
         return await sync_to_async(render)(request, self.template_name, context)
 
-    def _get_cached_context(self):
-        return cache.get_or_set(
+    def _get_cached_context(self) -> dict[str, Any]:
+        context = cache.get_or_set(
             LEADERBOARD_CACHE_KEY,
             self._build_context,
             LEADERBOARD_CACHE_TTL,
         )
+        # _build_context (the default factory passed above) never returns None.
+        assert context is not None
+        return context
 
-    def _build_context(self):
+    def _build_context(self) -> dict[str, Any]:
         now = timezone.now()
         start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 

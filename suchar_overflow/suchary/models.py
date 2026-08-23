@@ -8,7 +8,7 @@ class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=50, unique=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -27,7 +27,7 @@ class Suchar(models.Model):
     )
     tags = models.ManyToManyField(Tag, related_name="suchary", blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         author_name = (
             self.author.username
             if "author" in self._state.fields_cache
@@ -36,7 +36,7 @@ class Suchar(models.Model):
         return f"Suchar by {author_name} at {self.published_at}"
 
     @property
-    def is_published(self):
+    def is_published(self) -> bool:
         return self.published_at <= timezone.now()
 
 
@@ -53,7 +53,7 @@ class Vote(models.Model):
     class Meta:
         unique_together = ("suchar", "user")
 
-    def __str__(self):
+    def __str__(self) -> str:
         user_name = (
             self.user.username
             if "user" in self._state.fields_cache

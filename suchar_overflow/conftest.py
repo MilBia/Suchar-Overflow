@@ -5,16 +5,19 @@ import pytest
 from suchar_overflow.users.tests.factories import UserFactory
 
 if TYPE_CHECKING:
+    import py
+    from pytest_django.fixtures import Settings
+
     from suchar_overflow.users.models import User
 
 
 @pytest.fixture(autouse=True)
-def _media_storage(settings, tmpdir) -> None:
+def _media_storage(settings: Settings, tmpdir: py.path.local) -> None:
     settings.MEDIA_ROOT = tmpdir.strpath
 
 
 @pytest.fixture
-def user(db) -> User:
+def user(db: None) -> User:  # noqa: ARG001
     return UserFactory.create()
 
 

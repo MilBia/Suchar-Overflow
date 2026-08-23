@@ -90,7 +90,7 @@ class Achievement(models.Model):
         verbose_name = _("Achievement")
         verbose_name_plural = _("Achievements")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -113,7 +113,7 @@ class UserAchievement(models.Model):
         verbose_name_plural = _("User Achievements")
         unique_together = ("user", "achievement")
 
-    def __str__(self):
+    def __str__(self) -> str:
         user_name = (
             self.user.username
             if "user" in self._state.fields_cache
@@ -142,5 +142,5 @@ class SchedulerRun(models.Model):
         verbose_name = _("Scheduler Run")
         verbose_name_plural = _("Scheduler Runs")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.job_id} @ {self.ran_at}"

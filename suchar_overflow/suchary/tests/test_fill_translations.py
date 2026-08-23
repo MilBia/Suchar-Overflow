@@ -35,7 +35,7 @@ from suchar_overflow.suchary.management.commands.fill_translations import (
         ("llama3", False),
     ],
 )
-def test_is_translategemma(model, expected):
+def test_is_translategemma(model: str, expected: bool) -> None:  # noqa: FBT001
     assert _is_translategemma(model) is expected
 
 
@@ -44,29 +44,29 @@ def test_is_translategemma(model, expected):
 # ---------------------------------------------------------------------------
 
 
-def test_looks_like_hallucination_short_response_is_fine():
+def test_looks_like_hallucination_short_response_is_fine() -> None:
     assert _looks_like_hallucination("Home", "Strona główna") is False
 
 
-def test_looks_like_hallucination_absolute_length_cap():
+def test_looks_like_hallucination_absolute_length_cap() -> None:
     """A response over 500 chars is a hallucination regardless of msgid length."""
     assert _looks_like_hallucination("Home", "x" * 501) is True
 
 
-def test_looks_like_hallucination_ratio_only_applies_above_min_msgid_length():
+def test_looks_like_hallucination_ratio_only_applies_above_min_msgid_length() -> None:
     """Short msgids (<20 chars) are exempt from the length-ratio check."""
     short_msgid = "Cancel"  # 6 chars, below _MIN_MSGID_FOR_RATIO (20)
     response = "x" * (len(short_msgid) * 4 + 1)
     assert _looks_like_hallucination(short_msgid, response) is False
 
 
-def test_looks_like_hallucination_ratio_exceeded_on_long_msgid():
+def test_looks_like_hallucination_ratio_exceeded_on_long_msgid() -> None:
     long_msgid = "x" * 25  # >= _MIN_MSGID_FOR_RATIO
     response = "y" * (len(long_msgid) * 4 + 1)
     assert _looks_like_hallucination(long_msgid, response) is True
 
 
-def test_looks_like_hallucination_ratio_within_bounds_on_long_msgid():
+def test_looks_like_hallucination_ratio_within_bounds_on_long_msgid() -> None:
     long_msgid = "x" * 25
     response = "y" * (len(long_msgid) * 4)
     assert _looks_like_hallucination(long_msgid, response) is False
@@ -88,15 +88,15 @@ def test_looks_like_hallucination_ratio_within_bounds_on_long_msgid():
         "Ten/Ta/To",
     ],
 )
-def test_has_multiple_alternatives_detects_separators(response):
+def test_has_multiple_alternatives_detects_separators(response: str) -> None:
     assert _has_multiple_alternatives(response) is True
 
 
-def test_has_multiple_alternatives_plain_text_is_fine():
+def test_has_multiple_alternatives_plain_text_is_fine() -> None:
     assert _has_multiple_alternatives("Zapisz zmiany") is False
 
 
-def test_has_multiple_alternatives_detects_unspaced_slash_between_words():
+def test_has_multiple_alternatives_detects_unspaced_slash_between_words() -> None:
     assert _has_multiple_alternatives("OK/Cancel workflow") is True
 
 
@@ -105,25 +105,25 @@ def test_has_multiple_alternatives_detects_unspaced_slash_between_words():
 # ---------------------------------------------------------------------------
 
 
-def test_has_markdown_html_corruption_true_when_strong_becomes_markdown():
+def test_has_markdown_html_corruption_true_when_strong_becomes_markdown() -> None:
     msgid = "Click <strong>here</strong> to continue"
     response = "Kliknij **tutaj**, aby kontynuować"
     assert _has_markdown_html_corruption(msgid, response) is True
 
 
-def test_has_markdown_html_corruption_false_when_tag_preserved():
+def test_has_markdown_html_corruption_false_when_tag_preserved() -> None:
     msgid = "Click <strong>here</strong> to continue"
     response = "Kliknij <strong>tutaj</strong>, aby kontynuować"
     assert _has_markdown_html_corruption(msgid, response) is False
 
 
-def test_has_markdown_html_corruption_false_when_msgid_has_no_relevant_tags():
+def test_has_markdown_html_corruption_false_when_msgid_has_no_relevant_tags() -> None:
     msgid = "Save changes"
     response = "**Zapisz zmiany**"
     assert _has_markdown_html_corruption(msgid, response) is False
 
 
-def test_has_markdown_html_corruption_detects_em_tag_too():
+def test_has_markdown_html_corruption_detects_em_tag_too() -> None:
     msgid = "This is <em>important</em>"
     response = "To jest **ważne**"
     assert _has_markdown_html_corruption(msgid, response) is True
@@ -134,23 +134,23 @@ def test_has_markdown_html_corruption_detects_em_tag_too():
 # ---------------------------------------------------------------------------
 
 
-def test_has_format_specifier_corruption_false_when_no_specifiers():
+def test_has_format_specifier_corruption_false_when_no_specifiers() -> None:
     assert _has_format_specifier_corruption("Home", "Strona główna") is False
 
 
-def test_has_format_specifier_corruption_false_when_preserved():
+def test_has_format_specifier_corruption_false_when_preserved() -> None:
     msgid = "Welcome, %(name)s!"
     response = "Witaj, %(name)s!"
     assert _has_format_specifier_corruption(msgid, response) is False
 
 
-def test_has_format_specifier_corruption_true_when_space_injected():
+def test_has_format_specifier_corruption_true_when_space_injected() -> None:
     msgid = "Welcome, %(name)s!"
     response = "Witaj, % (name)s!"
     assert _has_format_specifier_corruption(msgid, response) is True
 
 
-def test_has_format_specifier_corruption_true_when_specifier_dropped():
+def test_has_format_specifier_corruption_true_when_specifier_dropped() -> None:
     msgid = "%(count)s items, %(total)s total"
     response = "%(count)s elementów"
     assert _has_format_specifier_corruption(msgid, response) is True
@@ -161,7 +161,7 @@ def test_has_format_specifier_corruption_true_when_specifier_dropped():
 # ---------------------------------------------------------------------------
 
 
-def test_translate_via_httpx_returns_stripped_text():
+def test_translate_via_httpx_returns_stripped_text() -> None:
     cmd = Command()
     client = MagicMock()
     client.post.return_value.json.return_value = {
@@ -182,7 +182,7 @@ def test_translate_via_httpx_returns_stripped_text():
     client.post.return_value.raise_for_status.assert_called_once()
 
 
-def test_translate_via_openai_returns_stripped_content():
+def test_translate_via_openai_returns_stripped_content() -> None:
     cmd = Command()
     client = MagicMock()
     message = MagicMock()
@@ -202,7 +202,7 @@ def test_translate_via_openai_returns_stripped_content():
     client.chat.completions.create.assert_called_once()
 
 
-def test_translate_via_openai_returns_none_when_content_missing():
+def test_translate_via_openai_returns_none_when_content_missing() -> None:
     cmd = Command()
     client = MagicMock()
     message = MagicMock()
@@ -226,21 +226,21 @@ def test_translate_via_openai_returns_none_when_content_missing():
 # ---------------------------------------------------------------------------
 
 
-def test_validate_result_passes_through_clean_translation():
+def test_validate_result_passes_through_clean_translation() -> None:
     cmd = Command()
     assert cmd._validate_result("Home", "Strona główna") == "Strona główna"  # noqa: SLF001
 
 
-def test_validate_result_rejects_hallucination():
+def test_validate_result_rejects_hallucination() -> None:
     cmd = Command()
     assert cmd._validate_result("Home", "x" * 501) is None  # noqa: SLF001
 
 
-def test_validate_result_rejects_multiple_alternatives():
+def test_validate_result_rejects_multiple_alternatives() -> None:
     cmd = Command()
     assert cmd._validate_result("Yes", "Tak / Nie") is None  # noqa: SLF001
 
 
-def test_validate_result_returns_none_unchanged():
+def test_validate_result_returns_none_unchanged() -> None:
     cmd = Command()
     assert cmd._validate_result("Home", None) is None  # noqa: SLF001

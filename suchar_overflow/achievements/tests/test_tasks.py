@@ -27,7 +27,7 @@ User = get_user_model()
 # ---------------------------------------------------------------------------
 
 
-def test_compute_period_range_month():
+def test_compute_period_range_month() -> None:
     start_dt, end_dt, suffix = compute_period_range(
         "month",
         datetime.date(2024, 2, 15),
@@ -37,7 +37,7 @@ def test_compute_period_range_month():
     assert suffix == "month"
 
 
-def test_compute_period_range_month_december_rolls_into_next_year():
+def test_compute_period_range_month_december_rolls_into_next_year() -> None:
     start_dt, end_dt, _suffix = compute_period_range(
         "month",
         datetime.date(2024, 12, 10),
@@ -46,7 +46,7 @@ def test_compute_period_range_month_december_rolls_into_next_year():
     assert end_dt == datetime.datetime(2025, 1, 1, 0, 0, tzinfo=end_dt.tzinfo)
 
 
-def test_compute_period_range_year():
+def test_compute_period_range_year() -> None:
     start_dt, end_dt, suffix = compute_period_range(
         "year",
         datetime.date(2024, 6, 1),
@@ -56,7 +56,7 @@ def test_compute_period_range_year():
     assert suffix == "year"
 
 
-def test_compute_period_range_unknown_period_raises():
+def test_compute_period_range_unknown_period_raises() -> None:
     with pytest.raises(ValueError, match="Unknown period"):
         compute_period_range("week", datetime.date(2024, 6, 1))
 
@@ -67,7 +67,7 @@ def test_compute_period_range_unknown_period_raises():
 
 
 @pytest.mark.django_db
-def test_find_best_suchary_returns_single_winner_when_no_tie():
+def test_find_best_suchary_returns_single_winner_when_no_tie() -> None:
     mid = last_month_mid()
     author = User.objects.create_user(
         username="solo",
@@ -94,7 +94,7 @@ def test_find_best_suchary_returns_single_winner_when_no_tie():
 
 
 @pytest.mark.django_db
-def test_find_best_suchary_returns_all_suchary_tied_for_top_vote_count():
+def test_find_best_suchary_returns_all_suchary_tied_for_top_vote_count() -> None:
     mid = last_month_mid()
     author_a = User.objects.create_user(
         username="tie-a",
@@ -135,7 +135,7 @@ def test_find_best_suchary_returns_all_suchary_tied_for_top_vote_count():
 
 
 @pytest.mark.django_db
-def test_find_best_suchary_returns_empty_list_when_no_suchars():
+def test_find_best_suchary_returns_empty_list_when_no_suchars() -> None:
     mid = last_month_mid()
     start_dt, end_dt, _suffix = compute_period_range("month", mid.date())
 
@@ -143,7 +143,9 @@ def test_find_best_suchary_returns_empty_list_when_no_suchars():
 
 
 @pytest.mark.django_db
-def test_find_best_suchary_returns_empty_list_when_all_suchary_have_zero_votes():
+def test_find_best_suchary_returns_empty_list_when_all_suchary_have_zero_votes() -> (
+    None
+):
     """A period where Suchary were posted but none received any votes has no
     winner — the max vote count of 0 doesn't count as a "best" tie (#171)."""
     mid = last_month_mid()
@@ -174,7 +176,8 @@ def test_find_best_suchary_returns_empty_list_when_all_suchary_have_zero_votes()
 
 
 @pytest.mark.django_db
-def test_award_winners_single_winner_gets_no_tie_achievement(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_winners_single_winner_gets_no_tie_achievement() -> None:
     winner = User.objects.create_user(
         username="award-solo",
         email="award-solo@example.com",
@@ -195,8 +198,9 @@ def test_award_winners_single_winner_gets_no_tie_achievement(periodic_achievemen
 
 
 @pytest.mark.django_db
-def test_award_winners_different_authors_tied_both_get_main_and_tie_achievement(
-    periodic_achievements,
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_winners_different_authors_tied_both_get_main_and_tie_achievement() -> (
+    None
 ):
     author_a = User.objects.create_user(
         username="award-tie-a",
@@ -225,7 +229,8 @@ def test_award_winners_different_authors_tied_both_get_main_and_tie_achievement(
 
 
 @pytest.mark.django_db
-def test_award_winners_results_are_ordered_by_username(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_winners_results_are_ordered_by_username() -> None:
     """award_winners dedupes authors into a set, whose iteration order is
     unspecified — results must be sorted by username so CLI/log output is
     deterministic across runs (PR #172 review nit)."""
@@ -260,9 +265,8 @@ def test_award_winners_results_are_ordered_by_username(periodic_achievements):
 
 
 @pytest.mark.django_db
-def test_award_winners_same_author_tied_with_self_gets_no_tie_achievement(
-    periodic_achievements,
-):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_winners_same_author_tied_with_self_gets_no_tie_achievement() -> None:
     """Two Suchary by the same author tied for the top spot, no other author
     involved — this is a plain win, not a tie between different people."""
     author = User.objects.create_user(
@@ -286,7 +290,8 @@ def test_award_winners_same_author_tied_with_self_gets_no_tie_achievement(
 
 
 @pytest.mark.django_db
-def test_award_winners_empty_list_does_nothing(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_winners_empty_list_does_nothing() -> None:
     award_winners([], "month")
 
     assert UserAchievement.objects.count() == 0
@@ -298,7 +303,8 @@ def test_award_winners_empty_list_does_nothing(periodic_achievements):
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_month_awards_winner(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_month_awards_winner() -> None:
     frozen_now = freeze_to_first_of_current_month()
     winner = User.objects.create_user(
         username="winner",
@@ -345,7 +351,8 @@ def test_award_best_suchar_month_awards_winner(periodic_achievements):
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_month_tie_awards_all_tied_authors(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_month_tie_awards_all_tied_authors() -> None:
     """When different authors tie for the top vote count in the period,
     every one of them gets the main achievement plus the hidden tie
     achievement (#171)."""
@@ -390,9 +397,8 @@ def test_award_best_suchar_month_tie_awards_all_tied_authors(periodic_achievemen
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_uses_explicit_reference_date_when_given(
-    periodic_achievements,
-):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_uses_explicit_reference_date_when_given() -> None:
     """An explicit reference_date overrides the yesterday default — used by
     the startup catch-up path (#169) to award a period other than the one
     "yesterday" falls in at restart time."""
@@ -425,7 +431,8 @@ def test_award_best_suchar_uses_explicit_reference_date_when_given(
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_month_no_suchars_does_not_crash(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_month_no_suchars_does_not_crash() -> None:
     frozen_now = freeze_to_first_of_current_month()
     with patch(
         "suchar_overflow.achievements.tasks.timezone.now",
@@ -436,9 +443,8 @@ def test_award_best_suchar_month_no_suchars_does_not_crash(periodic_achievements
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_month_missing_achievement_does_not_crash(
-    periodic_achievements,
-):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_month_missing_achievement_does_not_crash() -> None:
     """If the achievement slug doesn't exist in the DB the task exits gracefully."""
     frozen_now = freeze_to_first_of_current_month()
     winner = User.objects.create_user(
@@ -475,7 +481,8 @@ def test_award_best_suchar_month_missing_achievement_does_not_crash(
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_is_idempotent(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_is_idempotent() -> None:
     """Calling the task twice doesn't create duplicate UserAchievements."""
     frozen_now = freeze_to_first_of_current_month()
     winner = User.objects.create_user(
@@ -511,7 +518,8 @@ def test_award_best_suchar_is_idempotent(periodic_achievements):
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_raises_on_unknown_period(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_raises_on_unknown_period() -> None:
     frozen_now = freeze_to_first_of_current_month()
     with (
         patch(
@@ -530,7 +538,8 @@ def test_award_best_suchar_raises_on_unknown_period(periodic_achievements):
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_records_scheduler_run(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_records_scheduler_run() -> None:
     frozen_now = freeze_to_first_of_current_month()
     with patch(
         "suchar_overflow.achievements.tasks.timezone.now",
@@ -543,7 +552,8 @@ def test_award_best_suchar_records_scheduler_run(periodic_achievements):
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_updates_existing_scheduler_run(periodic_achievements):
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_updates_existing_scheduler_run() -> None:
     frozen_now = freeze_to_first_of_current_month()
     with patch(
         "suchar_overflow.achievements.tasks.timezone.now",
@@ -563,7 +573,7 @@ def test_award_best_suchar_updates_existing_scheduler_run(periodic_achievements)
 
 
 @pytest.mark.django_db(transaction=True)
-def test_award_best_suchar_closes_old_connections():
+def test_award_best_suchar_closes_old_connections() -> None:
     frozen_now = freeze_to_first_of_current_month()
     with (
         patch(
@@ -580,7 +590,7 @@ def test_award_best_suchar_closes_old_connections():
 
 
 @pytest.mark.django_db
-def test_award_best_suchar_skips_close_old_connections_inside_atomic_block():
+def test_award_best_suchar_skips_close_old_connections_inside_atomic_block() -> None:
     """Inside an atomic block (e.g. this test's own transaction), closing the
     connection would kill the transaction the caller depends on — see the
     ``connection.in_atomic_block`` guard in ``award_best_suchar``."""
@@ -604,7 +614,7 @@ def test_award_best_suchar_skips_close_old_connections_inside_atomic_block():
 # ---------------------------------------------------------------------------
 
 
-def test_due_monthly_run_at_returns_due_date_when_never_run():
+def test_due_monthly_run_at_returns_due_date_when_never_run() -> None:
     now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     assert due_monthly_run_at(now, None) == datetime.datetime(
         2024,
@@ -616,7 +626,7 @@ def test_due_monthly_run_at_returns_due_date_when_never_run():
     )
 
 
-def test_due_monthly_run_at_returns_due_date_when_last_run_before_it():
+def test_due_monthly_run_at_returns_due_date_when_last_run_before_it() -> None:
     now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2024, 4, 1, 0, 5, tzinfo=datetime.UTC)
     assert due_monthly_run_at(now, last_ran_at) == datetime.datetime(
@@ -629,19 +639,19 @@ def test_due_monthly_run_at_returns_due_date_when_last_run_before_it():
     )
 
 
-def test_due_monthly_run_at_none_when_last_run_on_due_date():
+def test_due_monthly_run_at_none_when_last_run_on_due_date() -> None:
     now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2024, 6, 1, 0, 5, tzinfo=datetime.UTC)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
-def test_due_monthly_run_at_none_when_last_run_after_due_date():
+def test_due_monthly_run_at_none_when_last_run_after_due_date() -> None:
     now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2024, 6, 1, 0, 6, tzinfo=datetime.UTC)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
-def test_due_monthly_run_at_before_first_of_month_fire_uses_previous_month():
+def test_due_monthly_run_at_before_first_of_month_fire_uses_previous_month() -> None:
     """On the 1st, before 00:05 UTC, this month's cron hasn't fired yet — the
     due date falls back to the previous month's fire time."""
     now = datetime.datetime(2024, 6, 1, 0, 0, tzinfo=datetime.UTC)
@@ -649,7 +659,7 @@ def test_due_monthly_run_at_before_first_of_month_fire_uses_previous_month():
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
-def test_due_monthly_run_at_before_first_of_month_fire_still_detects_gap():
+def test_due_monthly_run_at_before_first_of_month_fire_still_detects_gap() -> None:
     now = datetime.datetime(2024, 6, 1, 0, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2024, 4, 1, 0, 5, tzinfo=datetime.UTC)
     assert due_monthly_run_at(now, last_ran_at) == datetime.datetime(
@@ -662,7 +672,7 @@ def test_due_monthly_run_at_before_first_of_month_fire_still_detects_gap():
     )
 
 
-def test_due_monthly_run_at_january_rolls_back_to_december():
+def test_due_monthly_run_at_january_rolls_back_to_december() -> None:
     now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2023, 12, 1, 0, 5, tzinfo=datetime.UTC)
     assert due_monthly_run_at(now, last_ran_at) is None
@@ -673,7 +683,7 @@ def test_due_monthly_run_at_january_rolls_back_to_december():
 # ---------------------------------------------------------------------------
 
 
-def test_due_yearly_run_at_returns_due_date_when_never_run():
+def test_due_yearly_run_at_returns_due_date_when_never_run() -> None:
     now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     assert due_yearly_run_at(now, None) == datetime.datetime(
         2024,
@@ -685,7 +695,7 @@ def test_due_yearly_run_at_returns_due_date_when_never_run():
     )
 
 
-def test_due_yearly_run_at_returns_due_date_when_last_run_before_it():
+def test_due_yearly_run_at_returns_due_date_when_last_run_before_it() -> None:
     now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=datetime.UTC)
     assert due_yearly_run_at(now, last_ran_at) == datetime.datetime(
@@ -698,19 +708,19 @@ def test_due_yearly_run_at_returns_due_date_when_last_run_before_it():
     )
 
 
-def test_due_yearly_run_at_none_when_last_run_on_due_date():
+def test_due_yearly_run_at_none_when_last_run_on_due_date() -> None:
     now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2024, 1, 1, 0, 5, tzinfo=datetime.UTC)
     assert due_yearly_run_at(now, last_ran_at) is None
 
 
-def test_due_yearly_run_at_none_when_last_run_after_due_date():
+def test_due_yearly_run_at_none_when_last_run_after_due_date() -> None:
     now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2024, 1, 1, 0, 6, tzinfo=datetime.UTC)
     assert due_yearly_run_at(now, last_ran_at) is None
 
 
-def test_due_yearly_run_at_before_first_of_year_fire_uses_previous_year():
+def test_due_yearly_run_at_before_first_of_year_fire_uses_previous_year() -> None:
     """On Jan 1, before 00:05 UTC, this year's cron hasn't fired yet — the
     due date falls back to the previous year's fire time."""
     now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.UTC)
@@ -718,7 +728,7 @@ def test_due_yearly_run_at_before_first_of_year_fire_uses_previous_year():
     assert due_yearly_run_at(now, last_ran_at) is None
 
 
-def test_due_yearly_run_at_before_first_of_year_fire_still_detects_gap():
+def test_due_yearly_run_at_before_first_of_year_fire_still_detects_gap() -> None:
     now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.UTC)
     last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=datetime.UTC)
     assert due_yearly_run_at(now, last_ran_at) == datetime.datetime(
@@ -732,10 +742,10 @@ def test_due_yearly_run_at_before_first_of_year_fire_still_detects_gap():
 
 
 @pytest.mark.django_db
+@pytest.mark.usefixtures("periodic_achievements")
 def test_award_best_suchar_logs_warning_when_achievement_missing(
-    periodic_achievements,
-    caplog,
-):
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     frozen_now = freeze_to_first_of_current_month()
     winner = User.objects.create_user(
         username="w3",

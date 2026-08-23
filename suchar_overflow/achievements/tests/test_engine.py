@@ -1,6 +1,7 @@
 """Tests for AchievementEngine rules and registration."""
 
 import datetime
+from typing import TYPE_CHECKING
 
 import pytest
 from django.utils import timezone
@@ -17,13 +18,16 @@ from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
+if TYPE_CHECKING:
+    from suchar_overflow.users.models import User
+
 
 def make_achievement(
-    slug,
-    metric,
-    event_type=Achievement.EventType.SUCHAR_POSTED,
-    threshold=1,
-):
+    slug: str,
+    metric: Achievement.Metric,
+    event_type: Achievement.EventType = Achievement.EventType.SUCHAR_POSTED,
+    threshold: int = 1,
+) -> Achievement:
     return Achievement.objects.create(
         slug=slug,
         name=slug,
@@ -42,7 +46,7 @@ def make_achievement(
 
 
 @pytest.mark.django_db
-def test_register_rules_idempotent():
+def test_register_rules_idempotent() -> None:
     """Calling register_rules twice must not duplicate entries."""
     AchievementEngine._rules = {}  # noqa: SLF001
     AchievementEngine.register_rules()
@@ -52,7 +56,7 @@ def test_register_rules_idempotent():
 
 
 @pytest.mark.django_db
-def test_register_rules_covers_all_subclasses():
+def test_register_rules_covers_all_subclasses() -> None:
     """Every AchievementRule subclass with a metric must appear in _rules."""
     AchievementEngine._rules = {}  # noqa: SLF001
     AchievementEngine.register_rules()
@@ -67,7 +71,7 @@ def test_register_rules_covers_all_subclasses():
 
 
 @pytest.mark.django_db
-def test_periodic_achievement_never_auto_awarded():
+def test_periodic_achievement_never_auto_awarded() -> None:
     """PERIODIC category achievements must be excluded from automatic engine checks."""
     user = make_user("u1")
     Achievement.objects.create(
@@ -95,13 +99,13 @@ def test_periodic_achievement_never_auto_awarded():
 
 
 @pytest.mark.django_db
-def test_polarizer_rule_not_met_when_no_votes():
+def test_polarizer_rule_not_met_when_no_votes() -> None:
     user = make_user("u1")
     assert not PolarizerRule.evaluate(user, threshold=1)
 
 
 @pytest.mark.django_db
-def test_polarizer_rule_not_met_when_votes_unequal():
+def test_polarizer_rule_not_met_when_votes_unequal() -> None:
     user = make_user("u1")
     suchar = Suchar.objects.create(text="joke", author=user)
     voter1 = make_user("v1")
@@ -113,7 +117,7 @@ def test_polarizer_rule_not_met_when_votes_unequal():
 
 
 @pytest.mark.django_db
-def test_polarizer_rule_met_when_funny_equals_dry_at_threshold():
+def test_polarizer_rule_met_when_funny_equals_dry_at_threshold() -> None:
     user = make_user("u1")
     suchar = Suchar.objects.create(text="joke", author=user)
     for i in range(2):
@@ -126,7 +130,7 @@ def test_polarizer_rule_met_when_funny_equals_dry_at_threshold():
 
 
 @pytest.mark.django_db
-def test_polarizer_rule_engine_awards_achievement():
+def test_polarizer_rule_engine_awards_achievement() -> None:
     user = make_user("u1")
     ach = make_achievement(
         "polarizer",
@@ -149,20 +153,20 @@ def test_polarizer_rule_engine_awards_achievement():
 
 
 @pytest.mark.django_db
-def test_streak_rule_false_when_no_suchary():
+def test_streak_rule_false_when_no_suchary() -> None:
     user = make_user("u1")
     assert not StreakLoginRule.evaluate(user, threshold=2)
 
 
 @pytest.mark.django_db
-def test_streak_rule_false_when_single_day():
+def test_streak_rule_false_when_single_day() -> None:
     user = make_user("u1")
     Suchar.objects.create(text="joke", author=user)
     assert not StreakLoginRule.evaluate(user, threshold=2)
 
 
 @pytest.mark.django_db
-def test_streak_rule_true_for_consecutive_days():
+def test_streak_rule_true_for_consecutive_days() -> None:
     user = make_user("u1")
     today = timezone.now()
     s1 = Suchar.objects.create(text="day1", author=user)
@@ -175,7 +179,7 @@ def test_streak_rule_true_for_consecutive_days():
 
 
 @pytest.mark.django_db
-def test_streak_rule_false_when_gap_in_days():
+def test_streak_rule_false_when_gap_in_days() -> None:
     user = make_user("u1")
     today = timezone.now()
     s1 = Suchar.objects.create(text="day1", author=user)
@@ -189,7 +193,7 @@ def test_streak_rule_false_when_gap_in_days():
 
 
 @pytest.mark.django_db
-def test_streak_rule_counts_only_longest_leading_streak():
+def test_streak_rule_counts_only_longest_leading_streak() -> None:
     """Streak resets on first gap — old consecutive days don't count."""
     user = make_user("u1")
     today = timezone.now()
@@ -204,7 +208,7 @@ def test_streak_rule_counts_only_longest_leading_streak():
 
 
 @pytest.mark.django_db
-def test_streak_rule_engine_awards_achievement():
+def test_streak_rule_engine_awards_achievement() -> None:
     user = make_user("u1")
     ach = make_achievement(
         "streak-2",
@@ -230,7 +234,7 @@ def test_streak_rule_engine_awards_achievement():
 # Helpers used across NightOwl tests: TIME_ZONE=UTC so UTC hour == local hour.
 
 
-def _make_night_suchar(user, hour=2):
+def _make_night_suchar(user: User, hour: int = 2) -> Suchar:
     """Create a Suchar at the given UTC hour (within 0-4 = night window)."""
     suchar = Suchar.objects.create(text=f"night joke h{hour}", author=user)
     ts = timezone.now().replace(hour=hour, minute=0, second=0, microsecond=0)
@@ -239,7 +243,7 @@ def _make_night_suchar(user, hour=2):
     return suchar
 
 
-def _make_day_suchar(user):
+def _make_day_suchar(user: User) -> Suchar:
     """Create a Suchar at 12:00 UTC (outside night window)."""
     suchar = Suchar.objects.create(text="day joke", author=user)
     ts = timezone.now().replace(hour=12, minute=0, second=0, microsecond=0)
@@ -249,20 +253,20 @@ def _make_day_suchar(user):
 
 
 @pytest.mark.django_db
-def test_night_owl_false_without_suchar_instance():
+def test_night_owl_false_without_suchar_instance() -> None:
     user = make_user("u1")
     assert not NightOwlRule.evaluate(user, threshold=1, instance=None)
 
 
 @pytest.mark.django_db
-def test_night_owl_false_when_instance_is_wrong_type():
+def test_night_owl_false_when_instance_is_wrong_type() -> None:
     user = make_user("u1")
     vote = Vote.__new__(Vote)  # not a Suchar
     assert not NightOwlRule.evaluate(user, threshold=1, instance=vote)
 
 
 @pytest.mark.django_db
-def test_night_owl_false_when_suchar_belongs_to_other_user():
+def test_night_owl_false_when_suchar_belongs_to_other_user() -> None:
     user = make_user("u1")
     other = make_user("u2")
     suchar = _make_night_suchar(other)
@@ -270,7 +274,7 @@ def test_night_owl_false_when_suchar_belongs_to_other_user():
 
 
 @pytest.mark.django_db
-def test_night_owl_false_when_suchar_is_daytime():
+def test_night_owl_false_when_suchar_is_daytime() -> None:
     """Daytime suchar must never satisfy Night Owl."""
     user = make_user("u1")
     suchar = _make_day_suchar(user)
@@ -278,7 +282,7 @@ def test_night_owl_false_when_suchar_is_daytime():
 
 
 @pytest.mark.django_db
-def test_night_owl_true_for_first_night_suchar_at_threshold_1():
+def test_night_owl_true_for_first_night_suchar_at_threshold_1() -> None:
     """First night suchar must satisfy Bronze (threshold=1)."""
     user = make_user("u1")
     suchar = _make_night_suchar(user)
@@ -286,7 +290,7 @@ def test_night_owl_true_for_first_night_suchar_at_threshold_1():
 
 
 @pytest.mark.django_db
-def test_night_owl_false_when_threshold_not_yet_met():
+def test_night_owl_false_when_threshold_not_yet_met() -> None:
     """One night suchar must NOT satisfy Silver threshold=2."""
     user = make_user("u1")
     suchar = _make_night_suchar(user)
@@ -294,7 +298,7 @@ def test_night_owl_false_when_threshold_not_yet_met():
 
 
 @pytest.mark.django_db
-def test_night_owl_true_when_threshold_met_after_accumulation():
+def test_night_owl_true_when_threshold_met_after_accumulation() -> None:
     """Two accumulated night suchary must satisfy threshold=2."""
     user = make_user("u1")
     _make_night_suchar(user, hour=1)
@@ -303,7 +307,7 @@ def test_night_owl_true_when_threshold_met_after_accumulation():
 
 
 @pytest.mark.django_db
-def test_night_owl_daytime_suchary_do_not_count_toward_threshold():
+def test_night_owl_daytime_suchary_do_not_count_toward_threshold() -> None:
     """Daytime suchary must not increment the night owl counter."""
     user = make_user("u1")
     _make_day_suchar(user)
@@ -314,7 +318,7 @@ def test_night_owl_daytime_suchary_do_not_count_toward_threshold():
 
 
 @pytest.mark.django_db
-def test_night_owl_engine_awards_only_bronze_on_first_night_post():
+def test_night_owl_engine_awards_only_bronze_on_first_night_post() -> None:
     """With 1 night suchar, only Bronze (threshold=1) must be awarded;
     Silver (threshold=2) must NOT be awarded."""
     user = make_user("u1")
@@ -341,7 +345,7 @@ def test_night_owl_engine_awards_only_bronze_on_first_night_post():
 
 
 @pytest.mark.django_db
-def test_night_owl_engine_awards_bronze_and_silver_after_two_night_posts():
+def test_night_owl_engine_awards_bronze_and_silver_after_two_night_posts() -> None:
     """After 2 night suchary both Bronze (threshold=1) and Silver (threshold=2)
     must be awarded."""
     user = make_user("u1")
@@ -381,13 +385,13 @@ def test_night_owl_engine_awards_bronze_and_silver_after_two_night_posts():
 
 
 @pytest.mark.django_db
-def test_vote_dry_count_rule_false_when_no_votes_cast():
+def test_vote_dry_count_rule_false_when_no_votes_cast() -> None:
     user = make_user("u1")
     assert not VoteDryCountRule.evaluate(user, threshold=1)
 
 
 @pytest.mark.django_db
-def test_vote_dry_count_rule_true_when_user_casts_dry_vote():
+def test_vote_dry_count_rule_true_when_user_casts_dry_vote() -> None:
     """Casting 1 dry vote must satisfy threshold=1."""
     voter = make_user("voter")
     author = make_user("author")
@@ -397,7 +401,7 @@ def test_vote_dry_count_rule_true_when_user_casts_dry_vote():
 
 
 @pytest.mark.django_db
-def test_vote_dry_count_rule_funny_vote_does_not_count():
+def test_vote_dry_count_rule_funny_vote_does_not_count() -> None:
     """Casting only funny votes must NOT satisfy the dry vote threshold."""
     voter = make_user("voter")
     author = make_user("author")
@@ -407,7 +411,7 @@ def test_vote_dry_count_rule_funny_vote_does_not_count():
 
 
 @pytest.mark.django_db
-def test_vote_dry_count_rule_receiving_dry_votes_does_not_count():
+def test_vote_dry_count_rule_receiving_dry_votes_does_not_count() -> None:
     """A user whose own suchary received dry votes must NOT earn the rule
     unless they themselves also cast dry votes."""
     author = make_user("author")
@@ -419,7 +423,7 @@ def test_vote_dry_count_rule_receiving_dry_votes_does_not_count():
 
 
 @pytest.mark.django_db
-def test_vote_dry_count_rule_threshold_not_met():
+def test_vote_dry_count_rule_threshold_not_met() -> None:
     voter = make_user("voter")
     author = make_user("author")
     suchar = Suchar.objects.create(text="joke", author=author)
@@ -428,7 +432,7 @@ def test_vote_dry_count_rule_threshold_not_met():
 
 
 @pytest.mark.django_db
-def test_vote_dry_count_engine_awards_achievement_to_voter():
+def test_vote_dry_count_engine_awards_achievement_to_voter() -> None:
     """Casting a dry vote must award a COUNT_VOTE_DRY achievement to the voter,
     not to the suchar author."""
     voter = make_user("voter")
@@ -451,7 +455,7 @@ def test_vote_dry_count_engine_awards_achievement_to_voter():
 
 
 @pytest.mark.django_db
-def test_check_achievements_does_not_re_award():
+def test_check_achievements_does_not_re_award() -> None:
     user = make_user("u1")
     ach = make_achievement("count-1", Achievement.Metric.COUNT_SUCHAR, threshold=1)
     UserAchievement.objects.create(user=user, achievement=ach)

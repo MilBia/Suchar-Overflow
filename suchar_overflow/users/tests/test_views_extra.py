@@ -2,6 +2,7 @@
 
 import datetime
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -13,10 +14,13 @@ from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
+if TYPE_CHECKING:
+    from django.test import Client
+
 User = get_user_model()
 
 
-def detail_url(username):
+def detail_url(username: str) -> str:
     return reverse("users:detail", kwargs={"username": username})
 
 
@@ -26,7 +30,7 @@ def detail_url(username):
 
 
 @pytest.mark.django_db
-def test_scheduled_suchary_visible_to_owner(client):
+def test_scheduled_suchary_visible_to_owner(client: Client) -> None:
     user = make_user("owner")
     future = timezone.now() + datetime.timedelta(days=1)
     Suchar.objects.create(text="Scheduled joke", author=user, published_at=future)
@@ -41,7 +45,7 @@ def test_scheduled_suchary_visible_to_owner(client):
 
 
 @pytest.mark.django_db
-def test_scheduled_suchary_hidden_from_other_user(client):
+def test_scheduled_suchary_hidden_from_other_user(client: Client) -> None:
     owner = make_user("owner2")
     visitor = make_user("visitor2")
     future = timezone.now() + datetime.timedelta(days=1)
@@ -60,7 +64,7 @@ def test_scheduled_suchary_hidden_from_other_user(client):
 
 
 @pytest.mark.django_db
-def test_global_rank_is_one_for_top_user(client):
+def test_global_rank_is_one_for_top_user(client: Client) -> None:
     top = make_user("top")
     other = make_user("other_rank")
     s_top = Suchar.objects.create(text="funny joke", author=top)
@@ -79,7 +83,7 @@ def test_global_rank_is_one_for_top_user(client):
 
 
 @pytest.mark.django_db
-def test_global_rank_increases_when_others_have_more_votes(client):
+def test_global_rank_increases_when_others_have_more_votes(client: Client) -> None:
     u1 = make_user("rank_u1")
     u2 = make_user("rank_u2")
     s1 = Suchar.objects.create(text="j1", author=u1)
@@ -98,7 +102,7 @@ def test_global_rank_increases_when_others_have_more_votes(client):
 
 
 @pytest.mark.django_db
-def test_global_rank_is_one_when_user_has_no_votes(client):
+def test_global_rank_is_one_when_user_has_no_votes(client: Client) -> None:
     user = make_user("novotes")
     Suchar.objects.create(text="joke", author=user)
 
@@ -114,7 +118,7 @@ def test_global_rank_is_one_when_user_has_no_votes(client):
 
 
 @pytest.mark.django_db
-def test_heatmap_weeks_is_list(client):
+def test_heatmap_weeks_is_list(client: Client) -> None:
     user = make_user("heatmap_u")
     client.force_login(user)
     response = client.get(detail_url("heatmap_u"))
@@ -122,7 +126,7 @@ def test_heatmap_weeks_is_list(client):
 
 
 @pytest.mark.django_db
-def test_heatmap_weeks_each_has_days_and_month_label(client):
+def test_heatmap_weeks_each_has_days_and_month_label(client: Client) -> None:
     user = make_user("heatmap_u2")
     client.force_login(user)
     response = client.get(detail_url("heatmap_u2"))
@@ -136,7 +140,7 @@ def test_heatmap_weeks_each_has_days_and_month_label(client):
 
 
 @pytest.mark.django_db
-def test_heatmap_level_buckets(client):
+def test_heatmap_level_buckets(client: Client) -> None:
     """Levels 0-4 must correspond to the documented thresholds."""
     user = make_user("heatmap_u3")
     # Create 5 suchary today to hit level 4
@@ -161,7 +165,7 @@ def test_heatmap_level_buckets(client):
 
 
 @pytest.mark.django_db
-def test_heatmap_starts_aligned_to_monday(client):
+def test_heatmap_starts_aligned_to_monday(client: Client) -> None:
     """The first day in the first week must be a Monday (weekday=0)."""
     user = make_user("heatmap_u4")
     client.force_login(user)
@@ -178,7 +182,7 @@ def test_heatmap_starts_aligned_to_monday(client):
 
 
 @pytest.mark.django_db
-def test_best_joke_is_highest_funny_vote_suchar(client):
+def test_best_joke_is_highest_funny_vote_suchar(client: Client) -> None:
     user = make_user("bestjoke_u")
     s_low = Suchar.objects.create(text="Low scorer", author=user)
     s_high = Suchar.objects.create(text="Top scorer", author=user)
@@ -195,7 +199,7 @@ def test_best_joke_is_highest_funny_vote_suchar(client):
 
 
 @pytest.mark.django_db
-def test_best_joke_is_none_when_no_suchary(client):
+def test_best_joke_is_none_when_no_suchary(client: Client) -> None:
     user = make_user("bestjoke_empty")
     client.force_login(user)
     response = client.get(detail_url("bestjoke_empty"))
@@ -208,7 +212,7 @@ def test_best_joke_is_none_when_no_suchary(client):
 
 
 @pytest.mark.django_db
-def test_activity_labels_and_values_are_lists(client):
+def test_activity_labels_and_values_are_lists(client: Client) -> None:
     user = make_user("chart_u")
     client.force_login(user)
     response = client.get(detail_url("chart_u"))
@@ -217,7 +221,7 @@ def test_activity_labels_and_values_are_lists(client):
 
 
 @pytest.mark.django_db
-def test_reception_data_is_list_of_two(client):
+def test_reception_data_is_list_of_two(client: Client) -> None:
     user = make_user("recv_u")
     client.force_login(user)
     response = client.get(detail_url("recv_u"))
@@ -232,7 +236,7 @@ def test_reception_data_is_list_of_two(client):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_signup_uses_http_protocol_when_not_secure(client):
+def test_signup_uses_http_protocol_when_not_secure(client: Client) -> None:
     client.post(
         reverse("users:signup"),
         {
@@ -248,7 +252,7 @@ def test_signup_uses_http_protocol_when_not_secure(client):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_signup_uses_https_protocol_when_secure(client):
+def test_signup_uses_https_protocol_when_secure(client: Client) -> None:
     client.post(
         reverse("users:signup"),
         {
@@ -264,7 +268,7 @@ def test_signup_uses_https_protocol_when_secure(client):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_signup_creates_inactive_user(client):
+def test_signup_creates_inactive_user(client: Client) -> None:
     client.post(
         reverse("users:signup"),
         {
@@ -284,7 +288,7 @@ def test_signup_creates_inactive_user(client):
 
 
 @pytest.mark.django_db
-def test_password_change_form_uses_shared_error_bubble_styling(client):
+def test_password_change_form_uses_shared_error_bubble_styling(client: Client) -> None:
     user = make_user("pwchange_user", password="OriginalPass123")  # noqa: S106
     client.force_login(user)
 
@@ -302,7 +306,7 @@ def test_password_change_form_uses_shared_error_bubble_styling(client):
 
 
 @pytest.mark.django_db
-def test_user_update_form_uses_shared_field_partial(client):
+def test_user_update_form_uses_shared_field_partial(client: Client) -> None:
     user = make_user("form_field_user")
     client.force_login(user)
 

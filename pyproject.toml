@@ -85,7 +85,7 @@ select = [
     "N",
     "UP",
     "YTT",
-    # "ANN", # flake8-annotations: we should support this in the future but 100+ errors atm
+    "ANN",
     "ASYNC",
     "S",
     "BLE",
@@ -117,7 +117,7 @@ select = [
     "TID",
     "TC",
     "INT",
-    # "ARG", # Unused function argument
+    "ARG",
     "PTH",
     "ERA",
     "PD",

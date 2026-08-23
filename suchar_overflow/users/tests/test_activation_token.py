@@ -16,14 +16,14 @@ from suchar_overflow.users.models import ActivationToken
 
 
 @pytest.mark.django_db
-def test_fresh_token_is_valid():
+def test_fresh_token_is_valid() -> None:
     user = make_user("alice", is_active=False)
     token = ActivationToken.objects.create(user=user)
     assert token.is_valid()
 
 
 @pytest.mark.django_db
-def test_token_within_expiry_window_is_valid():
+def test_token_within_expiry_window_is_valid() -> None:
     user = make_user("alice", is_active=False)
     token = ActivationToken.objects.create(user=user)
     ActivationToken.objects.filter(pk=token.pk).update(
@@ -34,7 +34,7 @@ def test_token_within_expiry_window_is_valid():
 
 
 @pytest.mark.django_db
-def test_expired_token_is_invalid():
+def test_expired_token_is_invalid() -> None:
     user = make_user("alice", is_active=False)
     token = ActivationToken.objects.create(user=user)
     ActivationToken.objects.filter(pk=token.pk).update(
@@ -45,7 +45,7 @@ def test_expired_token_is_invalid():
 
 
 @pytest.mark.django_db
-def test_token_is_unique_per_user():
+def test_token_is_unique_per_user() -> None:
     """Creating a second token for the same user must raise an IntegrityError."""
     user = make_user("alice", is_active=False)
     ActivationToken.objects.create(user=user)
@@ -54,7 +54,7 @@ def test_token_is_unique_per_user():
 
 
 @pytest.mark.django_db
-def test_engine_sets_cache_flag_when_achievement_awarded():
+def test_engine_sets_cache_flag_when_achievement_awarded() -> None:
     """Creating a Suchar fires the signal → engine awards → cache flag set."""
     user = make_user("winner")
     Achievement.objects.get_or_create(
@@ -77,7 +77,7 @@ def test_engine_sets_cache_flag_when_achievement_awarded():
 
 
 @pytest.mark.django_db
-def test_engine_does_not_set_cache_flag_when_no_achievement_awarded():
+def test_engine_does_not_set_cache_flag_when_no_achievement_awarded() -> None:
     user = make_user("nobody")
     # No achievements in DB — nothing to award.
     AchievementEngine.check_achievements(user, Achievement.EventType.SUCHAR_POSTED)

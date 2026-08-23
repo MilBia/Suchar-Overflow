@@ -8,7 +8,12 @@ from suchar_overflow.suchary.models import Vote
 
 
 @receiver(post_save, sender=Suchar)
-def check_suchar_achievements(sender, instance, created, **kwargs):
+def check_suchar_achievements(
+    sender: type[Suchar],  # noqa: ARG001
+    instance: Suchar,
+    created: bool,  # noqa: FBT001
+    **kwargs: object,  # noqa: ARG001
+) -> None:
     if created:
         user = instance.author
         AchievementEngine.check_achievements(
@@ -19,7 +24,12 @@ def check_suchar_achievements(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=Vote)
-def check_vote_achievements(sender, instance, created, **kwargs):
+def check_vote_achievements(
+    sender: type[Vote],  # noqa: ARG001
+    instance: Vote,
+    created: bool,  # noqa: FBT001
+    **kwargs: object,  # noqa: ARG001
+) -> None:
     if created:
         # Check for voter
         voter = instance.user

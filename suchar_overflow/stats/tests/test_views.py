@@ -1,6 +1,7 @@
 from datetime import timedelta
 from http import HTTPStatus
 from types import SimpleNamespace
+from typing import TYPE_CHECKING
 
 import pytest
 from django.core.cache import cache
@@ -19,6 +20,9 @@ from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
 
+if TYPE_CHECKING:
+    from django.test import Client
+
 LEADERBOARD_URL = "stats:leaderboard"
 # 1 authors query, 1 suchary query, 1 scoped tags prefetch (only the ~30
 # rendered suchary, not the full table — see issue #183), 1 widest-window
@@ -32,13 +36,13 @@ MAX_UNCACHED_QUERIES = 5
 
 
 @pytest.mark.django_db
-def test_leaderboard_renders(client):
+def test_leaderboard_renders(client: Client) -> None:
     response = client.get(reverse(LEADERBOARD_URL))
     assert response.status_code == HTTPStatus.OK
 
 
 @pytest.mark.django_db
-def test_leaderboard_empty_db_renders(client):
+def test_leaderboard_empty_db_renders(client: Client) -> None:
     """Leaderboard must not crash when there is no data at all."""
     response = client.get(reverse(LEADERBOARD_URL))
     assert response.status_code == HTTPStatus.OK
@@ -54,7 +58,7 @@ def test_leaderboard_empty_db_renders(client):
 
 
 @pytest.mark.django_db
-def test_top_authors_overall_ordering(client):
+def test_top_authors_overall_ordering(client: Client) -> None:
     u1 = make_user("u1")
     u2 = make_user("u2")
     s1 = Suchar.objects.create(text="Joke 1", author=u1)
@@ -73,7 +77,7 @@ def test_top_authors_overall_ordering(client):
 
 
 @pytest.mark.django_db
-def test_top_authors_overall_excludes_zero_score(client):
+def test_top_authors_overall_excludes_zero_score(client: Client) -> None:
     u_no_votes = make_user("no_votes")
     Suchar.objects.create(text="Lonely joke", author=u_no_votes)
 
@@ -83,7 +87,7 @@ def test_top_authors_overall_excludes_zero_score(client):
 
 
 @pytest.mark.django_db
-def test_top_authors_overall_capped_at_ten(client):
+def test_top_authors_overall_capped_at_ten(client: Client) -> None:
     for i in range(15):
         u = make_user(f"user{i}")
         s = Suchar.objects.create(text=f"Joke {i}", author=u)
@@ -104,7 +108,7 @@ def test_top_authors_overall_capped_at_ten(client):
 
 
 @pytest.mark.django_db
-def test_top_authors_funny_only_counts_funny_votes(client):
+def test_top_authors_funny_only_counts_funny_votes(client: Client) -> None:
     u_funny = make_user("funny_author")
     u_dry = make_user("dry_author")
     s_funny = Suchar.objects.create(text="Funny", author=u_funny)
@@ -124,7 +128,7 @@ def test_top_authors_funny_only_counts_funny_votes(client):
 
 
 @pytest.mark.django_db
-def test_leaderboard_renders_card_per_tab_via_shared_partials(client):
+def test_leaderboard_renders_card_per_tab_via_shared_partials(client: Client) -> None:
     u_funny = make_user("badge_funny_author")
     u_dry = make_user("badge_dry_author")
     s_funny = Suchar.objects.create(text="Funny joke", author=u_funny)
@@ -156,7 +160,7 @@ def test_leaderboard_renders_card_per_tab_via_shared_partials(client):
 
 
 @pytest.mark.django_db
-def test_top_suchars_overall_ordering(client):
+def test_top_suchars_overall_ordering(client: Client) -> None:
     author = make_user("author")
     s_popular = Suchar.objects.create(text="Popular", author=author)
     s_unpopular = Suchar.objects.create(text="Unpopular", author=author)
@@ -174,7 +178,7 @@ def test_top_suchars_overall_ordering(client):
 
 
 @pytest.mark.django_db
-def test_top_suchars_overall_excludes_zero_score(client):
+def test_top_suchars_overall_excludes_zero_score(client: Client) -> None:
     author = make_user("author")
     Suchar.objects.create(text="No votes joke", author=author)
 
@@ -189,7 +193,7 @@ def test_top_suchars_overall_excludes_zero_score(client):
 
 
 @pytest.mark.django_db
-def test_top_n_from_iterable_orders_descending_and_caps_at_limit():
+def test_top_n_from_iterable_orders_descending_and_caps_at_limit() -> None:
     author = make_user("top_n_author")
     for i in range(5):
         Suchar.objects.create(text=f"Joke {i}", author=author)
@@ -203,12 +207,14 @@ def test_top_n_from_iterable_orders_descending_and_caps_at_limit():
     result = _top_n_from_iterable(items, "score", limit=3)
 
     assert len(result) == 3  # noqa: PLR2004
-    scores = [s.score for s in result]
+    # .score comes from the .annotate(score=Count(...)) call above, not a
+    # static model field — django-stubs can't see it.
+    scores = [s.score for s in result]  # type: ignore[union-attr]
     assert scores == sorted(scores, reverse=True)
 
 
 @pytest.mark.django_db
-def test_top_n_from_iterable_excludes_zero_order_field():
+def test_top_n_from_iterable_excludes_zero_order_field() -> None:
     author = make_user("top_n_zero_author")
     scored = Suchar.objects.create(text="Scored", author=author)
     Suchar.objects.create(text="Unscored", author=author)
@@ -221,7 +227,7 @@ def test_top_n_from_iterable_excludes_zero_order_field():
     assert [s.pk for s in result] == [scored.pk]
 
 
-def test_top_n_from_iterable_breaks_ties_by_pk_ascending():
+def test_top_n_from_iterable_breaks_ties_by_pk_ascending() -> None:
     """Tie-break must be deterministic and independent of input order —
     Python's stable sort alone would just preserve whatever order the
     caller passed in, which for a DB-materialized list is not guaranteed
@@ -233,7 +239,9 @@ def test_top_n_from_iterable_breaks_ties_by_pk_ascending():
         SimpleNamespace(pk=2, score=5),
     ]
 
-    result = _top_n_from_iterable(items, "score")
+    # SimpleNamespace is a deliberate lightweight stand-in (only .pk and the
+    # order_field are needed) so this test doesn't have to hit the DB.
+    result = _top_n_from_iterable(items, "score")  # type: ignore[arg-type]
 
     assert [item.pk for item in result] == [1, 2, 3]
 
@@ -244,7 +252,7 @@ def test_top_n_from_iterable_breaks_ties_by_pk_ascending():
 
 
 @pytest.mark.django_db
-def test_chart_data_is_valid_json(client):
+def test_chart_data_is_valid_json(client: Client) -> None:
     response = client.get(reverse(LEADERBOARD_URL))
     # These must be JSON-parseable strings
     datasets = response.context["chart_datasets"]
@@ -257,7 +265,7 @@ def test_chart_data_is_valid_json(client):
 
 
 @pytest.mark.django_db
-def test_chart_data_reflects_recent_activity(client):
+def test_chart_data_reflects_recent_activity(client: Client) -> None:
     author = make_user("author")
     Suchar.objects.create(text="Recent joke", author=author)
     # created_at is auto_now_add — this suchar was created "now", within last 30 days
@@ -269,7 +277,7 @@ def test_chart_data_reflects_recent_activity(client):
 
 
 @pytest.mark.django_db
-def test_chart_labels_and_values_have_same_length(client):
+def test_chart_labels_and_values_have_same_length(client: Client) -> None:
     author = make_user("author")
     Suchar.objects.create(text="Joke", author=author)
 
@@ -280,7 +288,7 @@ def test_chart_labels_and_values_have_same_length(client):
 
 
 @pytest.mark.django_db
-def test_chart_ignores_old_suchars(client):
+def test_chart_ignores_old_suchars(client: Client) -> None:
     """Suchars older than 30 days must not appear in the 30-day activity chart."""
     author = make_user("author")
     old = Suchar.objects.create(text="Old joke", author=author)
@@ -300,7 +308,7 @@ def test_chart_ignores_old_suchars(client):
 
 
 @pytest.mark.django_db
-def test_build_context_executes_at_most_five_queries():
+def test_build_context_executes_at_most_five_queries() -> None:
     author = make_user("query_count_author")
     suchar = Suchar.objects.create(text="Joke", author=author)
     voter = make_user("query_count_voter")
@@ -313,7 +321,7 @@ def test_build_context_executes_at_most_five_queries():
 
 
 @pytest.mark.django_db
-def test_full_page_render_does_not_n_plus_one_on_tags(client):
+def test_full_page_render_does_not_n_plus_one_on_tags(client: Client) -> None:
     """Regression test for issue #183: `tags.first()` in the suchar card
     template used to hit the DB twice per card (once for `.slug`, once for
     `.name`) regardless of prefetching, because `.first()` clones the
@@ -338,7 +346,7 @@ def test_full_page_render_does_not_n_plus_one_on_tags(client):
 
 
 @pytest.mark.django_db
-def test_get_cached_context_second_call_within_ttl_does_not_query_db():
+def test_get_cached_context_second_call_within_ttl_does_not_query_db() -> None:
     author = make_user("cache_author")
     suchar = Suchar.objects.create(text="Joke", author=author)
     voter = make_user("cache_voter")
@@ -354,7 +362,9 @@ def test_get_cached_context_second_call_within_ttl_does_not_query_db():
 
 
 @pytest.mark.django_db
-def test_leaderboard_second_request_within_ttl_issues_no_aggregating_queries(client):
+def test_leaderboard_second_request_within_ttl_issues_no_aggregating_queries(
+    client: Client,
+) -> None:
     author = make_user("cache_author")
     suchar = Suchar.objects.create(text="Joke", author=author)
     voter = make_user("cache_voter")
@@ -369,7 +379,7 @@ def test_leaderboard_second_request_within_ttl_issues_no_aggregating_queries(cli
 
 
 @pytest.mark.django_db
-def test_leaderboard_cache_repopulates_after_cache_clear(client):
+def test_leaderboard_cache_repopulates_after_cache_clear(client: Client) -> None:
     """Not a TTL test: deleting the cache key stands in for expiry, since the
     view itself has no lever to expire the cache early. This only proves a
     fresh `_build_context` call re-reads current DB state, not that TTL fires.

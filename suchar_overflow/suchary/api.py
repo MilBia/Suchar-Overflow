@@ -1,11 +1,20 @@
 from typing import Literal
 
 from django.db.models import Count
+
+# django-ninja resolves endpoint parameter *and return* types via
+# get_type_hints()/inspect.signature() at request-handling time, forcing
+# eager resolution — same gotcha as View.as_view() in users/mixins.py; these
+# imports must stay real, not TYPE_CHECKING-only.
 from django.db.models import Q
+from django.db.models import QuerySet
+from django.http import HttpRequest  # noqa: TC002
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja import Schema
 from ninja.security import django_auth
+
+from suchar_overflow.users.models import User
 
 from .models import Suchar
 from .models import Tag
@@ -31,7 +40,7 @@ class TagSchema(Schema):
 
 
 @router.get("/tags", response=list[TagSchema])
-def list_tags(request, q: str | None = None):
+def list_tags(request: HttpRequest, q: str | None = None) -> QuerySet[Tag]:  # noqa: ARG001
     tags = Tag.objects.all()
     if q:
         tags = tags.filter(name__icontains=q)
@@ -39,9 +48,10 @@ def list_tags(request, q: str | None = None):
 
 
 @router.post("/{suchar_id}/vote", auth=django_auth, response=VoteResponse)
-def vote_suchar(request, suchar_id: int, payload: VoteSchema):
+def vote_suchar(request: HttpRequest, suchar_id: int, payload: VoteSchema) -> dict:
     suchar = get_object_or_404(Suchar, pk=suchar_id)
     user = request.user
+    assert isinstance(user, User)  # django_auth already rejects anonymous requests
     vote_type = payload.vote_type
 
     vote, _ = Vote.objects.get_or_create(

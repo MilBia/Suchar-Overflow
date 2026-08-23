@@ -1,4 +1,6 @@
+from datetime import datetime
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 from django import forms
 from django.utils import timezone
@@ -7,6 +9,9 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import Suchar
 from .models import Tag
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class SucharForm(forms.ModelForm):
@@ -37,7 +42,7 @@ class SucharForm(forms.ModelForm):
             "published_at": _("Leave empty to publish immediately."),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: ANN401
         super().__init__(*args, **kwargs)
         if self.instance.pk:
             # Populate tags_input from existing tags
@@ -48,7 +53,7 @@ class SucharForm(forms.ModelForm):
         # Make published_at optional so that empty value (publish now) is accepted
         self.fields["published_at"].required = False
 
-    def clean_published_at(self):
+    def clean_published_at(self) -> datetime:
         published_at = self.cleaned_data.get("published_at")
         if not published_at:
             return timezone.now()
@@ -60,7 +65,7 @@ class SucharForm(forms.ModelForm):
             )
         return published_at
 
-    def clean_tags_input(self):
+    def clean_tags_input(self) -> str:
         tags_input = self.cleaned_data.get("tags_input", "")
         normalized = tags_input.replace(",", " ")
         tag_names = [
@@ -74,7 +79,7 @@ class SucharForm(forms.ModelForm):
             )
         return tags_input
 
-    def clean_text(self):
+    def clean_text(self) -> str:
         text = self.cleaned_data.get("text", "")
         if len(text) > 2000:  # noqa: PLR2004
             raise forms.ValidationError(
@@ -83,7 +88,7 @@ class SucharForm(forms.ModelForm):
             )
         return text
 
-    def save(self, commit=True):  # noqa: FBT002
+    def save(self, commit: bool = True) -> Suchar:  # noqa: FBT001, FBT002
         instance = super().save(commit=False)
         if commit:
             instance.save()
@@ -91,7 +96,7 @@ class SucharForm(forms.ModelForm):
         else:
             _base_save_m2m = self.save_m2m
 
-            def save_m2m():
+            def save_m2m() -> None:
                 _base_save_m2m()
                 self._save_tags(instance)
 
@@ -102,7 +107,7 @@ class SucharForm(forms.ModelForm):
             self.save_m2m = save_m2m  # type: ignore[method-assign]
         return instance
 
-    def _save_tags(self, instance):
+    def _save_tags(self, instance: Suchar) -> None:
         tags_input = self.cleaned_data.get("tags_input", "")
         # Replace commas with spaces to handle both separators
         tags_input = tags_input.replace(",", " ")

@@ -1,5 +1,6 @@
 from datetime import timedelta
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.messages import get_messages
@@ -11,16 +12,21 @@ from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
 
+if TYPE_CHECKING:
+    from django.test import Client
+
+    from suchar_overflow.users.models import User as UserModel
+
 
 @pytest.mark.django_db
-def test_suchar_list_view(client):
+def test_suchar_list_view(client: Client) -> None:
     url = reverse("suchary:list")
     response = client.get(url)
     assert response.status_code == HTTPStatus.OK
 
 
 @pytest.mark.django_db
-def test_create_suchar(client, django_user_model):
+def test_create_suchar(client: Client, django_user_model: type[UserModel]) -> None:
     user = django_user_model.objects.create_user(
         username="testuser",
         password="password",  # noqa: S106
@@ -40,7 +46,10 @@ def test_create_suchar(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_suchar_list_sorting(client, django_user_model):
+def test_suchar_list_sorting(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     user = django_user_model.objects.create_user(
         username="author",
         email="author@example.com",
@@ -71,7 +80,7 @@ def test_suchar_list_sorting(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_suchar_list_search(client, django_user_model):
+def test_suchar_list_search(client: Client, django_user_model: type[UserModel]) -> None:
     user = django_user_model.objects.create_user(
         username="author",
         email="author@example.com",
@@ -101,7 +110,10 @@ def test_suchar_list_search(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_create_suchar_with_tags(client, django_user_model):
+def test_create_suchar_with_tags(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     user = django_user_model.objects.create_user(
         username="testuser",
         email="testuser@example.com",
@@ -125,7 +137,10 @@ def test_create_suchar_with_tags(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_pagination_preserves_params(client, django_user_model):
+def test_pagination_preserves_params(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     user = django_user_model.objects.create_user(
         username="author",
         email="author@example.com",
@@ -154,9 +169,9 @@ def test_pagination_preserves_params(client, django_user_model):
 
 @pytest.mark.django_db
 def test_search_query_with_special_chars_is_urlencoded_in_links(
-    client,
-    django_user_model,
-):
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     user = django_user_model.objects.create_user(
         username="author2",
         email="author2@example.com",

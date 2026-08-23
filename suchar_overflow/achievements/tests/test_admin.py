@@ -7,7 +7,7 @@ from suchar_overflow.achievements.models import Achievement
 
 @pytest.mark.django_db
 class TestAchievementAdmin:
-    def test_icon_preview_with_braces_in_content(self):
+    def test_icon_preview_with_braces_in_content(self) -> None:
         """Test that icon_preview handles SVG with braces without crashing."""
         # Create an Achievement with SVG containing braces
         achievement = Achievement.objects.create(
@@ -34,7 +34,7 @@ class TestAchievementAdmin:
         # Result should be wrapped in the div
         assert "width: 32px; height: 32px;" in result
 
-    def test_icon_preview_with_multiple_braces(self):
+    def test_icon_preview_with_multiple_braces(self) -> None:
         """Test icon_preview with multiple braces in different contexts."""
         achievement = Achievement.objects.create(
             name="Complex SVG",
@@ -54,7 +54,7 @@ class TestAchievementAdmin:
         assert ".class1{fill:blue}" in result
         assert ".class2{stroke:green}" in result
 
-    def test_icon_preview_without_content(self):
+    def test_icon_preview_without_content(self) -> None:
         """Test that icon_preview returns dash when no icon content."""
         achievement = Achievement.objects.create(
             name="No Icon",
@@ -72,7 +72,7 @@ class TestAchievementAdmin:
 
         assert result == "-"
 
-    def test_icon_preview_with_normal_svg(self):
+    def test_icon_preview_with_normal_svg(self) -> None:
         """Test that icon_preview works with normal SVG without braces."""
         achievement = Achievement.objects.create(
             name="Simple Icon",

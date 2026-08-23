@@ -119,8 +119,8 @@ Always run a second time after auto-fixes to confirm all hooks pass.
 ## Code style — ruff rules in force
 
 Active rule sets include: F, E, W, C90, I, N, UP, S, B, SLF, PL (covers PLC/PLE/PLR/PLW),
-DJ, and many more. Only `S101`, `RUF012`, `SIM102` are globally ignored — the rules below
-are all active.
+DJ, ANN, ARG, and many more. Only `S101`, `RUF012`, `SIM102` are globally ignored — the
+rules below are all active.
 Key rules that trip agents up:
 
 | Rule | What it catches | How to fix |
@@ -131,8 +131,48 @@ Key rules that trip agents up:
 | `S106` | Hardcoded password string | Add `# noqa: S106` on test fixture passwords |
 | `PLR2004` | Magic value comparison | Add `# noqa: PLR2004` on numeric assertions in tests |
 | `E501` | Line > 88 chars | Shorten comments/docstrings; use `# noqa: E501` only as last resort |
+| `ARG001`/`ARG002`/`ARG003` | Unused function/method/classmethod argument | If genuinely removable (e.g. unused `*args, **kwargs` on a Django CBV method whose URL has no captured groups), delete it. If the name/position is mandated by a framework contract you don't control (Django signal receivers — dispatched by keyword, so the param name literally can't change; `ModelAdmin`/`ModelForm` overrides; polymorphic interfaces like `AchievementRule.evaluate`), add `# noqa: ARG00x` rather than renaming. For a pytest fixture used only for its side effect (never referenced in the test body), prefer `@pytest.mark.usefixtures("fixture_name")` over accepting-and-ignoring the parameter — it removes the violation and the dead parameter together. Never rename a pytest fixture parameter to silence this — fixtures are injected by exact parameter name. |
+| `ANN001`/`ANN201`/etc. | Missing type annotation | See "Type annotations (ANN)" below — this codebase has real gotchas around *when* an annotation-only import can go under `TYPE_CHECKING`. |
+| `ANN401` | Explicit `Any` in a signature | Legitimate for genuinely dynamic boundaries (Django management command `**options`, from argparse) — add `# noqa: ANN401` rather than mistyping as `object` and fighting mypy. |
+| `FBT001`/`FBT002` | Boolean positional argument | Fires the moment a previously-untyped bool param gets annotated. If the name/position is framework-mandated (`ModelForm.save(commit=...)`, factory_boy `post_generation` hooks, signal receivers' `created`), add `# noqa: FBT001`/`FBT002` — don't reorder to keyword-only unless you also control every call site. |
 
 `ruff format` enforces 88-char line width and import sorting (`force-single-line = true`).
+When combining a `# type: ignore[code]` with a `# noqa: CODE` on the same line, the
+`type: ignore` must come first — mypy only recognizes it as the leading comment.
+
+### Type annotations (ANN) — TYPE_CHECKING guard rules
+
+Python 3.14 (PEP 649) defers annotation evaluation by default, so an import used only in
+a type annotation is normally safe to put under `if TYPE_CHECKING:` — this works even for
+local variable annotations (`x: dict[str, Any] = {}`), which are never evaluated at
+runtime at all. This project does **not** use `from __future__ import annotations`; stay
+consistent with that (PEP 649 already gives the same benefit without it).
+
+There are exactly two situations where an annotation-only import must stay a **real**
+top-level import (with `# noqa: TC002`/`TC003` to satisfy the `TC` rule set), because
+something reads the annotation at runtime, not just at type-check time:
+
+- **`django.views.generic.View.dispatch()` overrides.** `View.as_view()` copies
+  `cls.dispatch.__annotations__` at class-creation time, which forces the (otherwise
+  lazy) annotation to resolve immediately. Only `suchar_overflow/users/mixins.py`
+  overrides `dispatch()` in this codebase — regular `get`/`post`/etc. method overrides
+  are *not* affected and can use `TYPE_CHECKING` freely.
+- **Every django-ninja `@router.get/post/...` endpoint function**, in every parameter
+  *and* the return type. Ninja calls `inspect.signature()`/`get_type_hints()` on the
+  whole function at request-handling time; a `NameError` on a TYPE_CHECKING-only name
+  only surfaces when the endpoint is actually hit (ruff and mypy won't catch it — write
+  or run a test that hits the endpoint).
+
+When `request.user` / `request.auser()` is accessed on a view/endpoint that's guarded by
+`AsyncLoginRequiredMixin` or ninja's `auth=django_auth`, django-stubs still types it as
+`User | AnonymousUser`. Narrow it explicitly rather than suppressing the error:
+```python
+user = await request.auser()
+# AsyncLoginRequiredMixin already rejects anonymous requests.
+assert isinstance(user, User)
+```
+(`assert` is fine here — `S101` is globally ignored, and production does not run with
+`python -O`, so this is a real runtime guard, not just a mypy hint.)
 
 ## Settings architecture — do not break this
 

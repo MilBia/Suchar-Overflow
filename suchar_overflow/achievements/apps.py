@@ -25,7 +25,7 @@ class AchievementsConfig(AppConfig):
     name = "suchar_overflow.achievements"
     verbose_name = _("Achievements")
 
-    def ready(self):
+    def ready(self) -> None:
         import suchar_overflow.achievements.signals  # noqa: F401
 
         if "pytest" in sys.modules:
@@ -57,7 +57,7 @@ class AchievementsConfig(AppConfig):
         return command in _NO_SCHEDULER
 
     @staticmethod
-    def _catch_up_missed_monthly_run():
+    def _catch_up_missed_monthly_run() -> None:
         """Run ``award_best_suchar`` immediately if the last due monthly
         cron fire was never recorded (e.g. the process was down when the
         in-memory jobstore would have fired it — see #169).
@@ -90,7 +90,7 @@ class AchievementsConfig(AppConfig):
             award_best_suchar("month", reference_date=due_at.date() - timedelta(days=1))
 
     @staticmethod
-    def _catch_up_missed_yearly_run():
+    def _catch_up_missed_yearly_run() -> None:
         """Run ``award_best_suchar`` immediately if the last due yearly cron
         fire was never recorded — the yearly counterpart of
         ``_catch_up_missed_monthly_run`` (see #169, extended in #168).
@@ -118,7 +118,7 @@ class AchievementsConfig(AppConfig):
             award_best_suchar("year", reference_date=due_at.date() - timedelta(days=1))
 
     @staticmethod
-    def _start_scheduler():
+    def _start_scheduler() -> None:
         from apscheduler.schedulers.background import BackgroundScheduler
 
         from suchar_overflow.achievements.tasks import award_best_suchar

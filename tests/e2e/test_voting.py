@@ -1,16 +1,24 @@
 """E2E tests for the AJAX voting system (voting.js)."""
 
+from typing import TYPE_CHECKING
+
 import pytest
+
+if TYPE_CHECKING:
+    from playwright.sync_api import Page
+    from pytest_django.live_server_helper import LiveServer
+
+    from suchar_overflow.suchary.models import Suchar as SucharModel
 
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
 def test_authenticated_user_can_cast_funny_vote(
-    page,
-    live_server,
-    login,
-    published_suchar,
-):
+    page: Page,
+    live_server: LiveServer,
+    published_suchar: SucharModel,
+) -> None:
     """Clicking the funny button increments the count and marks it active."""
     page.goto(f"{live_server.url}/suchary/")
     page.wait_for_load_state("networkidle")
@@ -40,10 +48,10 @@ def test_authenticated_user_can_cast_funny_vote(
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
 def test_unauthenticated_vote_click_redirects_to_login(
-    page,
-    live_server,
-    published_suchar,
-):
+    page: Page,
+    live_server: LiveServer,
+    published_suchar: SucharModel,
+) -> None:
     """Anonymous user clicking a vote button is redirected to the login page."""
     page.goto(f"{live_server.url}/suchary/")
     page.wait_for_load_state("networkidle")
@@ -61,12 +69,12 @@ def test_unauthenticated_vote_click_redirects_to_login(
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
 def test_clicking_active_vote_toggles_it_off(
-    page,
-    live_server,
-    login,
-    published_suchar,
-):
+    page: Page,
+    live_server: LiveServer,
+    published_suchar: SucharModel,
+) -> None:
     """Clicking an active vote button a second time removes the active state."""
     pk = published_suchar.pk
     page.goto(f"{live_server.url}/suchary/")

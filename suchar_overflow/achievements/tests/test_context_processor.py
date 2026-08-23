@@ -9,7 +9,7 @@ from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
 
 
-def make_achievement(slug, name="Achievement"):
+def make_achievement(slug: str, name: str = "Achievement") -> Achievement:
     ach, _ = Achievement.objects.get_or_create(
         slug=slug,
         defaults={
@@ -26,7 +26,7 @@ def make_achievement(slug, name="Achievement"):
 
 
 @pytest.mark.django_db
-def test_anonymous_user_gets_zero_count():
+def test_anonymous_user_gets_zero_count() -> None:
     factory = RequestFactory()
     request = factory.get("/")
     request.user = type("AnonymousUser", (), {"is_authenticated": False})()
@@ -38,7 +38,7 @@ def test_anonymous_user_gets_zero_count():
 
 
 @pytest.mark.django_db
-def test_authenticated_user_with_no_unseen_gets_zero_count():
+def test_authenticated_user_with_no_unseen_gets_zero_count() -> None:
     user = make_user("cp_user1")
     factory = RequestFactory()
     request = factory.get("/")
@@ -51,7 +51,7 @@ def test_authenticated_user_with_no_unseen_gets_zero_count():
 
 
 @pytest.mark.django_db
-def test_unseen_count_reflects_unseen_achievements():
+def test_unseen_count_reflects_unseen_achievements() -> None:
     user = make_user("cp_user2")
     ach1 = make_achievement("cp-ach-1", "One")
     ach2 = make_achievement("cp-ach-2", "Two")
@@ -69,7 +69,7 @@ def test_unseen_count_reflects_unseen_achievements():
 
 
 @pytest.mark.django_db
-def test_seen_achievements_not_counted():
+def test_seen_achievements_not_counted() -> None:
     user = make_user("cp_user3")
     ach = make_achievement("cp-ach-seen", "Seen")
     UserAchievement.objects.create(user=user, achievement=ach, is_seen=True)
@@ -85,7 +85,7 @@ def test_seen_achievements_not_counted():
 
 
 @pytest.mark.django_db
-def test_preview_capped_at_five():
+def test_preview_capped_at_five() -> None:
     user = make_user("cp_user4")
     for i in range(7):
         ach = make_achievement(f"cp-ach-{i}", f"Achievement {i}")
@@ -102,7 +102,7 @@ def test_preview_capped_at_five():
 
 
 @pytest.mark.django_db
-def test_preview_ordered_newest_first():
+def test_preview_ordered_newest_first() -> None:
     user = make_user("cp_user5")
     ach1 = make_achievement("cp-order-1", "Older")
     ach2 = make_achievement("cp-order-2", "Newer")

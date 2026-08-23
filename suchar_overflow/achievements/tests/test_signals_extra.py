@@ -9,7 +9,7 @@ from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
 
-def make_suchar_achievement(slug, threshold=1):
+def make_suchar_achievement(slug: str, threshold: int = 1) -> Achievement:
     return Achievement.objects.create(
         slug=slug,
         name=slug,
@@ -22,7 +22,7 @@ def make_suchar_achievement(slug, threshold=1):
     )
 
 
-def make_vote_cast_achievement(slug, threshold=1):
+def make_vote_cast_achievement(slug: str, threshold: int = 1) -> Achievement:
     return Achievement.objects.create(
         slug=slug,
         name=slug,
@@ -35,7 +35,7 @@ def make_vote_cast_achievement(slug, threshold=1):
     )
 
 
-def make_vote_received_achievement(slug, threshold=1):
+def make_vote_received_achievement(slug: str, threshold: int = 1) -> Achievement:
     # SUM_SCORE checks net score of votes received on author's suchary,
     # which correctly evaluates from the author's perspective (not the voter's).
     return Achievement.objects.create(
@@ -56,7 +56,7 @@ def make_vote_received_achievement(slug, threshold=1):
 
 
 @pytest.mark.django_db
-def test_suchar_update_does_not_award_achievement():
+def test_suchar_update_does_not_award_achievement() -> None:
     """Saving an existing Suchar (created=False) must not trigger achievements."""
     user = make_user("u1")
     ach = make_suchar_achievement("first-suchar-extra", threshold=1)
@@ -81,7 +81,7 @@ def test_suchar_update_does_not_award_achievement():
 
 
 @pytest.mark.django_db
-def test_vote_update_does_not_trigger_achievement_check():
+def test_vote_update_does_not_trigger_achievement_check() -> None:
     """Updating an existing Vote (toggling flags) must not re-trigger engine."""
     author = make_user("author")
     voter = make_user("voter")
@@ -114,7 +114,7 @@ def test_vote_update_does_not_trigger_achievement_check():
 
 
 @pytest.mark.django_db
-def test_vote_awards_achievement_to_voter():
+def test_vote_awards_achievement_to_voter() -> None:
     """Creating a Vote checks VOTE_CAST achievements for the voter."""
     author = make_user("author")
     voter = make_user("voter")
@@ -127,7 +127,7 @@ def test_vote_awards_achievement_to_voter():
 
 
 @pytest.mark.django_db
-def test_vote_awards_achievement_to_author():
+def test_vote_awards_achievement_to_author() -> None:
     """Creating a Vote checks VOTE_RECEIVED achievements for the suchar author."""
     author = make_user("author")
     voter = make_user("voter")
@@ -140,7 +140,7 @@ def test_vote_awards_achievement_to_author():
 
 
 @pytest.mark.django_db
-def test_vote_checks_both_voter_and_author_independently():
+def test_vote_checks_both_voter_and_author_independently() -> None:
     """A single Vote creation must trigger engine for both voter and author."""
     author = make_user("author")
     voter = make_user("voter")
@@ -159,7 +159,7 @@ def test_vote_checks_both_voter_and_author_independently():
 
 
 @pytest.mark.django_db
-def test_author_voting_own_suchar_awards_voter_not_duplicate_author():
+def test_author_voting_own_suchar_awards_voter_not_duplicate_author() -> None:
     """When author votes their own suchar, they get voter achievement; author
     achievement fires separately and must not duplicate."""
     author = make_user("self_voter")

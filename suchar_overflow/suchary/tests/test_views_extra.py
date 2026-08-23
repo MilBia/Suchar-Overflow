@@ -2,6 +2,7 @@
 
 from datetime import timedelta
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.messages import get_messages
@@ -14,6 +15,11 @@ from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
 
+if TYPE_CHECKING:
+    from django.test import Client
+
+    from suchar_overflow.users.models import User as UserModel
+
 LIST_URL = "suchary:list"
 ADD_URL = "suchary:add"
 
@@ -24,7 +30,7 @@ ADD_URL = "suchary:add"
 
 
 @pytest.mark.django_db
-def test_list_hides_scheduled_suchar(client):
+def test_list_hides_scheduled_suchar(client: Client) -> None:
     user = make_user("author")
     future = timezone.now() + timedelta(days=1)
     Suchar.objects.create(text="Future joke", author=user, published_at=future)
@@ -35,7 +41,7 @@ def test_list_hides_scheduled_suchar(client):
 
 
 @pytest.mark.django_db
-def test_list_shows_published_suchar(client):
+def test_list_shows_published_suchar(client: Client) -> None:
     user = make_user("author")
     Suchar.objects.create(text="Past joke", author=user)
 
@@ -49,7 +55,10 @@ def test_list_shows_published_suchar(client):
 
 
 @pytest.mark.django_db
-def test_list_annotates_user_is_funny_for_authenticated(client, django_user_model):
+def test_list_annotates_user_is_funny_for_authenticated(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     author = django_user_model.objects.create_user(
         username="auth_author",
         email="aa@example.com",
@@ -72,7 +81,10 @@ def test_list_annotates_user_is_funny_for_authenticated(client, django_user_mode
 
 
 @pytest.mark.django_db
-def test_list_annotates_user_is_dry_for_authenticated(client, django_user_model):
+def test_list_annotates_user_is_dry_for_authenticated(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     author = django_user_model.objects.create_user(
         username="dry_author",
         email="da@example.com",
@@ -94,7 +106,10 @@ def test_list_annotates_user_is_dry_for_authenticated(client, django_user_model)
 
 
 @pytest.mark.django_db
-def test_list_no_user_vote_annotations_for_anonymous(client, django_user_model):
+def test_list_no_user_vote_annotations_for_anonymous(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     author = django_user_model.objects.create_user(
         username="anon_author",
         email="ano@example.com",
@@ -115,7 +130,10 @@ def test_list_no_user_vote_annotations_for_anonymous(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_list_combined_text_and_tag_filter(client, django_user_model):
+def test_list_combined_text_and_tag_filter(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     author = django_user_model.objects.create_user(
         username="combo_auth",
         email="combo@example.com",
@@ -146,7 +164,10 @@ def test_list_combined_text_and_tag_filter(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_list_author_filter_exact_match(client, django_user_model):
+def test_list_author_filter_exact_match(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     u1 = django_user_model.objects.create_user(
         username="alice",
         email="alice@example.com",
@@ -172,14 +193,14 @@ def test_list_author_filter_exact_match(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_create_requires_login(client):
+def test_create_requires_login(client: Client) -> None:
     response = client.get(reverse(ADD_URL))
     assert response.status_code == HTTPStatus.FOUND
     assert "/accounts/login/" in response["Location"]
 
 
 @pytest.mark.django_db
-def test_create_post_requires_login(client):
+def test_create_post_requires_login(client: Client) -> None:
     response = client.post(reverse(ADD_URL), {"text": "joke"})
     assert response.status_code == HTTPStatus.FOUND
     assert "/accounts/login/" in response["Location"]
@@ -191,7 +212,10 @@ def test_create_post_requires_login(client):
 
 
 @pytest.mark.django_db
-def test_update_non_author_forbidden(client, django_user_model):
+def test_update_non_author_forbidden(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     author = django_user_model.objects.create_user(
         username="upd_author",
         email="ua@example.com",
@@ -220,7 +244,10 @@ def test_update_non_author_forbidden(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_update_author_can_edit_unpublished(client, django_user_model):
+def test_update_author_can_edit_unpublished(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     author = django_user_model.objects.create_user(
         username="upd_auth2",
         email="ua2@example.com",
@@ -239,7 +266,10 @@ def test_update_author_can_edit_unpublished(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_update_author_post_success_shows_message(client, django_user_model):
+def test_update_author_post_success_shows_message(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     author = django_user_model.objects.create_user(
         username="upd_auth4",
         email="ua4@example.com",
@@ -263,7 +293,10 @@ def test_update_author_post_success_shows_message(client, django_user_model):
 
 
 @pytest.mark.django_db
-def test_update_author_gets_too_late_page_for_published(client, django_user_model):
+def test_update_author_gets_too_late_page_for_published(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
     author = django_user_model.objects.create_user(
         username="upd_auth3",
         email="ua3@example.com",

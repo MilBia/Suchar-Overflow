@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from django.core.cache import cache
@@ -7,13 +8,16 @@ from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
 
+if TYPE_CHECKING:
+    from django.test import Client
+
 UNSEEN_ACHIEVEMENTS_URL = "/api/achievements/unseen"
 MARK_SEEN_URL = "/api/achievements/mark-seen"
 FRONTEND_OWNED_URL = "/api/achievements/frontend-owned"
 FRONTEND_EVENT_URL = "/api/achievements/frontend-event"
 
 
-def make_achievement(slug, name="Achievement"):
+def make_achievement(slug: str, name: str = "Achievement") -> Achievement:
     return Achievement.objects.create(
         slug=slug,
         name=name,
@@ -26,7 +30,10 @@ def make_achievement(slug, name="Achievement"):
     )
 
 
-def make_frontend_achievement(slug, name="Frontend Achievement"):
+def make_frontend_achievement(
+    slug: str,
+    name: str = "Frontend Achievement",
+) -> Achievement:
     achievement, _ = Achievement.objects.get_or_create(
         slug=slug,
         defaults={
@@ -43,13 +50,13 @@ def make_frontend_achievement(slug, name="Frontend Achievement"):
 
 
 @pytest.mark.django_db
-def test_unseen_achievements_requires_login(client):
+def test_unseen_achievements_requires_login(client: Client) -> None:
     response = client.get(UNSEEN_ACHIEVEMENTS_URL)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
 @pytest.mark.django_db
-def test_unseen_achievements_empty_by_default(client):
+def test_unseen_achievements_empty_by_default(client: Client) -> None:
     user = make_user("user1")
     client.force_login(user)
 
@@ -59,7 +66,7 @@ def test_unseen_achievements_empty_by_default(client):
 
 
 @pytest.mark.django_db
-def test_unseen_achievements_returns_awarded(client):
+def test_unseen_achievements_returns_awarded(client: Client) -> None:
     user = make_user("user1")
     client.force_login(user)
 
@@ -96,13 +103,13 @@ def test_unseen_achievements_returns_awarded(client):
 
 
 @pytest.mark.django_db
-def test_mark_seen_requires_login(client):
+def test_mark_seen_requires_login(client: Client) -> None:
     response = client.post(MARK_SEEN_URL)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
 @pytest.mark.django_db
-def test_mark_seen_marks_all_unseen_as_seen(client):
+def test_mark_seen_marks_all_unseen_as_seen(client: Client) -> None:
     user = make_user("user_ms")
     client.force_login(user)
 
@@ -122,7 +129,7 @@ def test_mark_seen_marks_all_unseen_as_seen(client):
 
 
 @pytest.mark.django_db
-def test_mark_seen_idempotent(client):
+def test_mark_seen_idempotent(client: Client) -> None:
     user = make_user("user_ms_idem")
     client.force_login(user)
 
@@ -142,13 +149,15 @@ def test_mark_seen_idempotent(client):
 
 
 @pytest.mark.django_db
-def test_frontend_owned_requires_login(client):
+def test_frontend_owned_requires_login(client: Client) -> None:
     response = client.get(FRONTEND_OWNED_URL)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
 @pytest.mark.django_db
-def test_frontend_owned_empty_when_user_has_no_frontend_achievements(client):
+def test_frontend_owned_empty_when_user_has_no_frontend_achievements(
+    client: Client,
+) -> None:
     user = make_user("user_fe_empty")
     client.force_login(user)
 
@@ -158,7 +167,7 @@ def test_frontend_owned_empty_when_user_has_no_frontend_achievements(client):
 
 
 @pytest.mark.django_db
-def test_frontend_owned_returns_correct_slugs(client):
+def test_frontend_owned_returns_correct_slugs(client: Client) -> None:
     user = make_user("user_fe_slugs")
     client.force_login(user)
 
@@ -175,7 +184,7 @@ def test_frontend_owned_returns_correct_slugs(client):
 
 
 @pytest.mark.django_db
-def test_frontend_owned_excludes_non_frontend_achievements(client):
+def test_frontend_owned_excludes_non_frontend_achievements(client: Client) -> None:
     user = make_user("user_fe_excl")
     client.force_login(user)
 
@@ -210,7 +219,7 @@ def test_frontend_owned_excludes_non_frontend_achievements(client):
 
 
 @pytest.mark.django_db
-def test_frontend_event_requires_login(client):
+def test_frontend_event_requires_login(client: Client) -> None:
     response = client.post(
         FRONTEND_EVENT_URL,
         data={"event_slug": "frontend-odkrywca"},
@@ -220,7 +229,7 @@ def test_frontend_event_requires_login(client):
 
 
 @pytest.mark.django_db
-def test_frontend_event_returns_400_for_invalid_slug(client):
+def test_frontend_event_returns_400_for_invalid_slug(client: Client) -> None:
     user = make_user("user_fe_bad_slug")
     client.force_login(user)
 
@@ -233,7 +242,7 @@ def test_frontend_event_returns_400_for_invalid_slug(client):
 
 
 @pytest.mark.django_db
-def test_frontend_event_returns_400_for_empty_slug(client):
+def test_frontend_event_returns_400_for_empty_slug(client: Client) -> None:
     user = make_user("user_fe_empty_slug")
     client.force_login(user)
 
@@ -246,7 +255,7 @@ def test_frontend_event_returns_400_for_empty_slug(client):
 
 
 @pytest.mark.django_db
-def test_frontend_event_happy_path_creates_user_achievement(client):
+def test_frontend_event_happy_path_creates_user_achievement(client: Client) -> None:
     user = make_user("user_fe_happy")
     client.force_login(user)
 
@@ -266,7 +275,7 @@ def test_frontend_event_happy_path_creates_user_achievement(client):
 
 
 @pytest.mark.django_db
-def test_frontend_event_idempotent_no_duplicate_created(client):
+def test_frontend_event_idempotent_no_duplicate_created(client: Client) -> None:
     user = make_user("user_fe_idem")
     client.force_login(user)
 
@@ -285,7 +294,7 @@ def test_frontend_event_idempotent_no_duplicate_created(client):
 
 
 @pytest.mark.django_db
-def test_frontend_event_sets_cache_key_on_new_award(client):
+def test_frontend_event_sets_cache_key_on_new_award(client: Client) -> None:
     user = make_user("user_fe_cache_set")
     client.force_login(user)
 
@@ -303,7 +312,9 @@ def test_frontend_event_sets_cache_key_on_new_award(client):
 
 
 @pytest.mark.django_db
-def test_frontend_event_does_not_set_cache_key_when_already_owned(client):
+def test_frontend_event_does_not_set_cache_key_when_already_owned(
+    client: Client,
+) -> None:
     user = make_user("user_fe_cache_idem")
     client.force_login(user)
 

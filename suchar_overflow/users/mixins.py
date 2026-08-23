@@ -6,7 +6,9 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 
 # Django's View.as_view() copies cls.dispatch.__annotations__ at class-creation
 # time, forcing the lazy annotation to resolve — it must stay a real runtime
-# import, not TYPE_CHECKING-only.
+# import, not TYPE_CHECKING-only. Same for HttpRequest below (dispatch's whole
+# annotation set is copied, not just the return type).
+from django.http import HttpRequest  # noqa: TC002
 from django.http import HttpResponseBase  # noqa: TC002
 from django.shortcuts import redirect
 from django.utils.translation import gettext
@@ -20,9 +22,9 @@ class AsyncLoginRequiredMixin(LoginRequiredMixin, View):
     # no async variant, even though Django supports async dispatch at runtime.
     async def dispatch(  # type: ignore[override]
         self,
-        request,
-        *args,
-        **kwargs,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
     ) -> HttpResponseBase:
         if callable(getattr(request, "auser", None)):
             user = await request.auser()
@@ -55,9 +57,9 @@ class AsyncUserPassesTestMixin(UserPassesTestMixin, View):
     # variant of `dispatch`/`test_func`.
     async def dispatch(  # type: ignore[override]
         self,
-        request,
-        *args,
-        **kwargs,
+        request: HttpRequest,
+        *args: object,
+        **kwargs: object,
     ) -> HttpResponseBase:
         if callable(getattr(request, "auser", None)):
             request.user = await request.auser()

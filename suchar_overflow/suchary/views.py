@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from asgiref.sync import sync_to_async
 from django.contrib import messages
 from django.core.paginator import InvalidPage
@@ -16,10 +18,15 @@ from django.views import View
 
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 from suchar_overflow.users.mixins import AsyncUserPassesTestMixin
+from suchar_overflow.users.models import User
 
 from .forms import SucharForm
 from .models import Suchar
 from .models import Vote
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
+    from django.http import HttpResponse
 
 _PER_PAGE = 10
 
@@ -27,7 +34,7 @@ _PER_PAGE = 10
 class SucharListView(View):
     template_name = "suchary/suchar_list.html"
 
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         qs = (
             Suchar.objects.select_related("author")
             .prefetch_related("tags")
@@ -75,7 +82,7 @@ class SucharListView(View):
 
         page_number = request.GET.get("page", 1)
 
-        def _paginate_and_render():
+        def _paginate_and_render() -> HttpResponse:
             paginator = Paginator(qs, per_page=_PER_PAGE)
             try:
                 page = paginator.page(page_number)
@@ -99,14 +106,14 @@ class SucharCreateView(AsyncLoginRequiredMixin):
     template_name = "suchary/suchar_form.html"
     success_url = reverse_lazy("suchary:list")
 
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request: HttpRequest) -> HttpResponse:
         return await sync_to_async(render)(
             request,
             self.template_name,
             {"form": SucharForm()},
         )
 
-    async def post(self, request, *args, **kwargs):
+    async def post(self, request: HttpRequest) -> HttpResponse:
         form = SucharForm(request.POST)  # safe: no instance, no DB in __init__
         if not await sync_to_async(form.is_valid)():
             return await sync_to_async(render)(
@@ -115,8 +122,10 @@ class SucharCreateView(AsyncLoginRequiredMixin):
                 {"form": form},
             )
 
-        def _save():
+        def _save() -> None:
             suchar = form.save(commit=False)
+            # AsyncLoginRequiredMixin already rejects anonymous requests.
+            assert isinstance(request.user, User)
             suchar.author = request.user
             suchar.save()
             form.save_m2m()
@@ -130,17 +139,21 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin):  # ty
     template_name = "suchary/suchar_form.html"
     success_url = reverse_lazy("suchary:list")
 
-    async def _get_suchar(self, pk):
+    async def _get_suchar(self, pk: int) -> Suchar:
         try:
             return await Suchar.objects.select_related("author").aget(pk=pk)
         except Suchar.DoesNotExist as exc:
             raise Http404 from exc
 
-    async def test_func(self):  # type: ignore[override]
+    async def test_func(self) -> bool:  # type: ignore[override]
         suchar = await self._get_suchar(self.kwargs["pk"])
         return suchar.author == self.request.user
 
-    async def _reject_if_published(self, request, suchar):
+    async def _reject_if_published(
+        self,
+        request: HttpRequest,
+        suchar: Suchar,
+    ) -> HttpResponse | None:
         """Return the "too late to edit" response if suchar is published, else None."""
         if suchar.is_published:
             return await sync_to_async(render)(
@@ -150,7 +163,7 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin):  # ty
             )
         return None
 
-    async def get(self, request, pk, *args, **kwargs):
+    async def get(self, request: HttpRequest, pk: int) -> HttpResponse:
         suchar = await self._get_suchar(pk)
         too_late = await self._reject_if_published(request, suchar)
         if too_late is not None:
@@ -159,7 +172,7 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin):  # ty
         form = await sync_to_async(SucharForm)(instance=suchar)
         return await sync_to_async(render)(request, self.template_name, {"form": form})
 
-    async def post(self, request, pk, *args, **kwargs):
+    async def post(self, request: HttpRequest, pk: int) -> HttpResponse:
         suchar = await self._get_suchar(pk)
         too_late = await self._reject_if_published(request, suchar)
         if too_late is not None:

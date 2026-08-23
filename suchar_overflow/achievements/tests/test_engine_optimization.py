@@ -14,7 +14,7 @@ User = get_user_model()
 
 @pytest.mark.django_db
 class TestAchievementEngineOptimizations:
-    def test_sum_score_n_plus_1_queries(self):
+    def test_sum_score_n_plus_1_queries(self) -> None:
         # Create User
         user = User.objects.create_user(
             username="testuser",
