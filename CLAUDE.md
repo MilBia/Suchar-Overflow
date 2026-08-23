@@ -228,6 +228,48 @@ Google Fonts.
 If you add inline `<script>` tags to a template, they must use the nonce or they will
 be blocked in browsers that enforce CSP.
 
+### Vendored JS libraries — no Dependabot coverage
+
+`chart.umd.min.js` and `flatpickr.min.js` under `static/js/` are hand-vendored, not
+managed by any package manager — `.github/dependabot.yml` only tracks `uv`, `docker`,
+`docker-compose`, and `github-actions`, so neither Dependabot nor any bot notices when
+a newer release ships (see issue #177). Adding a `package.json` + npm just for these
+two files was considered and rejected — it would require introducing a JS build step
+the project deliberately doesn't have (see Content Security Policy above), for two
+files that don't need one.
+
+Instead: **check manually, roughly each time you touch this area or do a periodic
+dependency review** (see #176-style project reviews). To check current vs. latest:
+
+```bash
+head -5 suchar_overflow/static/js/chart.umd.min.js   # vendored version, in the banner comment
+curl -s https://registry.npmjs.org/chart.js/latest | grep -o '"version":"[^"]*"'
+head -1 suchar_overflow/static/js/flatpickr.min.js   # whole file is 2 lines — line 2 is the minified bundle, head -1 only
+curl -s https://registry.npmjs.org/flatpickr/latest | grep -o '"version":"[^"]*"'
+```
+
+To refresh a vendored file, pull the same jsdelivr npm build the existing file came
+from (do not hand-edit the version banner — regenerate it):
+
+```bash
+curl -sSfL -o suchar_overflow/static/js/chart.umd.min.js \
+  https://cdn.jsdelivr.net/npm/chart.js@<version>/dist/chart.umd.min.js
+curl -sSfL -o suchar_overflow/static/js/flatpickr.min.js \
+  https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.js
+```
+
+Flatpickr also vendors a stylesheet at `suchar_overflow/static/css/pages/flatpickr.min.css`
+— when bumping `flatpickr.min.js`, refresh the CSS from the same release too
+(`https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.css`), or the JS
+and CSS builds can drift out of sync.
+
+After swapping either file, check the upstream changelog for breaking changes in the
+APIs this project actually uses, then manually verify in a browser (console clean, no
+CSP violations) — `just test` has no JS test coverage, so a green suite is not
+evidence the swap works. Chart.js usage: line/bar/doughnut charts on
+`/stats/leaderboard/` and user profile pages. Flatpickr usage: check
+`static/js/` for `flatpickr(` call sites before assuming defaults are unaffected.
+
 ### Async views
 
 Most view classes are async (`async def get/post`, `AsyncLoginRequiredMixin` from
