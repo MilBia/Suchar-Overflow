@@ -54,6 +54,11 @@ test-all:
     @just test
     @just test-e2e
 
+# coverage: Run unit tests under coverage and print the report — same gate CI enforces (fail_under in pyproject.toml).
+coverage *args:
+    @docker compose run --rm django coverage run -m pytest -m "not e2e" {{args}}
+    @docker compose run --rm django coverage report
+
 # fill-translations: Fill empty .po translation strings using a local AI model.
 # Example: just fill-translations --url http://localhost:11434/v1 --model translategemma --language pl
 fill-translations *args:
