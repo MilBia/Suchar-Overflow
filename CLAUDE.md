@@ -35,8 +35,25 @@ docker compose -f docker-compose.local.yml run --rm django bash -c \
 Credentials are in `.envs/.local/.postgres`. The compose service is named `django`.
 
 `just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
-(defined in `pyproject.toml`) instead of extending it — the E2E run does **not** get
-`--reuse-db`.
+(defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated
+explicitly in the override (see issue #214) — otherwise the E2E run drops and rebuilds
+the test DB from scratch even though the unit-test step in the same CI job already built
+an identical schema moments earlier, and the *next* unit-test run after E2E pays for
+rebuilding it again (measured locally: unit suite ~10s with an existing DB vs. ~15s
+immediately after a no-`--reuse-db` E2E run had dropped it). This is safe despite the
+migration-seeded-data flush artifact described in "Migration-seeded achievements" below:
+every E2E test already uses `@pytest.mark.django_db(transaction=True)` (needed because
+Playwright drives the app from a separate process/thread), which truncates all tables on
+teardown regardless of `--reuse-db`, so E2E tests already cannot rely on unfixtured
+migration-seeded rows surviving between tests — only ones they (re)create themselves,
+e.g. via `get_or_create` (see `frontend_achievements` in
+`tests/e2e/test_hidden_achievements.py`). Verified empirically (issue #214): confirmed
+via `SELECT oid, datname FROM pg_database WHERE datname='test_suchar_overflow'` that the
+DB object (same OID) is genuinely reused, not silently dropped/recreated; running the
+unit suite to flush seed data, then the E2E suite five consecutive times against that
+same reused, already-flushed DB, still passed 31/31 every time. If you change a
+migration and need a fresh E2E schema, pass `--create-db` through the recipe's `*args`:
+`just test-e2e --create-db`.
 
 ### Unit tests vs E2E tests — critical distinction
 
