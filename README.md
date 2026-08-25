@@ -426,10 +426,14 @@ Po otwarciu projektu w VS Code z zainstalowanym rozszerzeniem Dev Containers śr
 
 Projekt używa [pre-commit](https://pre-commit.com/) do automatycznego sprawdzania kodu.
 
+`pre-commit` (i `ipdb`) należą do grupy `local-tools` — celowo pominiętej przy
+`uv sync` w obrazie Docker (są potrzebne tylko lokalnie, poza kontenerem), więc
+trzeba ją zainstalować jawnie.
+
 ### Instalacja hooków (wymagany lokalny `.venv`):
 
 ```bash
-uv sync
+uv sync --group local-tools
 source .venv/bin/activate
 pre-commit install
 ```
