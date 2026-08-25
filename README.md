@@ -379,13 +379,13 @@ just test
 Lub bezpośrednio:
 
 ```bash
-docker compose -f docker-compose.local.yml run --rm django pytest
+docker compose -f docker-compose.local.yml run --rm django pytest -m "not e2e"
 ```
 
 Z pokryciem kodu:
 
 ```bash
-docker compose -f docker-compose.local.yml run --rm django coverage run -m pytest
+docker compose -f docker-compose.local.yml run --rm django coverage run -m pytest -m "not e2e"
 docker compose -f docker-compose.local.yml run --rm django coverage report
 ```
 
