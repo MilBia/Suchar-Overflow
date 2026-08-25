@@ -158,14 +158,24 @@ dev = [
     "django-stubs[compatible-mypy]==6.1.0",
     "djlint==1.44.2",
     "factory-boy==3.3.3",
-    "ipdb==0.13.13",
     "mypy==2.3.1",
-    "pre-commit==4.6.2",
     "pytest==9.1.1",
     "pytest-django==4.14.0",
     "pytest-playwright==0.9.0",
     "pytest-sugar==1.1.1",
     "ruff==0.16.4",
+]
+# Local-only tooling: never used inside the Docker image (pre-commit runs from the
+# host .venv per CLAUDE.md; ipdb needs an interactive terminal `docker compose run
+# --rm` doesn't provide in the CI/test flow). Not a uv default group, so plain
+# `uv sync` (as used by the Dockerfiles) skips it — install explicitly on the host
+# with `uv sync --only-group local-tools` (see README "Pre-commit" section).
+# Use `--only-group`, not `--group`: the latter also syncs the `dev` default group
+# and `[project.dependencies]`, which fails on a host without PostgreSQL headers
+# (psycopg-c needs `pg_config` — see CLAUDE.md's "Running commands" section).
+local-tools = [
+    "ipdb==0.13.13",
+    "pre-commit==4.6.2",
 ]
 
 [project]

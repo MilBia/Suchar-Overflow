@@ -1,6 +1,6 @@
 ---
 name: run_pre_commit
-description: How to run pre-commit locally using .venv or fallback to Docker
+description: How to run pre-commit locally using .venv, recreating it if missing
 ---
 
 # Running pre-commit
@@ -18,17 +18,25 @@ executable (e.g., `.venv/bin/pre-commit`), then run:
 .venv/bin/pre-commit run --all-files
 ```
 
-## Step 2: Fallback to Docker
-If the local `.venv` does NOT exist or is broken, do NOT get stuck or ask the user
-what to do — automatically fall back to running `pre-commit` inside the Docker
-`django` service:
+## Step 2: Fallback — recreate the local `.venv`
+`pre-commit` is never installed inside the Docker `django` image (it lives in the
+`local-tools` uv dependency group, deliberately excluded from the container — see
+issue #215). If the local `.venv` does NOT exist or is broken, do NOT get stuck or
+ask the user what to do — automatically recreate it:
 
 ```bash
-docker compose -f docker-compose.local.yml run --rm django pre-commit run --all-files
+uv sync --only-group local-tools
+```
+
+Use `--only-group`, not `--group` — `--group` also syncs the `dev` default group
+and `[project.dependencies]`, which fails on a host without PostgreSQL headers
+(`psycopg-c` needs `pg_config`). Then run:
+
+```bash
+.venv/bin/pre-commit run --all-files
 ```
 
 ## Summary of Rules
-- **Speed first:** The local `.venv` is preferred because it is faster.
-- **Guaranteed execution:** Docker is your guaranteed fallback. If `.venv` is missing, immediately use Docker.
-- **Do not prompt the user:** Automatically switch to the Docker fallback if the local execution is impossible.
+- **Local `.venv` only:** `pre-commit` does not exist inside the Docker container — there is no Docker fallback.
+- **Do not prompt the user:** Automatically recreate the `.venv` with `uv sync --only-group local-tools` if it is missing or broken.
 - **Fix issues:** If `pre-commit` fails because of lint/format errors, automatically fix the files and re-run (twice, per CLAUDE.md).
