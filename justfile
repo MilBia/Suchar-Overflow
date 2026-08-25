@@ -45,7 +45,7 @@ test *args:
 # Requires the DB to be up (`just up` first).
 test-e2e *args:
     @docker compose run --rm django pytest \
-        --override-ini="addopts=--ds=config.settings.e2e --import-mode=importlib" \
+        --override-ini="addopts=--ds=config.settings.e2e --reuse-db --import-mode=importlib" \
         -m e2e \
         tests/e2e/ {{args}}
 
