@@ -428,12 +428,15 @@ Projekt używa [pre-commit](https://pre-commit.com/) do automatycznego sprawdzan
 
 `pre-commit` (i `ipdb`) należą do grupy `local-tools` — celowo pominiętej przy
 `uv sync` w obrazie Docker (są potrzebne tylko lokalnie, poza kontenerem), więc
-trzeba ją zainstalować jawnie.
+trzeba ją zainstalować jawnie. Użyj `--only-group`, nie `--group` — `--group`
+zsynchronizowałby też domyślną grupę `dev` i `[project.dependencies]`, co na
+hoście bez nagłówków PostgreSQL (`pg_config`) zakończy się błędem kompilacji
+`psycopg-c` (patrz CLAUDE.md, sekcja "Running commands").
 
 ### Instalacja hooków (wymagany lokalny `.venv`):
 
 ```bash
-uv sync --group local-tools
+uv sync --only-group local-tools
 source .venv/bin/activate
 pre-commit install
 ```

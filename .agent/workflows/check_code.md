@@ -10,7 +10,7 @@ not inside Docker.
    ```bash
    .venv/bin/pre-commit run --all-files
    ```
-   *(Fallback if `.venv` is missing or broken — see `run_pre_commit` skill: `docker compose -f docker-compose.local.yml run --rm django pre-commit run --all-files`)*
+   *(Fallback if `.venv` is missing or broken — see `run_pre_commit` skill: recreate it with `uv sync --only-group local-tools`, then rerun the command above. `pre-commit` is not installed inside the Docker container.)*
 
 2. If there are failures, review the changes. Many hooks (like ruff) will auto-fix issues.
 3. If manual fixes are required, apply them and re-run the command to verify — per

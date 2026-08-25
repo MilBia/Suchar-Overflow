@@ -169,7 +169,10 @@ dev = [
 # host .venv per CLAUDE.md; ipdb needs an interactive terminal `docker compose run
 # --rm` doesn't provide in the CI/test flow). Not a uv default group, so plain
 # `uv sync` (as used by the Dockerfiles) skips it — install explicitly on the host
-# with `uv sync --group local-tools` (see README "Pre-commit" section).
+# with `uv sync --only-group local-tools` (see README "Pre-commit" section).
+# Use `--only-group`, not `--group`: the latter also syncs the `dev` default group
+# and `[project.dependencies]`, which fails on a host without PostgreSQL headers
+# (psycopg-c needs `pg_config` — see CLAUDE.md's "Running commands" section).
 local-tools = [
     "ipdb==0.13.13",
     "pre-commit==4.6.2",
