@@ -90,9 +90,11 @@ class UserDetailView(AsyncLoginRequiredMixin):
 
         # 1.5 Scheduled Suchary (Owner Only)
         if is_owner:
-            context["scheduled_suchary"] = user.suchary.filter(
-                published_at__gt=timezone.now(),
-            ).order_by("published_at")
+            context["scheduled_suchary"] = (
+                user.suchary.filter(published_at__gt=timezone.now())
+                .prefetch_related("tags")
+                .order_by("published_at")
+            )
 
         # 2. Total Score & Count
         stats = user.suchary.aggregate(
