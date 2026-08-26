@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
+from playwright.sync_api import expect
 
 if TYPE_CHECKING:
     from playwright.sync_api import Page
@@ -17,18 +18,18 @@ def test_clicking_toggle_flips_theme_and_persists_to_localstorage(
 ) -> None:
     """Clicking #theme-toggle switches the theme and writes it to localStorage."""
     page.goto(f"{live_server.url}/")
-    page.wait_for_load_state("networkidle")
 
     initial_theme = page.evaluate("localStorage.getItem('theme') || 'light'")
     expected_theme = "dark" if initial_theme == "light" else "light"
 
     page.click("#theme-toggle")
 
+    # The click handler sets the data-theme attribute and localStorage in the
+    # same synchronous call, so once the (auto-retrying) attribute check
+    # settles, localStorage is guaranteed to already be up to date too.
+    expect(page.locator("html")).to_have_attribute("data-theme", expected_theme)
     stored = page.evaluate("localStorage.getItem('theme')")
-    html_attr = page.evaluate("document.documentElement.getAttribute('data-theme')")
-
     assert stored == expected_theme
-    assert html_attr == expected_theme
 
 
 @pytest.mark.e2e
@@ -39,14 +40,11 @@ def test_theme_is_restored_after_page_reload(
 ) -> None:
     """Setting theme to dark then reloading keeps data-theme='dark' on <html>."""
     page.goto(f"{live_server.url}/")
-    page.wait_for_load_state("networkidle")
 
     page.evaluate("localStorage.setItem('theme', 'dark')")
     page.reload()
-    page.wait_for_load_state("networkidle")
 
-    html_attr = page.evaluate("document.documentElement.getAttribute('data-theme')")
-    assert html_attr == "dark"
+    expect(page.locator("html")).to_have_attribute("data-theme", "dark")
 
 
 @pytest.mark.e2e
@@ -57,11 +55,8 @@ def test_light_theme_is_restored_after_page_reload(
 ) -> None:
     """Setting theme to light then reloading keeps data-theme='light' on <html>."""
     page.goto(f"{live_server.url}/")
-    page.wait_for_load_state("networkidle")
 
     page.evaluate("localStorage.setItem('theme', 'light')")
     page.reload()
-    page.wait_for_load_state("networkidle")
 
-    html_attr = page.evaluate("document.documentElement.getAttribute('data-theme')")
-    assert html_attr == "light"
+    expect(page.locator("html")).to_have_attribute("data-theme", "light")

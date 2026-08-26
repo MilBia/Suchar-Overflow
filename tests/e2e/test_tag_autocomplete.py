@@ -1,8 +1,10 @@
 """E2E tests for the tag autocomplete in the suchar form (suchar_form.js)."""
 
+import re
 from typing import TYPE_CHECKING
 
 import pytest
+from playwright.sync_api import expect
 
 from suchar_overflow.suchary.models import Tag
 
@@ -23,7 +25,6 @@ def test_typing_shows_matching_tag_suggestions(
     Tag.objects.create(name="python", slug="python")
 
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     tags_input = page.locator("#id_tags_input")
     tags_input.click()
@@ -55,19 +56,17 @@ def test_clicking_suggestion_inserts_tag_and_closes_dropdown(
     Tag.objects.create(name="it", slug="it")
 
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     tags_input = page.locator("#id_tags_input")
     tags_input.click()
     tags_input.type("it", delay=60)
 
+    dropdown = page.locator("#tags-dropdown")
     page.locator("#tags-dropdown.show").wait_for(timeout=2000)
 
     page.locator("#tags-suggestions .dropdown-item").first.click()
 
     # Dropdown should close
-    assert not page.locator("#tags-dropdown").evaluate(
-        "el => el.classList.contains('show')",
-    )
+    expect(dropdown).not_to_have_class(re.compile(r"\bshow\b"))
     # The inserted tag name should appear in the input value
-    assert "it" in tags_input.input_value()
+    expect(tags_input).to_have_value(re.compile(r"it"))

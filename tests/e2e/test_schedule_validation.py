@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 def test_past_date_shows_error_message(page: Page, live_server: LiveServer) -> None:
     """Past scheduled date shows the server-provided validation error on submit."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     page.fill("#id_text", "Testowy suchar do walidacji daty.")
 
@@ -57,7 +56,6 @@ def test_future_date_passes_client_validation(
 ) -> None:
     """A valid future date passes client-side validation and the form submits."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     page.fill("#id_text", "Suchar z przyszłości.")
 

@@ -1,8 +1,10 @@
 """E2E tests for navigation, modals, toasts, and the sort dropdown (project.js)."""
 
+import re
 from typing import TYPE_CHECKING
 
 import pytest
+from playwright.sync_api import expect
 
 if TYPE_CHECKING:
     from playwright.sync_api import Page
@@ -20,14 +22,13 @@ def test_mobile_nav_toggle_opens_menu(page: Page, live_server: LiveServer) -> No
     # Use a narrow viewport so the hamburger button is actually visible.
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(f"{live_server.url}/")
-    page.wait_for_load_state("networkidle")
 
     menu = page.locator("#navbar-menu")
-    assert "active" not in (menu.get_attribute("class") or "")
+    expect(menu).not_to_have_class(re.compile(r"\bactive\b"))
 
     page.click("#navbar-toggler")
 
-    assert "active" in (menu.get_attribute("class") or "")
+    expect(menu).to_have_class(re.compile(r"\bactive\b"))
 
 
 @pytest.mark.e2e
@@ -36,13 +37,13 @@ def test_mobile_nav_toggle_closes_menu(page: Page, live_server: LiveServer) -> N
     """Clicking the hamburger button a second time removes .active."""
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(f"{live_server.url}/")
-    page.wait_for_load_state("networkidle")
+
+    menu = page.locator("#navbar-menu")
+    page.click("#navbar-toggler")
+    expect(menu).to_have_class(re.compile(r"\bactive\b"))
 
     page.click("#navbar-toggler")
-    assert "active" in (page.locator("#navbar-menu").get_attribute("class") or "")
-
-    page.click("#navbar-toggler")
-    assert "active" not in (page.locator("#navbar-menu").get_attribute("class") or "")
+    expect(menu).not_to_have_class(re.compile(r"\bactive\b"))
 
 
 # ---------------------------------------------------------------------------
@@ -59,14 +60,13 @@ def test_logout_modal_opens_on_button_click(
 ) -> None:
     """Clicking #logout-button removes the hidden attribute from #logoutModal."""
     page.goto(f"{live_server.url}/")
-    page.wait_for_load_state("networkidle")
 
     modal = page.locator("#logoutModal")
-    assert modal.evaluate("el => el.hidden") is True
+    expect(modal).to_be_hidden()
 
     page.click("#logout-button")
 
-    assert modal.evaluate("el => el.hidden") is False
+    expect(modal).to_be_visible()
 
 
 @pytest.mark.e2e
@@ -78,16 +78,15 @@ def test_logout_modal_closes_via_cancel_button(
 ) -> None:
     """Clicking .modal-close inside the modal sets hidden back to true."""
     page.goto(f"{live_server.url}/")
-    page.wait_for_load_state("networkidle")
 
     page.click("#logout-button")
     modal = page.locator("#logoutModal")
-    assert modal.evaluate("el => el.hidden") is False
+    expect(modal).to_be_visible()
 
     # First .modal-close is the x button in the header.
     page.locator("#logoutModal .modal-close").first.click()
 
-    assert modal.evaluate("el => el.hidden") is True
+    expect(modal).to_be_hidden()
 
 
 @pytest.mark.e2e
@@ -99,14 +98,13 @@ def test_logout_modal_closes_on_overlay_click(
 ) -> None:
     """Clicking the overlay backdrop (not the modal card) closes the modal."""
     page.goto(f"{live_server.url}/")
-    page.wait_for_load_state("networkidle")
 
     page.click("#logout-button")
 
     # Click the top-left corner of the overlay — outside the inner .modal card.
     page.locator("#logoutModal").click(position={"x": 5, "y": 5})
 
-    assert page.locator("#logoutModal").evaluate("el => el.hidden") is True
+    expect(page.locator("#logoutModal")).to_be_hidden()
 
 
 # ---------------------------------------------------------------------------
@@ -150,14 +148,13 @@ def test_sort_dropdown_opens_on_trigger_click(
 ) -> None:
     """Clicking the sort dropdown trigger adds .show to #sortDropdown."""
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
     dropdown = page.locator("#sortDropdown")
-    assert "show" not in (dropdown.get_attribute("class") or "")
+    expect(dropdown).not_to_have_class(re.compile(r"\bshow\b"))
 
     page.locator("#sortDropdown .dropdown-trigger").click()
 
-    assert "show" in (dropdown.get_attribute("class") or "")
+    expect(dropdown).to_have_class(re.compile(r"\bshow\b"))
 
 
 @pytest.mark.e2e
@@ -168,15 +165,15 @@ def test_sort_dropdown_closes_on_outside_click(
 ) -> None:
     """Clicking outside the sort dropdown removes .show."""
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
+    dropdown = page.locator("#sortDropdown")
     page.locator("#sortDropdown .dropdown-trigger").click()
-    assert "show" in (page.locator("#sortDropdown").get_attribute("class") or "")
+    expect(dropdown).to_have_class(re.compile(r"\bshow\b"))
 
     # Click the page heading — well outside the dropdown.
     page.locator("h1").click()
 
-    assert "show" not in (page.locator("#sortDropdown").get_attribute("class") or "")
+    expect(dropdown).not_to_have_class(re.compile(r"\bshow\b"))
 
 
 @pytest.mark.e2e
@@ -187,7 +184,6 @@ def test_sort_dropdown_selecting_top_submits_form(
 ) -> None:
     """Selecting 'Top' from the sort dropdown navigates to ?sort=top."""
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
     page.locator("#sortDropdown .dropdown-trigger").click()
     page.locator("#sortDropdown .dropdown-item[data-value='top']").click()

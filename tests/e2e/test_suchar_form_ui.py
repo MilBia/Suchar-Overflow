@@ -1,8 +1,10 @@
 """E2E tests for the suchar form's live UI behaviors (suchar_form.js)."""
 
+import re
 from typing import TYPE_CHECKING
 
 import pytest
+from playwright.sync_api import expect
 
 if TYPE_CHECKING:
     from playwright.sync_api import Page
@@ -22,16 +24,14 @@ def test_text_preview_updates_as_user_types(
 ) -> None:
     """Typing in #id_text updates #previewText in real time."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     page.fill("#id_text", "Dlaczego komputer nie śpi? Bo ma za dużo otwartych kart.")
 
     preview = page.locator("#previewText")
-    assert "Dlaczego komputer" in preview.inner_text()
+    expect(preview).to_contain_text("Dlaczego komputer")
     # With real content the muted/italic placeholder classes should be gone.
-    classes = preview.get_attribute("class") or ""
-    assert "text-muted" not in classes
-    assert "fst-italic" not in classes
+    expect(preview).not_to_have_class(re.compile(r"\btext-muted\b"))
+    expect(preview).not_to_have_class(re.compile(r"\bfst-italic\b"))
 
 
 @pytest.mark.e2e
@@ -43,7 +43,6 @@ def test_text_preview_shows_placeholder_when_cleared(
 ) -> None:
     """Clearing the textarea restores the Polish placeholder text in #previewText."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     page.fill("#id_text", "Jakiś suchar")
     page.fill("#id_text", "")
@@ -53,10 +52,9 @@ def test_text_preview_shows_placeholder_when_cleared(
     preview = page.locator("#previewText")
     placeholder = preview.get_attribute("data-placeholder") or ""
     assert placeholder
-    assert preview.inner_text() == placeholder
-    classes = preview.get_attribute("class") or ""
-    assert "text-muted" in classes
-    assert "fst-italic" in classes
+    expect(preview).to_have_text(placeholder)
+    expect(preview).to_have_class(re.compile(r"\btext-muted\b"))
+    expect(preview).to_have_class(re.compile(r"\bfst-italic\b"))
 
 
 # ---------------------------------------------------------------------------
@@ -73,13 +71,12 @@ def test_tags_preview_creates_badges_for_each_tag(
 ) -> None:
     """Typing comma-separated tags in #id_tags_input creates badge elements."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     page.fill("#id_tags_input", "python, it, humor")
     page.locator("#id_tags_input").dispatch_event("input")
 
     badges = page.locator("#previewTags .badge")
-    assert badges.count() == 3  # noqa: PLR2004
+    expect(badges).to_have_count(3)
     texts = [badges.nth(i).inner_text() for i in range(3)]
     assert "#python" in texts
     assert "#it" in texts
@@ -95,16 +92,16 @@ def test_tags_preview_clears_when_input_is_emptied(
 ) -> None:
     """Clearing the tags input removes all badges from the preview."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
+    badges = page.locator("#previewTags .badge")
     page.fill("#id_tags_input", "python, it")
     page.locator("#id_tags_input").dispatch_event("input")
-    assert page.locator("#previewTags .badge").count() > 0
+    expect(badges).to_have_count(2)
 
     page.fill("#id_tags_input", "")
     page.locator("#id_tags_input").dispatch_event("input")
 
-    assert page.locator("#previewTags .badge").count() == 0
+    expect(badges).to_have_count(0)
 
 
 # ---------------------------------------------------------------------------
@@ -121,15 +118,14 @@ def test_schedule_checkbox_shows_date_container(
 ) -> None:
     """Checking #scheduleCheck removes .d-none from #scheduleContainer."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     container = page.locator("#scheduleContainer")
-    assert "d-none" in (container.get_attribute("class") or "")
+    expect(container).to_have_class(re.compile(r"\bd-none\b"))
 
     page.check("#scheduleCheck")
     page.wait_for_selector("#scheduleContainer:not(.d-none)")
 
-    assert "d-none" not in (container.get_attribute("class") or "")
+    expect(container).not_to_have_class(re.compile(r"\bd-none\b"))
 
 
 @pytest.mark.e2e
@@ -141,7 +137,6 @@ def test_schedule_checkbox_hides_date_container(
 ) -> None:
     """Unchecking #scheduleCheck adds .d-none back to #scheduleContainer."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     page.check("#scheduleCheck")
     page.wait_for_selector("#scheduleContainer:not(.d-none)")
@@ -150,7 +145,7 @@ def test_schedule_checkbox_hides_date_container(
 
     container = page.locator("#scheduleContainer")
     container.wait_for(state="hidden")
-    assert "d-none" in (container.get_attribute("class") or "")
+    expect(container).to_have_class(re.compile(r"\bd-none\b"))
 
 
 # ---------------------------------------------------------------------------
@@ -167,7 +162,6 @@ def test_schedule_error_clears_when_date_input_is_changed(
 ) -> None:
     """After a past-date validation error, editing the input hides #dateError."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     page.fill("#id_text", "Suchar testowy.")
     page.check("#scheduleCheck")
@@ -194,7 +188,7 @@ def test_schedule_error_clears_when_date_input_is_changed(
 
     date_error = page.locator("#dateError")
     date_error.wait_for(state="hidden")
-    assert "d-none" in (date_error.get_attribute("class") or "")
-    assert "is-invalid" not in (
-        page.locator("#id_published_at").get_attribute("class") or ""
+    expect(date_error).to_have_class(re.compile(r"\bd-none\b"))
+    expect(page.locator("#id_published_at")).not_to_have_class(
+        re.compile(r"\bis-invalid\b"),
     )
