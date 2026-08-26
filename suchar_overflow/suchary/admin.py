@@ -37,6 +37,11 @@ class VoteInline(admin.TabularInline):
 @admin.register(Suchar)
 class SucharAdmin(admin.ModelAdmin):
     list_display = ["id", "short_text_display", "author", "created_at", "total_votes"]
+    # Pins the changelist join explicitly. Django 6.1's ChangeList already
+    # derives the same set from the FKs in list_display
+    # (ChangeList.get_select_related_fields), so this changes no SQL today — it
+    # keeps the intent from depending on that fallback.
+    list_select_related = ["author"]
     list_filter = ["created_at", "tags"]
     search_fields = ["text", "author__username", "author__name"]
     autocomplete_fields = ["author", "tags"]
@@ -60,6 +65,8 @@ class SucharAdmin(admin.ModelAdmin):
 @admin.register(Vote)
 class VoteAdmin(admin.ModelAdmin):
     list_display = ["user", "suchar", "is_funny", "is_dry"]
+    # See SucharAdmin above — explicit, matches Django's own derivation.
+    list_select_related = ["user", "suchar"]
     list_filter = ["is_funny", "is_dry"]
     search_fields = ["user__username", "suchar__text"]
     autocomplete_fields = ["user", "suchar"]

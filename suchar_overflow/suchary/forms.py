@@ -115,13 +115,37 @@ class SucharForm(forms.ModelForm):
             t.strip().lstrip("#") for t in tags_input.split() if t.strip().lstrip("#")
         ]
 
-        tags = []
+        # Deduplicate by slug, keeping the first spelling the user typed.
+        names_by_slug: dict[str, str] = {}
         for name in tag_names:
             slug = slugify(name)
             if not slug:
                 continue
-            # Try to find by slug first to avoid duplicates
-            tag, _ = Tag.objects.get_or_create(slug=slug, defaults={"name": name})
-            tags.append(tag)
+            names_by_slug.setdefault(slug, name)
 
-        instance.tags.set(tags)
+        if not names_by_slug:
+            instance.tags.set([])
+            return
+
+        # One query for the existing tags, one bulk_create for the rest — instead
+        # of 1-2 queries per tag from a get_or_create loop.
+        slugs = list(names_by_slug)
+        tags_by_slug = {tag.slug: tag for tag in Tag.objects.filter(slug__in=slugs)}
+        missing = [
+            Tag(slug=slug, name=name)
+            for slug, name in names_by_slug.items()
+            if slug not in tags_by_slug
+        ]
+        if missing:
+            # ignore_conflicts absorbs a race with a concurrent request creating
+            # the same tag — and, because Tag.name is unique too, the rarer case
+            # of a pre-existing row whose name matches but whose slug doesn't
+            # (that tag is then silently skipped instead of raising, which the
+            # comprehension below tolerates). It also leaves pks unset, hence the
+            # re-fetch.
+            Tag.objects.bulk_create(missing, ignore_conflicts=True)
+            tags_by_slug = {tag.slug: tag for tag in Tag.objects.filter(slug__in=slugs)}
+
+        instance.tags.set(
+            [tags_by_slug[slug] for slug in names_by_slug if slug in tags_by_slug],
+        )

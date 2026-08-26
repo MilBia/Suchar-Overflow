@@ -3,6 +3,8 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 
 from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
@@ -299,3 +301,44 @@ def test_vote_missing_payload_returns_422(client: Client) -> None:
         content_type="application/json",
     )
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+# ---------------------------------------------------------------------------
+# vote_suchar — query efficiency (issue #203, point 1)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_vote_loads_author_with_the_suchar(client: Client) -> None:
+    """The suchar lookup must join the author in.
+
+    ``check_vote_achievements`` reads ``instance.suchar.author`` for every
+    newly created Vote; without ``select_related("author")`` on the view's
+    ``get_object_or_404`` that costs one extra query per first-time vote.
+    """
+    author = make_user("selrel_author")
+    voter = make_user("selrel_voter")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+
+    client.force_login(voter)
+    with CaptureQueriesContext(connection) as ctx:
+        response = client.post(
+            vote_url(suchar.pk),
+            data=json.dumps({"vote_type": "funny"}),
+            content_type="application/json",
+        )
+    assert response.status_code == HTTPStatus.OK
+    # The vote must actually be new — the signal (and therefore the author
+    # access this test guards) only fires on created=True.
+    assert Vote.objects.filter(user=voter, suchar=suchar).exists()
+
+    suchar_selects = [
+        q["sql"]
+        for q in ctx.captured_queries
+        if q["sql"].startswith("SELECT") and '"suchary_suchar"' in q["sql"]
+    ]
+    assert suchar_selects, "expected the endpoint to load the suchar"
+    assert any('"users_user"' in sql for sql in suchar_selects), (
+        "the suchar must be fetched with its author joined in "
+        f"(queries seen: {suchar_selects})"
+    )

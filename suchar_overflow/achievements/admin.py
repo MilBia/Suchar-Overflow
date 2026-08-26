@@ -147,6 +147,9 @@ class AchievementAdmin(TabbedTranslationAdmin):
 @admin.register(UserAchievement)
 class UserAchievementAdmin(admin.ModelAdmin):
     list_display = ("user", "achievement", "awarded_at", "is_seen")
+    # Explicit changelist join; Django 6.1 derives the same set from
+    # list_display on its own (see the note in suchary/admin.py).
+    list_select_related = ("user", "achievement")
     list_filter = ("is_seen", "awarded_at", "achievement__category")
     search_fields = ("user__username", "user__email", "achievement__name")
     autocomplete_fields = ("user", "achievement")
