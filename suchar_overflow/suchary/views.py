@@ -40,8 +40,24 @@ class SucharListView(View):
             .prefetch_related("tags")
             .filter(published_at__lte=timezone.now())
             .annotate(
-                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
-                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
+                # distinct=True is required, not cosmetic: the `?q=` branch
+                # below adds a second multi-valued JOIN (suchar -> tags) that
+                # runs *parallel* to this one (suchar -> votes). A suchar
+                # matching the phrase on N tags then contributes N duplicated
+                # vote rows per vote inside the same GROUP BY, so a plain
+                # COUNT would report N x the real number of votes (#196).
+                # The trailing `.distinct()` on the queryset only dedupes the
+                # result rows, after these aggregates are already computed.
+                funny_count=Count(
+                    "votes",
+                    filter=Q(votes__is_funny=True),
+                    distinct=True,
+                ),
+                dry_count=Count(
+                    "votes",
+                    filter=Q(votes__is_dry=True),
+                    distinct=True,
+                ),
             )
         )
 
