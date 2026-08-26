@@ -192,10 +192,14 @@
                 <span class="page-link">{% trans "Previous" %}</span>
               </li>
             {% endif %}
-            {% for i in paginator.page_range %}
-              {% if page_obj.number == i %}
+            {% for i in page_range %}
+              {% if i == paginator.ELLIPSIS %}
+                <li class="page-item disabled">
+                  <span class="page-link" aria-hidden="true">{{ i }}</span>
+                </li>
+              {% elif page_obj.number == i %}
                 <li class="page-item active">
-                  <span class="page-link">{{ i }}</span>
+                  <span class="page-link" aria-current="page">{{ i }}</span>
                 </li>
               {% else %}
                 <li class="page-item">

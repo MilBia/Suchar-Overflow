@@ -29,6 +29,12 @@ if TYPE_CHECKING:
     from django.http import HttpResponse
 
 _PER_PAGE = 10
+# Elided pagination window (see issue #210). With these values the navigation
+# never renders more than 9 page numbers, and no elision happens at all for
+# <= (_ON_EACH_SIDE + _ON_ENDS) * 2 == 6 pages, so short lists keep the plain
+# "1 2 3 4 5" navigation they had before.
+_ON_EACH_SIDE = 2
+_ON_ENDS = 1
 
 
 class SucharListView(View):
@@ -115,6 +121,14 @@ class SucharListView(View):
                     "suchary": page.object_list,
                     "paginator": paginator,
                     "is_paginated": page.has_other_pages(),
+                    # Built here rather than in the template: the template
+                    # engine cannot pass the current page number (nor the
+                    # window arguments) to get_elided_page_range().
+                    "page_range": paginator.get_elided_page_range(
+                        page.number,
+                        on_each_side=_ON_EACH_SIDE,
+                        on_ends=_ON_ENDS,
+                    ),
                 },
             )
 
