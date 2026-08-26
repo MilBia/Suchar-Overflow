@@ -150,10 +150,12 @@ def test_global_rank_second_view_within_ttl_does_not_requery() -> None:
     Vote.objects.create(suchar=suchar, user=make_user("rank_cache_v"), is_funny=True)
 
     view = UserDetailView()
-    first = view._get_cached_rank(user, 1)  # noqa: SLF001
+    # The score argument must be this user's own funny total — one vote above.
+    own_funny_score = 1
+    first = view._get_cached_rank(user, own_funny_score)  # noqa: SLF001
 
     with CaptureQueriesContext(connection) as ctx:
-        second = view._get_cached_rank(user, 1)  # noqa: SLF001
+        second = view._get_cached_rank(user, own_funny_score)  # noqa: SLF001
 
     assert first == second == 1
     assert len(ctx.captured_queries) == 0

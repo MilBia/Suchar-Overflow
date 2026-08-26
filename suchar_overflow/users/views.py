@@ -143,7 +143,11 @@ class UserDetailView(AsyncLoginRequiredMixin):
         `GROUP BY` over the whole user table, and used to run on every profile
         view — same cost profile as the leaderboard aggregate cached in #182.
         Keyed by user pk (not by score) so entries can't be shared between two
-        users whose scores happen to collide.
+        users whose scores happen to collide. That means the key does not by
+        itself determine the value: `funny_score` MUST be `user`'s own funny
+        vote total (it is passed in only to avoid re-running the aggregate that
+        `_build_context` has already done). Passing anything else writes a wrong
+        rank under this user's key and it survives the whole TTL.
         """
         rank = cache.get_or_set(
             user_rank_cache_key(user.pk),
