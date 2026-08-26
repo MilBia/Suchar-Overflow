@@ -79,6 +79,24 @@ def _wait_for_award(page: Page, slug: str, timeout: int = 12_000) -> None:
     )
 
 
+def _goto_and_wait_for_achievements_init(page: Page, url: str) -> None:
+    """Navigate and wait for hidden_achievements.js's init fetch to resolve.
+
+    On DOMContentLoaded the script does `await getOwnedSlugs()` (a GET to
+    /api/achievements/frontend-owned) *before* attaching any of the
+    per-achievement listeners/counters. page.goto() only waits for the
+    'load' event, which fires independently of that fetch — acting on the
+    page immediately after goto() (dispatching a synthetic submit, clicking
+    a vote button, seeding storage right before another navigation) can
+    race the still-pending setup and be silently dropped, permanently
+    timing out _wait_for_award rather than just being slow.
+    """
+    with page.expect_response(
+        lambda response: response.url.endswith("/api/achievements/frontend-owned"),
+    ):
+        page.goto(url)
+
+
 # Slugs and minimal metadata for the 5 hidden frontend achievements.
 # Mirrors data from migration 0008_achievement_frontend_data.py.
 _FRONTEND_ACHIEVEMENT_DEFS = [
@@ -156,7 +174,7 @@ def test_odkrywca_achievement_awarded_after_five_visits(
 ) -> None:
     """Visiting /achievements/ 5 times earns the Odkrywca achievement."""
     # Navigate once so localStorage is available for the right origin.
-    page.goto(f"{live_server.url}/achievements/")
+    _goto_and_wait_for_achievements_init(page, f"{live_server.url}/achievements/")
 
     # Pre-seed to 4 — next real navigation is the 5th visit.
     page.evaluate("localStorage.setItem('odkrywca_visits', '4')")
@@ -164,7 +182,7 @@ def test_odkrywca_achievement_awarded_after_five_visits(
     page.evaluate("sessionStorage.removeItem('awarded_frontend-odkrywca')")
 
     # 5th navigation: JS reads 4, increments to 5, posts award.
-    page.goto(f"{live_server.url}/achievements/")
+    _goto_and_wait_for_achievements_init(page, f"{live_server.url}/achievements/")
 
     _wait_for_award(page, "frontend-odkrywca")
 
@@ -188,14 +206,14 @@ def test_zbieracz_sucharow_awarded_after_five_list_visits(
 ) -> None:
     """Browsing /suchary/ 5 times without voting earns Zbieracz Sucharów."""
     # Navigate once so sessionStorage is available for the right origin.
-    page.goto(f"{live_server.url}/suchary/")
+    _goto_and_wait_for_achievements_init(page, f"{live_server.url}/suchary/")
 
     # Pre-seed to 4 — next real navigation tips it to 5.
     page.evaluate("sessionStorage.setItem('zbieracz_pages', '4')")
     page.evaluate("sessionStorage.removeItem('awarded_frontend-zbieracz-sucharow')")
 
     # 5th visit — JS reads 4, increments to 5, clears key, posts award.
-    page.goto(f"{live_server.url}/suchary/")
+    _goto_and_wait_for_achievements_init(page, f"{live_server.url}/suchary/")
 
     _wait_for_award(page, "frontend-zbieracz-sucharow")
 
@@ -218,7 +236,7 @@ def test_niecierpliwy_awarded_after_three_short_submissions(
     e2e_user: UserModel,
 ) -> None:
     """Submitting the suchar form with <10 chars 3 times earns Niecierpliwy."""
-    page.goto(f"{live_server.url}/suchary/add/")
+    _goto_and_wait_for_achievements_init(page, f"{live_server.url}/suchary/add/")
 
     # Pre-seed to 2 — the next short submit is the 3rd.
     page.evaluate("sessionStorage.setItem('niecierpliwy_count', '2')")
@@ -256,7 +274,7 @@ def test_stluczona_mysz_awarded_after_five_clicks_on_same_button(
     suchar_by_other: SucharModel,
 ) -> None:
     """Clicking a vote button on the same suchar 5 times earns Stłuczona Mysz."""
-    page.goto(f"{live_server.url}/suchary/")
+    _goto_and_wait_for_achievements_init(page, f"{live_server.url}/suchary/")
 
     pk = suchar_by_other.pk
     funny_btn = page.locator(
