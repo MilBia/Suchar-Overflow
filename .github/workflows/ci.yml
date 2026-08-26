@@ -56,8 +56,6 @@ jobs:
           set: |
             django.cache-from=type=gha,scope=django-cached-tests
             django.cache-to=type=gha,scope=django-cached-tests,mode=max
-            postgres.cache-from=type=gha,scope=postgres-cached-tests
-            postgres.cache-to=type=gha,scope=postgres-cached-tests,mode=max
 
       - name: Build backend (fallback — no cache)
         if: steps.bake_build.outcome == 'failure'
@@ -69,11 +67,6 @@ jobs:
 
       - name: Run DB Migrations
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
-
-      # Blocking since #146: the pre-existing baseline of mypy errors tracked
-      # in #144/#146 is now clear.
-      - name: Run mypy
-        run: docker compose -f docker-compose.local.yml run --rm django python -m mypy .
 
       - name: Run Django Tests
         id: django_tests
@@ -98,6 +91,13 @@ jobs:
             -m e2e \
             tests/e2e/ \
             --junitxml=e2e_junit.xml
+
+      # Blocking since #146: the pre-existing baseline of mypy errors tracked
+      # in #144/#146 is now clear. Runs after the test suites (not just the
+      # image build) so a typing error doesn't delay the more valuable
+      # test-result signal — see #216.
+      - name: Run mypy
+        run: docker compose -f docker-compose.local.yml run --rm django python -m mypy .
 
       - name: Upload Test Report
         uses: actions/upload-artifact@v7

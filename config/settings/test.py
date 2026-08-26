@@ -43,7 +43,3 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     },
 }
-
-# COMPRESSOR
-# ------------------------------------------------------------------------------
-COMPRESS_ENABLED = False
