@@ -13,6 +13,7 @@ from ninja.security import django_auth
 
 from suchar_overflow.users.models import User
 
+from .context_processors import invalidate_bell_cache
 from .models import Achievement
 from .models import UserAchievement
 
@@ -82,6 +83,10 @@ def mark_achievements_seen(request: HttpRequest) -> dict[str, bool]:
         user=user,
         is_seen=False,
     ).update(is_seen=True)
+    # Bulk .update() fires no post_save, so the signal receiver in signals.py
+    # can't clear the bell count here — do it explicitly, otherwise the badge
+    # would stay lit until BELL_CACHE_TTL expires.
+    invalidate_bell_cache(user.pk)
     return {"ok": True}
 
 
