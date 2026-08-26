@@ -157,7 +157,6 @@ def test_odkrywca_achievement_awarded_after_five_visits(
     """Visiting /achievements/ 5 times earns the Odkrywca achievement."""
     # Navigate once so localStorage is available for the right origin.
     page.goto(f"{live_server.url}/achievements/")
-    page.wait_for_load_state("networkidle")
 
     # Pre-seed to 4 — next real navigation is the 5th visit.
     page.evaluate("localStorage.setItem('odkrywca_visits', '4')")
@@ -166,7 +165,6 @@ def test_odkrywca_achievement_awarded_after_five_visits(
 
     # 5th navigation: JS reads 4, increments to 5, posts award.
     page.goto(f"{live_server.url}/achievements/")
-    page.wait_for_load_state("networkidle")
 
     _wait_for_award(page, "frontend-odkrywca")
 
@@ -191,7 +189,6 @@ def test_zbieracz_sucharow_awarded_after_five_list_visits(
     """Browsing /suchary/ 5 times without voting earns Zbieracz Sucharów."""
     # Navigate once so sessionStorage is available for the right origin.
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
     # Pre-seed to 4 — next real navigation tips it to 5.
     page.evaluate("sessionStorage.setItem('zbieracz_pages', '4')")
@@ -199,7 +196,6 @@ def test_zbieracz_sucharow_awarded_after_five_list_visits(
 
     # 5th visit — JS reads 4, increments to 5, clears key, posts award.
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
     _wait_for_award(page, "frontend-zbieracz-sucharow")
 
@@ -223,7 +219,6 @@ def test_niecierpliwy_awarded_after_three_short_submissions(
 ) -> None:
     """Submitting the suchar form with <10 chars 3 times earns Niecierpliwy."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
 
     # Pre-seed to 2 — the next short submit is the 3rd.
     page.evaluate("sessionStorage.setItem('niecierpliwy_count', '2')")
@@ -262,7 +257,6 @@ def test_stluczona_mysz_awarded_after_five_clicks_on_same_button(
 ) -> None:
     """Clicking a vote button on the same suchar 5 times earns Stłuczona Mysz."""
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
     pk = suchar_by_other.pk
     funny_btn = page.locator(
@@ -305,7 +299,6 @@ def test_recenzent_totalny_awarded_via_direct_api_post(
     """Posting recenzent-totalny from an authenticated browser creates the DB award."""
     # Navigate to any page to establish CSRF cookie in the browser.
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
     result = page.evaluate(_DIRECT_AWARD_JS.format(slug="frontend-recenzent-totalny"))
     assert result == {"ok": True}

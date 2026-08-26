@@ -21,7 +21,6 @@ def test_authenticated_user_can_cast_funny_vote(
 ) -> None:
     """Clicking the funny button increments the count and marks it active."""
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
     pk = published_suchar.pk
     funny_btn = page.locator(
@@ -54,7 +53,6 @@ def test_unauthenticated_vote_click_redirects_to_login(
 ) -> None:
     """Anonymous user clicking a vote button is redirected to the login page."""
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
     pk = published_suchar.pk
     # Anonymous buttons carry data-anonymous="true"
@@ -78,7 +76,6 @@ def test_clicking_active_vote_toggles_it_off(
     """Clicking an active vote button a second time removes the active state."""
     pk = published_suchar.pk
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
 
     funny_btn = page.locator(
         f"button.btn-vote[data-suchar-id='{pk}'][data-vote-type='funny']",
