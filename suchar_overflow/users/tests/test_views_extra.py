@@ -529,3 +529,24 @@ def test_profile_without_badges_renders_empty_state(client: Client) -> None:
     assert response.context["user_achievements"] == []
     assert "achievement-container" not in response.content.decode()
     assert not UserAchievement.objects.filter(user=owner).exists()
+
+
+@pytest.mark.django_db
+def test_build_context_fetches_badges_in_one_query() -> None:
+    """Acceptance criterion of issue #198: exactly one query for the badges.
+
+    Exercised directly on `_build_context` (like the leaderboard precedent in
+    `stats/tests/test_views.py`) so the `achievements_bell` context processor
+    and the session lookups of a full request don't blur the count.
+    """
+    owner = make_user("badge_query_owner")
+    _award_achievements(owner, ["badge-q1", "badge-q2", "badge-q3"])
+
+    with CaptureQueriesContext(connection) as ctx:
+        context = UserDetailView()._build_context(owner, is_owner=False)  # noqa: SLF001
+
+    badge_queries = [
+        q["sql"] for q in ctx.captured_queries if "achievements_" in q["sql"]
+    ]
+    assert len(badge_queries) == 1
+    assert len(context["user_achievements"]) == 3  # noqa: PLR2004
