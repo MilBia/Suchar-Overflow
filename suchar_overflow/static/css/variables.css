@@ -57,6 +57,21 @@
     --color-funny: #E58E26;
     --color-dry: #0ea5e9;
 
+    /* Achievement Tier Colors - indices match Achievement.Tier (1..5) and the
+       .tier-N / .tier-color-N / .tier-icon-N classes in achievement-page.css.
+       Tier 0 (Common) has no colour of its own by design. Deliberately theme
+       independent: the metals read the same in light and dark mode. */
+    --tier-1-color: #cd7f32;
+    /* Bronze */
+    --tier-2-color: #c0c0c0;
+    /* Silver */
+    --tier-3-color: #ffd700;
+    /* Gold */
+    --tier-4-color: #e5e4e2;
+    /* Platinum */
+    --tier-5-color: #b9f2ff;
+    /* Diamond */
+
     /* Accents (Gradients) */
     --gradient-primary: linear-gradient(135deg, hsl(var(--hue-primary), 90%, 65%), hsl(var(--hue-primary), 80%, 55%));
     --gradient-brand: linear-gradient(135deg, hsl(var(--hue-primary), 90%, 60%), hsl(var(--hue-secondary), 80%, 60%));

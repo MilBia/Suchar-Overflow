@@ -114,31 +114,37 @@
     margin-bottom: 0;
 }
 
-/* Tier Specific Styles (Glow and borders) */
+/* Tier Specific Styles (Glow and borders).
+   #209: colours come from --tier-1-color .. --tier-5-color in variables.css.
+   The rgba() glows/gradients below deliberately keep their literal channels:
+   color-mix(in srgb, var(--tier-N-color) X%, transparent) is numerically
+   identical, but Chrome serialises the color-mix() literal in computed
+   box-shadow/background-image, so that swap can't be proven visually neutral
+   by a computed-style diff. Left as a possible follow-up. */
 .achievement-card.tier-1 {
     /* Bronze */
-    border-bottom: 4px solid #cd7f32;
+    border-bottom: 4px solid var(--tier-1-color);
 }
 
 .achievement-card.tier-2 {
     /* Silver */
-    border-bottom: 4px solid #c0c0c0;
+    border-bottom: 4px solid var(--tier-2-color);
 }
 
 .achievement-card.tier-3 {
     /* Gold */
-    border-bottom: 4px solid #ffd700;
+    border-bottom: 4px solid var(--tier-3-color);
 }
 
 .achievement-card.tier-4 {
     /* Platinum */
-    border-bottom: 4px solid #e5e4e2;
+    border-bottom: 4px solid var(--tier-4-color);
     box-shadow: 0 0 15px rgba(229, 228, 226, 0.2);
 }
 
 .achievement-card.tier-5 {
     /* Diamond */
-    border-bottom: 4px solid #b9f2ff;
+    border-bottom: 4px solid var(--tier-5-color);
     box-shadow: 0 0 20px rgba(185, 242, 255, 0.4);
     background: linear-gradient(135deg, var(--bg-surface) 40%, rgba(185, 242, 255, 0.05) 100%);
 }
@@ -176,51 +182,51 @@
 }
 
 .tier-color-1 {
-    background: #cd7f32;
+    background: var(--tier-1-color);
     color: #fff;
 }
 
 .tier-color-2 {
-    background: #c0c0c0;
+    background: var(--tier-2-color);
     color: #000;
 }
 
 .tier-color-3 {
-    background: #ffd700;
+    background: var(--tier-3-color);
     color: #000;
 }
 
 .tier-color-4 {
-    background: #e5e4e2;
+    background: var(--tier-4-color);
     color: #000;
 }
 
 .tier-color-5 {
-    background: #b9f2ff;
+    background: var(--tier-5-color);
     color: #000;
 }
 
 /* #151: tints .achievement-icon-wrapper's background per tier, reusing the
-   same hex as .tier-color-N above so the card border, badge, and icon wash
-   all read as one tier signal. tier-icon-0 (Common) is intentionally left
-   undefined, matching .tier-color-0's own precedent above. */
+   same --tier-N-color as .tier-color-N above so the card border, badge, and
+   icon wash all read as one tier signal. tier-icon-0 (Common) is intentionally
+   left undefined, matching .tier-color-0's own precedent above. */
 .tier-icon-1 {
-    background: color-mix(in srgb, #cd7f32 20%, transparent);
+    background: color-mix(in srgb, var(--tier-1-color) 20%, transparent);
 }
 
 .tier-icon-2 {
-    background: color-mix(in srgb, #c0c0c0 20%, transparent);
+    background: color-mix(in srgb, var(--tier-2-color) 20%, transparent);
 }
 
 .tier-icon-3 {
-    background: color-mix(in srgb, #ffd700 20%, transparent);
+    background: color-mix(in srgb, var(--tier-3-color) 20%, transparent);
 }
 
 .tier-icon-4 {
-    background: color-mix(in srgb, #e5e4e2 25%, transparent);
+    background: color-mix(in srgb, var(--tier-4-color) 25%, transparent);
 }
 
 .tier-icon-5 {
-    background: color-mix(in srgb, #b9f2ff 25%, transparent);
+    background: color-mix(in srgb, var(--tier-5-color) 25%, transparent);
     box-shadow: 0 0 15px rgba(185, 242, 255, 0.3);
 }
