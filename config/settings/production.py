@@ -1,4 +1,5 @@
 import copy
+from typing import Any
 
 from .base import *  # noqa: F403
 from .base import DATABASES
@@ -104,16 +105,16 @@ ADMIN_URL = env("DJANGO_ADMIN_URL")
 # doesn't leak back into base.LOGGING. The only tangible addition here is
 # sending an email to the site admins on every HTTP 500 error when
 # DEBUG=False.
-LOGGING = copy.deepcopy(LOGGING)
-LOGGING["filters"] = {
+logging_config: dict[str, Any] = copy.deepcopy(LOGGING)
+logging_config["filters"] = {
     "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
 }
-LOGGING["handlers"]["mail_admins"] = {
+logging_config["handlers"]["mail_admins"] = {
     "level": "ERROR",
     "filters": ["require_debug_false"],
     "class": "django.utils.log.AdminEmailHandler",
 }
-LOGGING["loggers"] = {
+logging_config["loggers"] = {
     "django.request": {
         "handlers": ["mail_admins"],
         "level": "ERROR",
@@ -125,6 +126,7 @@ LOGGING["loggers"] = {
         "propagate": True,
     },
 }
+LOGGING = logging_config
 
 
 # COMPRESSOR
