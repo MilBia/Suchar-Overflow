@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.messages import get_messages
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -290,6 +292,72 @@ def test_update_author_post_success_shows_message(
     assert response.status_code == HTTPStatus.FOUND
     messages = list(get_messages(response.wsgi_request))
     assert [str(m) for m in messages] == [gettext("Your suchar has been updated.")]
+
+
+def _suchar_select_count(ctx: CaptureQueriesContext) -> int:
+    """Count SELECTs against the suchar table itself.
+
+    Matching the quoted table name excludes the m2m table
+    (`"suchary_suchar_tags"`) and the `UPDATE "suchary_suchar" SET ...`
+    issued by `form.save()`.
+    """
+    return len(
+        [q for q in ctx.captured_queries if 'FROM "suchary_suchar"' in q["sql"]],
+    )
+
+
+def _make_editable_suchar(django_user_model: type[UserModel], slug: str) -> Suchar:
+    author = django_user_model.objects.create_user(
+        username=f"upd_{slug}",
+        email=f"{slug}@example.com",
+        password="pw",  # noqa: S106
+    )
+    future = timezone.now() + timedelta(days=1)
+    return Suchar.objects.create(
+        text="Future joke",
+        author=author,
+        published_at=future,
+    )
+
+
+@pytest.mark.django_db
+def test_update_get_fetches_suchar_once(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
+    """Regression test for issue #201.
+
+    `AsyncUserPassesTestMixin.dispatch` calls `test_func()`, which loads the
+    suchar to check authorship; `get()` then loaded the very same row a second
+    time. The object must be fetched exactly once per request.
+    """
+    suchar = _make_editable_suchar(django_user_model, "qcount_get")
+    client.force_login(suchar.author)
+
+    with CaptureQueriesContext(connection) as ctx:
+        response = client.get(reverse("suchary:update", kwargs={"pk": suchar.pk}))
+
+    assert response.status_code == HTTPStatus.OK
+    assert _suchar_select_count(ctx) == 1
+
+
+@pytest.mark.django_db
+def test_update_post_fetches_suchar_once(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
+    """Regression test for issue #201 — same double fetch on the POST path."""
+    suchar = _make_editable_suchar(django_user_model, "qcount_post")
+    client.force_login(suchar.author)
+
+    with CaptureQueriesContext(connection) as ctx:
+        response = client.post(
+            reverse("suchary:update", kwargs={"pk": suchar.pk}),
+            {"text": "Updated future joke"},
+        )
+
+    assert response.status_code == HTTPStatus.FOUND
+    assert _suchar_select_count(ctx) == 1
 
 
 @pytest.mark.django_db
