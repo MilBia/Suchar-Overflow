@@ -189,8 +189,9 @@ label {
 }
 
 /* #151: used on suchar_form.html's schedule-date error message, toggled via
-   .d-none by JS. Deliberately doesn't set `display` — this file loads after
-   utilities.css in base.css's @import order, so a `display: block` here
+   .d-none by JS. Deliberately doesn't set `display` — this file is linked
+   after utilities.css in the {% compress css %} block in templates/base.html
+   (see #204 — formerly css/base.css's @import order), so a `display: block` here
    would win the cascade over .d-none's `display: none` even while .d-none
    is still present (same bug utilities.css documents elsewhere). The <div>
    is block-level by default anyway, so no rule is needed for the visible

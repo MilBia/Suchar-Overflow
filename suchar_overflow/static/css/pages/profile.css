@@ -68,8 +68,9 @@
 /* Sticky Sidebar Offset. `!important` is load-bearing here: this class is
    always combined with `.sticky-top` (layout.css) on the same element, and
    both set `top` with equal specificity — without `!important` this value
-   would only win by import order, which would silently flip if base.css's
-   import order ever changes. */
+   would only win by the order the sheets are linked in the {% compress css %}
+   block in templates/base.html (see #204 — formerly css/base.css's @import
+   order), which would silently flip if that order ever changes. */
 .sticky-sidebar {
     position: -webkit-sticky;
     position: sticky;
