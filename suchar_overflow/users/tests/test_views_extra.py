@@ -7,12 +7,17 @@ from typing import TYPE_CHECKING
 import pytest
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.core.cache import cache
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 
 from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
+from suchar_overflow.users.views import UserDetailView
+from suchar_overflow.users.views import user_rank_cache_key
 
 if TYPE_CHECKING:
     from django.test import Client
@@ -110,6 +115,72 @@ def test_global_rank_is_one_when_user_has_no_votes(client: Client) -> None:
     response = client.get(detail_url("novotes"))
     # No users have MORE votes, so rank = 0 + 1 = 1
     assert response.context["global_rank"] == 1
+
+
+@pytest.mark.django_db
+def test_global_rank_ignores_dry_votes_received(client: Client) -> None:
+    """Regression for #195.
+
+    The rank compares the profile owner against other users' *funny* vote
+    counts. It used to feed the owner's total (funny + dry) count into that
+    comparison, so dry votes inflated their position: `dry_only` below came
+    out as rank 1 ahead of `funny_only`, who has three times as many funny
+    votes.
+    """
+    dry_only = make_user("dry_only")
+    funny_only = make_user("funny_only")
+    s_dry = Suchar.objects.create(text="a dry one", author=dry_only)
+    s_funny = Suchar.objects.create(text="a funny one", author=funny_only)
+
+    for i in range(5):
+        Vote.objects.create(suchar=s_dry, user=make_user(f"dv{i}"), is_dry=True)
+    for i in range(3):
+        Vote.objects.create(suchar=s_funny, user=make_user(f"fv{i}"), is_funny=True)
+
+    client.force_login(dry_only)
+    response = client.get(detail_url("dry_only"))
+    # 5 dry votes are worth nothing here; funny_only's 3 funny votes rank higher.
+    assert response.context["global_rank"] == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_global_rank_second_view_within_ttl_does_not_requery() -> None:
+    user = make_user("rank_cache_u")
+    suchar = Suchar.objects.create(text="joke", author=user)
+    Vote.objects.create(suchar=suchar, user=make_user("rank_cache_v"), is_funny=True)
+
+    view = UserDetailView()
+    first = view._get_cached_rank(user, 1)  # noqa: SLF001
+
+    with CaptureQueriesContext(connection) as ctx:
+        second = view._get_cached_rank(user, 1)  # noqa: SLF001
+
+    assert first == second == 1
+    assert len(ctx.captured_queries) == 0
+
+
+@pytest.mark.django_db
+def test_global_rank_recomputes_after_cache_expiry(client: Client) -> None:
+    """Deleting the key stands in for TTL expiry (the view has no lever to
+    expire it early) — this only proves a recomputed rank reflects fresh DB
+    state, not that the TTL itself fires.
+    """
+    user = make_user("rank_stale_u")
+    Suchar.objects.create(text="joke", author=user)
+
+    client.force_login(user)
+    assert client.get(detail_url("rank_stale_u")).context["global_rank"] == 1
+
+    rival = make_user("rank_stale_rival")
+    s_rival = Suchar.objects.create(text="better joke", author=rival)
+    Vote.objects.create(suchar=s_rival, user=make_user("rank_stale_v"), is_funny=True)
+
+    # Still cached from the first view, so the new rival is invisible.
+    assert client.get(detail_url("rank_stale_u")).context["global_rank"] == 1
+
+    cache.delete(user_rank_cache_key(user.pk))
+    response = client.get(detail_url("rank_stale_u"))
+    assert response.context["global_rank"] == 2  # noqa: PLR2004
 
 
 # ===========================================================================

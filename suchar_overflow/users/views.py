@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from asgiref.sync import sync_to_async
 from django.contrib import messages
+from django.core.cache import cache
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models.functions import TruncDay
@@ -35,6 +36,19 @@ if TYPE_CHECKING:
     from django import forms
     from django.http import HttpRequest
     from django.http import HttpResponse
+
+
+# Mirrors LEADERBOARD_CACHE_TTL in suchar_overflow/stats/views.py — the profile
+# rank is the same kind of full-table aggregate and is just as tolerant of being
+# a few minutes stale.
+USER_RANK_CACHE_TTL = 60 * 5
+# The metric is part of the key: if the ranking ever switches away from
+# funny-only votes, in-flight entries can't be served under the new meaning.
+USER_RANK_CACHE_KEY_TEMPLATE = "user_funny_rank:{pk}"
+
+
+def user_rank_cache_key(pk: int) -> str:
+    return USER_RANK_CACHE_KEY_TEMPLATE.format(pk=pk)
 
 
 class UserDetailView(AsyncLoginRequiredMixin):
@@ -81,22 +95,17 @@ class UserDetailView(AsyncLoginRequiredMixin):
             dry_score=Count("votes", filter=Q(votes__is_dry=True)),
             total_count=Count("id", distinct=True),
         )
-        # Stashed on the instance (not a model field) purely to pass the total
-        # into the queryset filter below without a second aggregate query.
+        # Stashed on the instance (not a model field) so the template can render
+        # "Total Votes" straight off `object` without a second aggregate query.
         user.total_score = stats["total_score"] or 0  # type: ignore[attr-defined]
         context["total_funny_score"] = stats["funny_score"] or 0
         context["total_dry_score"] = stats["dry_score"] or 0
         context["suchar_count"] = stats["total_count"] or 0
 
-        # Global Rank — count users with more funny votes than this user
-        higher_ranking_users = (
-            User.objects.annotate(
-                score=Count("suchary__votes", filter=Q(suchary__votes__is_funny=True)),
-            )
-            .filter(score__gt=user.total_score)  # type: ignore[attr-defined]
-            .count()
+        context["global_rank"] = self._get_cached_rank(
+            user,
+            context["total_funny_score"],
         )
-        context["global_rank"] = higher_ranking_users + 1
 
         # Best Joke (highest funny count)
         context["best_joke"] = (
@@ -126,6 +135,45 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # 5. Contribution Heatmap (Last ~1 year, aligned to weeks)
         context["heatmap_weeks"] = self._get_heatmap_weeks(user)
         return context
+
+    def _get_cached_rank(self, user: User, funny_score: int) -> int:
+        """Global rank by funny votes received, cached for `USER_RANK_CACHE_TTL`.
+
+        The underlying query is a full `User x Suchar x Vote` join with a
+        `GROUP BY` over the whole user table, and used to run on every profile
+        view — same cost profile as the leaderboard aggregate cached in #182.
+        Keyed by user pk (not by score) so entries can't be shared between two
+        users whose scores happen to collide.
+        """
+        rank = cache.get_or_set(
+            user_rank_cache_key(user.pk),
+            lambda: self._compute_rank(funny_score),
+            USER_RANK_CACHE_TTL,
+        )
+        # _compute_rank (the default factory passed above) never returns None.
+        assert rank is not None
+        return rank
+
+    @staticmethod
+    def _compute_rank(funny_score: int) -> int:
+        """Count users with more funny votes received, +1.
+
+        Both sides of the comparison must count the *same* thing: the reference
+        value is the profile owner's funny-vote total, never their total vote
+        count, or every user with any "dry" vote gets a better rank than they
+        earned (#195).
+        """
+        higher_ranking_users = (
+            User.objects.annotate(
+                funny_score=Count(
+                    "suchary__votes",
+                    filter=Q(suchary__votes__is_funny=True),
+                ),
+            )
+            .filter(funny_score__gt=funny_score)
+            .count()
+        )
+        return higher_ranking_users + 1
 
     def _get_heatmap_weeks(self, user: User) -> list[dict]:
         today = timezone.now().date()
