@@ -137,6 +137,14 @@ class UserDetailView(AsyncLoginRequiredMixin):
 
         # 5. Contribution Heatmap (Last ~1 year, aligned to weeks)
         context["heatmap_weeks"] = self._get_heatmap_weeks(user)
+
+        # 6. Achievement badges — materialized here (one query, with the
+        # related Achievement joined in) so the template neither re-queries
+        # the relation for its emptiness check nor fetches the achievement
+        # once per badge while looping.
+        context["user_achievements"] = list(
+            user.user_achievements.select_related("achievement"),
+        )
         return context
 
     def _get_cached_rank(self, funny_score: int) -> int:

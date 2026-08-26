@@ -9,9 +9,13 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 
+from suchar_overflow.achievements.models import Achievement
+from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
@@ -20,6 +24,10 @@ from suchar_overflow.users.views import user_rank_cache_key
 
 if TYPE_CHECKING:
     from django.test import Client
+
+    # `User` below is a runtime value (get_user_model()), so mypy rejects it
+    # as an annotation — alias the concrete model class for typing instead.
+    from suchar_overflow.users.models import User as UserType
 
 User = get_user_model()
 
@@ -446,3 +454,78 @@ def test_user_update_form_uses_shared_field_partial(client: Client) -> None:
     content = response.content.decode()
     assert "error-bubble-container" not in content
     assert 'class="form-label"' in content
+
+
+# ===========================================================================
+# Achievement badges — query count (issue #198)
+# ===========================================================================
+
+
+def _award_achievements(user: UserType, slugs: list[str]) -> None:
+    for slug in slugs:
+        achievement = Achievement.objects.create(
+            name=f"Achievement {slug}",
+            slug=slug,
+            description=f"Description {slug}",
+            icon_content="<svg></svg>",
+        )
+        UserAchievement.objects.create(user=user, achievement=achievement)
+
+
+def _achievement_queries(ctx: CaptureQueriesContext) -> list[str]:
+    return [
+        q["sql"]
+        for q in ctx.captured_queries
+        if "achievements_achievement" in q["sql"]
+        or "achievements_userachievement" in q["sql"]
+    ]
+
+
+@pytest.mark.django_db
+def test_profile_badges_query_count_does_not_grow_with_badge_count(
+    client: Client,
+) -> None:
+    """Regression test for issue #198.
+
+    The template used to call `object.user_achievements.exists` and
+    `.all` (two queries on the same relation) and then dereference
+    `user_ach.achievement` per badge without `select_related`, so the
+    profile page cost `2 + N` achievement queries. Rendering must now stay
+    flat regardless of how many badges the profile owner has.
+    """
+    owner = make_user("badge_owner")
+    viewer = make_user("badge_viewer")
+    client.force_login(viewer)
+
+    _award_achievements(owner, ["badge-a", "badge-b"])
+    with CaptureQueriesContext(connection) as first_ctx:
+        first_response = client.get(detail_url("badge_owner"))
+    first_queries = _achievement_queries(first_ctx)
+
+    _award_achievements(owner, ["badge-c", "badge-d", "badge-e"])
+    with CaptureQueriesContext(connection) as second_ctx:
+        second_response = client.get(detail_url("badge_owner"))
+    second_queries = _achievement_queries(second_ctx)
+
+    # Guard against a vacuous pass: the badges really are rendered.
+    assert first_response.content.decode().count("achievement-container") == 2  # noqa: PLR2004
+    assert second_response.content.decode().count("achievement-container") == 5  # noqa: PLR2004
+
+    assert len(second_queries) == len(first_queries), (
+        f"Liczba zapytań o osiągnięcia rośnie z liczbą odznak: "
+        f"{len(first_queries)} (2 odznaki) -> {len(second_queries)} (5 odznak)"
+    )
+
+
+@pytest.mark.django_db
+def test_profile_without_badges_renders_empty_state(client: Client) -> None:
+    owner = make_user("badgeless_owner")
+    viewer = make_user("badgeless_viewer")
+    client.force_login(viewer)
+
+    response = client.get(detail_url("badgeless_owner"))
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.context["user_achievements"] == []
+    assert "achievement-container" not in response.content.decode()
+    assert not UserAchievement.objects.filter(user=owner).exists()
