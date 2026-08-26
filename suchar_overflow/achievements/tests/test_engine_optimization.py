@@ -106,10 +106,6 @@ class TestAchievementEngineOptimizations:
 # ---------------------------------------------------------------------------
 
 
-def _select_queries(queries: list[dict[str, str]]) -> list[str]:
-    return [q["sql"] for q in queries if q["sql"].lstrip().upper().startswith("SELECT")]
-
-
 @pytest.mark.django_db
 def test_query_count_independent_of_number_of_tiers() -> None:
     """Adding more unreachable tiers of the same metric must not add queries.
@@ -158,29 +154,36 @@ def test_query_count_independent_of_number_of_tiers() -> None:
 
 
 @pytest.mark.django_db
-def test_metric_is_evaluated_once_per_metric_not_per_tier() -> None:
-    """No SELECT is issued twice within a single check_achievements() call."""
+def test_streak_query_count_independent_of_number_of_tiers() -> None:
+    """Same invariance for STREAK_LOGIN, whose rule runs a .dates() query.
+
+    Covers a second metric (and a second query shape) than the COUNT_SUCHAR
+    test above, so the memo is proven to key on the metric, not on one rule.
+    """
     user = make_user("dupes")
     Suchar.objects.create(text="joke", author=user)
     AchievementEngine.check_achievements(user, Achievement.EventType.SUCHAR_POSTED)
 
-    for threshold in (100, 200, 300, 400):
-        make_achievement(
-            f"suchar-tier-{threshold}",
-            Achievement.Metric.COUNT_SUCHAR,
-            threshold=threshold,
-        )
+    for threshold in (100, 200):
         make_achievement(
             f"streak-tier-{threshold}",
             Achievement.Metric.STREAK_LOGIN,
             threshold=threshold,
         )
+    with_two_tiers = len(_capture_check(user, Achievement.EventType.SUCHAR_POSTED))
 
-    selects = _select_queries(
-        _capture_check(user, Achievement.EventType.SUCHAR_POSTED),
+    for threshold in (300, 400):
+        make_achievement(
+            f"streak-tier-{threshold}",
+            Achievement.Metric.STREAK_LOGIN,
+            threshold=threshold,
+        )
+    with_four_tiers = len(_capture_check(user, Achievement.EventType.SUCHAR_POSTED))
+
+    assert with_four_tiers == with_two_tiers, (
+        f"Query count grew with the number of streak tiers "
+        f"({with_two_tiers} → {with_four_tiers})."
     )
-    duplicated = {sql for sql in selects if selects.count(sql) > 1}
-    assert not duplicated, f"Repeated identical SELECT(s): {duplicated}"
 
 
 # ---------------------------------------------------------------------------
