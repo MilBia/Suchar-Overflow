@@ -3,16 +3,20 @@
 import datetime
 from http import HTTPStatus
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.core.cache import cache
 from django.urls import reverse
 from django.utils import timezone
 
 from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
+from suchar_overflow.users.views import UserDetailView
+from suchar_overflow.users.views import user_rank_cache_key
 
 if TYPE_CHECKING:
     from django.test import Client
@@ -110,6 +114,132 @@ def test_global_rank_is_one_when_user_has_no_votes(client: Client) -> None:
     response = client.get(detail_url("novotes"))
     # No users have MORE votes, so rank = 0 + 1 = 1
     assert response.context["global_rank"] == 1
+
+
+@pytest.mark.django_db
+def test_global_rank_ignores_dry_votes_received(client: Client) -> None:
+    """Regression for #195.
+
+    The rank compares the profile owner against other users' *funny* vote
+    counts. It used to feed the owner's total (funny + dry) count into that
+    comparison, so dry votes inflated their position: `dry_only` below came
+    out as rank 1 ahead of `funny_only`, who has three times as many funny
+    votes.
+    """
+    dry_only = make_user("dry_only")
+    funny_only = make_user("funny_only")
+    s_dry = Suchar.objects.create(text="a dry one", author=dry_only)
+    s_funny = Suchar.objects.create(text="a funny one", author=funny_only)
+
+    for i in range(5):
+        Vote.objects.create(suchar=s_dry, user=make_user(f"dv{i}"), is_dry=True)
+    for i in range(3):
+        Vote.objects.create(suchar=s_funny, user=make_user(f"fv{i}"), is_funny=True)
+
+    client.force_login(dry_only)
+    response = client.get(detail_url("dry_only"))
+    # 5 dry votes are worth nothing here; funny_only's 3 funny votes rank higher.
+    assert response.context["global_rank"] == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_global_rank_ties_share_position() -> None:
+    """Standard competition ranking: users tied on funny votes share a rank.
+
+    PR #222 picked this semantics deliberately (the leaderboard breaks ties by
+    pk instead); pin it here so a future change to `_compute_rank` can't drop it
+    silently. Tested against `_compute_rank` directly — the rank cache is keyed
+    by score, so two tied owners would otherwise just read the same entry and
+    the assertion would pass even for broken counting.
+    """
+    for name in ("tie_a", "tie_b"):
+        owner = make_user(name)
+        s = Suchar.objects.create(text=f"joke {name}", author=owner)
+        Vote.objects.create(suchar=s, user=make_user(f"v_{name}"), is_funny=True)
+    leader = make_user("tie_leader")
+    s_lead = Suchar.objects.create(text="top joke", author=leader)
+    for i in range(3):
+        Vote.objects.create(suchar=s_lead, user=make_user(f"lv{i}"), is_funny=True)
+
+    # tie_a and tie_b both sit on 1 funny vote, behind the single leader on 3.
+    assert UserDetailView._compute_rank(1) == 2  # noqa: SLF001, PLR2004
+    assert UserDetailView._compute_rank(3) == 1  # noqa: SLF001
+
+
+@pytest.mark.django_db
+def test_global_rank_second_view_within_ttl_does_not_recompute(client: Client) -> None:
+    """Acceptance criterion from #195: a second profile view inside the TTL
+    serves the cached rank instead of re-running the aggregate.
+    """
+    user = make_user("rank_cache_u")
+    suchar = Suchar.objects.create(text="joke", author=user)
+    Vote.objects.create(suchar=suchar, user=make_user("rank_cache_v"), is_funny=True)
+
+    client.force_login(user)
+    real_compute = UserDetailView._compute_rank  # noqa: SLF001
+    with patch.object(
+        UserDetailView,
+        "_compute_rank",
+        wraps=real_compute,
+    ) as compute_spy:
+        first = client.get(detail_url("rank_cache_u")).context["global_rank"]
+        second = client.get(detail_url("rank_cache_u")).context["global_rank"]
+
+    assert first == second == 1
+    compute_spy.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_global_rank_recomputes_after_cache_expiry(client: Client) -> None:
+    """Deleting the key stands in for TTL expiry (the view has no lever to
+    expire it early) — this only proves a recomputed rank reflects fresh DB
+    state, not that the TTL itself fires.
+    """
+    user = make_user("rank_stale_u")
+    Suchar.objects.create(text="joke", author=user)
+
+    client.force_login(user)
+    assert client.get(detail_url("rank_stale_u")).context["global_rank"] == 1
+
+    rival = make_user("rank_stale_rival")
+    s_rival = Suchar.objects.create(text="better joke", author=rival)
+    Vote.objects.create(suchar=s_rival, user=make_user("rank_stale_v"), is_funny=True)
+
+    # Still cached under the owner's own score (0 funny votes), so the new rival
+    # is invisible — the owner's key didn't change.
+    assert client.get(detail_url("rank_stale_u")).context["global_rank"] == 1
+
+    cache.delete(user_rank_cache_key(0))
+    response = client.get(detail_url("rank_stale_u"))
+    assert response.context["global_rank"] == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_global_rank_reflects_owner_score_change_within_ttl(client: Client) -> None:
+    """The rank cache is keyed by the owner's own funny total, so a change to
+    that total is served from a different key — the owner's own progress is
+    never hidden by the TTL, only other users' votes are. Under the old pk key
+    this second view would still show the stale rank.
+    """
+    owner = make_user("own_change_u")
+    rival = make_user("own_change_rival")
+    s_rival = Suchar.objects.create(text="rival joke", author=rival)
+    for i in range(2):
+        Vote.objects.create(suchar=s_rival, user=make_user(f"ocr{i}"), is_funny=True)
+
+    client.force_login(owner)
+    # 0 funny votes → behind the rival on 2.
+    before = client.get(detail_url("own_change_u")).context["global_rank"]
+    assert before == 2  # noqa: PLR2004
+
+    s_owner = Suchar.objects.create(text="owner joke", author=owner)
+    for i in range(5):
+        Vote.objects.create(suchar=s_owner, user=make_user(f"oco{i}"), is_funny=True)
+
+    # No invalidation ran, but the owner's funny total is now 5 — a different
+    # cache key — so the improved rank shows on the very next view.
+    after = client.get(detail_url("own_change_u")).context["global_rank"]
+    assert after == 1
 
 
 # ===========================================================================
