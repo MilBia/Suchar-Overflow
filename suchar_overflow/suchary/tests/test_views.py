@@ -275,3 +275,38 @@ def test_search_counts_correct_with_single_matching_tag(
     assert len(results) == 1
     assert results[0].funny_count == 3  # noqa: PLR2004
     assert results[0].dry_count == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_search_counts_not_inflated_by_text_match_with_nonmatching_tags(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
+    """#196: the fan-out also fires when only the *text* matches `?q=`.
+
+    The tag predicate is OR'd with the text predicate in WHERE, so a text
+    match lets every one of the suchar's tag rows through -- two tags that
+    don't match the phrase still multiply the vote counts without
+    distinct=True. This is the more common production case than two
+    genuinely matching tags.
+    """
+    author = django_user_model.objects.create_user(
+        username="text-match-author",
+        email="text-match-author@example.com",
+        password="password",  # noqa: S106
+    )
+    suchar = Suchar.objects.create(text="A joke about fajny things", author=author)
+    suchar.tags.add(
+        Tag.objects.create(name="koty", slug="koty"),
+        Tag.objects.create(name="psy", slug="psy"),
+    )
+    _cast_votes(suchar, django_user_model, funny=3, dry=2)
+
+    response = client.get(reverse("suchary:list"), {"q": "fajny"})
+
+    assert response.status_code == HTTPStatus.OK
+    results = list(response.context["suchary"])
+    assert len(results) == 1
+    # Two non-matching tags x five votes would still yield 6/4 without distinct.
+    assert results[0].funny_count == 3  # noqa: PLR2004
+    assert results[0].dry_count == 2  # noqa: PLR2004
