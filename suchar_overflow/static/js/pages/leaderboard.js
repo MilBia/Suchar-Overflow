@@ -1,5 +1,20 @@
 /* Leaderboard: activity chart + sliding tab/timeframe indicators */
 
+// Coalesce rapid-fire events into a single trailing call. `resize` fires
+// dozens of times per second while the user drags the window, and every
+// repositioning pass below forces a synchronous reflow via
+// getBoundingClientRect() — so we only reposition once the drag settles.
+// Same pattern as the tag autocomplete in pages/suchar_form.js.
+function debounce(func, wait) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    };
+}
+
+const RESIZE_DEBOUNCE_MS = 150;
+
 // Shared by the timeframe and tab sliding indicators below: positions
 // `slider` over `btn`, relative to `container`, optionally without a
 // transition (used for the initial, unanimated placement).
@@ -19,6 +34,10 @@ function positionSliderOverButton(slider, container, btn, animate) {
 document.addEventListener('DOMContentLoaded', function() {
     const activityCanvas = document.getElementById('activityChart');
     if (!activityCanvas) return;
+
+    // Repositioning callbacks collected by the blocks below, all run by the
+    // single debounced `resize` listener registered at the end of setup.
+    const resizeHandlers = [];
 
     const datasetsEl = document.getElementById('chart-datasets-data');
     const datasets = JSON.parse(datasetsEl.textContent);
@@ -99,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Reposition on window resize
-        window.addEventListener('resize', () => {
+        resizeHandlers.push(() => {
             const activeBtn = timeframeSelector.querySelector('button.active');
             if (activeBtn) {
                 positionSliderOverButton(slider, timeframeSelector, activeBtn, false);
@@ -135,11 +154,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Reposition tabs on window resize
-        window.addEventListener('resize', () => {
+        resizeHandlers.push(() => {
             const activeBtn = tabList.querySelector('.nav-link.active');
             if (activeBtn) {
                 positionTabSlider(activeBtn, false);
             }
         });
+    }
+
+    // One shared, debounced listener for every indicator registered above.
+    if (resizeHandlers.length > 0) {
+        window.addEventListener('resize', debounce(() => {
+            resizeHandlers.forEach(reposition => reposition());
+        }, RESIZE_DEBOUNCE_MS));
     }
 });
