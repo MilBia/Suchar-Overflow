@@ -52,6 +52,12 @@ class MyAchievementsView(AsyncLoginRequiredMixin):
         user = await request.auser()
         # AsyncLoginRequiredMixin already rejects anonymous requests.
         assert isinstance(user, User)
+        # Bulk .aupdate() fires no post_save, so the bell-cache signal receiver
+        # in signals.py doesn't run here. We deliberately don't call
+        # invalidate_bell_cache either (it's sync — wrong for an async view):
+        # the render below runs the achievements_bell context processor in the
+        # same request, and with zero unseen rows left its short-preview branch
+        # recomputes the cached count to 0. Keep that branch load-bearing.
         await UserAchievement.objects.filter(
             user=user,
             is_seen=False,

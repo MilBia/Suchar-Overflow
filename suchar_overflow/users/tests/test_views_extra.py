@@ -541,12 +541,18 @@ def test_profile_badges_query_count_does_not_grow_with_badge_count(
     viewer = make_user("badge_viewer")
     client.force_login(viewer)
 
+    # `_achievement_queries` also catches the viewer's own `achievements_bell`
+    # context-processor query, which is cached after the first hit — clear it
+    # before each measurement so the only thing that varies between the two
+    # requests is the owner's badge fetch.
     _award_achievements(owner, ["badge-a", "badge-b"])
+    cache.clear()
     with CaptureQueriesContext(connection) as first_ctx:
         first_response = client.get(detail_url("badge_owner"))
     first_queries = _achievement_queries(first_ctx)
 
     _award_achievements(owner, ["badge-c", "badge-d", "badge-e"])
+    cache.clear()
     with CaptureQueriesContext(connection) as second_ctx:
         second_response = client.get(detail_url("badge_owner"))
     second_queries = _achievement_queries(second_ctx)
