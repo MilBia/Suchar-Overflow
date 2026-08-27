@@ -14,7 +14,8 @@ def _clear_user_rank_cache() -> Iterator[None]:
     Mirrors `stats/tests/conftest.py`: the test settings use a `locmem` cache
     that lives for the whole process, so a rank computed in one test would
     otherwise be served to the next one. Unlike the leaderboard there is no
-    single key to delete — the rank key embeds the user pk — so clear the lot.
+    single key to delete — the rank key embeds the funny score, which varies
+    across test cases — so clear the lot.
     """
     cache.clear()
     yield
