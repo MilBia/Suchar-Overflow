@@ -158,11 +158,27 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin):  # ty
     template_name = "suchary/suchar_form.html"
     success_url = reverse_lazy("suchary:list")
 
+    #: Per-request cache for the edited suchar; Django builds a fresh view
+    #: instance for every request, so this can never leak between requests.
+    _suchar: Suchar | None = None
+
     async def _get_suchar(self, pk: int) -> Suchar:
+        """Fetch the edited suchar, at most once per request (issue #201).
+
+        `AsyncUserPassesTestMixin.dispatch` calls `test_func()` before handing
+        off to `get()`/`post()`, and both need the same row. Memoizing here —
+        rather than only in `test_func` — keeps the handlers correct even if
+        they are ever reached without `test_func` having run first.
+        """
+        suchar = self._suchar
+        if suchar is not None and suchar.pk == pk:
+            return suchar
         try:
-            return await Suchar.objects.select_related("author").aget(pk=pk)
+            suchar = await Suchar.objects.select_related("author").aget(pk=pk)
         except Suchar.DoesNotExist as exc:
             raise Http404 from exc
+        self._suchar = suchar
+        return suchar
 
     async def test_func(self) -> bool:  # type: ignore[override]
         suchar = await self._get_suchar(self.kwargs["pk"])
