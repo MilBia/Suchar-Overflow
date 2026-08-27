@@ -1,9 +1,12 @@
+import re
 from datetime import timedelta
 from http import HTTPStatus
 from typing import TYPE_CHECKING
+from typing import NamedTuple
 
 import pytest
 from django.contrib.messages import get_messages
+from django.core.paginator import Paginator
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -165,6 +168,109 @@ def test_pagination_preserves_params(
     assert "sort=top" in content
     assert "tag=it" in content
     assert "author=author" in content
+
+
+_PAGE_LINK_RE = re.compile(
+    r'<(a|span)\b[^>]*\bclass="page-link"[^>]*>\s*(.+?)\s*</(?:a|span)>',
+    re.DOTALL,
+)
+
+
+def _pagination_links(content: str) -> list[tuple[str, str]]:
+    """Return (tag, label) pairs for the pagination nav, in render order."""
+    start = content.index('<nav aria-label="Page navigation">')
+    end = content.index("</nav>", start)
+    return _PAGE_LINK_RE.findall(content[start:end])
+
+
+def _bulk_create_suchary(author: UserModel, count: int) -> None:
+    Suchar.objects.bulk_create(
+        [Suchar(text=f"Joke {i}", author=author) for i in range(count)],
+    )
+
+
+class _ElisionCase(NamedTuple):
+    page: int
+    digits: list[str]
+    ellipsis_count: int
+    absent_pages: tuple[str, ...]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "case",
+    [
+        # 12 pages, on_each_side=2 / on_ends=1.
+        _ElisionCase(1, ["1", "2", "3", "12"], 1, ("page=5", "page=9")),
+        _ElisionCase(6, ["1", "4", "5", "6", "7", "8", "12"], 2, ("page=3", "page=10")),
+        _ElisionCase(12, ["1", "10", "11", "12"], 1, ("page=5", "page=9")),
+    ],
+    ids=["first-page", "middle-page", "last-page"],
+)
+def test_pagination_elides_page_range_for_many_pages(
+    client: Client,
+    django_user_model: type[UserModel],
+    case: _ElisionCase,
+) -> None:
+    user = django_user_model.objects.create_user(
+        username="prolific",
+        email="prolific@example.com",
+        password="password",  # noqa: S106
+    )
+    # 120 suchary / _PER_PAGE == 12 pages.
+    _bulk_create_suchary(user, 120)
+
+    response = client.get(reverse("suchary:list"), {"page": case.page})
+
+    assert response.status_code == HTTPStatus.OK
+    content = response.content.decode()
+    links = _pagination_links(content)
+    labels = [label for _, label in links]
+    ellipsis = str(Paginator.ELLIPSIS)
+
+    assert [label for label in labels if label.isdigit()] == case.digits
+    assert labels.count(ellipsis) == case.ellipsis_count
+    # The ellipsis is static text (a <span>), never a link -- a "?page=…" href
+    # 404s on PageNotAnInteger, and a label-only assertion would not catch it.
+    ellipsis_tags = [tag for tag, label in links if label == ellipsis]
+    assert ellipsis_tags == ["span"] * case.ellipsis_count
+    assert "page=%E2%80%A6" not in content
+    # The current page is plain text too, not a self-link.
+    assert [tag for tag, label in links if label == str(case.page)] == ["span"]
+    # Elided pages are unreachable as links.
+    for absent in case.absent_pages:
+        assert absent not in content
+
+
+@pytest.mark.django_db
+def test_pagination_shows_every_page_when_few_pages(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
+    user = django_user_model.objects.create_user(
+        username="modest",
+        email="modest@example.com",
+        password="password",  # noqa: S106
+    )
+    # 45 suchary / _PER_PAGE == 5 pages, below the elision threshold.
+    _bulk_create_suchary(user, 45)
+
+    response = client.get(reverse("suchary:list"), {"page": 3})
+
+    assert response.status_code == HTTPStatus.OK
+    links = _pagination_links(response.content.decode())
+    labels = [label for _, label in links]
+
+    assert [label for label in labels if label.isdigit()] == ["1", "2", "3", "4", "5"]
+    assert str(Paginator.ELLIPSIS) not in labels
+    # Only the active page is a <span>; every other number stays a link.
+    assert [tag for tag, label in links if label.isdigit()] == [
+        "a",
+        "a",
+        "span",
+        "a",
+        "a",
+    ]
 
 
 @pytest.mark.django_db
