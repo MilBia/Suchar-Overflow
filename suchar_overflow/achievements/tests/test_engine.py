@@ -65,6 +65,19 @@ def test_register_rules_covers_all_subclasses() -> None:
             assert rule_cls.metric in AchievementEngine._rules  # noqa: SLF001
 
 
+def test_overriding_evaluate_on_a_rule_is_rejected() -> None:
+    """The engine only calls compute_value(); an overridden evaluate() would be
+    silently ignored, so defining one must fail at class-creation time."""
+    with pytest.raises(TypeError, match="compute_value"):
+
+        class BadRule(eng.AchievementRule):
+            metric = Achievement.Metric.COUNT_SUCHAR
+
+            @classmethod
+            def evaluate(cls, *args: object, **kwargs: object) -> bool:  # noqa: ARG003
+                return False
+
+
 # ---------------------------------------------------------------------------
 # AchievementEngine.check_achievements — PERIODIC excluded
 # ---------------------------------------------------------------------------

@@ -369,6 +369,18 @@ runs (handled automatically in `compose/production/django/start`).
 Signals call it on `post_save` of `Suchar` (SUCHAR_POSTED) and `Vote` (VOTE_CAST for
 voter, VOTE_RECEIVED for suchar author) only when `created=True`.
 
+Rules split into `AchievementRule.compute_value(user, instance)` (the *threshold-
+independent* metric value, or `None` when the rule can't be met at all — note that
+`None` is not `0`, which would still satisfy `threshold=0`) and `evaluate()`, which
+only compares that value with a threshold. `check_achievements` calls `compute_value`
+**once per metric** and reuses the result for every candidate tier of that metric
+(issue #200 — before that, a user sitting on N unearned tiers of one series re-ran the
+same `.count()` N times inside the synchronous `post_save` path). Consequences for new
+rules: implement `compute_value`, not `evaluate` (the engine never calls an overridden
+`evaluate`), keep it threshold-independent, and keep the rule a **direct** subclass of
+`AchievementRule` — `register_rules()` discovers rules via `__subclasses__()`, which
+only sees one level, so an intermediate base class would silently orphan them.
+
 Metric → what it evaluates:
 - `COUNT_SUCHAR` → suchary authored by user
 - `COUNT_VOTE_FUNNY` → funny votes **cast by** user (voter perspective)
@@ -376,7 +388,11 @@ Metric → what it evaluates:
   `user.suchar_votes` accessor as `COUNT_VOTE_FUNNY`, *not* votes received)
 - `COUNT_VOTE_CAST` → all votes cast by user
 - `SUM_SCORE` → net score of votes received on user's suchary (author perspective)
-- `POLARIZER` → custom rule: suchar where funny == dry >= threshold
+- `POLARIZER` → custom rule: the highest `funny_count` (which, by the `funny ==
+  dry` filter, equals `dry_count` — i.e. half the votes on that suchar, not
+  `funny + dry`) among the user's perfectly-split suchary, compared against the
+  threshold — equivalent to the old `funny_count__gte=threshold` + `.exists()`,
+  but threshold-free so it runs once
 - `STREAK_LOGIN` → consecutive days with at least one suchar posted
 - `NIGHT_OWL` → suchar created between 00:00–04:00 local time
 - `FRONTEND_EVENT` → not evaluated by a rule in `engine.py`; awarded directly by
