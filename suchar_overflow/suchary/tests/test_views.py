@@ -192,3 +192,121 @@ def test_search_query_with_special_chars_is_urlencoded_in_links(
     # start of a new parameter, breaking the pagination/filter-removal links.
     assert "q=Fish & Chips" not in content
     assert "%26" in content
+
+
+def _cast_votes(
+    suchar: Suchar,
+    django_user_model: type[UserModel],
+    *,
+    funny: int,
+    dry: int,
+) -> None:
+    """Cast `funny` funny votes and `dry` dry votes, one per distinct voter.
+
+    Vote has unique_together ("suchar", "user"), so every vote needs its own
+    voter — hence the generated usernames.
+    """
+    for i in range(funny + dry):
+        voter = django_user_model.objects.create_user(
+            username=f"voter-{suchar.pk}-{i}",
+            email=f"voter-{suchar.pk}-{i}@example.com",
+            password="password",  # noqa: S106
+        )
+        Vote.objects.create(
+            suchar=suchar,
+            user=voter,
+            is_funny=i < funny,
+            is_dry=i >= funny,
+        )
+
+
+@pytest.mark.django_db
+def test_search_counts_not_inflated_by_multiple_matching_tags(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
+    """Regression for #196: parallel tags/votes JOINs must not multiply counts.
+
+    The vote counts are annotated before the `?q=` filter adds its own JOIN to
+    the tags table, so without `distinct=True` a suchar matching the phrase on
+    two tags reports every vote twice.
+    """
+    author = django_user_model.objects.create_user(
+        username="tag-author",
+        email="tag-author@example.com",
+        password="password",  # noqa: S106
+    )
+    suchar = Suchar.objects.create(text="A joke about nothing", author=author)
+    suchar.tags.add(
+        Tag.objects.create(name="śmiech-fajny", slug="smiech-fajny"),
+        Tag.objects.create(name="fajny-info", slug="fajny-info"),
+    )
+    _cast_votes(suchar, django_user_model, funny=3, dry=2)
+
+    response = client.get(reverse("suchary:list"), {"q": "fajny"})
+
+    assert response.status_code == HTTPStatus.OK
+    results = list(response.context["suchary"])
+    assert len(results) == 1
+    # Two matching tags x five votes would yield 6/4 without distinct=True.
+    assert results[0].funny_count == 3  # noqa: PLR2004
+    assert results[0].dry_count == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_search_counts_correct_with_single_matching_tag(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
+    """The single-matching-tag case (never inflated) must stay correct."""
+    author = django_user_model.objects.create_user(
+        username="single-tag-author",
+        email="single-tag-author@example.com",
+        password="password",  # noqa: S106
+    )
+    suchar = Suchar.objects.create(text="Another joke", author=author)
+    suchar.tags.add(Tag.objects.create(name="fajny-only", slug="fajny-only"))
+    _cast_votes(suchar, django_user_model, funny=3, dry=2)
+
+    response = client.get(reverse("suchary:list"), {"q": "fajny"})
+
+    assert response.status_code == HTTPStatus.OK
+    results = list(response.context["suchary"])
+    assert len(results) == 1
+    assert results[0].funny_count == 3  # noqa: PLR2004
+    assert results[0].dry_count == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_search_counts_not_inflated_by_text_match_with_nonmatching_tags(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
+    """#196: the fan-out also fires when only the *text* matches `?q=`.
+
+    The tag predicate is OR'd with the text predicate in WHERE, so a text
+    match lets every one of the suchar's tag rows through -- two tags that
+    don't match the phrase still multiply the vote counts without
+    distinct=True. This is the more common production case than two
+    genuinely matching tags.
+    """
+    author = django_user_model.objects.create_user(
+        username="text-match-author",
+        email="text-match-author@example.com",
+        password="password",  # noqa: S106
+    )
+    suchar = Suchar.objects.create(text="A joke about fajny things", author=author)
+    suchar.tags.add(
+        Tag.objects.create(name="koty", slug="koty"),
+        Tag.objects.create(name="psy", slug="psy"),
+    )
+    _cast_votes(suchar, django_user_model, funny=3, dry=2)
+
+    response = client.get(reverse("suchary:list"), {"q": "fajny"})
+
+    assert response.status_code == HTTPStatus.OK
+    results = list(response.context["suchary"])
+    assert len(results) == 1
+    # Two non-matching tags x five votes would still yield 6/4 without distinct.
+    assert results[0].funny_count == 3  # noqa: PLR2004
+    assert results[0].dry_count == 2  # noqa: PLR2004
