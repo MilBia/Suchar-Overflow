@@ -23,14 +23,17 @@ to be the first test in the run to touch compressor. Output lands in
 """
 
 import re
+from typing import TYPE_CHECKING
 
 import pytest
 from django.core.cache import cache
-from django.test import Client
 from django.urls import reverse
-from pytest_django.fixtures import Settings as SettingsWrapper
 
 from suchar_overflow.conftest import make_user
+
+if TYPE_CHECKING:
+    from django.test import Client
+    from pytest_django.fixtures import Settings as SettingsWrapper
 
 SCRIPT_TAG_RE = re.compile(r"<script\b(?=[^>]*\bsrc=)[^>]*>", re.IGNORECASE)
 SCRIPT_SRC_RE = re.compile(r'\bsrc="([^"]+)"', re.IGNORECASE)
@@ -67,15 +70,15 @@ def logged_in_client(client: Client) -> Client:
     return client
 
 
-# (url name, kwargs) for the pages whose blocks #205 wrapped, plus the
-# number of separate `{% compress js %}` / `{% compress css %}` bundles each
-# page is expected to emit (base.html's own bundles included).
+# URL name, kwargs, and the number of separate compress bundles the page is
+# expected to emit. Every page inherits two bundles from base.html (one holding
+# project.js, one holding hidden_achievements.js for logged-in users); the rest
+# come from the page's own blocks. Leaderboard adds two — the vendored chart
+# library and its own script, kept apart by the json_script between them —
+# while the suchary pages add a single bundle each.
 JS_PAGES: list[tuple[str, dict[str, str], int]] = [
-    # base(project.js + hidden_achievements.js) + chart.umd.min.js + leaderboard.js
     ("stats:leaderboard", {}, 4),
-    # base(project.js + hidden_achievements.js) + voting.js
     ("suchary:list", {}, 3),
-    # base(project.js + hidden_achievements.js) + flatpickr.min.js + suchar_form.js
     ("suchary:add", {}, 3),
 ]
 
@@ -119,7 +122,8 @@ def test_user_detail_js_is_compressed_and_keeps_defer(
     srcs = _script_srcs(html)
     uncompressed = [src for src in srcs if not src.startswith("/static/CACHE/js/")]
     assert not uncompressed, uncompressed
-    # base(project.js + hidden_achievements.js) + chart.umd.min.js + user_detail.js
+    # Two bundles inherited from base.html, plus the vendored chart library and
+    # the page's own script, which the json_script blocks keep in separate ones.
     assert len(set(srcs)) == 4, srcs  # noqa: PLR2004
     missing_defer = [tag for tag in _script_tags(html) if " defer" not in tag]
     assert not missing_defer, missing_defer
