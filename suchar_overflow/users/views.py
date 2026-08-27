@@ -205,9 +205,24 @@ class UserDetailView(AsyncLoginRequiredMixin):
         days_to_subtract = start_date.weekday()
         start_date -= datetime.timedelta(days=days_to_subtract)
 
+        # Raw datetime bounds (not created_at__date__gte): the __date lookup
+        # renders as (created_at AT TIME ZONE tz)::date, and a cast column can't
+        # use the plain B-tree index on created_at (added in #197). A half-open
+        # [start, end) range on the bare column can — same pattern as
+        # stats.views._fetch_daily_counts_map and the "Dryness Chart" above.
+        range_start = timezone.make_aware(
+            datetime.datetime.combine(start_date, datetime.time.min),
+        )
+        range_end = timezone.make_aware(
+            datetime.datetime.combine(
+                today + datetime.timedelta(days=1),
+                datetime.time.min,
+            ),
+        )
+
         # Get counts per day
         daily_counts = (
-            user.suchary.filter(created_at__date__gte=start_date)
+            user.suchary.filter(created_at__gte=range_start, created_at__lt=range_end)
             .annotate(date=TruncDay("created_at"))
             .values("date")
             .annotate(count=Count("id"))

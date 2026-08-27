@@ -617,3 +617,105 @@ def test_build_context_orders_badges_newest_first() -> None:
 
     slugs = [ua.achievement.slug for ua in context["user_achievements"]]
     assert slugs == ["badge-o3", "badge-o2", "badge-o1"]
+
+
+# ===========================================================================
+# Heatmap date range — half-open datetime bound (issue #203, point 4)
+# ===========================================================================
+
+
+def heatmap_count_for(weeks: list[dict], day: datetime.date) -> int | None:
+    """Return the heatmap count for `day`, or None if the day is off the grid."""
+    day_str = day.strftime("%Y-%m-%d")
+    for week in weeks:
+        for entry in week["days"]:
+            if entry["date"] == day_str:
+                return entry["count"]
+    return None
+
+
+@pytest.mark.django_db
+def test_heatmap_includes_todays_suchary(client: Client) -> None:
+    """The window's upper bound is tomorrow — today must still count."""
+    user = make_user("heatmap_today")
+    now = timezone.now()
+    s = Suchar.objects.create(text="today", author=user)
+    Suchar.objects.filter(pk=s.pk).update(created_at=now)
+
+    client.force_login(user)
+    response = client.get(detail_url("heatmap_today"))
+
+    assert heatmap_count_for(response.context["heatmap_weeks"], now.date()) == 1
+
+
+@pytest.mark.django_db
+def test_heatmap_includes_suchar_at_midnight_of_first_day(client: Client) -> None:
+    """A suchar at exactly 00:00 of the grid's first day is inside the range."""
+    user = make_user("heatmap_start")
+    # Mirror the view's own window: 365 days back, aligned to the Monday before.
+    start_date = timezone.now().date() - datetime.timedelta(days=365)
+    start_date -= datetime.timedelta(days=start_date.weekday())
+    midnight = timezone.make_aware(
+        datetime.datetime.combine(start_date, datetime.time.min),
+    )
+
+    s = Suchar.objects.create(text="boundary", author=user)
+    Suchar.objects.filter(pk=s.pk).update(created_at=midnight)
+
+    client.force_login(user)
+    response = client.get(detail_url("heatmap_start"))
+
+    assert heatmap_count_for(response.context["heatmap_weeks"], start_date) == 1
+
+
+@pytest.mark.django_db
+def test_heatmap_excludes_suchar_before_the_window(client: Client) -> None:
+    user = make_user("heatmap_before")
+    start_date = timezone.now().date() - datetime.timedelta(days=365)
+    start_date -= datetime.timedelta(days=start_date.weekday())
+    before = timezone.make_aware(
+        datetime.datetime.combine(start_date, datetime.time.min),
+    ) - datetime.timedelta(seconds=1)
+
+    s = Suchar.objects.create(text="too old", author=user)
+    Suchar.objects.filter(pk=s.pk).update(created_at=before)
+
+    client.force_login(user)
+    response = client.get(detail_url("heatmap_before"))
+
+    # The day itself is off the grid entirely, and nothing leaked into day one.
+    weeks = response.context["heatmap_weeks"]
+    assert heatmap_count_for(weeks, before.date()) is None
+    assert heatmap_count_for(weeks, start_date) == 0
+
+
+@pytest.mark.django_db
+def test_profile_day_queries_compare_the_bare_created_at_column(
+    client: Client,
+) -> None:
+    """The per-day aggregations must not cast created_at in their WHERE clause.
+
+    ``created_at__date__gte`` renders on PostgreSQL as
+    ``("suchary_suchar"."created_at" AT TIME ZONE 'UTC')::date >= ...`` — a cast
+    expression, so the plain B-tree index on ``created_at`` (issue #197) cannot
+    be used. ``TruncDay`` in the SELECT list still casts, which is fine; only
+    the filtered column has to stay bare.
+    """
+    user = make_user("heatmap_sql")
+    client.force_login(user)
+
+    with CaptureQueriesContext(connection) as ctx:
+        client.get(detail_url("heatmap_sql"))
+
+    day_queries = [
+        q["sql"]
+        for q in ctx.captured_queries
+        if "DATE_TRUNC" in q["sql"] and '"suchary_suchar"' in q["sql"]
+    ]
+    assert day_queries, "expected the heatmap/activity aggregation queries"
+    for sql in day_queries:
+        where = sql.split(" WHERE ", 1)[1]
+        assert "::date" not in where, f"created_at is still cast to date: {sql}"
+        assert '"suchary_suchar"."created_at" >=' in where, (
+            f"expected a bare half-open lower bound on created_at: {sql}"
+        )

@@ -32,6 +32,11 @@ class EmailChangeRequestInline(admin.TabularInline):
 @admin.register(EmailChangeRequest)
 class EmailChangeRequestAdmin(admin.ModelAdmin):
     list_display = ["user", "old_email", "new_email", "status", "created_at"]
+    # Explicit changelist join; Django 6.1 would derive the same set from
+    # list_display on its own, but declaring it opts out of that fallback
+    # (see the note in suchary/admin.py). test_admin_select_related keeps
+    # this list equal to what list_display would derive.
+    list_select_related = ["user"]
     list_filter = ["status", "created_at"]
     search_fields = ["user__username", "user__email", "new_email"]
     date_hierarchy = "created_at"

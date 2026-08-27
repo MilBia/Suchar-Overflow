@@ -53,7 +53,10 @@ def vote_suchar(
     suchar_id: int,
     payload: VoteSchema,
 ) -> dict[str, int | bool]:
-    suchar = get_object_or_404(Suchar, pk=suchar_id)
+    # select_related("author"): the freshly created Vote carries this instance in
+    # its fields_cache, so check_vote_achievements' `instance.suchar.author`
+    # resolves without an extra query on every first-time vote.
+    suchar = get_object_or_404(Suchar.objects.select_related("author"), pk=suchar_id)
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
     vote_type = payload.vote_type
