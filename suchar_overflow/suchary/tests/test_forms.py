@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
@@ -5,6 +6,7 @@ import pytest
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
+from django.utils.text import slugify
 
 from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.forms import SucharForm
@@ -365,3 +367,31 @@ def test_save_tags_query_count_does_not_scale_with_tag_count() -> None:
     many = tag_query_count(" ".join(f"many{i}" for i in range(8)))
 
     assert few == many, f"tag queries scale with tag count: {few} vs {many}"
+
+
+@pytest.mark.django_db
+def test_save_tags_logs_when_a_name_collision_drops_a_tag(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A pre-existing name under a different slug is skipped, not fatal, logged.
+
+    ``Tag.name`` is unique, so ``bulk_create(ignore_conflicts=True)`` silently
+    drops the insert for a new slug whose name already belongs to another row.
+    The suchar still saves; the dropped tag gets a warning rather than nothing.
+    """
+    user = make_user("tags_name_clash")
+    typed = "żółw"
+    dropped_slug = slugify(typed)
+    # Same name, a different slug — the admin's urlify.js vs. python slugify
+    # divergence that makes this reachable in a Polish-language app.
+    Tag.objects.create(name=typed, slug=f"{dropped_slug}-admin")
+
+    with caplog.at_level(logging.WARNING, logger="suchar_overflow.suchary.forms"):
+        suchar = save_with_tags(user, f"{typed} python")
+
+    assert tag_slugs(suchar) == {"python"}
+    assert Tag.objects.filter(slug=dropped_slug).count() == 0
+    assert any(
+        dropped_slug in record.message and record.levelno == logging.WARNING
+        for record in caplog.records
+    ), caplog.records

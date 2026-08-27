@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from datetime import timedelta
 from typing import TYPE_CHECKING
@@ -12,6 +13,8 @@ from .models import Tag
 
 if TYPE_CHECKING:
     from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 class SucharForm(forms.ModelForm):
@@ -146,6 +149,20 @@ class SucharForm(forms.ModelForm):
             Tag.objects.bulk_create(missing, ignore_conflicts=True)
             tags_by_slug = {tag.slug: tag for tag in Tag.objects.filter(slug__in=slugs)}
 
-        instance.tags.set(
-            [tags_by_slug[slug] for slug in names_by_slug if slug in tags_by_slug],
-        )
+        resolved = [
+            tags_by_slug[slug] for slug in names_by_slug if slug in tags_by_slug
+        ]
+        dropped = [slug for slug in names_by_slug if slug not in tags_by_slug]
+        if dropped:
+            # Reachable only via the name-collision path described above: a
+            # pre-existing Tag shares this slug's name under a different slug, so
+            # ignore_conflicts skipped the insert and the re-fetch finds nothing.
+            # Not fatal (the suchar still saves), but the user silently loses a
+            # tag they typed — worth a log line rather than nothing.
+            logger.warning(
+                "SucharForm._save_tags dropped tag(s) %s (name already taken "
+                "under a different slug)",
+                dropped,
+            )
+
+        instance.tags.set(resolved)

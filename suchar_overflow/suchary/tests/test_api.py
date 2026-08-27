@@ -342,3 +342,17 @@ def test_vote_loads_author_with_the_suchar(client: Client) -> None:
         "the suchar must be fetched with its author joined in "
         f"(queries seen: {suchar_selects})"
     )
+
+    # The effect issue #203 point 1 actually asks for: no separate author
+    # re-fetch on top of that join. The voter's own row is loaded by auth
+    # middleware; the author's row must never be fetched on its own.
+    standalone_author_lookups = [
+        q["sql"]
+        for q in ctx.captured_queries
+        if f'"users_user"."id" = {author.pk}' in q["sql"]
+        and '"suchary_suchar"' not in q["sql"]
+    ]
+    assert not standalone_author_lookups, (
+        "the author was re-fetched in a standalone query despite select_related "
+        f"({standalone_author_lookups})"
+    )
