@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% load static %}
+{% load static compress %}
 
 {% block title %}
   {% trans "Add Joke" %}
@@ -10,8 +10,11 @@
 
 {% block css %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/pages/flatpickr.min.css' %}" />
-  <link rel="stylesheet" href="{% static 'css/pages/suchar_form.css' %}" />
+  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+  {% compress css %}
+    <link rel="stylesheet" href="{% static 'css/pages/flatpickr.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/pages/suchar_form.css' %}" />
+  {% endcompress %}
 {% endblock css %}
 
 {% block content %}
@@ -163,6 +166,9 @@
 
 {% block javascript %}
   {{ block.super }}
-  <script defer src="{% static 'js/flatpickr.min.js' %}"></script>
-  <script defer src="{% static 'js/pages/suchar_form.js' %}"></script>
+  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+  {% compress js %}
+    <script defer src="{% static 'js/flatpickr.min.js' %}"></script>
+    <script defer src="{% static 'js/pages/suchar_form.js' %}"></script>
+  {% endcompress %}
 {% endblock javascript %}
