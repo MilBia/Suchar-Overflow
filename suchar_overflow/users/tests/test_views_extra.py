@@ -18,6 +18,7 @@ from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
+from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
 from suchar_overflow.users.views import UserDetailView
 from suchar_overflow.users.views import user_rank_cache_key
@@ -68,6 +69,49 @@ def test_scheduled_suchary_hidden_from_other_user(client: Client) -> None:
     assert response.status_code == HTTPStatus.OK
     # scheduled_suchary context key must not exist for non-owner
     assert "scheduled_suchary" not in response.context
+
+
+@pytest.mark.django_db
+def test_scheduled_suchary_tags_do_not_n_plus_one(client: Client) -> None:
+    """Regression test for issue #199.
+
+    `user_detail.html` iterates `suchar.tags.all` for every scheduled suchar.
+    Without `prefetch_related("tags")` on the `scheduled_suchary` queryset
+    that costs one extra query per scheduled suchar. The tag-query count must
+    stay constant regardless of how many scheduled suchary the owner has.
+
+    Goes through a full `client.get()` render (not `_build_context`
+    directly) so it also covers the template — a regression like #183
+    (`tags.first()` dropping the prefetch cache) would be invisible to a
+    Python-level `suchar.tags.all()` loop. Same shape as
+    `stats/tests/test_views.py::test_full_page_render_does_not_n_plus_one_on_tags`.
+    """
+    owner = make_user("prefetch_owner")
+    tag = Tag.objects.create(name="Programowanie", slug="programowanie")
+    future = timezone.now() + datetime.timedelta(days=1)
+    scheduled_count = 3
+    for i in range(scheduled_count):
+        suchar = Suchar.objects.create(
+            text=f"Scheduled joke {i}",
+            author=owner,
+            published_at=future,
+        )
+        suchar.tags.add(tag)
+
+    client.force_login(owner)
+    with CaptureQueriesContext(connection) as ctx:
+        response = client.get(detail_url("prefetch_owner"))
+
+    assert response.status_code == HTTPStatus.OK
+    # Guard against a vacuous pass: the scheduled suchary really are rendered.
+    assert len(response.context["scheduled_suchary"]) == scheduled_count
+
+    tag_queries = [q for q in ctx.captured_queries if "suchary_tag" in q["sql"]]
+    max_tag_queries = 2  # one prefetch query, generously allow one more
+    # Seed enough scheduled suchary that an N+1 would actually breach the
+    # threshold — otherwise the assertion below can't detect the regression.
+    assert scheduled_count > max_tag_queries
+    assert len(tag_queries) <= max_tag_queries
 
 
 # ===========================================================================
