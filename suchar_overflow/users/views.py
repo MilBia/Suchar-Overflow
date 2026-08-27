@@ -141,9 +141,13 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # 6. Achievement badges — materialized here (one query, with the
         # related Achievement joined in) so the template neither re-queries
         # the relation for its emptiness check nor fetches the achievement
-        # once per badge while looping.
+        # once per badge while looping. Ordered newest-first to match the
+        # `achievements_bell` context processor and keep the badge order
+        # stable across page loads (the JOIN leaves row order undefined).
         context["user_achievements"] = list(
-            user.user_achievements.select_related("achievement"),
+            user.user_achievements.select_related("achievement").order_by(
+                "-awarded_at",
+            ),
         )
         return context
 

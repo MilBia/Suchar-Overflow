@@ -550,3 +550,20 @@ def test_build_context_fetches_badges_in_one_query() -> None:
     ]
     assert len(badge_queries) == 1
     assert len(context["user_achievements"]) == 3  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_build_context_orders_badges_newest_first() -> None:
+    """The JOIN leaves row order undefined, so the view sorts explicitly.
+
+    Newest-first matches the `achievements_bell` context processor and keeps
+    the badge order stable across page loads.
+    """
+    owner = make_user("badge_order_owner")
+    # `awarded_at` is `auto_now_add`, so the rows are created oldest-first.
+    _award_achievements(owner, ["badge-o1", "badge-o2", "badge-o3"])
+
+    context = UserDetailView()._build_context(owner, is_owner=False)  # noqa: SLF001
+
+    slugs = [ua.achievement.slug for ua in context["user_achievements"]]
+    assert slugs == ["badge-o3", "badge-o2", "badge-o1"]
