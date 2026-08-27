@@ -116,11 +116,12 @@
 
 /* Tier Specific Styles (Glow and borders).
    #209: colours come from --tier-1-color .. --tier-5-color in variables.css.
-   The rgba() glows/gradients below deliberately keep their literal channels:
-   color-mix(in srgb, var(--tier-N-color) X%, transparent) is numerically
-   identical, but Chrome serialises the color-mix() literal in computed
-   box-shadow/background-image, so that swap can't be proven visually neutral
-   by a computed-style diff. Left as a possible follow-up. */
+   The rgba() glows/gradients below deliberately keep their literal channels.
+   color-mix(in srgb, var(--tier-N-color) X%, transparent) would be numerically
+   identical, but Chrome expands color-mix() in computed styles to a
+   color(srgb R G B / A) literal, not rgba(), so a computed-style diff of this
+   PR would show textual (not visual) differences. Left as a possible
+   follow-up (e.g. rgb(from var(--tier-N-color) r g b / A)). */
 .achievement-card.tier-1 {
     /* Bronze */
     border-bottom: 4px solid var(--tier-1-color);
