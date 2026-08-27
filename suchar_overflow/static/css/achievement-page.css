@@ -116,12 +116,11 @@
 
 /* Tier Specific Styles (Glow and borders).
    #209: colours come from --tier-1-color .. --tier-5-color in variables.css.
-   The rgba() glows/gradients below deliberately keep their literal channels.
-   color-mix(in srgb, var(--tier-N-color) X%, transparent) would be numerically
-   identical, but Chrome expands color-mix() in computed styles to a
-   color(srgb R G B / A) literal, not rgba(), so a computed-style diff of this
-   PR would show textual (not visual) differences. Left as a possible
-   follow-up (e.g. rgb(from var(--tier-N-color) r g b / A)). */
+   The translucent glows/gradients derive their alpha from the same token via
+   relative colour syntax: rgb(from var(--tier-N-color) r g b / A) has the same
+   channels as the old rgba(R, G, B, A) literals, so this is a pure rename.
+   Computed styles serialise it (like color-mix()) as color(srgb R G B / A) --
+   numerically identical, just a different text form. */
 .achievement-card.tier-1 {
     /* Bronze */
     border-bottom: 4px solid var(--tier-1-color);
@@ -140,14 +139,14 @@
 .achievement-card.tier-4 {
     /* Platinum */
     border-bottom: 4px solid var(--tier-4-color);
-    box-shadow: 0 0 15px rgba(229, 228, 226, 0.2);
+    box-shadow: 0 0 15px rgb(from var(--tier-4-color) r g b / 0.2);
 }
 
 .achievement-card.tier-5 {
     /* Diamond */
     border-bottom: 4px solid var(--tier-5-color);
-    box-shadow: 0 0 20px rgba(185, 242, 255, 0.4);
-    background: linear-gradient(135deg, var(--bg-surface) 40%, rgba(185, 242, 255, 0.05) 100%);
+    box-shadow: 0 0 20px rgb(from var(--tier-5-color) r g b / 0.4);
+    background: linear-gradient(135deg, var(--bg-surface) 40%, rgb(from var(--tier-5-color) r g b / 0.05) 100%);
 }
 
 .achievement-glow {
@@ -229,5 +228,5 @@
 
 .tier-icon-5 {
     background: color-mix(in srgb, var(--tier-5-color) 25%, transparent);
-    box-shadow: 0 0 15px rgba(185, 242, 255, 0.3);
+    box-shadow: 0 0 15px rgb(from var(--tier-5-color) r g b / 0.3);
 }
