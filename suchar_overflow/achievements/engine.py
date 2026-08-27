@@ -39,9 +39,23 @@ class AchievementRule:
     Subclasses must stay *direct* subclasses of this class:
     ``AchievementEngine.register_rules`` discovers them via
     ``__subclasses__()``, which only sees one level.
+
+    Subclasses implement :meth:`compute_value` only — the engine calls that,
+    never ``evaluate``, so overriding ``evaluate`` in a subclass would be a
+    no-op the engine silently ignores. ``__init_subclass__`` rejects it.
     """
 
     metric: Achievement.Metric | None = None
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        super().__init_subclass__(**kwargs)
+        if "evaluate" in cls.__dict__:
+            msg = (
+                f"{cls.__name__} overrides evaluate(); rules must implement "
+                f"compute_value() instead — the engine never calls a rule's "
+                f"evaluate()."
+            )
+            raise TypeError(msg)
 
     @classmethod
     def compute_value(

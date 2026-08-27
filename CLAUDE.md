@@ -388,9 +388,11 @@ Metric → what it evaluates:
   `user.suchar_votes` accessor as `COUNT_VOTE_FUNNY`, *not* votes received)
 - `COUNT_VOTE_CAST` → all votes cast by user
 - `SUM_SCORE` → net score of votes received on user's suchary (author perspective)
-- `POLARIZER` → custom rule: highest vote count among suchary where funny == dry
-  (compared against the threshold — equivalent to the old
-  `funny_count__gte=threshold` + `.exists()`, but threshold-free so it runs once)
+- `POLARIZER` → custom rule: the highest `funny_count` (which, by the `funny ==
+  dry` filter, equals `dry_count` — i.e. half the votes on that suchar, not
+  `funny + dry`) among the user's perfectly-split suchary, compared against the
+  threshold — equivalent to the old `funny_count__gte=threshold` + `.exists()`,
+  but threshold-free so it runs once
 - `STREAK_LOGIN` → consecutive days with at least one suchar posted
 - `NIGHT_OWL` → suchar created between 00:00–04:00 local time
 - `FRONTEND_EVENT` → not evaluated by a rule in `engine.py`; awarded directly by

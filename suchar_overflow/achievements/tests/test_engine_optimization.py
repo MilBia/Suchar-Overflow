@@ -155,10 +155,14 @@ def test_query_count_independent_of_number_of_tiers() -> None:
 
 @pytest.mark.django_db
 def test_streak_query_count_independent_of_number_of_tiers() -> None:
-    """Same invariance for STREAK_LOGIN, whose rule runs a .dates() query.
+    """Same query-count invariance for STREAK_LOGIN's ``.dates()`` query shape.
 
-    Covers a second metric (and a second query shape) than the COUNT_SUCHAR
-    test above, so the memo is proven to key on the metric, not on one rule.
+    A second metric and a second query shape than the COUNT_SUCHAR test above,
+    so the memo is shown to key on the metric rather than on one rule. This
+    asserts only that adding tiers adds no queries — that STREAK_LOGIN is
+    computed correctly (and exactly once) is covered by
+    ``test_awarded_set_matches_per_candidate_evaluation``, whose scenario puts
+    the user mid-way through a STREAK_LOGIN series.
     """
     user = make_user("dupes")
     Suchar.objects.create(text="joke", author=user)
