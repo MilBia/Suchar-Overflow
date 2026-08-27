@@ -362,6 +362,47 @@ not the exception.
 `COMPRESS_ENABLED = False` (dev/test). Only active in production after `manage.py compress --force`
 runs (handled automatically in `compose/production/django/start`).
 
+**Never use CSS `@import` for a project module** (issue #204). `COMPRESS_CSS_FILTERS`
+(`CssAbsoluteFilter` + `RCSSMinFilter`) neither resolves nor inlines a bare
+`@import 'x.css'` — `CssAbsoluteFilter` only rewrites `url(...)` / `src="..."`, so the
+directive is copied into `/static/CACHE/css/output.<hash>.css` verbatim. Two problems:
+
+- **It defeats the compressor.** Instead of the single minified bundle the
+  `{% compress %}` block exists to produce, the browser gets that bundle *plus* ~22
+  extra render-blocking requests it can only discover sequentially (it must fetch and
+  parse the bundle before it sees the `@import`s). That is the #204 regression — the
+  compressor stops doing the one thing it was switched on for.
+- **Whether those copied `@import`s even resolve in production is incidental.**
+  `production.py` sets `STORAGES["staticfiles"]` to a
+  `CompressedManifestStaticFilesStorage`, and `compose/production/django/start` runs
+  `collectstatic` *before* `compress --force`; Django's `HashedFilesMixin` rewrites
+  `@import 'x.css'` → `@import url("x.<hash>.css")`, which `CssAbsoluteFilter` then
+  *does* absolutise — so today's production bundle's imports happen to point at real
+  files. Switch to any non-manifest `STORAGES`, or set `COMPRESS_ENABLED = True` in any
+  other settings profile, and all ~22 turn into `/static/CACHE/css/<module>.css` → HTTP
+  404. Invisible in dev/test because compression is off there.
+
+`manage.py compress --force` is **not** a gate for this — it reports success on the
+broken state too (confirmed on `main` during the #237 review). `tests/test_compressed_css.py`
+is the only gate: it is the sole unit test that runs with `COMPRESS_ENABLED = True`, and it
+asserts the bundle has no `@import`, has absolutised `url(...)` refs, and preserves the
+cascade order (writing into the gitignored `staticfiles/CACHE/` via compressor's own
+storage). It runs on the default non-manifest storage, so it guards "no `@import` in the
+bundle", not any particular production render. Stylesheet composition therefore lives in
+the templates:
+
+- One `{% compress %}` block = one output file, and **position inside the block is the
+  cascade order**. `base.html`'s css block lists the ~23 global modules in the canonical
+  order fonts → core → components → pages → `project.css`; `utilities.css`,
+  `components/forms.css` and `pages/profile.css` carry comments that depend on it. A new
+  global module gets a `<link>` at the right position there.
+- A page template keeps `{{ block.super }}` **outside** any `{% compress %}` tag — it
+  already expands to base's finished `<link ... CACHE/css/output.<hash>.css>`, and
+  re-feeding a compressed output through the compressor is wrong — then opens its
+  **own** `{% compress css %}` block for its page-specific sheets, a second output file.
+  Don't try to merge page sheets into base's block.
+- Vendored, already-minified sheets (`pages/flatpickr.min.css`) are fine inside a block.
+
 ### Achievement engine
 
 `AchievementEngine.check_achievements(user, event_type, instance=None)` looks up

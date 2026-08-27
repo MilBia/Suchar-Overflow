@@ -29,8 +29,51 @@
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <link rel="icon" href="{% static 'images/favicons/favicon.svg' %}" />
     {% block css %}
+      {% comment %}
+      Canonical global stylesheet order: fonts → core → components → pages →
+      project.css. This block IS the cascade order — a rule in a file listed
+      lower wins over an equally specific rule listed higher, and several
+      files (utilities.css, components/forms.css, pages/profile.css) document
+      rules that depend on it. Add new global modules at the right position here.
+
+      Composition deliberately lives in this template rather than in a CSS
+      `@import` chain (see #204). django-compressor concatenates every link
+      tag inside one {% compress %} block into a single output file and runs
+      CssAbsoluteFilter once per input file, absolutising each file's own
+      relative url(...) refs (e.g. fonts.css's ../fonts/*.woff2). `@import`
+      directives, by contrast, are copied into the output verbatim and then
+      resolve against /static/CACHE/css/ — where the modules do not exist —
+      so never reintroduce one for a project module. Vendored pre-minified
+      sheets are fine inside a compress block; page-specific sheets belong in
+      the child template's own {% compress css %} block, not this one — and
+      that child block must NOT wrap {{ block.super }}, which already expands
+      to this bundle's finished link tag pointing at CACHE/css/output.HASH.css:
+      feeding an already-compressed output back through the compressor is wrong.
+      {% endcomment %}
       {% compress css %}
-        <link href="{% static 'css/base.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/fonts.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/variables.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/reset.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/typography.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/layout.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/utilities.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/buttons.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/navbar.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/cards.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/forms.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/modals.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/toasts.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/list_group.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/pagination.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/dropdowns.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/voting.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/heatmap.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/achievement-badge.css' %}"
+              rel="stylesheet" />
+        <link href="{% static 'css/components/suchar-card.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/components/footer.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/pages/leaderboard.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/pages/profile.css' %}" rel="stylesheet" />
         <link href="{% static 'css/project.css' %}" rel="stylesheet" />
       {% endcompress %}
     {% endblock css %}

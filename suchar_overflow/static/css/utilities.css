@@ -72,8 +72,10 @@
 }
 
 /* !important on these (and the other #66 follow-up spacing utilities below):
-   utilities.css is @imported before components/*.css and project.css in
-   base.css, so any component that sets margin/padding as a shorthand (.btn,
+   utilities.css is linked before components/*.css and project.css in the
+   {% compress css %} block in templates/base.html (see #204 — this used to be
+   an @import chain in css/base.css), so any component that sets margin/padding
+   as a shorthand (.btn,
    .badge, .list-group-item, etc.) would otherwise win the cascade at equal
    specificity and silently cancel these out wherever combined — the exact
    "class defined but has no visible effect" bug this PR exists to fix. */
