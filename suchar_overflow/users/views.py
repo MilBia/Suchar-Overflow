@@ -40,15 +40,21 @@ if TYPE_CHECKING:
 
 # Mirrors LEADERBOARD_CACHE_TTL in suchar_overflow/stats/views.py — the profile
 # rank is the same kind of full-table aggregate and is just as tolerant of being
-# a few minutes stale.
+# a few minutes stale. There is deliberately no per-vote invalidation: the rank
+# depends on the *global* vote distribution, so a single new vote would in
+# principle invalidate every user's entry rather than one — the TTL is the whole
+# invalidation strategy.
 USER_RANK_CACHE_TTL = 60 * 5
-# The metric is part of the key: if the ranking ever switches away from
-# funny-only votes, in-flight entries can't be served under the new meaning.
-USER_RANK_CACHE_KEY_TEMPLATE = "user_funny_rank:{pk}"
+# Keyed by the funny-vote total itself, not the user: the rank is a pure function
+# of that number, and two users tied on it share a rank under standard
+# competition ranking, so they correctly share an entry. `user_funny_rank:`
+# encodes the metric so entries can't be served under a new meaning if the
+# ranking ever switches away from funny-only votes.
+USER_RANK_CACHE_KEY_TEMPLATE = "user_funny_rank:score:{score}"
 
 
-def user_rank_cache_key(pk: int) -> str:
-    return USER_RANK_CACHE_KEY_TEMPLATE.format(pk=pk)
+def user_rank_cache_key(score: int) -> str:
+    return USER_RANK_CACHE_KEY_TEMPLATE.format(score=score)
 
 
 class UserDetailView(AsyncLoginRequiredMixin):
@@ -102,10 +108,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
         context["total_dry_score"] = stats["dry_score"] or 0
         context["suchar_count"] = stats["total_count"] or 0
 
-        context["global_rank"] = self._get_cached_rank(
-            user,
-            context["total_funny_score"],
-        )
+        context["global_rank"] = self._get_cached_rank(context["total_funny_score"])
 
         # Best Joke (highest funny count)
         context["best_joke"] = (
@@ -136,21 +139,21 @@ class UserDetailView(AsyncLoginRequiredMixin):
         context["heatmap_weeks"] = self._get_heatmap_weeks(user)
         return context
 
-    def _get_cached_rank(self, user: User, funny_score: int) -> int:
+    def _get_cached_rank(self, funny_score: int) -> int:
         """Global rank by funny votes received, cached for `USER_RANK_CACHE_TTL`.
 
         The underlying query is a full `User x Suchar x Vote` join with a
         `GROUP BY` over the whole user table, and used to run on every profile
         view — same cost profile as the leaderboard aggregate cached in #182.
-        Keyed by user pk (not by score) so entries can't be shared between two
-        users whose scores happen to collide. That means the key does not by
-        itself determine the value: `funny_score` MUST be `user`'s own funny
-        vote total (it is passed in only to avoid re-running the aggregate that
-        `_build_context` has already done). Passing anything else writes a wrong
-        rank under this user's key and it survives the whole TTL.
+        Keyed by `funny_score` itself: the rank is a pure function of it, so an
+        owner whose own funny total just changed lands on a different key and
+        sees the move immediately — only *other* users' votes wait for the TTL.
+        Max staleness is the TTL either way; a hot key like `score=0` (most
+        accounts) is just rewritten once per TTL instead of recomputed per
+        viewer.
         """
         rank = cache.get_or_set(
-            user_rank_cache_key(user.pk),
+            user_rank_cache_key(funny_score),
             lambda: self._compute_rank(funny_score),
             USER_RANK_CACHE_TTL,
         )
@@ -159,13 +162,13 @@ class UserDetailView(AsyncLoginRequiredMixin):
         return rank
 
     @staticmethod
-    def _compute_rank(funny_score: int) -> int:
-        """Count users with more funny votes received, +1.
+    def _compute_rank(threshold: int) -> int:
+        """Count users with a higher funny-vote total than `threshold`, +1.
 
-        Both sides of the comparison must count the *same* thing: the reference
-        value is the profile owner's funny-vote total, never their total vote
-        count, or every user with any "dry" vote gets a better rank than they
-        earned (#195).
+        `threshold` is the profile owner's funny-vote total, never their total
+        vote count, or every user with any "dry" vote gets a better rank than
+        they earned (#195). Both sides count funny votes received across all of
+        the user's suchary (neither filters on `published_at`).
         """
         higher_ranking_users = (
             User.objects.annotate(
@@ -174,7 +177,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
                     filter=Q(suchary__votes__is_funny=True),
                 ),
             )
-            .filter(funny_score__gt=funny_score)
+            .filter(funny_score__gt=threshold)
             .count()
         )
         return higher_ranking_users + 1
