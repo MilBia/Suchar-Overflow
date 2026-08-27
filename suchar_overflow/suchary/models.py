@@ -19,7 +19,7 @@ class Suchar(models.Model):
         on_delete=models.CASCADE,
         related_name="suchary",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     published_at = models.DateTimeField(
         _("Publication Date"),
         default=timezone.now,
