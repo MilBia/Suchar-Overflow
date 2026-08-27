@@ -87,9 +87,9 @@
             <div class="card border bg-white mb-4 overflow-visible">
               <div class="card-body">
                 <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Achievements" %}</h6>
-                {% if object.user_achievements.exists %}
+                {% if user_achievements %}
                   <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-xl-start">
-                    {% for user_ach in object.user_achievements.all %}
+                    {% for user_ach in user_achievements %}
                       <div class="achievement-container">
                         <div class="achievement-badge-icon-wrapper text-warning">{{ user_ach.achievement.icon_content|safe }}</div>
 
