@@ -424,9 +424,13 @@ under `COMPRESS_OFFLINE = True` (production; dev/test never notice):
 
 Also remember `{% load compress %}` in each page template — `{% load %}` does not inherit
 from `base.html`. `tests/test_compressed_page_assets.py` is the regression guard for the
-page-specific blocks: it renders the affected pages with `COMPRESS_ENABLED = True`,
+page-specific blocks. Most of it renders with `COMPRESS_ENABLED = True` (online),
 asserting no raw `/static/` asset survives, that compressor's generated `<script>` tags
-keep `defer`, and that the `json_script` ids are intact.
+keep `defer`, and that the `json_script` ids are intact. One test
+(`test_pages_render_under_offline_compression`) additionally builds the offline manifest
+with `compress --force` and renders every page under `COMPRESS_OFFLINE = True`, so the
+`{{ block.super }}` rule has a guard too — `compress --force` alone reports success on
+the broken state, the `OfflineGenerationError` only fires at render time.
 
 ### Achievement engine
 

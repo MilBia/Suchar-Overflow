@@ -26,7 +26,11 @@ import re
 from typing import TYPE_CHECKING
 
 import pytest
+from compressor.cache import flush_offline_manifest
+from compressor.storage import default_offline_manifest_storage
+from django.conf import settings as django_settings
 from django.core.cache import cache
+from django.core.management import call_command
 from django.urls import reverse
 
 from suchar_overflow.conftest import make_user
@@ -70,16 +74,19 @@ def logged_in_client(client: Client) -> Client:
     return client
 
 
+# Bundles every logged-in page inherits from base.html: one holds project.js,
+# one holds hidden_achievements.js. Adding a `{% compress js %}` block to
+# base.html shifts every expected count below, hence the named constant.
+BASE_JS_BUNDLES = 2
+
 # URL name, kwargs, and the number of separate compress bundles the page is
-# expected to emit. Every page inherits two bundles from base.html (one holding
-# project.js, one holding hidden_achievements.js for logged-in users); the rest
-# come from the page's own blocks. Leaderboard adds two — the vendored chart
-# library and its own script, kept apart by the json_script between them —
-# while the suchary pages add a single bundle each.
+# expected to emit — base.html's inherited bundles plus the page's own blocks.
+# Leaderboard adds two (the vendored chart library and its own script, kept
+# apart by the json_script between them); the suchary pages add one each.
 JS_PAGES: list[tuple[str, dict[str, str], int]] = [
-    ("stats:leaderboard", {}, 4),
-    ("suchary:list", {}, 3),
-    ("suchary:add", {}, 3),
+    ("stats:leaderboard", {}, BASE_JS_BUNDLES + 2),
+    ("suchary:list", {}, BASE_JS_BUNDLES + 1),
+    ("suchary:add", {}, BASE_JS_BUNDLES + 1),
 ]
 
 
@@ -122,9 +129,9 @@ def test_user_detail_js_is_compressed_and_keeps_defer(
     srcs = _script_srcs(html)
     uncompressed = [src for src in srcs if not src.startswith("/static/CACHE/js/")]
     assert not uncompressed, uncompressed
-    # Two bundles inherited from base.html, plus the vendored chart library and
-    # the page's own script, which the json_script blocks keep in separate ones.
-    assert len(set(srcs)) == 4, srcs  # noqa: PLR2004
+    # base.html's bundles, plus the vendored chart library and the page's own
+    # script, which the json_script blocks keep in separate ones.
+    assert len(set(srcs)) == BASE_JS_BUNDLES + 2, srcs
     missing_defer = [tag for tag in _script_tags(html) if " defer" not in tag]
     assert not missing_defer, missing_defer
 
@@ -190,3 +197,63 @@ def test_page_css_is_compressed(
     uncompressed = [href for href in hrefs if not href.startswith("/static/CACHE/css/")]
     assert not uncompressed, uncompressed
     assert len(set(hrefs)) == expected_bundles, hrefs
+
+
+# Every page that gained its own `{% compress %}` block in #205, plus the home
+# page as a control. `"__self__"` is resolved to the logged-in user's username.
+OFFLINE_PAGES: list[tuple[str, dict[str, str]]] = [
+    ("home", {}),
+    ("achievements:list", {}),
+    ("achievements:mine", {}),
+    ("suchary:add", {}),
+    ("suchary:list", {}),
+    ("stats:leaderboard", {}),
+    ("users:detail", {"username": "__self__"}),
+    ("users:update", {}),
+]
+
+
+@pytest.mark.django_db
+def test_pages_render_under_offline_compression(
+    client: Client,
+    settings: SettingsWrapper,
+) -> None:
+    """Build the offline manifest, then render every #205 page against it.
+
+    This is the only automated guard for the `{{ block.super }}` rule: pulling
+    it inside a `{% compress %}` block still lets `compress --force` report
+    success, and the `OfflineGenerationError` only surfaces at render time when
+    the runtime hash misses the manifest. The online tests above never enter
+    that code path (`_render` pins `COMPRESS_OFFLINE = False`).
+
+    Both the in-memory manifest cache and the on-disk `manifest.json` (which
+    `staticfiles/CACHE/` keeps around — it is a bind mount, not per-run) are
+    cleared on teardown so a later test or a dev `manage.py` run can't read a
+    manifest built for this one weird settings combination.
+    """
+    user = make_user("compress_offline")
+    client.force_login(user)
+
+    settings.COMPRESS_ENABLED = True
+    settings.COMPRESS_OFFLINE = True
+    cache.clear()
+    try:
+        call_command("compress", "--force", verbosity=0)
+        for url_name, kwargs in OFFLINE_PAGES:
+            resolved = dict(kwargs)
+            if resolved.get("username") == "__self__":
+                resolved["username"] = user.username
+            url = reverse(url_name, kwargs=resolved)
+            response = client.get(url)
+            assert response.status_code == 200, (url, response.status_code)  # noqa: PLR2004
+    finally:
+        # django-stubs doesn't know compressor's settings; "manifest.json" is
+        # its documented default for COMPRESS_OFFLINE_MANIFEST.
+        manifest = getattr(
+            django_settings,
+            "COMPRESS_OFFLINE_MANIFEST",
+            "manifest.json",
+        )
+        if default_offline_manifest_storage.exists(manifest):
+            default_offline_manifest_storage.delete(manifest)
+        flush_offline_manifest()
