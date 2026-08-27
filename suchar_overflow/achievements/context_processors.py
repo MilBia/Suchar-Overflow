@@ -38,11 +38,18 @@ def bell_cache_key(user_id: int) -> str:
 def invalidate_bell_cache(user_id: int) -> None:
     """Drop a user's cached bell count so the next request recomputes it.
 
-    Called from every write path that can change the number of unseen
-    achievements: the ``UserAchievement`` post_save/post_delete receivers in
-    ``signals.py`` (covering the engine, the periodic tasks, the frontend-event
-    endpoint and the admin) and ``POST /api/achievements/mark-seen``, whose
-    bulk ``.update()`` fires no model signals.
+    Called from the write paths that change the number of unseen achievements
+    without leaving a fresh cache entry behind them: the ``UserAchievement``
+    post_save/post_delete receivers in ``signals.py`` (covering the engine, the
+    periodic tasks, the frontend-event endpoint and the admin) and
+    ``POST /api/achievements/mark-seen``, whose bulk ``.update()`` fires no
+    model signals.
+
+    Not every bulk ``is_seen`` write calls this: ``MyAchievementsView.get``
+    also does a signal-less ``.aupdate(is_seen=True)``, but it renders a
+    template in the same request, so the short-preview branch in
+    ``achievements_bell`` below recomputes the count to 0 on the spot (see the
+    comment there).
     """
     cache.delete(bell_cache_key(user_id))
 
@@ -73,14 +80,22 @@ def achievements_bell(request: HttpRequest) -> AchievementsBellContext:
 
     if len(preview) < BELL_PREVIEW_LIMIT:
         # The live LIMIT query came back short, so it is the exact total —
-        # authoritative even over a stale cached count.
+        # authoritative even over a stale cached count. This branch is also
+        # what keeps MyAchievementsView honest: after its .aupdate() there are
+        # zero unseen rows, so the count is recomputed to 0 here.
         count = len(preview)
     elif cached_count is None:
         count = unseen.count()
     else:
         count = cached_count
 
-    cache.set(cache_key, count, BELL_CACHE_TTL)
+    if count != cached_count:
+        # Only write when the value actually changed. Re-setting an unchanged
+        # count on every warm request would keep pushing BELL_CACHE_TTL out,
+        # so a stale count >= BELL_PREVIEW_LIMIT (which the short-preview branch
+        # can't correct) would never expire for an active user — the TTL
+        # backstop only works if it's allowed to run out.
+        cache.set(cache_key, count, BELL_CACHE_TTL)
     return {
         "unseen_achievements_count": count,
         "unseen_achievements_preview": preview,
