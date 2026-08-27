@@ -361,6 +361,21 @@ def test_update_post_fetches_suchar_once(
 
 
 @pytest.mark.django_db
+def test_update_missing_pk_returns_404(client: Client) -> None:
+    """The memo must not swallow `Http404` for a non-existent `pk` (issue #201).
+
+    `self._suchar` is only assigned after a successful `aget`, so `test_func()`
+    still raises `Http404` before any handler runs — this guards the PR's
+    explicit "Http404 unchanged" claim.
+    """
+    client.force_login(make_user("u404"))
+
+    response = client.get(reverse("suchary:update", kwargs={"pk": 999999}))
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+@pytest.mark.django_db
 def test_update_author_gets_too_late_page_for_published(
     client: Client,
     django_user_model: type[UserModel],
