@@ -194,7 +194,7 @@ dependencies = [
     "django>=6.1,<6.2",
     "django-environ==0.14.0",
     "django-redis==7.0.0",
-    "gunicorn==26.1.0",
+    "gunicorn==26.2.0",
     "hiredis==3.4.1",
     # openai 3.0.0 stopped auto-installing httpx and switched the default trust
     # store from certifi to HTTPX2's OS store (see issue #156). Verified e2e on
