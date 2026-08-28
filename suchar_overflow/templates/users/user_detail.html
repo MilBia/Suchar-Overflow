@@ -1,6 +1,6 @@
 {% extends "users/base_dashboard.html" %}
 
-{% load static i18n %}
+{% load static i18n compress %}
 
 {% block title %}
   {% trans "User" %}: {{ object.username }}
@@ -246,9 +246,15 @@
 
   {% block javascript %}
     {{ block.super }}
-    <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
+    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+    {% compress js %}
+      <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
+    {% endcompress %}
+    {# json_script output must stay OUT of {% compress %} — see #205. #}
     {{ activity_labels|json_script:"activity-labels-data" }}
     {{ activity_values|json_script:"activity-values-data" }}
     {{ reception_data|json_script:"reception-data-data" }}
-    <script defer src="{% static 'js/pages/user_detail.js' %}"></script>
+    {% compress js %}
+      <script defer src="{% static 'js/pages/user_detail.js' %}"></script>
+    {% endcompress %}
   {% endblock javascript %}

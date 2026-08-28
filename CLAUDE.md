@@ -383,13 +383,14 @@ directive is copied into `/static/CACHE/css/output.<hash>.css` verbatim. Two pro
   404. Invisible in dev/test because compression is off there.
 
 `manage.py compress --force` is **not** a gate for this — it reports success on the
-broken state too (confirmed on `main` during the #237 review). `tests/test_compressed_css.py`
-is the only gate: it is the sole unit test that runs with `COMPRESS_ENABLED = True`, and it
-asserts the bundle has no `@import`, has absolutised `url(...)` refs, and preserves the
-cascade order (writing into the gitignored `staticfiles/CACHE/` via compressor's own
-storage). It runs on the default non-manifest storage, so it guards "no `@import` in the
-bundle", not any particular production render. Stylesheet composition therefore lives in
-the templates:
+broken state too (confirmed on `main` during the #237 review). Exactly two unit tests
+run with `COMPRESS_ENABLED = True`, and nothing else in the suite does:
+`tests/test_compressed_css.py` asserts the `base.html` bundle has no `@import`, has
+absolutised `url(...)` refs, and preserves the cascade order (writing into the gitignored
+`staticfiles/CACHE/` via compressor's own storage); `tests/test_compressed_page_assets.py`
+(#205) covers the page-specific blocks — see below. Both run on the default non-manifest
+storage, so they guard "no `@import` in the bundle", not any particular production
+render. Stylesheet composition therefore lives in the templates:
 
 - One `{% compress %}` block = one output file, and **position inside the block is the
   cascade order**. `base.html`'s css block lists the ~23 global modules in the canonical
@@ -402,6 +403,34 @@ the templates:
   **own** `{% compress css %}` block for its page-specific sheets, a second output file.
   Don't try to merge page sheets into base's block.
 - Vendored, already-minified sheets (`pages/flatpickr.min.css`) are fine inside a block.
+
+Page-specific `<script>` blocks (issue #205) follow that same "own block,
+`{{ block.super }}` stays outside" rule, and add two JS-only ones. All three break only
+under `COMPRESS_OFFLINE = True` (production; dev/test never notice):
+
+- **`{{ block.super }}` inside your own `{% compress %}` block → `OfflineGenerationError`
+  on *every* request.** Offline generation renders the block without the real parent
+  context, so the runtime hash misses the offline manifest. Keep `{{ block.super }}`
+  above the new block. (Verified as a negative control while implementing #205.)
+- **Never put `json_script` output inside a `{% compress js %}` block.** `JsCompressor`
+  treats any `<script>` without `src` as an inline hunk, minifies it into the bundle —
+  the `id="..."` that `getElementById` needs is gone — and its per-request content
+  guarantees an offline hash mismatch. `stats/leaderboard.html` and
+  `users/user_detail.html` therefore use two compress blocks with the `json_script`
+  calls between them.
+- **`defer` must survive, and all `<script>`s in one block must share their attributes.**
+  `{% block javascript %}` lives in `<head>`, so every page script needs `defer`;
+  compressor emits a single `<script>` tag per block and does keep the attribute.
+
+Also remember `{% load compress %}` in each page template — `{% load %}` does not inherit
+from `base.html`. `tests/test_compressed_page_assets.py` is the regression guard for the
+page-specific blocks. Most of it renders with `COMPRESS_ENABLED = True` (online),
+asserting no raw `/static/` asset survives, that compressor's generated `<script>` tags
+keep `defer`, and that the `json_script` ids are intact. One test
+(`test_pages_render_under_offline_compression`) additionally builds the offline manifest
+with `compress --force` and renders every page under `COMPRESS_OFFLINE = True`, so the
+`{{ block.super }}` rule has a guard too — `compress --force` alone reports success on
+the broken state, the `OfflineGenerationError` only fires at render time.
 
 ### Achievement engine
 

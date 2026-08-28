@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static i18n %}
+{% load static i18n compress %}
 
 {% block title %}
   {% trans "Leaderboard" %}
@@ -123,7 +123,13 @@
 
 {% block javascript %}
   {{ block.super }}
-  <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
+  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+  {% compress js %}
+    <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
+  {% endcompress %}
+  {# json_script output must stay OUT of {% compress %} — see #205. #}
   {{ chart_datasets|json_script:"chart-datasets-data" }}
-  <script defer src="{% static 'js/pages/leaderboard.js' %}"></script>
+  {% compress js %}
+    <script defer src="{% static 'js/pages/leaderboard.js' %}"></script>
+  {% endcompress %}
 {% endblock javascript %}

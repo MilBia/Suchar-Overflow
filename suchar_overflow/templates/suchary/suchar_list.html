@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static i18n %}
+{% load static i18n compress %}
 
 {% block title %}
   Suchary
@@ -226,5 +226,8 @@
 
 {% block javascript %}
   {{ block.super }}
-  <script defer src="{% static 'js/features/voting.js' %}"></script>
+  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+  {% compress js %}
+    <script defer src="{% static 'js/features/voting.js' %}"></script>
+  {% endcompress %}
 {% endblock javascript %}
