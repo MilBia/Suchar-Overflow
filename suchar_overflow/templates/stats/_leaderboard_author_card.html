@@ -7,7 +7,7 @@
       {% for author in authors %}
         <div class="list-group-item p-3 border-0 border-bottom">
           <div class="d-flex align-items-center mb-2">
-            <span class="h2 fw-bold text-muted me-3 mb-0 rank-col rank-{{ forloop.counter }}">#{{ forloop.counter }}</span>
+            <span class="h2 fw-bold text-muted me-3 mb-0 rank-col rank-{{ author.rank }}">#{{ author.rank }}</span>
             <div class="flex-grow-1">
               <h5 class="mb-0 fw-bold">
                 <a href="{% url 'users:detail' author.username %}"

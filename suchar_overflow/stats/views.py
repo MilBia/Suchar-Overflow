@@ -1,3 +1,4 @@
+from copy import copy
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
@@ -145,20 +146,43 @@ def get_all_time_activity_data(
     return {"labels": labels, "values": values}
 
 
-def _top_n_from_iterable(
+def _ranked_top_n(
     items: Sequence[Suchar | UserModel],
     order_field: str,
     limit: int = 10,
 ) -> list[Suchar | UserModel]:
-    """Drop zero scores and return the top `limit` by `order_field` desc.
+    """Drop zero scores and return the top `limit` by `order_field` desc,
+    each labeled with its dense rank (`.rank`, issue #229 — ties share a
+    rank, the next distinct value follows with no gap).
 
-    Ties break by ascending pk — deterministic regardless of the order the
-    DB happened to return `items` in (which, without an explicit secondary
-    ORDER BY, is not guaranteed stable across query plans).
+    Sort ties break by ascending pk — deterministic regardless of the order
+    the DB happened to return `items` in (which, without an explicit
+    secondary ORDER BY, is not guaranteed stable across query plans). That
+    tie-break only orders same-score items relative to each other — it does
+    not affect their (shared) rank number.
+
+    Returns shallow copies, not the original objects: `_build_context` ranks
+    the same underlying `authors`/`all_suchary` list three times (once per
+    metric), and each item's rank differs per metric, so mutating the
+    originals in place would let the last call's ranks leak into the lists
+    already returned by earlier calls.
     """
     filtered = [item for item in items if getattr(item, order_field) != 0]
     filtered.sort(key=lambda item: (-getattr(item, order_field), item.pk))
-    return filtered[:limit]
+    top = filtered[:limit]
+
+    ranked: list[Suchar | UserModel] = []
+    rank = 0
+    previous_value = None
+    for item in top:
+        value = getattr(item, order_field)
+        if value != previous_value:
+            rank += 1
+            previous_value = value
+        ranked_item = copy(item)
+        ranked_item.rank = rank  # type: ignore[union-attr]
+        ranked.append(ranked_item)
+    return ranked
 
 
 class LeaderboardView(View):
@@ -207,9 +231,9 @@ class LeaderboardView(View):
                 suchar_count=suchar_count,
             ),
         )
-        top_authors_overall = _top_n_from_iterable(authors, "total_score")
-        top_authors_funny = _top_n_from_iterable(authors, "funny_score")
-        top_authors_dry = _top_n_from_iterable(authors, "dry_score")
+        top_authors_overall = _ranked_top_n(authors, "total_score")
+        top_authors_funny = _ranked_top_n(authors, "funny_score")
+        top_authors_dry = _ranked_top_n(authors, "dry_score")
 
         score = Count("votes")
         funny_count = Count("votes", filter=Q(votes__is_funny=True))
@@ -224,21 +248,22 @@ class LeaderboardView(View):
                 dry_count=dry_count,
             ),
         )
-        top_suchars_overall = _top_n_from_iterable(all_suchary, "score")
-        top_suchars_funny = _top_n_from_iterable(all_suchary, "funny_count")
-        top_suchars_dry = _top_n_from_iterable(all_suchary, "dry_count")
+        top_suchars_overall = _ranked_top_n(all_suchary, "score")
+        top_suchars_funny = _ranked_top_n(all_suchary, "funny_count")
+        top_suchars_dry = _ranked_top_n(all_suchary, "dry_count")
 
         # Scoped prefetch: only the suchary that actually get rendered (the
-        # union of the three top-10 lists, deduped — they share instances).
-        # The template must read tags via `tags.all.0`, not `tags.first`:
-        # `.first()` clones the manager's queryset via `order_by("pk")`,
-        # which drops this prefetch cache and re-hits the DB every time.
-        rendered_suchary = list(
-            {
-                s.pk: s
-                for s in [*top_suchars_overall, *top_suchars_funny, *top_suchars_dry]
-            }.values(),
-        )
+        # union of the three top-10 lists). `_ranked_top_n` (#229) returns a
+        # fresh shallow copy per call — so the same suchar can appear as a
+        # *different* Python object in each of the three lists — no pk-based
+        # dedup here: `prefetch_related_objects` fetches by pk once regardless
+        # of duplicates, but assigns the cache only to the exact instances it
+        # is given, so deduping by pk would silently starve the dropped
+        # duplicates of their prefetch cache. The template must read tags via
+        # `tags.all.0`, not `tags.first`: `.first()` clones the manager's
+        # queryset via `order_by("pk")`, which drops this prefetch cache and
+        # re-hits the DB every time.
+        rendered_suchary = [*top_suchars_overall, *top_suchars_funny, *top_suchars_dry]
         prefetch_related_objects(rendered_suchary, "tags")
 
         widest_days = 90

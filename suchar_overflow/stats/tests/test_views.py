@@ -15,7 +15,7 @@ from django.utils.translation import gettext
 from suchar_overflow.conftest import make_user
 from suchar_overflow.stats.views import LEADERBOARD_CACHE_KEY
 from suchar_overflow.stats.views import LeaderboardView
-from suchar_overflow.stats.views import _top_n_from_iterable
+from suchar_overflow.stats.views import _ranked_top_n
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
@@ -154,6 +154,41 @@ def test_leaderboard_renders_card_per_tab_via_shared_partials(client: Client) ->
     assert "stats-text-sm" in content
 
 
+@pytest.mark.django_db
+def test_leaderboard_author_card_ties_share_dense_rank(client: Client) -> None:
+    """Issue #229: two authors tied on funny votes must show the same rank
+    number on the leaderboard, and the next distinct tier must not skip a
+    number — the same dense-ranking semantics as the profile's global_rank.
+    """
+    tie_a = make_user("dense_tie_a")
+    tie_b = make_user("dense_tie_b")
+    behind = make_user("dense_behind")
+    s_a = Suchar.objects.create(text="joke a", author=tie_a)
+    s_b = Suchar.objects.create(text="joke b", author=tie_b)
+    s_behind = Suchar.objects.create(text="joke c", author=behind)
+    for i in range(3):
+        Vote.objects.create(suchar=s_a, user=make_user(f"va{i}"), is_funny=True)
+        Vote.objects.create(suchar=s_b, user=make_user(f"vb{i}"), is_funny=True)
+    Vote.objects.create(suchar=s_behind, user=make_user("vc0"), is_funny=True)
+
+    response = client.get(reverse(LEADERBOARD_URL))
+    content = response.content.decode()
+    funny_authors_section = content.split(gettext("Comedy Kings"))[1].split(
+        gettext("Top Funny Jokes"),
+    )[0]
+    # s_a and s_b (3 funny votes each) also tie on the suchar-level ranking,
+    # one tier above s_behind (1 funny vote) — same fixture, same assertion,
+    # covering `_leaderboard_suchar_card.html`'s `{{ suchar.rank }}` too.
+    funny_suchary_section = content.split(gettext("Top Funny Jokes"))[1].split(
+        gettext("Lords of Drought"),
+    )[0]
+
+    for section in (funny_authors_section, funny_suchary_section):
+        assert section.count(">#1</span>") == 2  # noqa: PLR2004
+        assert section.count(">#2</span>") == 1
+        assert ">#3</span>" not in section
+
+
 # ---------------------------------------------------------------------------
 # top_suchars_overall
 # ---------------------------------------------------------------------------
@@ -188,12 +223,12 @@ def test_top_suchars_overall_excludes_zero_score(client: Client) -> None:
 
 
 # ---------------------------------------------------------------------------
-# _top_n_from_iterable
+# _ranked_top_n
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.django_db
-def test_top_n_from_iterable_orders_descending_and_caps_at_limit() -> None:
+def test_ranked_top_n_orders_descending_and_caps_at_limit() -> None:
     author = make_user("top_n_author")
     for i in range(5):
         Suchar.objects.create(text=f"Joke {i}", author=author)
@@ -204,7 +239,7 @@ def test_top_n_from_iterable_orders_descending_and_caps_at_limit() -> None:
             Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
 
     items = list(Suchar.objects.annotate(score=Count("votes")))
-    result = _top_n_from_iterable(items, "score", limit=3)
+    result = _ranked_top_n(items, "score", limit=3)
 
     assert len(result) == 3  # noqa: PLR2004
     # .score comes from the .annotate(score=Count(...)) call above, not a
@@ -214,7 +249,7 @@ def test_top_n_from_iterable_orders_descending_and_caps_at_limit() -> None:
 
 
 @pytest.mark.django_db
-def test_top_n_from_iterable_excludes_zero_order_field() -> None:
+def test_ranked_top_n_excludes_zero_order_field() -> None:
     author = make_user("top_n_zero_author")
     scored = Suchar.objects.create(text="Scored", author=author)
     Suchar.objects.create(text="Unscored", author=author)
@@ -222,16 +257,16 @@ def test_top_n_from_iterable_excludes_zero_order_field() -> None:
     Vote.objects.create(suchar=scored, user=voter, is_funny=True)
 
     items = list(Suchar.objects.annotate(score=Count("votes")))
-    result = _top_n_from_iterable(items, "score")
+    result = _ranked_top_n(items, "score")
 
     assert [s.pk for s in result] == [scored.pk]
 
 
-def test_top_n_from_iterable_breaks_ties_by_pk_ascending() -> None:
-    """Tie-break must be deterministic and independent of input order —
-    Python's stable sort alone would just preserve whatever order the
-    caller passed in, which for a DB-materialized list is not guaranteed
-    stable across query plans.
+def test_ranked_top_n_breaks_sort_ties_by_pk_ascending() -> None:
+    """Sort order among equal-score items must be deterministic and
+    independent of input order — Python's stable sort alone would just
+    preserve whatever order the caller passed in, which for a
+    DB-materialized list is not guaranteed stable across query plans.
     """
     items = [
         SimpleNamespace(pk=3, score=5),
@@ -241,9 +276,46 @@ def test_top_n_from_iterable_breaks_ties_by_pk_ascending() -> None:
 
     # SimpleNamespace is a deliberate lightweight stand-in (only .pk and the
     # order_field are needed) so this test doesn't have to hit the DB.
-    result = _top_n_from_iterable(items, "score")  # type: ignore[arg-type]
+    result = _ranked_top_n(items, "score")  # type: ignore[arg-type]
 
     assert [item.pk for item in result] == [1, 2, 3]
+
+
+def test_ranked_top_n_ties_share_dense_rank() -> None:
+    """Issue #229: equal scores share a rank, and the next distinct score
+    follows immediately with no gap (dense ranking, not competition ranking).
+    """
+    items = [
+        SimpleNamespace(pk=1, score=10),
+        SimpleNamespace(pk=2, score=10),
+        SimpleNamespace(pk=3, score=8),
+        SimpleNamespace(pk=4, score=5),
+    ]
+
+    result = _ranked_top_n(items, "score")  # type: ignore[arg-type]
+
+    assert [item.rank for item in result] == [1, 1, 2, 3]  # type: ignore[union-attr]
+
+
+def test_ranked_top_n_does_not_leak_rank_across_calls_on_shared_items() -> None:
+    """`authors`/`all_suchary` in `_build_context` are each ranked three times
+    (overall/funny/dry) from the *same* underlying objects. Each item's rank
+    differs per metric, so `_ranked_top_n` must hand back copies rather than
+    mutating the shared originals, or the second call's ranks would bleed
+    into the first call's already-returned result.
+    """
+    shared = [
+        SimpleNamespace(pk=1, score_a=5, score_b=1),
+        SimpleNamespace(pk=2, score_a=1, score_b=5),
+    ]
+
+    by_a = _ranked_top_n(shared, "score_a")  # type: ignore[arg-type]
+    by_b = _ranked_top_n(shared, "score_b")  # type: ignore[arg-type]
+
+    assert [item.rank for item in by_a] == [1, 2]  # type: ignore[union-attr]
+    assert [item.rank for item in by_b] == [1, 2]  # type: ignore[union-attr]
+    assert not hasattr(shared[0], "rank")
+    assert not hasattr(shared[1], "rank")
 
 
 # ---------------------------------------------------------------------------

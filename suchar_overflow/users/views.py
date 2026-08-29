@@ -46,10 +46,10 @@ if TYPE_CHECKING:
 # invalidation strategy.
 USER_RANK_CACHE_TTL = 60 * 5
 # Keyed by the funny-vote total itself, not the user: the rank is a pure function
-# of that number, and two users tied on it share a rank under standard
-# competition ranking, so they correctly share an entry. `user_funny_rank:`
-# encodes the metric so entries can't be served under a new meaning if the
-# ranking ever switches away from funny-only votes.
+# of that number, and two users tied on it share a rank under dense ranking
+# (#229), so they correctly share an entry. `user_funny_rank:` encodes the
+# metric so entries can't be served under a new meaning if the ranking ever
+# switches away from funny-only votes.
 USER_RANK_CACHE_KEY_TEMPLATE = "user_funny_rank:score:{score}"
 
 
@@ -177,14 +177,16 @@ class UserDetailView(AsyncLoginRequiredMixin):
 
     @staticmethod
     def _compute_rank(threshold: int) -> int:
-        """Count users with a higher funny-vote total than `threshold`, +1.
+        """Count distinct funny-vote totals above `threshold`, +1 (dense rank).
 
         `threshold` is the profile owner's funny-vote total, never their total
         vote count, or every user with any "dry" vote gets a better rank than
         they earned (#195). Both sides count funny votes received across all of
-        the user's suchary (neither filters on `published_at`).
+        the user's suchary (neither filters on `published_at`). Counts distinct
+        *values*, not users, so ties share a rank and the next tier down never
+        skips a number — matches the leaderboard's dense ranking (#229).
         """
-        higher_ranking_users = (
+        higher_ranking_scores = (
             User.objects.annotate(
                 funny_score=Count(
                     "suchary__votes",
@@ -192,9 +194,11 @@ class UserDetailView(AsyncLoginRequiredMixin):
                 ),
             )
             .filter(funny_score__gt=threshold)
+            .values_list("funny_score", flat=True)
+            .distinct()
             .count()
         )
-        return higher_ranking_users + 1
+        return higher_ranking_scores + 1
 
     def _get_heatmap_weeks(self, user: User) -> list[dict]:
         today = timezone.now().date()
