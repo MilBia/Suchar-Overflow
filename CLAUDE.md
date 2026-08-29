@@ -244,6 +244,13 @@ they need (see `achievements/tests/test_stream.py`).
 how the frontend awards `FRONTEND_EVENT`-metric achievements for client-only actions,
 gated by an allowlist of slugs in `VALID_FRONTEND_SLUGS`).
 
+`static/js/features/hidden_achievements.js` sets `window.__hiddenAchievementsReady =
+true` at the end of its `DOMContentLoaded` handler — this looks like a no-op (no
+production code reads it) but `tests/e2e/test_hidden_achievements.py` waits on it
+instead of `wait_for_load_state("networkidle")`, because the achievement listeners
+are only attached after an awaited `GET /achievements/frontend-owned` that the `load`
+event isn't synced with (issue #221). Don't delete it as dead code in a JS cleanup.
+
 ### Background scheduling — APScheduler, not Django-RQ
 
 Django-RQ has been removed entirely. `AchievementsConfig.ready()`

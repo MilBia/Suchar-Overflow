@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from playwright.sync_api import expect
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
@@ -77,6 +78,35 @@ def _wait_for_award(page: Page, slug: str, timeout: int = 12_000) -> None:
         _POLL_JS.format(slug=slug),
         timeout=timeout,
     )
+
+
+# A polling Promise, not a bare `window.__hiddenAchievementsReady === true`
+# expression: with a boolean expression Playwright reconstructs the predicate
+# with in-page `eval` for its polling loop, which the app's CSP (no
+# 'unsafe-eval') blocks.  A Promise resolves inside a single CDP evaluate call
+# that bypasses page CSP — same reason `_POLL_JS` above is shaped this way.
+_TRACKER_READY_JS = """
+    new Promise((resolve) => {
+        const check = () => {
+            if (window.__hiddenAchievementsReady === true) resolve(true);
+            else setTimeout(check, 50);
+        };
+        check();
+    })
+"""
+
+
+def _wait_for_tracker_ready(page: Page, timeout: int = 12_000) -> None:
+    """Block until hidden_achievements.js has finished its DOMContentLoaded init.
+
+    That handler is gated behind an ``await`` (``getOwnedSlugs``), so the
+    achievement listeners/counters aren't attached until the fetch resolves.
+    ``page.goto()`` only waits for the ``load`` event, which isn't synced with
+    that fetch — seeding storage or dispatching an event before it lands races
+    the setup and the event is lost for good (issue #221). The script sets
+    ``window.__hiddenAchievementsReady = true`` at the end of init; wait on that.
+    """
+    page.wait_for_function(_TRACKER_READY_JS, timeout=timeout)
 
 
 # Slugs and minimal metadata for the 5 hidden frontend achievements.
@@ -156,8 +186,11 @@ def test_odkrywca_achievement_awarded_after_five_visits(
 ) -> None:
     """Visiting /achievements/ 5 times earns the Odkrywca achievement."""
     # Navigate once so localStorage is available for the right origin.
+    # The readiness wait here is correctness-critical, not cosmetic: setupOdkrywca
+    # does its own null->1 increment during init, so seeding to 4 before that runs
+    # would let init read 4->5 and award on this first load already.
     page.goto(f"{live_server.url}/achievements/")
-    page.wait_for_load_state("networkidle")
+    _wait_for_tracker_ready(page)
 
     # Pre-seed to 4 — next real navigation is the 5th visit.
     page.evaluate("localStorage.setItem('odkrywca_visits', '4')")
@@ -166,7 +199,7 @@ def test_odkrywca_achievement_awarded_after_five_visits(
 
     # 5th navigation: JS reads 4, increments to 5, posts award.
     page.goto(f"{live_server.url}/achievements/")
-    page.wait_for_load_state("networkidle")
+    _wait_for_tracker_ready(page)
 
     _wait_for_award(page, "frontend-odkrywca")
 
@@ -190,8 +223,11 @@ def test_zbieracz_sucharow_awarded_after_five_list_visits(
 ) -> None:
     """Browsing /suchary/ 5 times without voting earns Zbieracz Sucharów."""
     # Navigate once so sessionStorage is available for the right origin.
+    # As in the Odkrywca test, waiting for readiness here is correctness-critical:
+    # setupZbieraczSucharow increments the counter during init, so seeding to 4
+    # before it runs would trip the award on this first load.
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
+    _wait_for_tracker_ready(page)
 
     # Pre-seed to 4 — next real navigation tips it to 5.
     page.evaluate("sessionStorage.setItem('zbieracz_pages', '4')")
@@ -199,7 +235,7 @@ def test_zbieracz_sucharow_awarded_after_five_list_visits(
 
     # 5th visit — JS reads 4, increments to 5, clears key, posts award.
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
+    _wait_for_tracker_ready(page)
 
     _wait_for_award(page, "frontend-zbieracz-sucharow")
 
@@ -223,7 +259,7 @@ def test_niecierpliwy_awarded_after_three_short_submissions(
 ) -> None:
     """Submitting the suchar form with <10 chars 3 times earns Niecierpliwy."""
     page.goto(f"{live_server.url}/suchary/add/")
-    page.wait_for_load_state("networkidle")
+    _wait_for_tracker_ready(page)
 
     # Pre-seed to 2 — the next short submit is the 3rd.
     page.evaluate("sessionStorage.setItem('niecierpliwy_count', '2')")
@@ -262,7 +298,7 @@ def test_stluczona_mysz_awarded_after_five_clicks_on_same_button(
 ) -> None:
     """Clicking a vote button on the same suchar 5 times earns Stłuczona Mysz."""
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
+    _wait_for_tracker_ready(page)
 
     pk = suchar_by_other.pk
     funny_btn = page.locator(
@@ -303,9 +339,11 @@ def test_recenzent_totalny_awarded_via_direct_api_post(
     e2e_user: UserModel,
 ) -> None:
     """Posting recenzent-totalny from an authenticated browser creates the DB award."""
-    # Navigate to any page to establish CSRF cookie in the browser.
+    # Navigate to any page to establish the CSRF cookie in the browser. This
+    # test POSTs to the API directly, so it doesn't depend on the hidden-
+    # achievements tracker being ready — just on the page being rendered.
     page.goto(f"{live_server.url}/suchary/")
-    page.wait_for_load_state("networkidle")
+    expect(page.locator("#sortDropdown")).to_be_visible()
 
     result = page.evaluate(_DIRECT_AWARD_JS.format(slug="frontend-recenzent-totalny"))
     assert result == {"ok": True}
