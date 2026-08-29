@@ -23,8 +23,12 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 # EMAIL
 # ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+# https://docs.djangoproject.com/en/dev/topics/email/#mailers
+# In-memory outbox for assertions. (setup_test_environment() would force this
+# per-alias anyway, but keeping it explicit matches the other settings layers.)
+MAILERS = {
+    "default": {"BACKEND": "django.core.mail.backends.locmem.EmailBackend"},
+}
 
 # DEBUGGING FOR TEMPLATES
 # ------------------------------------------------------------------------------

@@ -88,6 +88,26 @@ EMAIL_SUBJECT_PREFIX = env(
     "DJANGO_EMAIL_SUBJECT_PREFIX",
     default="[Suchar Overflow] ",
 )
+# https://docs.djangoproject.com/en/dev/topics/email/#mailers
+# SMTP credentials come from the env vars documented in
+# .envs/.production/.django.example. Defaults keep the pre-migration
+# behaviour (localhost:25, no auth) when they are left unset.
+MAILERS = {
+    "default": {
+        "BACKEND": env(
+            "DJANGO_EMAIL_BACKEND",
+            default="django.core.mail.backends.smtp.EmailBackend",
+        ),
+        "OPTIONS": {
+            "host": env("EMAIL_HOST", default="localhost"),
+            "port": env.int("EMAIL_PORT", default=25),
+            "username": env("EMAIL_HOST_USER", default=""),
+            "password": env("EMAIL_HOST_PASSWORD", default=""),
+            "use_tls": env.bool("EMAIL_USE_TLS", default=False),
+            "timeout": 5,
+        },
+    },
+}
 
 # ADMIN
 # ------------------------------------------------------------------------------

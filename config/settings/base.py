@@ -279,13 +279,24 @@ X_FRAME_OPTIONS = "DENY"
 
 # EMAIL
 # ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = env(
-    "DJANGO_EMAIL_BACKEND",
-    default="django.core.mail.backends.smtp.EmailBackend",
-)
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
-EMAIL_TIMEOUT = 5
+# https://docs.djangoproject.com/en/dev/topics/email/#mailers
+# Django 6.x replaces the flat EMAIL_* settings (deprecated, removed in 7.0)
+# with a DATABASES/CACHES-style MAILERS mapping. Conservative default here:
+# SMTP to localhost:25, matching the pre-migration behaviour. Environment
+# overrides live in local.py / production.py.
+MAILERS = {
+    "default": {
+        "BACKEND": env(
+            "DJANGO_EMAIL_BACKEND",
+            default="django.core.mail.backends.smtp.EmailBackend",
+        ),
+        "OPTIONS": {
+            "host": "localhost",
+            "port": 25,
+            "timeout": 5,
+        },
+    },
+}
 
 # ADMIN
 # ------------------------------------------------------------------------------
