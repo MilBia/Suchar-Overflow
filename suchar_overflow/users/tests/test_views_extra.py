@@ -711,6 +711,50 @@ def test_build_context_orders_badges_newest_first() -> None:
 
 
 # ===========================================================================
+# Achievement badge icon fallback (issue #243)
+# ===========================================================================
+
+
+@pytest.mark.django_db
+def test_profile_badge_without_icon_content_renders_trophy_fallback(
+    client: Client,
+) -> None:
+    owner = make_user("no_icon_owner")
+    viewer = make_user("no_icon_viewer")
+    client.force_login(viewer)
+    achievement = Achievement.objects.create(
+        name="Bez ikony",
+        slug="no-icon",
+        description="Odznaka bez icon_content",
+        icon_content="",
+    )
+    UserAchievement.objects.create(user=owner, achievement=achievement)
+
+    response = client.get(detail_url("no_icon_owner"))
+    content = response.content.decode()
+
+    assert response.status_code == HTTPStatus.OK
+    assert content.count("🏆") == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_profile_badge_with_icon_content_does_not_render_fallback(
+    client: Client,
+) -> None:
+    owner = make_user("icon_owner")
+    viewer = make_user("icon_viewer")
+    client.force_login(viewer)
+    _award_achievements(owner, ["has-icon"])
+
+    response = client.get(detail_url("icon_owner"))
+    content = response.content.decode()
+
+    assert response.status_code == HTTPStatus.OK
+    assert "<svg></svg>" in content
+    assert "🏆" not in content
+
+
+# ===========================================================================
 # Heatmap date range — half-open datetime bound (issue #203, point 4)
 # ===========================================================================
 

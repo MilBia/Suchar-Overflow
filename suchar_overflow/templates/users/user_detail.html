@@ -91,10 +91,22 @@
                   <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-xl-start">
                     {% for user_ach in user_achievements %}
                       <div class="achievement-container">
-                        <div class="achievement-badge-icon-wrapper text-warning">{{ user_ach.achievement.icon_content|safe }}</div>
+                        <div class="achievement-badge-icon-wrapper text-warning">
+                          {% if user_ach.achievement.icon_content %}
+                            {{ user_ach.achievement.icon_content|safe }}
+                          {% else %}
+                            🏆
+                          {% endif %}
+                        </div>
 
                         <div class="achievement-details-popover">
-                          <div class="achievement-details-icon text-warning">{{ user_ach.achievement.icon_content|safe }}</div>
+                          <div class="achievement-details-icon text-warning">
+                            {% if user_ach.achievement.icon_content %}
+                              {{ user_ach.achievement.icon_content|safe }}
+                            {% else %}
+                              🏆
+                            {% endif %}
+                          </div>
                           <div class="achievement-details-content">
                             <span class="achievement-title text-start">{{ user_ach.achievement.name }}</span>
                             <span class="achievement-description text-start">{{ user_ach.achievement.description }}</span>
