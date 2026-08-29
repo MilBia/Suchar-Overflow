@@ -393,6 +393,25 @@ def test_best_joke_is_none_when_no_suchary(client: Client) -> None:
     assert response.context["best_joke"] is None
 
 
+@pytest.mark.django_db
+def test_best_joke_has_funny_and_dry_counts(client: Client) -> None:
+    user = make_user("bestjoke_counts_u")
+    suchar = Suchar.objects.create(text="Counted", author=user)
+
+    v1 = make_user("bjc_v1")
+    v2 = make_user("bjc_v2")
+    v3 = make_user("bjc_v3")
+    Vote.objects.create(suchar=suchar, user=v1, is_funny=True)
+    Vote.objects.create(suchar=suchar, user=v2, is_funny=True)
+    Vote.objects.create(suchar=suchar, user=v3, is_dry=True)
+
+    client.force_login(user)
+    response = client.get(detail_url("bestjoke_counts_u"))
+    best_joke = response.context["best_joke"]
+    assert best_joke.funny_count == 2  # noqa: PLR2004
+    assert best_joke.dry_count == 1
+
+
 # ===========================================================================
 # Activity chart context
 # ===========================================================================

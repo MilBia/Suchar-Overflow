@@ -114,7 +114,11 @@ class UserDetailView(AsyncLoginRequiredMixin):
 
         # Best Joke (highest funny count)
         context["best_joke"] = (
-            user.suchary.annotate(score=Count("votes", filter=Q(votes__is_funny=True)))
+            user.suchary.annotate(
+                score=Count("votes", filter=Q(votes__is_funny=True)),
+                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
+                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
+            )
             .order_by("-score", "-created_at")
             .first()
         )
