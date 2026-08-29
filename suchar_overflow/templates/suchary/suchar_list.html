@@ -227,6 +227,11 @@
 {% block javascript %}
   {{ block.super }}
   {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+  {% if request.user.is_authenticated %}
+    {% compress js %}
+      <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
+    {% endcompress %}
+  {% endif %}
   {% compress js %}
     <script defer src="{% static 'js/features/voting.js' %}"></script>
   {% endcompress %}

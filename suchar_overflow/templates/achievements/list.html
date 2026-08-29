@@ -14,6 +14,16 @@
   {% endcompress %}
 {% endblock css %}
 
+{% block javascript %}
+  {{ block.super }}
+  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+  {% if request.user.is_authenticated %}
+    {% compress js %}
+      <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
+    {% endcompress %}
+  {% endif %}
+{% endblock javascript %}
+
 {% block content %}
   <div class="achievements-container fade-in-up">
     <header class="achievements-header text-center pb-4 mb-5 border-bottom border-secondary">
