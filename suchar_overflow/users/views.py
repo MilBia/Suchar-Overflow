@@ -112,14 +112,19 @@ class UserDetailView(AsyncLoginRequiredMixin):
 
         context["global_rank"] = self._get_cached_rank(context["total_funny_score"])
 
-        # Best Joke (highest funny count)
+        # Best Joke (highest funny count). `funny_count` doubles as the
+        # ordering key (no separate `score` annotation) since the two were
+        # previously identical, redundant `COUNT(...) FILTER` expressions.
+        # `total_votes` is deliberately a distinct annotation from
+        # `funny_count` — the template's "N Votes" label must count dry votes
+        # too, or it contradicts the F/D badges rendered next to it (#242).
         context["best_joke"] = (
             user.suchary.annotate(
-                score=Count("votes", filter=Q(votes__is_funny=True)),
                 funny_count=Count("votes", filter=Q(votes__is_funny=True)),
                 dry_count=Count("votes", filter=Q(votes__is_dry=True)),
+                total_votes=Count("votes"),
             )
-            .order_by("-score", "-created_at")
+            .order_by("-funny_count", "-created_at")
             .first()
         )
 

@@ -117,7 +117,7 @@
                   <h6 class="text-uppercase text-warning-emphasis small fw-bold mb-2">{% trans "The Best Of" %}</h6>
                   <div class="mb-0 small fst-italic text-dark">{{ best_joke.text|linebreaksbr }}</div>
                   <div class="mt-2 small fw-bold text-warning-emphasis d-flex gap-2 align-items-center">
-                    <span>{{ best_joke.score|default:0 }} {% trans "Votes" %}</span>
+                    <span>{{ best_joke.total_votes|default:0 }} {% trans "Votes" %}</span>
                     <span class="badge bg-warning text-dark opacity-75">{{ best_joke.funny_count }} F</span>
                     <span class="badge bg-info text-white opacity-75">{{ best_joke.dry_count }} D</span>
                   </div>

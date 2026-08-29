@@ -412,6 +412,67 @@ def test_best_joke_has_funny_and_dry_counts(client: Client) -> None:
     assert best_joke.dry_count == 1
 
 
+@pytest.mark.django_db
+def test_best_joke_card_renders_funny_and_dry_counts(client: Client) -> None:
+    """Regression test for issue #242 — checks the render, not just the context.
+
+    `latest_suchary` renders the same `{{ suchar.funny_count }} F` markup
+    lower on the same page, so a page-wide `assertContains(response, "2 F")`
+    would pass even if the best-joke card itself were still blank. Scope the
+    assertion to the trophy card's own markup (guard against a vacuous pass,
+    same idiom as `test_scheduled_suchary_tags_do_not_n_plus_one` above).
+    """
+    user = make_user("bestjoke_render_u")
+    suchar = Suchar.objects.create(text="Rendered joke", author=user)
+
+    v1 = make_user("bjr_v1")
+    v2 = make_user("bjr_v2")
+    v3 = make_user("bjr_v3")
+    Vote.objects.create(suchar=suchar, user=v1, is_funny=True)
+    Vote.objects.create(suchar=suchar, user=v2, is_funny=True)
+    Vote.objects.create(suchar=suchar, user=v3, is_dry=True)
+
+    client.force_login(user)
+    response = client.get(detail_url("bestjoke_render_u"))
+    content = response.content.decode()
+
+    card_start = content.index("card border border-warning bg-warning bg-opacity-10")
+    # `<div class="card ` (trailing space) matches only top-level card wrappers,
+    # not the nested `<div class="card-body ...">` right after `card_start`.
+    card_end = content.index('<div class="card ', card_start + 1)
+    best_joke_card = content[card_start:card_end]
+
+    assert "2 F" in best_joke_card
+    assert "1 D" in best_joke_card
+    # "Votes" renders as "Głosy" (LANGUAGE_CODE = "pl") — pin to the rendered
+    # label, not a bare "3 ", which could coincidentally match Bootstrap
+    # utility classes elsewhere in the card markup.
+    assert "3 Głosy" in best_joke_card  # total_votes (2 funny + 1 dry)
+
+
+@pytest.mark.django_db
+def test_best_joke_total_votes_counts_funny_and_dry(client: Client) -> None:
+    """`best_joke.score`/"Votes" label used to be funny-vote-only, contradicting
+    the F/D badges next to it once they started rendering real numbers (#242
+    follow-up). `total_votes` is a separate annotation from `funny_count` and
+    counts dry votes too.
+    """
+    user = make_user("bestjoke_total_u")
+    suchar = Suchar.objects.create(text="Totaled", author=user)
+
+    v1 = make_user("bjt_v1")
+    v2 = make_user("bjt_v2")
+    v3 = make_user("bjt_v3")
+    Vote.objects.create(suchar=suchar, user=v1, is_funny=True)
+    Vote.objects.create(suchar=suchar, user=v2, is_funny=True)
+    Vote.objects.create(suchar=suchar, user=v3, is_dry=True)
+
+    client.force_login(user)
+    response = client.get(detail_url("bestjoke_total_u"))
+    best_joke = response.context["best_joke"]
+    assert best_joke.total_votes == 3  # noqa: PLR2004
+
+
 # ===========================================================================
 # Activity chart context
 # ===========================================================================
