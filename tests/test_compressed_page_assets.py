@@ -74,19 +74,24 @@ def logged_in_client(client: Client) -> Client:
     return client
 
 
-# Bundles every logged-in page inherits from base.html: one holds project.js,
-# one holds hidden_achievements.js. Adding a `{% compress js %}` block to
-# base.html shifts every expected count below, hence the named constant.
-BASE_JS_BUNDLES = 2
+# Bundle every logged-in page inherits from base.html: project.js.
+# hidden_achievements.js moved to page-specific templates in #207 (it is
+# only relevant to pages with a DOM/URL match for one of its 5 trackers) —
+# see the per-page bundle counts below.
+BASE_JS_BUNDLES = 1
 
 # URL name, kwargs, and the number of separate compress bundles the page is
-# expected to emit — base.html's inherited bundles plus the page's own blocks.
-# Leaderboard adds two (the vendored chart library and its own script, kept
-# apart by the json_script between them); the suchary pages add one each.
+# expected to emit — base.html's inherited bundles plus the page's own
+# blocks. Leaderboard adds two (the vendored chart library and its own
+# script, kept apart by the json_script between them); suchary:list and
+# suchary:add each add two (hidden_achievements.js — see #207 — plus their
+# existing page script); achievements:list adds one (hidden_achievements.js
+# only).
 JS_PAGES: list[tuple[str, dict[str, str], int]] = [
     ("stats:leaderboard", {}, BASE_JS_BUNDLES + 2),
-    ("suchary:list", {}, BASE_JS_BUNDLES + 1),
-    ("suchary:add", {}, BASE_JS_BUNDLES + 1),
+    ("suchary:list", {}, BASE_JS_BUNDLES + 2),
+    ("suchary:add", {}, BASE_JS_BUNDLES + 2),
+    ("achievements:list", {}, BASE_JS_BUNDLES + 1),
 ]
 
 
@@ -129,8 +134,12 @@ def test_user_detail_js_is_compressed_and_keeps_defer(
     srcs = _script_srcs(html)
     uncompressed = [src for src in srcs if not src.startswith("/static/CACHE/js/")]
     assert not uncompressed, uncompressed
-    # base.html's bundles, plus the vendored chart library and the page's own
+    # base.html's bundle, plus the vendored chart library and the page's own
     # script, which the json_script blocks keep in separate ones.
+    # hidden_achievements.js is deliberately absent here (#207): the profile
+    # page's `latest_suchary` is sliced to 5 cards, so the only tracker whose
+    # DOM it matches (Recenzent Totalny, needs 20 hovered cards) can never
+    # fire on this page.
     assert len(set(srcs)) == BASE_JS_BUNDLES + 2, srcs
     missing_defer = [tag for tag in _script_tags(html) if " defer" not in tag]
     assert not missing_defer, missing_defer

@@ -81,11 +81,6 @@
       {% compress js %}
         <script defer src="{% static 'js/project.js' %}"></script>
       {% endcompress %}
-      {% if request.user.is_authenticated %}
-        {% compress js %}
-          <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
-        {% endcompress %}
-      {% endif %}
     {% endblock javascript %}
     <script nonce="{{ csp_nonce }}">
       (function() {
