@@ -22,6 +22,7 @@ from suchar_overflow.users.models import User
 
 from .forms import SucharForm
 from .models import Suchar
+from .models import Tag
 from .models import Vote
 
 if TYPE_CHECKING:
@@ -46,27 +47,14 @@ class SucharListView(View):
             .prefetch_related("tags")
             .filter(published_at__lte=timezone.now())
             .annotate(
-                # distinct=True is required, not cosmetic: the `?q=` branch
-                # below adds a second multi-valued JOIN (suchar -> tags) that
-                # runs *parallel* to this one (suchar -> votes). That JOIN is
-                # a LEFT OUTER and its tag predicate is OR'd with the text
-                # predicate in WHERE, so a suchar with N tags contributes N
-                # duplicated vote rows per vote inside the same GROUP BY --
-                # whether the phrase matched its text or one of its tags. A
-                # plain COUNT would then report N x the real vote count
-                # (#196). The trailing `.distinct()` on the queryset only
-                # dedupes the result rows, after these aggregates are
-                # already computed.
-                funny_count=Count(
-                    "votes",
-                    filter=Q(votes__is_funny=True),
-                    distinct=True,
-                ),
-                dry_count=Count(
-                    "votes",
-                    filter=Q(votes__is_dry=True),
-                    distinct=True,
-                ),
+                # The `?q=` branch below matches tags via a `pk__in` subquery
+                # rather than a JOIN, so it never adds a second multi-valued
+                # JOIN in parallel with this one (suchar -> votes) -- these
+                # aggregates see at most one row per vote and don't need
+                # `distinct=True` (#241; see #196 for the fan-out this used
+                # to guard against).
+                funny_count=Count("votes", filter=Q(votes__is_funny=True)),
+                dry_count=Count("votes", filter=Q(votes__is_dry=True)),
             )
         )
 
@@ -95,7 +83,10 @@ class SucharListView(View):
 
         q = request.GET.get("q")
         if q:
-            qs = qs.filter(Q(text__icontains=q) | Q(tags__name__icontains=q)).distinct()
+            qs = qs.filter(
+                Q(text__icontains=q)
+                | Q(pk__in=Tag.objects.filter(name__icontains=q).values("suchary__pk")),
+            )
 
         tag = request.GET.get("tag")
         if tag:

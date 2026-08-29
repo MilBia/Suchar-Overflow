@@ -7,6 +7,8 @@ from typing import NamedTuple
 import pytest
 from django.contrib.messages import get_messages
 from django.core.paginator import Paginator
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -416,3 +418,52 @@ def test_search_counts_not_inflated_by_text_match_with_nonmatching_tags(
     # Two non-matching tags x five votes would still yield 6/4 without distinct.
     assert results[0].funny_count == 3  # noqa: PLR2004
     assert results[0].dry_count == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_search_query_avoids_distinct_count_aggregate(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
+    """Regression for #241.
+
+    The `?q=` branch matches tags via a `pk__in` subquery rather than a
+    parallel JOIN, so the vote-count annotations never see duplicated rows
+    and don't need `distinct=True`/`COUNT(DISTINCT ...)`. This also lets
+    Django drop the annotations from the `Paginator.count` query instead of
+    duplicating the (now cheaper) aggregate a second time per page view.
+    """
+    author = django_user_model.objects.create_user(
+        username="sql-shape-author",
+        email="sql-shape-author@example.com",
+        password="password",  # noqa: S106
+    )
+    suchar = Suchar.objects.create(text="A joke about nothing", author=author)
+    suchar.tags.add(
+        Tag.objects.create(name="śmiech-fajny", slug="smiech-fajny-241"),
+        Tag.objects.create(name="fajny-info", slug="fajny-info-241"),
+    )
+    _cast_votes(suchar, django_user_model, funny=3, dry=2)
+
+    with CaptureQueriesContext(connection) as ctx:
+        response = client.get(reverse("suchary:list"), {"q": "fajny"})
+
+    assert response.status_code == HTTPStatus.OK
+    results = list(response.context["suchary"])
+    assert len(results) == 1
+    assert results[0].funny_count == 3  # noqa: PLR2004
+    assert results[0].dry_count == 2  # noqa: PLR2004
+
+    annotation_queries = [
+        q["sql"]
+        for q in ctx.captured_queries
+        if "funny_count" in q["sql"] or "dry_count" in q["sql"]
+    ]
+    assert annotation_queries
+    assert not any("DISTINCT" in sql for sql in annotation_queries)
+
+    count_queries = [
+        q["sql"] for q in ctx.captured_queries if "SELECT COUNT(*)" in q["sql"]
+    ]
+    assert count_queries
+    assert not any("funny_count" in sql or "dry_count" in sql for sql in count_queries)
