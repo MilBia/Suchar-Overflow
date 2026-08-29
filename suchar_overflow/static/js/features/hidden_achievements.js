@@ -194,25 +194,37 @@ function setupOdkrywca(teardownRegistry) {
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
+// The monitors below are all gated behind an `await` (getOwnedSlugs), so their
+// listeners/counters don't exist until that fetch resolves. `window.__hidden
+// AchievementsReady` flips to true once init has fully finished — E2E tests wait
+// on it instead of a load-state heuristic, which isn't synced with this fetch
+// (see issue #221). Mirrors the window.getCsrfToken / window.showToast exports
+// in project.js. The `finally` guarantees the flag is set even if a setupX()
+// throws synchronously, so tests fail fast on the real error instead of hanging
+// on the readiness wait.
 document.addEventListener('DOMContentLoaded', async () => {
-    if (document.body.dataset.userIsAuthenticated !== 'true') return;
+    try {
+        if (document.body.dataset.userIsAuthenticated !== 'true') return;
 
-    const owned = await getOwnedSlugs();
-    const teardownRegistry = {};
+        const owned = await getOwnedSlugs();
+        const teardownRegistry = {};
 
-    if (!owned.includes('frontend-recenzent-totalny')) {
-        setupRecenzentTotalny(teardownRegistry);
-    }
-    if (!owned.includes('frontend-stluczona-mysz')) {
-        setupStluczonaMysz(teardownRegistry);
-    }
-    if (!owned.includes('frontend-zbieracz-sucharow')) {
-        setupZbieraczSucharow(teardownRegistry);
-    }
-    if (!owned.includes('frontend-niecierpliwy')) {
-        setupNiecierpliwy(teardownRegistry);
-    }
-    if (!owned.includes('frontend-odkrywca')) {
-        setupOdkrywca(teardownRegistry);
+        if (!owned.includes('frontend-recenzent-totalny')) {
+            setupRecenzentTotalny(teardownRegistry);
+        }
+        if (!owned.includes('frontend-stluczona-mysz')) {
+            setupStluczonaMysz(teardownRegistry);
+        }
+        if (!owned.includes('frontend-zbieracz-sucharow')) {
+            setupZbieraczSucharow(teardownRegistry);
+        }
+        if (!owned.includes('frontend-niecierpliwy')) {
+            setupNiecierpliwy(teardownRegistry);
+        }
+        if (!owned.includes('frontend-odkrywca')) {
+            setupOdkrywca(teardownRegistry);
+        }
+    } finally {
+        window.__hiddenAchievementsReady = true;
     }
 });
