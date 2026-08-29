@@ -13,6 +13,7 @@ from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
@@ -444,10 +445,15 @@ def test_best_joke_card_renders_funny_and_dry_counts(client: Client) -> None:
 
     assert "2 F" in best_joke_card
     assert "1 D" in best_joke_card
-    # "Votes" renders as "Głosy" (LANGUAGE_CODE = "pl") — pin to the rendered
-    # label, not a bare "3 ", which could coincidentally match Bootstrap
-    # utility classes elsewhere in the card markup.
-    assert "3 Głosy" in best_joke_card  # total_votes (2 funny + 1 dry)
+    # Derive the expected label via `gettext` rather than hardcoding the
+    # Polish translation: whether a compiled `.mo` catalog is present differs
+    # between environments (CI never runs `compilemessages`, so it renders
+    # the raw "Votes" msgid; a local checkout can have a stray compiled
+    # catalog on disk from an earlier `compilemessages` run — see #242 CI
+    # failure). Pin to the number's real position, not a bare "3 ", which
+    # could coincidentally match Bootstrap utility classes elsewhere in the
+    # card markup.
+    assert f"3 {gettext('Votes')}" in best_joke_card  # total_votes (2 funny + 1 dry)
 
 
 @pytest.mark.django_db
