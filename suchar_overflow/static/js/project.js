@@ -442,7 +442,15 @@ document.addEventListener('DOMContentLoaded', () => {
             es = new EventSource('/achievements/stream/');
             es.onmessage = handleStreamMessage;
             es.onerror = (event) => {
-                console.error(`Achievement stream error (readyState=${es.readyState}):`, event);
+                const target = event.target;
+                console.error(`Achievement stream error (readyState=${target.readyState}):`, event);
+                // A session expiring server-side redirects the reconnect to the
+                // (non-event-stream) login page, which the browser treats as fatal —
+                // readyState goes CLOSED and it stops retrying on its own. Drop our
+                // reference so a later visibility change can attempt a fresh connection.
+                if (target.readyState === EventSource.CLOSED && target === es) {
+                    es = null;
+                }
             };
         };
 
@@ -450,6 +458,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (streamDisabled) return;
 
             if (document.visibilityState === 'hidden') {
+                if (hiddenTimeoutId) {
+                    clearTimeout(hiddenTimeoutId);
+                }
                 hiddenTimeoutId = setTimeout(() => {
                     hiddenTimeoutId = null;
                     if (es) {
@@ -468,7 +479,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        connectAchievementStream();
+        // A tab opened in the background starts out hidden — connect only once it's
+        // actually visible so backgrounded tabs never open a stream to begin with.
+        if (document.visibilityState === 'visible') {
+            connectAchievementStream();
+        }
     }
 
     function updateBell(achievements) {
