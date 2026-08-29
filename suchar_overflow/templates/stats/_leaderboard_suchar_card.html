@@ -8,7 +8,7 @@
         <div class="list-group-item p-3 border-0 border-bottom">
           <div class="d-flex w-100 justify-content-between">
             <h6 class="mb-1 text-muted small">
-              <span class="fw-bold text-dark rank-{{ forloop.counter }}">#{{ forloop.counter }}</span> by {{ suchar.author.display_name }}
+              <span class="fw-bold text-dark rank-{{ suchar.rank }}">#{{ suchar.rank }}</span> by {{ suchar.author.display_name }}
             </h6>
             <small class="text-muted">{{ suchar.created_at|date:"d M" }}</small>
           </div>

@@ -196,26 +196,31 @@ def test_global_rank_ignores_dry_votes_received(client: Client) -> None:
 
 @pytest.mark.django_db
 def test_global_rank_ties_share_position() -> None:
-    """Standard competition ranking: users tied on funny votes share a rank.
+    """Users tied on funny votes share a rank (dense ranking, issue #229).
 
-    PR #222 picked this semantics deliberately (the leaderboard breaks ties by
-    pk instead); pin it here so a future change to `_compute_rank` can't drop it
-    silently. Tested against `_compute_rank` directly — the rank cache is keyed
-    by score, so two tied owners would otherwise just read the same entry and
+    Two users tied at 3 funny votes should both rank behind the two users
+    tied at 5 — but as the *second* distinct tier, not the *third* position:
+    dense ranking counts distinct score tiers above, not user count, so the
+    next tier down never skips a number the way competition ranking would.
+    Tested against `_compute_rank` directly — the rank cache is keyed by
+    score, so two tied owners would otherwise just read the same entry and
     the assertion would pass even for broken counting.
     """
+    for name in ("lead_a", "lead_b"):
+        owner = make_user(name)
+        s = Suchar.objects.create(text=f"joke {name}", author=owner)
+        for i in range(5):
+            Vote.objects.create(suchar=s, user=make_user(f"v_{name}{i}"), is_funny=True)
     for name in ("tie_a", "tie_b"):
         owner = make_user(name)
         s = Suchar.objects.create(text=f"joke {name}", author=owner)
-        Vote.objects.create(suchar=s, user=make_user(f"v_{name}"), is_funny=True)
-    leader = make_user("tie_leader")
-    s_lead = Suchar.objects.create(text="top joke", author=leader)
-    for i in range(3):
-        Vote.objects.create(suchar=s_lead, user=make_user(f"lv{i}"), is_funny=True)
+        for i in range(3):
+            Vote.objects.create(suchar=s, user=make_user(f"v_{name}{i}"), is_funny=True)
 
-    # tie_a and tie_b both sit on 1 funny vote, behind the single leader on 3.
-    assert UserDetailView._compute_rank(1) == 2  # noqa: SLF001, PLR2004
-    assert UserDetailView._compute_rank(3) == 1  # noqa: SLF001
+    # Two users sit on 5 funny votes (one tier above), so competition ranking
+    # would put the 3-vote tier at position 3; dense ranking puts it at 2.
+    assert UserDetailView._compute_rank(3) == 2  # noqa: SLF001, PLR2004
+    assert UserDetailView._compute_rank(5) == 1  # noqa: SLF001
 
 
 @pytest.mark.django_db
