@@ -43,42 +43,43 @@ function award(slug, teardownRegistry) {
 // ── Achievement 1: Recenzent Totalny ────────────────────────────────────────
 // Trigger: hover 20 different suchar cards for 3+ seconds each.
 function setupRecenzentTotalny(teardownRegistry) {
-    const cards = document.querySelectorAll('.card.suchar-card');
-    if (cards.length === 0) return;
+    const SLUG = 'frontend-recenzent-totalny';
+    if (document.querySelectorAll('.card.suchar-card').length === 0) return;
 
-    const hovered = new Set();
-    const timers = new Map();
-    const listeners = [];
+    // Delegated on `document` (one pair of listeners instead of two per card).
+    // `mouseenter`/`mouseleave` don't bubble, so use `mouseover`/`mouseout` and
+    // ignore transitions that stay within the same card via `relatedTarget`.
+    // Cards have no stable id of their own, so dedupe by the element itself —
+    // one card == one suchar on the list, so this matches the old id-based set.
+    const hovered = new Set();  // card elements that completed a 3s dwell
+    const timers = new Map();   // card element -> pending timeout id
 
-    cards.forEach((card, idx) => {
-        // Cards have no own data-suchar-id; read it from the child vote button.
-        const btn = card.querySelector('.btn-vote[data-suchar-id]');
-        const id = btn ? btn.dataset.sucharId : String(idx);
+    const onOver = (e) => {
+        const card = e.target.closest('.card.suchar-card');
+        if (!card || card.contains(e.relatedTarget)) return;
+        if (hovered.has(card) || timers.has(card)) return;
 
-        const onEnter = () => {
-            if (hovered.has(id)) return;
-            timers.set(id, setTimeout(() => {
-                hovered.add(id);
-                if (hovered.size >= 20) {
-                    award('frontend-recenzent-totalny', teardownRegistry);
-                }
-            }, 3000));
-        };
-        const onLeave = () => {
-            clearTimeout(timers.get(id));
-            timers.delete(id);
-        };
+        timers.set(card, setTimeout(() => {
+            timers.delete(card);
+            hovered.add(card);
+            if (hovered.size >= 20) {
+                award(SLUG, teardownRegistry);
+            }
+        }, 3000));
+    };
+    const onOut = (e) => {
+        const card = e.target.closest('.card.suchar-card');
+        if (!card || card.contains(e.relatedTarget)) return;
+        clearTimeout(timers.get(card));
+        timers.delete(card);
+    };
 
-        card.addEventListener('mouseenter', onEnter);
-        card.addEventListener('mouseleave', onLeave);
-        listeners.push({ el: card, onEnter, onLeave });
-    });
+    document.addEventListener('mouseover', onOver);
+    document.addEventListener('mouseout', onOut);
 
-    teardownRegistry['frontend-recenzent-totalny'] = () => {
-        listeners.forEach(({ el, onEnter, onLeave }) => {
-            el.removeEventListener('mouseenter', onEnter);
-            el.removeEventListener('mouseleave', onLeave);
-        });
+    teardownRegistry[SLUG] = () => {
+        document.removeEventListener('mouseover', onOver);
+        document.removeEventListener('mouseout', onOut);
         timers.forEach(t => clearTimeout(t));
         timers.clear();
     };
@@ -87,50 +88,45 @@ function setupRecenzentTotalny(teardownRegistry) {
 // ── Achievement 2: Stłuczona Mysz ───────────────────────────────────────────
 // Trigger: click vote buttons on the same suchar 5+ times (indecisive voter).
 function setupStluczonaMysz(teardownRegistry) {
-    const btns = document.querySelectorAll('.btn-vote');
-    if (btns.length === 0) return;
+    const SLUG = 'frontend-stluczona-mysz';
+    if (document.querySelectorAll('.btn-vote').length === 0) return;
 
     const clicks = new Map();
-    const listeners = [];
 
-    btns.forEach(btn => {
+    const onClick = (e) => {
+        const btn = e.target.closest('.btn-vote[data-suchar-id]');
+        if (!btn) return;
         const sucharId = btn.dataset.sucharId;
         if (!sucharId) return;
 
-        const onClick = () => {
-            const count = (clicks.get(sucharId) || 0) + 1;
-            clicks.set(sucharId, count);
-            if (count >= 5) {
-                award('frontend-stluczona-mysz', teardownRegistry);
-            }
-        };
-        btn.addEventListener('click', onClick);
-        listeners.push({ el: btn, onClick });
-    });
-
-    teardownRegistry['frontend-stluczona-mysz'] = () => {
-        listeners.forEach(({ el, onClick }) => el.removeEventListener('click', onClick));
+        const count = (clicks.get(sucharId) || 0) + 1;
+        clicks.set(sucharId, count);
+        if (count >= 5) {
+            award(SLUG, teardownRegistry);
+        }
     };
+
+    document.addEventListener('click', onClick);
+    teardownRegistry[SLUG] = () => document.removeEventListener('click', onClick);
 }
 
 // ── Achievement 3: Zbieracz Sucharów ────────────────────────────────────────
 // Trigger: navigate through 5 suchar list pages without casting a vote.
 // Uses sessionStorage so the counter resets when the browser session ends.
 function setupZbieraczSucharow(teardownRegistry) {
+    const SLUG = 'frontend-zbieracz-sucharow';
     const PAGE_KEY = 'zbieracz_pages';
 
-    // Reset counter on any vote action during this page load.
-    const btns = document.querySelectorAll('.btn-vote');
-    const listeners = [];
-    btns.forEach(btn => {
-        const onVote = () => sessionStorage.setItem(PAGE_KEY, '0');
-        btn.addEventListener('click', onVote);
-        listeners.push({ el: btn, onVote });
-    });
-
-    teardownRegistry['frontend-zbieracz-sucharow'] = () => {
-        listeners.forEach(({ el, onVote }) => el.removeEventListener('click', onVote));
+    // Reset counter on any vote-button click during this page load. Unlike
+    // Stłuczona Mysz this doesn't require a data-suchar-id — any `.btn-vote`.
+    const onVote = (e) => {
+        if (e.target.closest('.btn-vote')) {
+            sessionStorage.setItem(PAGE_KEY, '0');
+        }
     };
+    document.addEventListener('click', onVote);
+    // Registered before the early return below, matching the original.
+    teardownRegistry[SLUG] = () => document.removeEventListener('click', onVote);
 
     if (!window.location.pathname.startsWith('/suchary')) return;
 
@@ -141,7 +137,7 @@ function setupZbieraczSucharow(teardownRegistry) {
 
     if (current >= 5) {
         sessionStorage.removeItem(PAGE_KEY);
-        award('frontend-zbieracz-sucharow', teardownRegistry);
+        award(SLUG, teardownRegistry);
     }
 }
 

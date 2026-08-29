@@ -103,13 +103,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Custom Dropdown Handling
+    // `.dropdown-item` sets are server-rendered and never added or removed at
+    // runtime (only their `.hidden` class is toggled by the language filter), so
+    // the per-dropdown list is queried once and cached — no invalidation needed.
+    const dropdownItemCache = new WeakMap();
+    const getDropdownItems = (dropdown) => {
+        let items = dropdownItemCache.get(dropdown);
+        if (!items) {
+            items = [...dropdown.querySelectorAll('.dropdown-item')];
+            dropdownItemCache.set(dropdown, items);
+        }
+        return items;
+    };
+    const getVisibleDropdownItems = (dropdown) =>
+        getDropdownItems(dropdown).filter(item => !item.classList.contains('hidden'));
+
     const dropdowns = document.querySelectorAll('.custom-dropdown');
 
     dropdowns.forEach(dropdown => {
         const trigger = dropdown.querySelector('.dropdown-trigger');
         const menu = dropdown.querySelector('.dropdown-menu');
         const input = dropdown.querySelector('input[type="hidden"]');
-        const options = dropdown.querySelectorAll('.dropdown-item');
+        const options = getDropdownItems(dropdown);
 
         if (trigger && menu) {
             // Language search filter
@@ -117,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (searchInput) {
                 searchInput.addEventListener('input', () => {
                     const q = searchInput.value.toLowerCase();
-                    dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                    getDropdownItems(dropdown).forEach(item => {
                         const text = item.textContent.toLowerCase();
                         item.classList.toggle('hidden', q.length > 0 && !text.includes(q));
                     });
@@ -149,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     trigger.focus();
                 } else if (e.key === 'ArrowDown' && dropdown.classList.contains('show')) {
                     e.preventDefault();
-                    const visibleOptions = [...dropdown.querySelectorAll('.dropdown-item:not(.hidden)')];
+                    const visibleOptions = getVisibleDropdownItems(dropdown);
                     if (visibleOptions.length) visibleOptions[0].focus();
                 }
             });
@@ -177,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Keyboard navigation within dropdown items
                 option.addEventListener('keydown', (e) => {
-                    const visibleOptions = [...dropdown.querySelectorAll('.dropdown-item:not(.hidden)')];
+                    const visibleOptions = getVisibleDropdownItems(dropdown);
                     const idx = visibleOptions.indexOf(option);
 
                     if (e.key === 'ArrowDown') {
@@ -207,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const searchInput = dropdown.querySelector('.language-search');
                 if (searchInput) {
                     searchInput.value = '';
-                    dropdown.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('hidden'));
+                    getDropdownItems(dropdown).forEach(item => item.classList.remove('hidden'));
                 }
             }
         });
