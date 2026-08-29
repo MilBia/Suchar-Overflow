@@ -408,15 +408,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Achievements via SSE — browser auto-reconnects after server closes connection
+    // Achievements via SSE — browser auto-reconnects after server closes connection.
+    // We also close the connection when the tab has been hidden for a while and
+    // reopen it on return, so backgrounded tabs don't keep piling up long-lived
+    // polling connections on the backend.
     const userLink = document.querySelector('.user-link');
     if (userLink && window.EventSource) {
-        const es = new EventSource('/achievements/stream/');
+        const HIDDEN_STREAM_CLOSE_DELAY_MS = 3 * 60 * 1000;
+        let es = null;
+        let streamDisabled = false;
+        let hiddenTimeoutId = null;
 
-        es.onmessage = async () => {
+        const handleStreamMessage = async () => {
             try {
                 const response = await fetch('/api/achievements/unseen');
                 if (response.status === 401 || response.status === 403) {
+                    streamDisabled = true;
                     es.close();
                     return;
                 }
@@ -430,6 +437,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error fetching achievements:', err);
             }
         };
+
+        const connectAchievementStream = () => {
+            es = new EventSource('/achievements/stream/');
+            es.onmessage = handleStreamMessage;
+            es.onerror = (event) => {
+                console.error(`Achievement stream error (readyState=${es.readyState}):`, event);
+            };
+        };
+
+        document.addEventListener('visibilitychange', () => {
+            if (streamDisabled) return;
+
+            if (document.visibilityState === 'hidden') {
+                hiddenTimeoutId = setTimeout(() => {
+                    hiddenTimeoutId = null;
+                    if (es) {
+                        es.close();
+                        es = null;
+                    }
+                }, HIDDEN_STREAM_CLOSE_DELAY_MS);
+            } else {
+                if (hiddenTimeoutId) {
+                    clearTimeout(hiddenTimeoutId);
+                    hiddenTimeoutId = null;
+                }
+                if (!es) {
+                    connectAchievementStream();
+                }
+            }
+        });
+
+        connectAchievementStream();
     }
 
     function updateBell(achievements) {
