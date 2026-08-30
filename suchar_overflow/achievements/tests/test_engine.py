@@ -60,9 +60,46 @@ def test_register_rules_covers_all_subclasses() -> None:
     """Every AchievementRule subclass with a metric must appear in _rules."""
     AchievementEngine._rules = {}  # noqa: SLF001
     AchievementEngine.register_rules()
-    for rule_cls in eng.AchievementRule.__subclasses__():
+    for rule_cls in eng._all_subclasses(eng.AchievementRule):  # noqa: SLF001
         if rule_cls.metric:
             assert rule_cls.metric in AchievementEngine._rules  # noqa: SLF001
+
+
+def test_register_rules_discovers_indirect_subclasses() -> None:
+    """A rule nested under an intermediate base class must still be registered.
+
+    ``register_rules`` walks the whole subclass tree, so grouping shared code
+    in an abstract base (``metric = None``) doesn't orphan the concrete rules
+    below it (#246). The classes are local so weakref-based ``__subclasses__()``
+    drops them after GC; the sentinel metric is a plain string, not a real
+    ``Achievement.Metric``, so it can't shadow a production rule even if it
+    lingered. ``_rules`` is saved and restored regardless.
+    """
+
+    class _IntermediateBase(eng.AchievementRule):
+        metric = None
+
+    class _ConcreteIndirectRule(_IntermediateBase):
+        metric = "test-indirect-metric"  # type: ignore[assignment]
+
+        @classmethod
+        def compute_value(
+            cls,
+            user: object,  # noqa: ARG003
+            instance: object = None,  # noqa: ARG003
+        ) -> int:
+            return 0
+
+    saved = AchievementEngine._rules  # noqa: SLF001
+    AchievementEngine._rules = {}  # noqa: SLF001
+    try:
+        AchievementEngine.register_rules()
+        assert (
+            AchievementEngine._rules.get("test-indirect-metric")  # noqa: SLF001
+            is _ConcreteIndirectRule
+        )
+    finally:
+        AchievementEngine._rules = saved  # noqa: SLF001
 
 
 def test_overriding_evaluate_on_a_rule_is_rejected() -> None:

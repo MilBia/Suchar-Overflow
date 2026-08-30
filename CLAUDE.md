@@ -459,9 +459,10 @@ only compares that value with a threshold. `check_achievements` calls `compute_v
 (issue #200 — before that, a user sitting on N unearned tiers of one series re-ran the
 same `.count()` N times inside the synchronous `post_save` path). Consequences for new
 rules: implement `compute_value`, not `evaluate` (the engine never calls an overridden
-`evaluate`), keep it threshold-independent, and keep the rule a **direct** subclass of
-`AchievementRule` — `register_rules()` discovers rules via `__subclasses__()`, which
-only sees one level, so an intermediate base class would silently orphan them.
+`evaluate`), and keep it threshold-independent. `register_rules()` walks the whole
+`AchievementRule` subclass tree (`_all_subclasses()`, issue #246), so an intermediate
+base class grouping shared code between concrete rules is fine — give that base
+`metric = None` (the engine skips it) and only the concrete rules a real metric.
 
 Metric → what it evaluates:
 - `COUNT_SUCHAR` → suchary authored by user
