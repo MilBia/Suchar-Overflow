@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-30 09:07+0000\n"
+"POT-Creation-Date: 2026-08-30 09:13+0000\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -1478,8 +1478,9 @@ msgid "Statistics"
 msgstr "Statystyki"
 
 #: suchar_overflow/templates/users/user_detail.html:145
-msgid "Rank"
-msgstr "Pozycja"
+#: suchar_overflow/users/tests/test_views.py:105
+msgid "Comedy Rank"
+msgstr "Pozycja w rankingu komedii"
 
 #: suchar_overflow/templates/users/user_detail.html:153
 msgid "Total Votes"
@@ -1626,6 +1627,9 @@ msgstr "Link wygasł (minęło 24 godziny)."
 #: suchar_overflow/users/views.py:532
 msgid "Email already taken."
 msgstr "Ten adres e-mail jest już zajęty."
+
+#~ msgid "Rank"
+#~ msgstr "Pozycja"
 
 #~ msgid "None"
 #~ msgstr "Brak"

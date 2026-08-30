@@ -83,3 +83,24 @@ async def test_user_detail_stats_calculation(async_client: AsyncClient) -> None:
     assert response.context["object"].total_score == expected_score
     expected_count = 2
     assert response.context["suchar_count"] == expected_count
+
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_user_detail_rank_label_qualifies_funny_ranking(
+    async_client: AsyncClient,
+) -> None:
+    """The stat next to ``global_rank`` must say it ranks by funny votes (#240)."""
+    target = await sync_to_async(UserFactory.create)()
+    viewer = await sync_to_async(UserFactory.create)()
+    await async_client.aforce_login(viewer)
+    response = await async_client.get(
+        reverse("users:detail", kwargs={"username": target.username}),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    content = response.content.decode()
+    # Assert on the (possibly untranslated) catalog string, not a hardcoded
+    # Polish rendering — CI never compiles locale/*.mo (see CLAUDE.md).
+    assert gettext("Comedy Rank") in content
+    assert ">Rank<" not in content

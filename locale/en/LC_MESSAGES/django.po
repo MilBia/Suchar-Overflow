@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-30 09:07+0000\n"
+"POT-Creation-Date: 2026-08-30 09:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1478,8 +1478,9 @@ msgid "Statistics"
 msgstr "Statistics"
 
 #: suchar_overflow/templates/users/user_detail.html:145
-msgid "Rank"
-msgstr "Rank"
+#: suchar_overflow/users/tests/test_views.py:105
+msgid "Comedy Rank"
+msgstr "Comedy Rank"
 
 #: suchar_overflow/templates/users/user_detail.html:153
 msgid "Total Votes"
@@ -1626,6 +1627,9 @@ msgstr "The link has expired (24 hours have passed)."
 #: suchar_overflow/users/views.py:532
 msgid "Email already taken."
 msgstr "Email already taken."
+
+#~ msgid "Rank"
+#~ msgstr "Rank"
 
 #~ msgid "None"
 #~ msgstr "None"
