@@ -448,8 +448,30 @@ the broken state, the `OfflineGenerationError` only fires at render time.
 
 `AchievementEngine.check_achievements(user, event_type, instance=None)` looks up
 `Achievement` rows by `event_type`, skips `PERIODIC` category, skips already-owned.
-Signals call it on `post_save` of `Suchar` (SUCHAR_POSTED) and `Vote` (VOTE_CAST for
-voter, VOTE_RECEIVED for suchar author) only when `created=True`.
+The engine only ever *awards* — it never revokes an achievement whose metric later
+drops back below the threshold.
+
+Two triggers feed it for votes (see `suchar_overflow/achievements/signals.py`,
+`_award_vote_achievements`):
+
+- **`post_save` of `Suchar` (SUCHAR_POSTED) and `Vote` (VOTE_CAST for voter,
+  VOTE_RECEIVED for suchar author), `created=True` only.** The vote endpoint sets
+  `is_funny`/`is_dry` via `Vote.objects.get_or_create(defaults=...)` so this first
+  `post_save` already sees the final flag state — reverting that to a post-insert flag
+  flip silently reintroduces #247 (the first funny/dry vote counted one vote late,
+  because the flip's `save()` fires no signal).
+- **`vote_changed`** (a plain `django.dispatch.Signal` defined in
+  `suchar_overflow/suchary/signals.py`, sent *only* from `vote_suchar` in
+  `suchary/api.py`, received in `achievements/signals.py`). Covers the toggle and
+  removal paths — an existing `Vote` saved with `created=False`, or `delete()`d — where
+  no `post_save(created=True)` fires. It re-runs the engine for voter and author on the
+  final state, so a threshold newly crossed by a toggle (e.g. removing a dry vote raises
+  the author's `SUM_SCORE`) is awarded immediately instead of lagging a vote (#247,
+  direction 3). It is **not** a `post_delete` receiver on `Vote` on purpose:
+  `Vote.suchar` and `Vote.user` are both `on_delete=CASCADE`, so a model signal would
+  also fire mid-cascade when a Suchar or User is deleted — including
+  `UserAchievement.objects.create()` for a user being deleted. A bare model-level
+  `Vote.save()` (outside the endpoint) still does not re-check.
 
 Rules split into `AchievementRule.compute_value(user, instance)` (the *threshold-
 independent* metric value, or `None` when the rule can't be met at all — note that

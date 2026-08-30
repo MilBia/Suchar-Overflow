@@ -19,6 +19,7 @@ from suchar_overflow.users.models import User
 from .models import Suchar
 from .models import Tag
 from .models import Vote
+from .signals import vote_changed
 
 router = Router()
 
@@ -61,20 +62,37 @@ def vote_suchar(
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
     vote_type = payload.vote_type
 
-    vote, _ = Vote.objects.get_or_create(
+    # defaults=: set the flag on the row *before* the INSERT so the
+    # post_save(created=True) signal the achievement engine listens on sees
+    # the final state. Flipping it in a follow-up save() (as the toggle path
+    # below still does) fires no signal, so the first funny/dry vote used to
+    # be counted one vote late (#247).
+    vote, created = Vote.objects.get_or_create(
         user=user,
         suchar=suchar,
+        defaults={
+            "is_funny": vote_type == "funny",
+            "is_dry": vote_type == "dry",
+        },
     )
 
-    if vote_type == "funny":
-        vote.is_funny = not vote.is_funny
-    elif vote_type == "dry":
-        vote.is_dry = not vote.is_dry
+    if not created:
+        if vote_type == "funny":
+            vote.is_funny = not vote.is_funny
+        elif vote_type == "dry":
+            vote.is_dry = not vote.is_dry
 
-    if not vote.is_funny and not vote.is_dry:
-        vote.delete()
-    else:
-        vote.save()
+        if not vote.is_funny and not vote.is_dry:
+            vote.delete()
+        else:
+            vote.save()
+
+        # A toggle on an existing row saves with created=False (or deletes
+        # it), so no post_save(created=True) fires. Re-evaluate vote
+        # achievements on the final state now — this also lets removing an
+        # opposing vote award a threshold it newly crosses, e.g. deleting a
+        # dry vote raises the author's SUM_SCORE (#247).
+        vote_changed.send(sender=Vote, voter=user, author=suchar.author)
 
     # Calculate counts using aggregation
     counts = suchar.votes.aggregate(
