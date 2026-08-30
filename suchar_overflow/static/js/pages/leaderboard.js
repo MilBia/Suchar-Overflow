@@ -1,39 +1,45 @@
 /* Leaderboard: activity chart + sliding tab/timeframe indicators */
 
-// Coalesce rapid-fire events into a single trailing call. `resize` fires
-// dozens of times per second while the user drags the window, and every
-// repositioning pass below forces a synchronous reflow via
-// getBoundingClientRect() — so we only reposition once the drag settles.
-// Same pattern as the tag autocomplete in pages/suchar_form.js.
-function debounce(func, wait) {
-    let timeout;
-    return (...args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), wait);
-    };
-}
-
-const RESIZE_DEBOUNCE_MS = 150;
-
-// Shared by the timeframe and tab sliding indicators below: positions
-// `slider` over `btn`, relative to `container`, optionally without a
-// transition (used for the initial, unanimated placement).
-function positionSliderOverButton(slider, container, btn, animate) {
-    if (!animate) slider.style.transition = 'none';
-    const containerRect = container.getBoundingClientRect();
-    const btnRect = btn.getBoundingClientRect();
-    slider.style.left = (btnRect.left - containerRect.left) + 'px';
-    slider.style.top = (btnRect.top - containerRect.top) + 'px';
-    slider.style.width = btnRect.width + 'px';
-    slider.style.height = btnRect.height + 'px';
-    if (!animate) requestAnimationFrame(() => {
-        slider.style.transition = '';
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     const activityCanvas = document.getElementById('activityChart');
     if (!activityCanvas) return;
+
+    // Everything below is scoped to this handler rather than the (shared,
+    // page-global) script scope a classic `defer` script otherwise leaks into:
+    // a second `const debounce`/`RESIZE_DEBOUNCE_MS` in any other script on the
+    // same page would be a whole-script SyntaxError (issue #248). Matches
+    // pages/suchar_form.js, which likewise keeps its `debounce` local.
+
+    // Coalesce rapid-fire events into a single trailing call. `resize` fires
+    // dozens of times per second while the user drags the window, and every
+    // repositioning pass below forces a synchronous reflow via
+    // getBoundingClientRect() — so we only reposition once the drag settles.
+    // Same pattern as the tag autocomplete in pages/suchar_form.js.
+    function debounce(func, wait) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    }
+
+    const RESIZE_DEBOUNCE_MS = 150;
+
+    // Shared by the timeframe and tab sliding indicators below: positions
+    // `slider` over `btn`, relative to `container`, optionally without a
+    // transition (used for the initial, unanimated placement).
+    function positionSliderOverButton(slider, container, btn, animate) {
+        if (!animate) slider.style.transition = 'none';
+        const containerRect = container.getBoundingClientRect();
+        const btnRect = btn.getBoundingClientRect();
+        slider.style.left = (btnRect.left - containerRect.left) + 'px';
+        slider.style.top = (btnRect.top - containerRect.top) + 'px';
+        slider.style.width = btnRect.width + 'px';
+        slider.style.height = btnRect.height + 'px';
+        if (!animate) requestAnimationFrame(() => {
+            slider.style.transition = '';
+        });
+    }
 
     // Repositioning callbacks collected by the blocks below, all run by the
     // single debounced `resize` listener registered at the end of setup.
