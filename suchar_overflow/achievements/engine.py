@@ -37,9 +37,11 @@ class AchievementRule:
     that is not the same as the value ``0``, which would still satisfy a
     ``threshold`` of ``0``.
 
-    Subclasses must stay *direct* subclasses of this class:
-    ``AchievementEngine.register_rules`` discovers them via
-    ``__subclasses__()``, which only sees one level.
+    ``AchievementEngine.register_rules`` discovers rules by walking the
+    whole subclass tree (:func:`_all_subclasses`), so an intermediate base
+    class grouping shared code between concrete rules is fine — give that
+    base ``metric = None`` (the engine skips it) and only concrete rules a
+    real metric (#246).
 
     Subclasses implement :meth:`compute_value` only — the engine calls that,
     never ``evaluate``, so overriding ``evaluate`` in a subclass would be a
@@ -226,13 +228,29 @@ class StreakLoginRule(AchievementRule):
         return streak
 
 
+def _all_subclasses[T](cls: type[T]) -> list[type[T]]:
+    """Every descendant of ``cls``, not just its direct subclasses.
+
+    ``type.__subclasses__()`` only returns one level; walking the whole
+    tree means an intermediate base class grouping shared rule code
+    doesn't silently orphan its concrete rules (#246). Sorted by
+    ``(module, qualname)`` so registration order stays deterministic (a
+    ``set`` would not be) even if two rules ever share a bare ``__name__``.
+    """
+    seen: set[type[T]] = set()
+    for sub in cls.__subclasses__():
+        seen.add(sub)
+        seen.update(_all_subclasses(sub))
+    return sorted(seen, key=lambda c: (c.__module__, c.__qualname__))
+
+
 class AchievementEngine:
     _rules: dict[str, type[AchievementRule]] = {}
 
     @classmethod
     def register_rules(cls) -> None:
         if not cls._rules:
-            for rule_cls in AchievementRule.__subclasses__():
+            for rule_cls in _all_subclasses(AchievementRule):
                 if rule_cls.metric:
                     cls._rules[rule_cls.metric] = rule_cls
 
