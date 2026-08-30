@@ -1,7 +1,8 @@
 """Regression guard for #204 — the global CSS bundle must be self-contained.
 
-`base.html` composes the global stylesheet from ~23 separate `<link>` tags
-inside a single `{% compress css %}` block. Before #204 the same modules were
+`base.html` composes the global stylesheet from ~21 separate `<link>` tags
+inside a single `{% compress css %}` block (the two `pages/*.css` sheets moved
+to page-specific blocks in #250). Before #204 the same modules were
 pulled in by CSS `@import` from a single `css/base.css`. django-compressor's
 filters (`CssAbsoluteFilter`, `RCSSMinFilter`) neither resolve nor inline a
 bare `@import 'x.css'` — they copy it into the output
@@ -93,9 +94,11 @@ def test_compressed_bundle_rewrites_relative_urls(compressed_home: str) -> None:
 def test_compressed_bundle_preserves_cascade_order(compressed_home: str) -> None:
     """Concatenation order == the `<link>` order == the documented cascade.
 
-    utilities.css, components/forms.css and pages/profile.css all carry
-    comments relying on utilities → components → pages → project ordering; a
-    reshuffled block would break them silently (all use the same specificity).
+    utilities.css and components/forms.css both carry comments relying on
+    utilities → components → project ordering; a reshuffled block would break
+    them silently (all use the same specificity). The page-specific sheets
+    that also relied on this (pages/leaderboard.css, pages/profile.css) left
+    the global bundle in #250 and now load from their own blocks after it.
     """
     markers = [
         "@font-face",  # fonts.css — first

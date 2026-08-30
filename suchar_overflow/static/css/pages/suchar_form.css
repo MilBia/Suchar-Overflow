@@ -1,5 +1,14 @@
 /* CSS for Suchar Form Page */
 
+/* Sticky Preview column. Moved here from pages/profile.css in #250 —
+   suchary/suchar_form.html is its only consumer, and profile.css is no
+   longer in the global bundle. */
+.sticky-preview {
+    position: sticky;
+    top: 100px;
+    z-index: 1;
+}
+
 /* Preview specific styles */
 #previewText {
     white-space: pre-wrap;

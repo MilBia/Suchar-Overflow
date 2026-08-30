@@ -6,6 +6,14 @@
   {% trans "Leaderboard" %}
 {% endblock title %}
 
+{% block css %}
+  {{ block.super }}
+  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+  {% compress css %}
+    <link href="{% static 'css/pages/leaderboard.css' %}" rel="stylesheet" />
+  {% endcompress %}
+{% endblock css %}
+
 {% block content %}
   <div class="container py-5">
     <div class="text-center mb-5">

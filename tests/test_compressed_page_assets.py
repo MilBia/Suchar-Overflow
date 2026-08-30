@@ -187,6 +187,8 @@ def test_json_script_survives_compression(
         ("achievements:list", 2),
         ("achievements:mine", 2),
         ("suchary:add", 2),
+        # pages/leaderboard.css left base.html's global bundle in #250.
+        ("stats:leaderboard", 2),
     ],
 )
 def test_page_css_is_compressed(
@@ -208,8 +210,36 @@ def test_page_css_is_compressed(
     assert len(set(hrefs)) == expected_bundles, hrefs
 
 
-# Every page that gained its own `{% compress %}` block in #205, plus the home
-# page as a control. `"__self__"` is resolved to the logged-in user's username.
+@pytest.mark.django_db
+def test_user_detail_css_is_compressed(
+    client: Client,
+    settings: SettingsWrapper,
+) -> None:
+    """Same as above for the profile page, fetched by username.
+
+    pages/profile.css moved to users/base_dashboard.html's own block in #250,
+    so user_detail.html emits base.html's bundle plus that one — two in total,
+    none raw.
+    """
+    user = make_user("compress_profile_css")
+    client.force_login(user)
+    html = _render(
+        client,
+        settings,
+        reverse("users:detail", kwargs={"username": user.username}),
+    )
+
+    hrefs = LINK_TAG_RE.findall(html)
+    uncompressed = [href for href in hrefs if not href.startswith("/static/CACHE/css/")]
+    assert not uncompressed, uncompressed
+    assert len(set(hrefs)) == 2, hrefs  # noqa: PLR2004
+
+
+# Every page with its own `{% compress %}` block (#205, plus #250 which moved
+# pages/leaderboard.css and pages/profile.css out of the global bundle), plus
+# the home page as a control. #250 routes profile.css through
+# users/base_dashboard.html, so users:update and password_change gain a css
+# block too. `"__self__"` is resolved to the logged-in user's username.
 OFFLINE_PAGES: list[tuple[str, dict[str, str]]] = [
     ("home", {}),
     ("achievements:list", {}),
@@ -219,6 +249,7 @@ OFFLINE_PAGES: list[tuple[str, dict[str, str]]] = [
     ("stats:leaderboard", {}),
     ("users:detail", {"username": "__self__"}),
     ("users:update", {}),
+    ("password_change", {}),
 ]
 
 
