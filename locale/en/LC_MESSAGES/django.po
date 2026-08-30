@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-26 16:29+0000\n"
+"POT-Creation-Date: 2026-08-30 09:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,9 +218,9 @@ msgstr "Chinese (Simplified)"
 msgid "Chinese (Traditional)"
 msgstr "Chinese (Traditional)"
 
-#: suchar_overflow/achievements/apps.py:23
-#: suchar_overflow/achievements/models.py:86
-#: suchar_overflow/templates/base.html:115
+#: suchar_overflow/achievements/apps.py:26
+#: suchar_overflow/achievements/models.py:91
+#: suchar_overflow/templates/base.html:148
 #: suchar_overflow/templates/users/user_detail.html:89
 msgid "Achievements"
 msgstr "Achievements"
@@ -290,46 +290,27 @@ msgid "Frontend Event"
 msgstr "Frontend Event"
 
 #: suchar_overflow/achievements/models.py:30
-msgid "None"
-msgstr "None"
+#: suchar_overflow/achievements/tests/test_views.py:97
+msgid "Common"
+msgstr "Common"
 
 #: suchar_overflow/achievements/models.py:31
-#: suchar_overflow/templates/achievements/inbox.html:40
-#: suchar_overflow/templates/achievements/list.html:42
-#: suchar_overflow/templates/achievements/list.html:82
-#: suchar_overflow/templates/achievements/mine.html:42
 msgid "Bronze"
 msgstr "Bronze"
 
 #: suchar_overflow/achievements/models.py:32
-#: suchar_overflow/templates/achievements/inbox.html:42
-#: suchar_overflow/templates/achievements/list.html:44
-#: suchar_overflow/templates/achievements/list.html:84
-#: suchar_overflow/templates/achievements/mine.html:44
 msgid "Silver"
 msgstr "Silver"
 
 #: suchar_overflow/achievements/models.py:33
-#: suchar_overflow/templates/achievements/inbox.html:44
-#: suchar_overflow/templates/achievements/list.html:46
-#: suchar_overflow/templates/achievements/list.html:86
-#: suchar_overflow/templates/achievements/mine.html:46
 msgid "Gold"
 msgstr "Gold"
 
 #: suchar_overflow/achievements/models.py:34
-#: suchar_overflow/templates/achievements/inbox.html:46
-#: suchar_overflow/templates/achievements/list.html:48
-#: suchar_overflow/templates/achievements/list.html:88
-#: suchar_overflow/templates/achievements/mine.html:48
 msgid "Platinum"
 msgstr "Platinum"
 
 #: suchar_overflow/achievements/models.py:35
-#: suchar_overflow/templates/achievements/inbox.html:48
-#: suchar_overflow/templates/achievements/list.html:50
-#: suchar_overflow/templates/achievements/list.html:90
-#: suchar_overflow/templates/achievements/mine.html:50
 msgid "Diamond"
 msgstr "Diamond"
 
@@ -393,39 +374,90 @@ msgstr "Secret Achievement"
 msgid "If checked, name and description are hidden until unlocked."
 msgstr "If checked, name and description are hidden until unlocked."
 
-#: suchar_overflow/achievements/models.py:85
+#: suchar_overflow/achievements/models.py:90
 msgid "Achievement"
 msgstr "Achievement"
 
-#: suchar_overflow/achievements/models.py:104
+#: suchar_overflow/achievements/models.py:109
 msgid "Seen by user"
 msgstr "Seen by user"
 
-#: suchar_overflow/achievements/models.py:107
+#: suchar_overflow/achievements/models.py:112
 msgid "User Achievement"
 msgstr "User Achievement"
 
-#: suchar_overflow/achievements/models.py:108
+#: suchar_overflow/achievements/models.py:113
 msgid "User Achievements"
 msgstr "User Achievements"
 
-#: suchar_overflow/suchary/admin.py:40
+#: suchar_overflow/achievements/models.py:137
+msgid "Job ID"
+msgstr "Job ID"
+
+#: suchar_overflow/achievements/models.py:138
+msgid "Ran At"
+msgstr "Ran At"
+
+#: suchar_overflow/achievements/models.py:142
+msgid "Scheduler Run"
+msgstr "Scheduler Run"
+
+#: suchar_overflow/achievements/models.py:143
+msgid "Scheduler Runs"
+msgstr "Scheduler Runs"
+
+#: suchar_overflow/stats/tests/test_views.py:147
+#: suchar_overflow/templates/stats/leaderboard.html:77
+msgid "Most Active Authors"
+msgstr "Most Active Authors"
+
+#: suchar_overflow/stats/tests/test_views.py:148
+#: suchar_overflow/templates/achievements/list.html:30
+#: suchar_overflow/templates/stats/leaderboard.html:78
+msgid "Hall of Fame"
+msgstr "Hall of Fame"
+
+#: suchar_overflow/stats/tests/test_views.py:149
+#: suchar_overflow/stats/tests/test_views.py:176
+#: suchar_overflow/templates/stats/leaderboard.html:79
+msgid "Comedy Kings"
+msgstr "Comedy Kings"
+
+#: suchar_overflow/stats/tests/test_views.py:150
+#: suchar_overflow/stats/tests/test_views.py:177
+#: suchar_overflow/stats/tests/test_views.py:182
+#: suchar_overflow/templates/stats/leaderboard.html:80
+msgid "Top Funny Jokes"
+msgstr "Top Funny Jokes"
+
+#: suchar_overflow/stats/tests/test_views.py:151
+#: suchar_overflow/stats/tests/test_views.py:183
+#: suchar_overflow/templates/stats/leaderboard.html:81
+msgid "Lords of Drought"
+msgstr "Lords of Drought"
+
+#: suchar_overflow/stats/tests/test_views.py:152
+#: suchar_overflow/templates/stats/leaderboard.html:82
+msgid "Top Dry Jokes"
+msgstr "Top Dry Jokes"
+
+#: suchar_overflow/suchary/admin.py:59
 msgid "Text"
 msgstr "Text"
 
-#: suchar_overflow/suchary/admin.py:45
-#: suchar_overflow/templates/stats/leaderboard.html:103
-#: suchar_overflow/templates/stats/leaderboard.html:139
-#: suchar_overflow/templates/users/user_detail.html:120
-#: suchar_overflow/templates/users/user_detail.html:219
+#: suchar_overflow/suchary/admin.py:64
+#: suchar_overflow/templates/stats/_leaderboard_author_card.html:20
+#: suchar_overflow/templates/stats/_leaderboard_suchar_card.html:21
+#: suchar_overflow/templates/users/user_detail.html:132
+#: suchar_overflow/templates/users/user_detail.html:235
 msgid "Votes"
 msgstr "Votes"
 
-#: suchar_overflow/suchary/apps.py:7
+#: suchar_overflow/suchary/apps.py:8
 msgid "Suchary"
 msgstr "Suchary"
 
-#: suchar_overflow/suchary/forms.py:17
+#: suchar_overflow/suchary/forms.py:25
 msgid ""
 "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
 "programowanie)."
@@ -433,21 +465,48 @@ msgstr ""
 "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, "
 "programowanie)."
 
-#: suchar_overflow/suchary/forms.py:34 suchar_overflow/suchary/models.py:24
+#: suchar_overflow/suchary/forms.py:42 suchar_overflow/suchary/models.py:24
 msgid "Publication Date"
 msgstr "Publication Date"
 
-#: suchar_overflow/suchary/forms.py:37
+#: suchar_overflow/suchary/forms.py:45
 msgid "Leave empty to publish immediately."
 msgstr "Leave empty to publish immediately."
 
-#: suchar_overflow/suchary/forms.py:59
+#: suchar_overflow/suchary/forms.py:67
+#: suchar_overflow/templates/suchary/suchar_form.html:89
 msgid "Publication date cannot be in the past."
 msgstr "Publication date cannot be in the past."
+
+#: suchar_overflow/suchary/forms.py:80
+#, python-format
+msgid "Tag names must be 50 characters or fewer: %(tags)s"
+msgstr "Tag names must be 50 characters or fewer: %(tags)s"
+
+#: suchar_overflow/suchary/forms.py:89
+#, python-format
+msgid "Joke cannot exceed 2000 characters (currently %(count)d)."
+msgstr "Joke cannot exceed 2000 characters (currently %(count)d)."
 
 #: suchar_overflow/suchary/models.py:16
 msgid "Suchar text"
 msgstr "Suchar text"
+
+#: suchar_overflow/suchary/tests/test_views.py:50
+#: suchar_overflow/suchary/views.py:158
+msgid "Your suchar has been posted."
+msgstr "Your suchar has been posted."
+
+#: suchar_overflow/suchary/tests/test_views_extra.py:244
+#: suchar_overflow/users/mixins.py:67
+#: suchar_overflow/users/tests/test_mixins.py:92
+msgid "You don't have permission to do that."
+msgstr "You don't have permission to do that."
+
+#: suchar_overflow/suchary/tests/test_views_extra.py:294
+#: suchar_overflow/suchary/views.py:229
+msgid "Your suchar has been updated."
+msgstr "Your suchar has been updated."
 
 #: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:9
 #: suchar_overflow/templates/403_csrf.html:6
@@ -488,159 +547,140 @@ msgstr ""
 "We track these errors automatically, but if the problem persists feel free "
 "to contact us. In the meantime, try refreshing."
 
-#: suchar_overflow/templates/achievements/inbox.html:6
-#: suchar_overflow/templates/achievements/inbox.html:17
-msgid "Notification Inbox"
-msgstr "Notification Inbox"
+#: suchar_overflow/templates/achievements/_card.html:19
+msgid "Achievement locked. Discover its secret by playing!"
+msgstr "Achievement locked. Discover its secret by playing!"
 
-#: suchar_overflow/templates/achievements/inbox.html:18
-#: suchar_overflow/templates/achievements/mine.html:18
-msgid "All achievements you have earned, newest first."
-msgstr "All achievements you have earned, newest first."
-
-#: suchar_overflow/templates/achievements/inbox.html:50
-#: suchar_overflow/templates/achievements/list.html:52
-#: suchar_overflow/templates/achievements/list.html:92
-#: suchar_overflow/templates/achievements/mine.html:52
-msgid "Common"
-msgstr "Common"
-
-#: suchar_overflow/templates/achievements/inbox.html:55
-#: suchar_overflow/templates/achievements/mine.html:57
+#: suchar_overflow/templates/achievements/_card.html:26
 #, python-format
 msgid "Unlocked: %(date)s"
 msgstr "Unlocked: %(date)s"
 
-#: suchar_overflow/templates/achievements/inbox.html:63
-#: suchar_overflow/templates/achievements/mine.html:65
-msgid "No achievements yet — go post some jokes!"
-msgstr "No achievements yet — go post some jokes!"
-
-#: suchar_overflow/templates/achievements/inbox.html:64
-#: suchar_overflow/templates/achievements/mine.html:66
-msgid "Browse achievements"
-msgstr "Browse achievements"
-
 #: suchar_overflow/templates/achievements/list.html:6
 #: suchar_overflow/templates/achievements/mine.html:6
-#: suchar_overflow/templates/achievements/mine.html:17
+#: suchar_overflow/templates/achievements/mine.html:20
 msgid "My Achievements"
 msgstr "My Achievements"
 
-#: suchar_overflow/templates/achievements/list.html:17
-#: suchar_overflow/templates/stats/leaderboard.html:122
-msgid "Hall of Fame"
-msgstr "Hall of Fame"
-
-#: suchar_overflow/templates/achievements/list.html:19
+#: suchar_overflow/templates/achievements/list.html:32
 msgid "Your badges, medals, and shameful secrets from Suchar Overflow."
 msgstr "Your badges, medals, and shameful secrets from Suchar Overflow."
 
-#: suchar_overflow/templates/achievements/list.html:74
-msgid "Achievement locked. Discover its secret by playing!"
-msgstr "Achievement locked. Discover its secret by playing!"
+#: suchar_overflow/templates/achievements/mine.html:21
+msgid "All achievements you have earned, newest first."
+msgstr "All achievements you have earned, newest first."
 
-#: suchar_overflow/templates/achievements/mine.html:20
+#: suchar_overflow/templates/achievements/mine.html:23
 msgid "Browse all achievements"
 msgstr "Browse all achievements"
+
+#: suchar_overflow/templates/achievements/mine.html:34
+msgid "No achievements yet — go post some jokes!"
+msgstr "No achievements yet — go post some jokes!"
+
+#: suchar_overflow/templates/achievements/mine.html:35
+msgid "Browse achievements"
+msgstr "Browse achievements"
 
 #: suchar_overflow/templates/base.html:17
 #: suchar_overflow/templates/base.html:25
 msgid "Joke aggregator with critically low humidity levels."
 msgstr "Joke aggregator with critically low humidity levels."
 
-#: suchar_overflow/templates/base.html:106
+#: suchar_overflow/templates/base.html:139
 #: suchar_overflow/templates/suchary/suchar_list.html:12
-#: suchar_overflow/templates/users/user_detail.html:137
-#: suchar_overflow/users/admin.py:68
+#: suchar_overflow/templates/users/user_detail.html:149
+#: suchar_overflow/users/admin.py:82
 msgid "Jokes"
 msgstr "Jokes"
 
-#: suchar_overflow/templates/base.html:110
+#: suchar_overflow/templates/base.html:143
 #: suchar_overflow/templates/stats/leaderboard.html:6
 #: suchar_overflow/templates/stats/leaderboard.html:12
 msgid "Leaderboard"
 msgstr "Leaderboard"
 
-#: suchar_overflow/templates/base.html:124
+#: suchar_overflow/templates/base.html:157
 msgid "Post"
 msgstr "Post"
 
-#: suchar_overflow/templates/base.html:146
+#: suchar_overflow/templates/base.html:179
 msgid "Search…"
 msgstr "Search…"
 
-#: suchar_overflow/templates/base.html:174
+#: suchar_overflow/templates/base.html:207
 msgid "Notifications"
 msgstr "Notifications"
 
-#: suchar_overflow/templates/base.html:182
+#: suchar_overflow/templates/base.html:216
+#: suchar_overflow/templates/base.html:219
 msgid "New achievements"
 msgstr "New achievements"
 
-#: suchar_overflow/templates/base.html:198
+#: suchar_overflow/templates/base.html:217
+#: suchar_overflow/templates/base.html:235
 msgid "No new achievements"
 msgstr "No new achievements"
 
-#: suchar_overflow/templates/base.html:201
+#: suchar_overflow/templates/base.html:238
 msgid "View all my achievements"
 msgstr "View all my achievements"
 
-#: suchar_overflow/templates/base.html:210
-#: suchar_overflow/templates/base.html:294
+#: suchar_overflow/templates/base.html:247
+#: suchar_overflow/templates/base.html:337
 msgid "Log Out"
 msgstr "Log Out"
 
-#: suchar_overflow/templates/base.html:212
+#: suchar_overflow/templates/base.html:249
 msgid "Log In"
 msgstr "Log In"
 
-#: suchar_overflow/templates/base.html:213
+#: suchar_overflow/templates/base.html:250
 #: suchar_overflow/templates/registration/signup.html:6
 #: suchar_overflow/templates/registration/signup.html:12
-#: suchar_overflow/templates/registration/signup.html:23
+#: suchar_overflow/templates/registration/signup.html:16
 msgid "Sign Up"
 msgstr "Sign Up"
 
-#: suchar_overflow/templates/base.html:223
+#: suchar_overflow/templates/base.html:260
 msgid "Default content."
 msgstr "Default content."
 
-#: suchar_overflow/templates/base.html:232
+#: suchar_overflow/templates/base.html:269
 msgid "All rights reserved (but jokes stolen)."
 msgstr "All rights reserved (but jokes stolen)."
 
-#: suchar_overflow/templates/base.html:237
+#: suchar_overflow/templates/base.html:274
 msgid "About"
 msgstr "About"
 
-#: suchar_overflow/templates/base.html:246
+#: suchar_overflow/templates/base.html:283
 msgid "Report a Bug"
 msgstr "Report a Bug"
 
-#: suchar_overflow/templates/base.html:266
+#: suchar_overflow/templates/base.html:310
 #: suchar_overflow/templates/users/email_change_failed.html:6
 msgid "Error"
 msgstr "Error"
 
-#: suchar_overflow/templates/base.html:268
+#: suchar_overflow/templates/base.html:312
 msgid "Success"
 msgstr "Success"
 
-#: suchar_overflow/templates/base.html:270
+#: suchar_overflow/templates/base.html:314
 msgid "Notification"
 msgstr "Notification"
 
-#: suchar_overflow/templates/base.html:286
+#: suchar_overflow/templates/base.html:329
 msgid "Confirm Logout"
 msgstr "Confirm Logout"
 
-#: suchar_overflow/templates/base.html:289
+#: suchar_overflow/templates/base.html:332
 msgid "Are you sure you want to log out?"
 msgstr "Are you sure you want to log out?"
 
-#: suchar_overflow/templates/base.html:291
-#: suchar_overflow/templates/suchary/suchar_form.html:89
+#: suchar_overflow/templates/base.html:334
+#: suchar_overflow/templates/suchary/suchar_form.html:96
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
 msgstr "Cancel"
@@ -664,12 +704,12 @@ msgstr "Mission"
 #: suchar_overflow/templates/pages/about.html:20
 msgid ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one"
-" followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one "
+"followed by awkward silence and crickets chirping in the background."
 msgstr ""
 "The goal of Suchar Overflow is to gather the largest collection of jokes "
-"that cause physical pain to the recipient. We believe a good dry joke is one"
-" followed by awkward silence and crickets chirping in the background."
+"that cause physical pain to the recipient. We believe a good dry joke is one "
+"followed by awkward silence and crickets chirping in the background."
 
 #: suchar_overflow/templates/pages/about.html:22
 msgid "Technology"
@@ -677,11 +717,11 @@ msgstr "Technology"
 
 #: suchar_overflow/templates/pages/about.html:24
 msgid ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure"
-" fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure "
+"fast and reliable delivery of cringe content straight to your screen."
 msgstr ""
-"The site is built on the latest technologies (Django + Custom CSS) to ensure"
-" fast and reliable delivery of cringe content straight to your screen."
+"The site is built on the latest technologies (Django + Custom CSS) to ensure "
+"fast and reliable delivery of cringe content straight to your screen."
 
 #: suchar_overflow/templates/pages/home.html:8
 msgid "Dry Bread for the Horse"
@@ -712,8 +752,7 @@ msgid "Vote"
 msgstr "Vote"
 
 #: suchar_overflow/templates/pages/home.html:32
-msgid ""
-"Rate other people's jokes. Decide what is funny (and what is pathetic)."
+msgid "Rate other people's jokes. Decide what is funny (and what is pathetic)."
 msgstr ""
 "Rate other people's jokes. Decide what is funny (and what is pathetic)."
 
@@ -751,7 +790,7 @@ msgstr ""
 "using Suchar Overflow."
 
 #: suchar_overflow/templates/registration/activation_complete.html:28
-#: suchar_overflow/templates/registration/password_reset_complete.html:19
+#: suchar_overflow/templates/registration/password_reset_complete.html:25
 msgid "Log in"
 msgstr "Log in"
 
@@ -812,12 +851,12 @@ msgstr "Back to Home"
 
 #: suchar_overflow/templates/registration/login.html:6
 #: suchar_overflow/templates/registration/login.html:12
-#: suchar_overflow/templates/registration/login.html:23
-#: suchar_overflow/templates/registration/signup.html:26
+#: suchar_overflow/templates/registration/login.html:16
+#: suchar_overflow/templates/registration/signup.html:19
 msgid "Sign In"
 msgstr "Sign In"
 
-#: suchar_overflow/templates/registration/login.html:26
+#: suchar_overflow/templates/registration/login.html:19
 msgid "Forgot Password?"
 msgstr "Forgot Password?"
 
@@ -837,16 +876,16 @@ msgstr "Back to Profile"
 #: suchar_overflow/templates/registration/password_change_form.html:6
 #: suchar_overflow/templates/registration/password_change_form.html:12
 #: suchar_overflow/templates/registration/password_change_form.html:18
-#: suchar_overflow/templates/users/base_dashboard.html:42
+#: suchar_overflow/templates/users/base_dashboard.html:35
 msgid "Change Password"
 msgstr "Change Password"
 
 #: suchar_overflow/templates/registration/password_reset_complete.html:6
-#: suchar_overflow/templates/registration/password_reset_complete.html:17
+#: suchar_overflow/templates/registration/password_reset_complete.html:23
 msgid "Password reset successful"
 msgstr "Password reset successful"
 
-#: suchar_overflow/templates/registration/password_reset_complete.html:18
+#: suchar_overflow/templates/registration/password_reset_complete.html:24
 msgid "Your password has been set. You may go ahead and log in now."
 msgstr "Your password has been set. You may go ahead and log in now."
 
@@ -942,7 +981,7 @@ msgstr ""
 msgid "Reset my password"
 msgstr "Reset my password"
 
-#: suchar_overflow/templates/registration/signup.html:26
+#: suchar_overflow/templates/registration/signup.html:19
 msgid "Already have an account?"
 msgstr "Already have an account?"
 
@@ -958,6 +997,30 @@ msgstr ""
 "We have sent you an email to confirm your registration. Please check your "
 "inbox and click the link to activate your account."
 
+#: suchar_overflow/templates/stats/_leaderboard_author_card.html:16
+msgid "jokes"
+msgstr "jokes"
+
+#: suchar_overflow/templates/stats/_leaderboard_author_card.html:25
+#: suchar_overflow/templates/stats/leaderboard.html:59
+#: suchar_overflow/templates/suchary/suchar_list.html:149
+#: suchar_overflow/templates/suchary/suchar_list.html:152
+#: suchar_overflow/templates/users/user_detail.html:178
+msgid "Funny"
+msgstr "Funny"
+
+#: suchar_overflow/templates/stats/_leaderboard_author_card.html:27
+#: suchar_overflow/templates/stats/leaderboard.html:69
+#: suchar_overflow/templates/suchary/suchar_list.html:162
+#: suchar_overflow/templates/suchary/suchar_list.html:165
+#: suchar_overflow/templates/users/user_detail.html:179
+msgid "Dry"
+msgstr "Dry"
+
+#: suchar_overflow/templates/stats/_leaderboard_suchar_card.html:33
+msgid "No jokes."
+msgstr "No jokes."
+
 #: suchar_overflow/templates/stats/leaderboard.html:13
 msgid "Celebrating the best (and the driest) caused by our community."
 msgstr "Celebrating the best (and the driest) caused by our community."
@@ -970,73 +1033,25 @@ msgstr "Activity"
 msgid "All time"
 msgstr "All time"
 
-#: suchar_overflow/templates/stats/leaderboard.html:48
+#: suchar_overflow/templates/stats/leaderboard.html:33
+msgid "New Jokes"
+msgstr "New Jokes"
+
+#: suchar_overflow/templates/stats/leaderboard.html:49
 msgid "Overall"
 msgstr "Overall"
 
-#: suchar_overflow/templates/stats/leaderboard.html:58
-#: suchar_overflow/templates/stats/leaderboard.html:182
-#: suchar_overflow/templates/suchary/suchar_list.html:149
-#: suchar_overflow/templates/suchary/suchar_list.html:152
-#: suchar_overflow/templates/users/user_detail.html:299
-msgid "Funny"
-msgstr "Funny"
-
-#: suchar_overflow/templates/stats/leaderboard.html:68
-#: suchar_overflow/templates/stats/leaderboard.html:256
-#: suchar_overflow/templates/suchary/suchar_list.html:162
-#: suchar_overflow/templates/suchary/suchar_list.html:165
-#: suchar_overflow/templates/users/user_detail.html:299
-msgid "Dry"
-msgstr "Dry"
-
-#: suchar_overflow/templates/stats/leaderboard.html:87
-msgid "Most Active Authors"
-msgstr "Most Active Authors"
-
-#: suchar_overflow/templates/stats/leaderboard.html:100
-#: suchar_overflow/templates/stats/leaderboard.html:179
-#: suchar_overflow/templates/stats/leaderboard.html:253
-msgid "jokes"
-msgstr "jokes"
-
-#: suchar_overflow/templates/stats/leaderboard.html:111
+#: suchar_overflow/templates/stats/leaderboard.html:74
 msgid "No data."
 msgstr "No data."
 
-#: suchar_overflow/templates/stats/leaderboard.html:146
-#: suchar_overflow/templates/stats/leaderboard.html:220
-#: suchar_overflow/templates/stats/leaderboard.html:294
-msgid "No jokes."
-msgstr "No jokes."
-
-#: suchar_overflow/templates/stats/leaderboard.html:166
-msgid "Comedy Kings"
-msgstr "Comedy Kings"
-
-#: suchar_overflow/templates/stats/leaderboard.html:187
+#: suchar_overflow/templates/stats/leaderboard.html:75
 msgid "No funny data."
 msgstr "No funny data."
 
-#: suchar_overflow/templates/stats/leaderboard.html:198
-msgid "Top Funny Jokes"
-msgstr "Top Funny Jokes"
-
-#: suchar_overflow/templates/stats/leaderboard.html:240
-msgid "Lords of Drought"
-msgstr "Lords of Drought"
-
-#: suchar_overflow/templates/stats/leaderboard.html:261
+#: suchar_overflow/templates/stats/leaderboard.html:76
 msgid "No dry data."
 msgstr "No dry data."
-
-#: suchar_overflow/templates/stats/leaderboard.html:272
-msgid "Top Dry Jokes"
-msgstr "Top Dry Jokes"
-
-#: suchar_overflow/templates/stats/leaderboard.html:321
-msgid "New Jokes"
-msgstr "New Jokes"
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:6
 msgid "Too Late!"
@@ -1067,63 +1082,64 @@ msgid "Back to Jokes"
 msgstr "Back to Jokes"
 
 #: suchar_overflow/templates/suchary/suchar_form.html:8
-#: suchar_overflow/templates/suchary/suchar_form.html:29
+#: suchar_overflow/templates/suchary/suchar_form.html:31
 msgid "Add Joke"
 msgstr "Add Joke"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:30
+#: suchar_overflow/templates/suchary/suchar_form.html:32
 msgid "Shine with humor."
 msgstr "Shine with humor."
 
-#: suchar_overflow/templates/suchary/suchar_form.html:38
+#: suchar_overflow/templates/suchary/suchar_form.html:40
 msgid "Joke Content"
 msgstr "Joke Content"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:43
+#: suchar_overflow/templates/suchary/suchar_form.html:46
 msgid "Why did the chicken cross the road?"
 msgstr "Why did the chicken cross the road?"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:46
+#: suchar_overflow/templates/suchary/suchar_form.html:49
 msgid "Remember, the drier the better."
 msgstr "Remember, the drier the better."
 
-#: suchar_overflow/templates/suchary/suchar_form.html:50
+#: suchar_overflow/templates/suchary/suchar_form.html:54
 msgid "Tags"
 msgstr "Tags"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:55
+#: suchar_overflow/templates/suchary/suchar_form.html:59
 msgid "e.g. it, programming, school"
 msgstr "e.g. it, programming, school"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:62
+#: suchar_overflow/templates/suchary/suchar_form.html:67
 msgid "Separate with commas."
 msgstr "Separate with commas."
 
-#: suchar_overflow/templates/suchary/suchar_form.html:70
+#: suchar_overflow/templates/suchary/suchar_form.html:75
 msgid "Schedule for later"
 msgstr "Schedule for later"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:79
+#: suchar_overflow/templates/suchary/suchar_form.html:84
 msgid "Select date and time..."
 msgstr "Select date and time..."
 
-#: suchar_overflow/templates/suchary/suchar_form.html:88
+#: suchar_overflow/templates/suchary/suchar_form.html:95
 msgid "Publish"
 msgstr "Publish"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:99
+#: suchar_overflow/templates/suchary/suchar_form.html:106
 msgid "Live Preview"
 msgstr "Live Preview"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:109
+#: suchar_overflow/templates/suchary/suchar_form.html:116
 msgid "Now"
 msgstr "Now"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:116
+#: suchar_overflow/templates/suchary/suchar_form.html:124
+#: suchar_overflow/templates/suchary/suchar_form.html:125
 msgid "Your joke content will appear here..."
 msgstr "Your joke content will appear here..."
 
-#: suchar_overflow/templates/suchary/suchar_form.html:149
+#: suchar_overflow/templates/suchary/suchar_form.html:158
 msgid "This is how your joke will look on the main list."
 msgstr "This is how your joke will look on the main list."
 
@@ -1166,7 +1182,7 @@ msgid "Scheduled"
 msgstr "Scheduled"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:127
-#: suchar_overflow/templates/users/user_detail.html:193
+#: suchar_overflow/templates/users/user_detail.html:209
 msgid "Edit"
 msgstr "Edit"
 
@@ -1188,8 +1204,8 @@ msgstr "Be the hero we need and add the first joke."
 msgid "Previous"
 msgstr "Previous"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:212
-#: suchar_overflow/templates/suchary/suchar_list.html:216
+#: suchar_overflow/templates/suchary/suchar_list.html:213
+#: suchar_overflow/templates/suchary/suchar_list.html:217
 msgid "Next"
 msgstr "Next"
 
@@ -1207,7 +1223,7 @@ msgstr "Profile"
 msgid "Edit Profile"
 msgstr "Edit Profile"
 
-#: suchar_overflow/templates/users/base_dashboard.html:37
+#: suchar_overflow/templates/users/base_dashboard.html:30
 msgid "Security"
 msgstr "Security"
 
@@ -1239,13 +1255,17 @@ msgstr "Check both inboxes!"
 
 #: suchar_overflow/templates/users/email_change_done.html:25
 msgid ""
-"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation "
+"link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, "
+"so you know it's really you."
 msgstr ""
-"We sent a message to your <strong>NEW</strong> address with an activation link.\n"
+"We sent a message to your <strong>NEW</strong> address with an activation "
+"link.\n"
 "          <br />\n"
-"          But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you."
+"          But we also sent a warning to your <strong>OLD</strong> address, "
+"so you know it's really you."
 
 #: suchar_overflow/templates/users/email_change_done.html:30
 msgid ""
@@ -1256,7 +1276,7 @@ msgstr ""
 "as dry as our jokes."
 
 #: suchar_overflow/templates/users/email_change_done.html:34
-#: suchar_overflow/templates/users/email_change_revoked.html:43
+#: suchar_overflow/templates/users/email_change_revoked.html:45
 msgid "Back to profile"
 msgstr "Back to profile"
 
@@ -1301,15 +1321,15 @@ msgid "Changed my mind (go back)"
 msgstr "Changed my mind (go back)"
 
 #: suchar_overflow/templates/users/email_change_revoked.html:6
-#: suchar_overflow/users/models.py:75
+#: suchar_overflow/users/models.py:74
 msgid "Revoked"
 msgstr "Revoked"
 
-#: suchar_overflow/templates/users/email_change_revoked.html:15
+#: suchar_overflow/templates/users/email_change_revoked.html:23
 msgid "We've reverted the changes!"
 msgstr "We've reverted the changes!"
 
-#: suchar_overflow/templates/users/email_change_revoked.html:17
+#: suchar_overflow/templates/users/email_change_revoked.html:25
 msgid ""
 "Phew, that was close. Your email address has been restored to its previous "
 "state."
@@ -1317,20 +1337,19 @@ msgstr ""
 "Phew, that was close. Your email address has been restored to its previous "
 "state."
 
-#: suchar_overflow/templates/users/email_change_revoked.html:19
+#: suchar_overflow/templates/users/email_change_revoked.html:27
 msgid "You can breathe a sigh of relief. We recommend changing your password."
-msgstr ""
-"You can breathe a sigh of relief. We recommend changing your password."
+msgstr "You can breathe a sigh of relief. We recommend changing your password."
 
-#: suchar_overflow/templates/users/email_change_revoked.html:32
+#: suchar_overflow/templates/users/email_change_revoked.html:34
 msgid "Change cancelled"
 msgstr "Change cancelled"
 
-#: suchar_overflow/templates/users/email_change_revoked.html:34
+#: suchar_overflow/templates/users/email_change_revoked.html:36
 msgid "All active email change links have been invalidated."
 msgstr "All active email change links have been invalidated."
 
-#: suchar_overflow/templates/users/email_change_revoked.html:36
+#: suchar_overflow/templates/users/email_change_revoked.html:38
 msgid ""
 "If it wasn't you who tried to change the email, we recommend changing your "
 "password."
@@ -1338,15 +1357,14 @@ msgstr ""
 "If it wasn't you who tried to change the email, we recommend changing your "
 "password."
 
-#: suchar_overflow/templates/users/email_change_revoked.html:41
+#: suchar_overflow/templates/users/email_change_revoked.html:43
 msgid "Change password (just in case)"
 msgstr "Change password (just in case)"
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:5
 #, python-format
 msgid "We just received a request to change your email address to: %(email)s."
-msgstr ""
-"We just received a request to change your email address to: %(email)s."
+msgstr "We just received a request to change your email address to: %(email)s."
 
 #: suchar_overflow/templates/users/email_notify_old_email.txt:7
 msgid ""
@@ -1411,7 +1429,7 @@ msgstr ""
 "the intruder to your old address."
 
 #: suchar_overflow/templates/users/user_detail.html:6
-#: suchar_overflow/users/models.py:48
+#: suchar_overflow/users/models.py:47
 msgid "User"
 msgstr "User"
 
@@ -1447,51 +1465,51 @@ msgstr "Fri"
 msgid "jokes on"
 msgstr "jokes on"
 
-#: suchar_overflow/templates/users/user_detail.html:107
+#: suchar_overflow/templates/users/user_detail.html:119
 msgid "No achievements yet."
 msgstr "No achievements yet."
 
-#: suchar_overflow/templates/users/user_detail.html:117
+#: suchar_overflow/templates/users/user_detail.html:129
 msgid "The Best Of"
 msgstr "The Best Of"
 
-#: suchar_overflow/templates/users/user_detail.html:131
+#: suchar_overflow/templates/users/user_detail.html:143
 msgid "Statistics"
 msgstr "Statistics"
 
-#: suchar_overflow/templates/users/user_detail.html:133
+#: suchar_overflow/templates/users/user_detail.html:145
 msgid "Rank"
 msgstr "Rank"
 
-#: suchar_overflow/templates/users/user_detail.html:141
+#: suchar_overflow/templates/users/user_detail.html:153
 msgid "Total Votes"
 msgstr "Total Votes"
 
-#: suchar_overflow/templates/users/user_detail.html:148
+#: suchar_overflow/templates/users/user_detail.html:160
 msgid "Joined"
 msgstr "Joined"
 
-#: suchar_overflow/templates/users/user_detail.html:156
+#: suchar_overflow/templates/users/user_detail.html:168
 msgid "Dryness Level"
 msgstr "Dryness Level"
 
-#: suchar_overflow/templates/users/user_detail.html:164
+#: suchar_overflow/templates/users/user_detail.html:176
 msgid "Reception"
 msgstr "Reception"
 
-#: suchar_overflow/templates/users/user_detail.html:178
+#: suchar_overflow/templates/users/user_detail.html:194
 msgid "Latest Jokes"
 msgstr "Latest Jokes"
 
-#: suchar_overflow/templates/users/user_detail.html:184
+#: suchar_overflow/templates/users/user_detail.html:200
 msgid "Scheduled for Publication"
 msgstr "Scheduled for Publication"
 
-#: suchar_overflow/templates/users/user_detail.html:230
+#: suchar_overflow/templates/users/user_detail.html:246
 msgid "See all entries"
 msgstr "See all entries"
 
-#: suchar_overflow/templates/users/user_detail.html:234
+#: suchar_overflow/templates/users/user_detail.html:250
 msgid "User hasn't added any jokes yet."
 msgstr "User hasn't added any jokes yet."
 
@@ -1515,15 +1533,15 @@ msgstr "Address change requires confirmation."
 msgid "Save Changes"
 msgstr "Save Changes"
 
-#: suchar_overflow/users/admin.py:36
+#: suchar_overflow/users/admin.py:51
 msgid "Personal info"
 msgstr "Personal info"
 
-#: suchar_overflow/users/admin.py:38
+#: suchar_overflow/users/admin.py:53
 msgid "Permissions"
 msgstr "Permissions"
 
-#: suchar_overflow/users/admin.py:49
+#: suchar_overflow/users/admin.py:64
 msgid "Important dates"
 msgstr "Important dates"
 
@@ -1532,7 +1550,7 @@ msgid "Users"
 msgstr "Users"
 
 #: suchar_overflow/users/forms.py:19
-#: suchar_overflow/users/tests/test_forms.py:36
+#: suchar_overflow/users/tests/test_forms.py:40
 msgid "This username has already been taken."
 msgstr "This username has already been taken."
 
@@ -1544,62 +1562,73 @@ msgstr "New Email Address"
 msgid "This email is already currently used."
 msgstr "This email is already currently used."
 
-#: suchar_overflow/users/models.py:21
+#: suchar_overflow/users/models.py:20
 msgid "Name of User"
 msgstr "Name of User"
 
-#: suchar_overflow/users/models.py:24
+#: suchar_overflow/users/models.py:23
 msgid "email address"
 msgstr "email address"
 
-#: suchar_overflow/users/models.py:54
+#: suchar_overflow/users/models.py:53
 msgid "Activation Token"
 msgstr "Activation Token"
 
-#: suchar_overflow/users/models.py:55
+#: suchar_overflow/users/models.py:54
 msgid "Activation Tokens"
 msgstr "Activation Tokens"
 
-#: suchar_overflow/users/models.py:73
+#: suchar_overflow/users/models.py:72
 msgid "Pending"
 msgstr "Pending"
 
-#: suchar_overflow/users/models.py:74
+#: suchar_overflow/users/models.py:73
 msgid "Verified"
 msgstr "Verified"
 
-#: suchar_overflow/users/models.py:94
+#: suchar_overflow/users/models.py:93
 msgid "Email Change Request"
 msgstr "Email Change Request"
 
-#: suchar_overflow/users/models.py:95
+#: suchar_overflow/users/models.py:94
 msgid "Email Change Requests"
 msgstr "Email Change Requests"
 
-#: suchar_overflow/users/tasks.py:11
+#: suchar_overflow/users/tasks.py:16
 msgid "Confirm you have a sense of humor (Account Activation)"
 msgstr "Confirm you have a sense of humor (Account Activation)"
 
-#: suchar_overflow/users/tasks.py:29
+#: suchar_overflow/users/tasks.py:40
 msgid "Confirm it's you (Email Change)"
 msgstr "Confirm it's you (Email Change)"
 
-#: suchar_overflow/users/tasks.py:41
+#: suchar_overflow/users/tasks.py:52
 msgid "Someone wants to change your email address (We hope it's you)"
 msgstr "Someone wants to change your email address (We hope it's you)"
 
-#: suchar_overflow/users/views.py:386
+#: suchar_overflow/users/tests/test_views.py:39
+#: suchar_overflow/users/views.py:340
+msgid "Profile updated."
+msgstr "Profile updated."
+
+#: suchar_overflow/users/views.py:509
+msgid "The link is invalid."
+msgstr "The link is invalid."
+
+#: suchar_overflow/users/views.py:516
 msgid "The link has already been used or cancelled."
 msgstr "The link has already been used or cancelled."
 
-#: suchar_overflow/users/views.py:395
+#: suchar_overflow/users/views.py:525
 msgid "The link has expired (24 hours have passed)."
 msgstr "The link has expired (24 hours have passed)."
 
-#: suchar_overflow/users/views.py:402
+#: suchar_overflow/users/views.py:532
 msgid "Email already taken."
 msgstr "Email already taken."
 
-#: suchar_overflow/users/views.py:421
-msgid "The link is invalid."
-msgstr "The link is invalid."
+#~ msgid "None"
+#~ msgstr "None"
+
+#~ msgid "Notification Inbox"
+#~ msgstr "Notification Inbox"
