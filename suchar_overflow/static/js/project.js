@@ -255,6 +255,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.setAttribute('aria-selected', 'true');
         btn.setAttribute('tabindex', '0');
         targetPane.classList.add('show', 'active');
+
+        // Announce the switch so page scripts can react to keyboard-driven
+        // activation too, not just clicks (e.g. pages/leaderboard.js repositions
+        // its sliding tab indicator on this).
+        btn.dispatchEvent(new CustomEvent('tab:activated', { bubbles: true }));
     }
 
     document.querySelectorAll('[data-toggle="tab"]').forEach(btn => {
