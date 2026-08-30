@@ -67,10 +67,11 @@
 
 /* Sticky Sidebar Offset. `!important` is load-bearing here: this class is
    always combined with `.sticky-top` (layout.css) on the same element, and
-   both set `top` with equal specificity — without `!important` this value
-   would only win by the order the sheets are linked in the {% compress css %}
-   block in templates/base.html (see #204 — formerly css/base.css's @import
-   order), which would silently flip if that order ever changes. */
+   both set `top` with equal specificity. This sheet is loaded from
+   users/base_dashboard.html's own `{% compress css %}` block (see #250),
+   which runs *after* base.html's global bundle (layout.css included), so
+   even without `!important` this would win on order today — but `!important`
+   pins it regardless of how either block is later reordered. */
 .sticky-sidebar {
     position: -webkit-sticky;
     position: sticky;
@@ -83,11 +84,4 @@
     justify-content: center;
     align-items: center;
     width: 20px;
-}
-
-/* Sticky Preview for Add Suchar */
-.sticky-preview {
-    position: sticky;
-    top: 100px;
-    z-index: 1;
 }

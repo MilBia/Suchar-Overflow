@@ -439,15 +439,26 @@ storage, so they guard "no `@import` in the bundle", not any particular producti
 render. Stylesheet composition therefore lives in the templates:
 
 - One `{% compress %}` block = one output file, and **position inside the block is the
-  cascade order**. `base.html`'s css block lists the ~23 global modules in the canonical
-  order fonts → core → components → pages → `project.css`; `utilities.css`,
-  `components/forms.css` and `pages/profile.css` carry comments that depend on it. A new
-  global module gets a `<link>` at the right position there.
+  cascade order**. `base.html`'s css block lists the ~21 global modules in the canonical
+  order fonts → core → components → `project.css`; `utilities.css` and
+  `components/forms.css` carry comments that depend on it. A new global module gets a
+  `<link>` at the right position there. There is no `pages/` stage in the global block
+  anymore — `pages/leaderboard.css` and `pages/profile.css` moved to page-specific
+  blocks in #250 (`stats/leaderboard.html` and `users/base_dashboard.html`
+  respectively; `base_dashboard.html` covers `user_detail`/`user_form`/
+  `password_change_form`, since its sidebar uses `.dashboard-card`/`.sticky-sidebar`).
+  Both load *after* the global bundle, so their equal-specificity `!important` rules
+  (`.rank-*` vs `utilities.css`, `.sticky-sidebar` vs `layout.css`) still win on order.
+  `.stats-text-sm` was shared by the leaderboard partial and `user_detail.html`, so it
+  moved to `project.css` (still last in the global bundle) rather than either
+  page sheet; `.sticky-preview` moved from `profile.css` to `pages/suchar_form.css`,
+  its only consumer.
 - A page template keeps `{{ block.super }}` **outside** any `{% compress %}` tag — it
   already expands to base's finished `<link ... CACHE/css/output.<hash>.css>`, and
   re-feeding a compressed output through the compressor is wrong — then opens its
   **own** `{% compress css %}` block for its page-specific sheets, a second output file.
-  Don't try to merge page sheets into base's block.
+  Don't try to merge page sheets into base's block. `base_dashboard.html` needs its own
+  `{% load compress %}` — `{% load %}` does not inherit from `base.html`.
 - Vendored, already-minified sheets (`pages/flatpickr.min.css`) are fine inside a block.
 
 Page-specific `<script>` blocks (issue #205) follow that same "own block,

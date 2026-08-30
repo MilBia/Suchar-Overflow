@@ -65,6 +65,15 @@ button.badge:hover {
   box-shadow: var(--shadow-sm);
 }
 
+/* Shrinks the F/D vote-count badges. Used by both the leaderboard partial
+   (_leaderboard_author_card.html) and user_detail.html, so it can't live in
+   either page-specific sheet (#250). Lives here — last in the global bundle —
+   so it keeps beating `.small` (utilities.css) on cascade order at equal
+   specificity, exactly as it did from pages/leaderboard.css before. */
+.stats-text-sm {
+  font-size: 0.7em;
+}
+
 /* Home Page Hero Icon */
 .hero-icon-wrapper {
   transform: scale(1.5);
