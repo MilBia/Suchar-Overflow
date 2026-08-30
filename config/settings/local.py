@@ -28,10 +28,18 @@ CACHES = {
 
 # EMAIL
 # ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-host
-EMAIL_HOST = env("EMAIL_HOST", default="mailpit")
-# https://docs.djangoproject.com/en/dev/ref/settings/#email-port
-EMAIL_PORT = 1025
+# https://docs.djangoproject.com/en/dev/topics/email/#mailers
+# Route dev mail to the mailpit container (web UI on localhost:8025).
+MAILERS = {
+    "default": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": env("EMAIL_HOST", default="mailpit"),
+            "port": env.int("EMAIL_PORT", default=1025),
+            "timeout": 5,
+        },
+    },
+}
 
 # WhiteNoise
 # ------------------------------------------------------------------------------
