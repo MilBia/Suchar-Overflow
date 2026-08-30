@@ -13,7 +13,8 @@ from ninja.security import django_auth
 
 from suchar_overflow.users.models import User
 
-from .context_processors import invalidate_bell_cache
+from .cache import invalidate_bell_cache
+from .cache import pending_cache_key
 from .models import Achievement
 from .models import UserAchievement
 
@@ -45,7 +46,7 @@ class FrontendEventSchema(Schema):
 def list_unseen_achievements(request: HttpRequest) -> list[dict]:
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
-    cache_key = f"achievements_pending:{user.pk}"
+    cache_key = pending_cache_key(user.pk)
 
     if not cache.get(cache_key):
         return []
@@ -124,7 +125,7 @@ def record_frontend_event(
 
     if not already_owned:
         UserAchievement.objects.create(user=user, achievement=achievement)
-        cache_key = f"achievements_pending:{user.pk}"
+        cache_key = pending_cache_key(user.pk)
         cache.set(cache_key, value=True, timeout=30 * 24 * 60 * 60)
 
     return {"ok": True}

@@ -222,14 +222,19 @@ from clearing the cache before the SSE generator could read it). The current flo
 `AchievementEngine` sets cache key `achievements_pending:{user.pk}` when it awards an
 achievement; `suchar_overflow/achievements/api.py` (`GET /api/achievements/unseen`, a
 django-ninja endpoint) reads and clears that key when the frontend fetches it (triggered by the SSE
-event — see below).
+event — see below). Both that key and the bell-badge key `achievements_bell:{user.pk}`
+are built by helpers in `suchar_overflow/achievements/cache.py` (`pending_cache_key`,
+`bell_cache_key`) — that module is the single source for the key formats and for
+`invalidate_bell_cache`; nothing should re-derive an `achievements_*:{pk}` string by
+hand, and the signal/API layers import from there, not from `context_processors.py`.
 
 ### SSE stream (`/achievements/stream/`)
 
 `suchar_overflow/achievements/views.py:achievement_stream` is a **long-lived polling
 loop**, not single-shot: it yields an initial `retry: 5000\n\n`, then loops
-`while True`, checking `achievements_pending:{user.pk}` every 2 seconds and yielding
-`data: new\n\n` when set; it only ends on `asyncio.CancelledError` (client disconnect).
+`while True`, checking `achievements_pending:{user.pk}` (via `pending_cache_key`, see
+above) every 2 seconds and yielding `data: new\n\n` when set; it only ends on
+`asyncio.CancelledError` (client disconnect).
 Because the generator never completes on its own, the general test advice
 "consume with `b"".join(response.streaming_content)`" (see Test patterns above)
 **does not apply to this endpoint** — it would hang. Tests instead iterate

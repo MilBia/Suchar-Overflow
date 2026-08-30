@@ -2,7 +2,7 @@ from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from suchar_overflow.achievements.context_processors import invalidate_bell_cache
+from suchar_overflow.achievements.cache import invalidate_bell_cache
 from suchar_overflow.achievements.engine import AchievementEngine
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement

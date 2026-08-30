@@ -11,8 +11,8 @@ from django.test import RequestFactory
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
+from suchar_overflow.achievements.cache import bell_cache_key
 from suchar_overflow.achievements.context_processors import achievements_bell
-from suchar_overflow.achievements.context_processors import bell_cache_key
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user

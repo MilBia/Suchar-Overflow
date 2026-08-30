@@ -8,6 +8,7 @@ from asgiref.sync import sync_to_async
 from django.core.cache import cache
 from django.urls import reverse
 
+from suchar_overflow.achievements.cache import pending_cache_key
 from suchar_overflow.conftest import make_user
 
 if TYPE_CHECKING:
@@ -56,7 +57,7 @@ async def test_stream_sets_x_accel_buffering_no(async_client: AsyncClient) -> No
 async def test_stream_sends_retry_when_no_pending(async_client: AsyncClient) -> None:
     user = await sync_to_async(make_user)("u1")
     await async_client.aforce_login(user)
-    await cache.adelete(f"achievements_pending:{user.pk}")
+    await cache.adelete(pending_cache_key(user.pk))
 
     response = await async_client.get(reverse(STREAM_URL))
     content = ""
@@ -72,7 +73,7 @@ async def test_stream_sends_retry_when_no_pending(async_client: AsyncClient) -> 
 async def test_stream_sends_data_new_when_pending(async_client: AsyncClient) -> None:
     user = await sync_to_async(make_user)("u1")
     await async_client.aforce_login(user)
-    cache_key = f"achievements_pending:{user.pk}"
+    cache_key = pending_cache_key(user.pk)
     await cache.aset(cache_key, True, timeout=60)  # noqa: FBT003
 
     response = await async_client.get(reverse(STREAM_URL))
@@ -91,7 +92,7 @@ async def test_stream_does_not_send_data_without_cache_flag(
 ) -> None:
     user = await sync_to_async(make_user)("u1")
     await async_client.aforce_login(user)
-    await cache.adelete(f"achievements_pending:{user.pk}")
+    await cache.adelete(pending_cache_key(user.pk))
 
     response = await async_client.get(reverse(STREAM_URL))
     content = ""
