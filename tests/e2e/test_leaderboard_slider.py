@@ -138,6 +138,40 @@ def test_tab_slider_repositions_after_window_resize(
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
+def test_tab_slider_follows_keyboard_navigation(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
+    """Arrow-key tab navigation moves the slider, not just clicks.
+
+    project.js ``activateTab`` (the arrow-key handler) fires no ``click``; it
+    dispatches a ``tab:activated`` CustomEvent that leaderboard.js listens on.
+    Broken wiring -> the slider stays on the first tab -> this poll times out.
+    """
+    page.goto(f"{live_server.url}/stats/leaderboard/")
+
+    page.wait_for_function(
+        _TAB_SLIDER_ALIGNED_JS.format(tol=_ALIGN_TOLERANCE_PX),
+        timeout=5000,
+    )
+
+    # ArrowRight on the first tab activates the second ("Funny") via keyboard.
+    page.locator("#overall-tab").press("ArrowRight")
+    assert page.evaluate(
+        "document.querySelector('#funny-tab').classList.contains('active')",
+    )
+
+    page.wait_for_function(
+        _TAB_SLIDER_ALIGNED_JS.format(tol=_ALIGN_TOLERANCE_PX),
+        timeout=5000,
+    )
+    result = page.evaluate(_MEASURE_JS)
+    assert result["left_delta"] <= _ALIGN_TOLERANCE_PX
+    assert result["width_delta"] <= _ALIGN_TOLERANCE_PX
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
 def test_timeframe_slider_stays_aligned_after_window_resize(
     page: Page,
     live_server: LiveServer,
