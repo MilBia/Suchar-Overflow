@@ -358,15 +358,20 @@ production's `CompressedManifestStaticFilesStorage`
 `compress --force` ever runs:
 
 ```bash
-sed -i '/sourceMappingURL=/d' \
+sed -i -E \
+  -e 's|//# ?sourceMappingURL=[^[:space:]]*||' \
+  -e 's|/\*# ?sourceMappingURL=[^*]*\*/||' \
   suchar_overflow/static/js/chart.umd.min.js \
   suchar_overflow/static/js/flatpickr.min.js \
   suchar_overflow/static/css/pages/flatpickr.min.css
 ```
 
 (Covers both the JS `//# sourceMappingURL=` and the CSS `/*# sourceMappingURL=... */`
-banner forms. As of the last refresh only `chart.umd.min.js` actually carried one;
-running it against a file with none is a harmless no-op.)
+banner forms. It deletes only the comment, not the whole line — the vendored bundles
+are 1–2 lines, so a blanket `sed '/.../d'` would nuke the bundle if a CDN ever appended
+the banner to the code line instead of putting it on its own. As of the last refresh
+only `chart.umd.min.js` actually carried one; running it against a file with none is a
+harmless no-op.)
 
 Vendoring the `.map` instead was rejected: it is a large file nobody debugs
 into, and it adds another no-Dependabot artifact to keep in sync by hand. The
