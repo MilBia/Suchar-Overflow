@@ -103,8 +103,11 @@ MAILERS = {
             "port": env.int("EMAIL_PORT", default=25),
             "username": env("EMAIL_HOST_USER", default=""),
             "password": env("EMAIL_HOST_PASSWORD", default=""),
+            # STARTTLS (port 587) vs. implicit TLS / SMTPS (port 465) — set at
+            # most one. Django's SMTP backend rejects both being True.
             "use_tls": env.bool("EMAIL_USE_TLS", default=False),
-            "timeout": 5,
+            "use_ssl": env.bool("EMAIL_USE_SSL", default=False),
+            "timeout": env.int("EMAIL_TIMEOUT", default=5),
         },
     },
 }

@@ -19,7 +19,9 @@ DJANGO_SECURE_SSL_REDIRECT=True
 # EMAIL_PORT=587
 # EMAIL_HOST_USER=<your-smtp-user>
 # EMAIL_HOST_PASSWORD=<your-smtp-password>
-# EMAIL_USE_TLS=True
+# EMAIL_USE_TLS=True          # STARTTLS, port 587
+# EMAIL_USE_SSL=True          # implicit TLS / SMTPS, port 465 — mutually exclusive with EMAIL_USE_TLS
+# EMAIL_TIMEOUT=5
 
 # Redis
 # ------------------------------------------------------------------------------
