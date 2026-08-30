@@ -4,6 +4,7 @@ import datetime
 from typing import TYPE_CHECKING
 
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 from django.utils import timezone
 
 from suchar_overflow.achievements import engine as eng
@@ -100,6 +101,49 @@ def test_register_rules_discovers_indirect_subclasses() -> None:
         )
     finally:
         AchievementEngine._rules = saved  # noqa: SLF001
+
+
+def test_register_rules_rejects_metric_collision(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Two rule classes claiming the same metric must fail loudly (#266).
+
+    Without the guard the second class silently overwrites the first in
+    ``_rules`` and the engine evaluates only one of them. The stand-ins are
+    plain classes (not ``AchievementRule`` subclasses) and ``_all_subclasses``
+    is patched to return them, so nothing leaks into the real subclass tree
+    other tests discover; ``_rules`` is saved and restored regardless.
+    """
+
+    class _RuleA:
+        metric = "dup-metric"
+
+    class _RuleB:
+        metric = "dup-metric"
+
+    monkeypatch.setattr(eng, "_all_subclasses", lambda _cls: [_RuleA, _RuleB])
+
+    saved = AchievementEngine._rules  # noqa: SLF001
+    AchievementEngine._rules = {}  # noqa: SLF001
+    try:
+        with pytest.raises(ImproperlyConfigured) as exc_info:
+            AchievementEngine.register_rules()
+    finally:
+        AchievementEngine._rules = saved  # noqa: SLF001
+
+    message = str(exc_info.value)
+    assert "_RuleA" in message
+    assert "_RuleB" in message
+    assert "dup-metric" in message
+
+
+@pytest.mark.django_db
+def test_register_rules_accepts_distinct_production_metrics() -> None:
+    """Regression: real rule classes all declare distinct metrics, so the
+    collision guard (#266) must not fire for the production rule set."""
+    AchievementEngine._rules = {}  # noqa: SLF001
+    AchievementEngine.register_rules()  # must not raise
+    assert AchievementEngine._rules  # noqa: SLF001
 
 
 def test_overriding_evaluate_on_a_rule_is_rejected() -> None:
