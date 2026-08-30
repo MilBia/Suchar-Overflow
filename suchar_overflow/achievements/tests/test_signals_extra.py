@@ -82,7 +82,10 @@ def test_suchar_update_does_not_award_achievement() -> None:
 
 @pytest.mark.django_db
 def test_vote_update_does_not_trigger_achievement_check() -> None:
-    """Updating an existing Vote (toggling flags) must not re-trigger engine."""
+    """A bare model-level ``Vote.save()`` (created=False) must not re-trigger
+    the engine. Toggling through the vote endpoint *does* re-check, but via
+    the explicit ``vote_changed`` signal it sends — not ``post_save`` (#247).
+    """
     author = make_user("author")
     voter = make_user("voter")
     suchar = Suchar.objects.create(text="joke", author=author)
