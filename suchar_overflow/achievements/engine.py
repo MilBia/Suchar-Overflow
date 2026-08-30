@@ -233,14 +233,15 @@ def _all_subclasses[T](cls: type[T]) -> list[type[T]]:
 
     ``type.__subclasses__()`` only returns one level; walking the whole
     tree means an intermediate base class grouping shared rule code
-    doesn't silently orphan its concrete rules (#246). Sorted by name so
-    registration order stays deterministic (a ``set`` would not be).
+    doesn't silently orphan its concrete rules (#246). Sorted by
+    ``(module, qualname)`` so registration order stays deterministic (a
+    ``set`` would not be) even if two rules ever share a bare ``__name__``.
     """
     seen: set[type[T]] = set()
     for sub in cls.__subclasses__():
         seen.add(sub)
         seen.update(_all_subclasses(sub))
-    return sorted(seen, key=lambda c: c.__name__)
+    return sorted(seen, key=lambda c: (c.__module__, c.__qualname__))
 
 
 class AchievementEngine:
