@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Case
 from django.db.models import Count
 from django.db.models import F
@@ -41,7 +42,10 @@ class AchievementRule:
     whole subclass tree (:func:`_all_subclasses`), so an intermediate base
     class grouping shared code between concrete rules is fine — give that
     base ``metric = None`` (the engine skips it) and only concrete rules a
-    real metric (#246).
+    real metric (#246). If two concrete rules ever declare the *same*
+    metric, ``register_rules`` raises ``ImproperlyConfigured`` naming both
+    classes rather than letting the second silently overwrite the first
+    (#266).
 
     Subclasses implement :meth:`compute_value` only — the engine calls that,
     never ``evaluate``, so overriding ``evaluate`` in a subclass would be a
@@ -249,10 +253,22 @@ class AchievementEngine:
 
     @classmethod
     def register_rules(cls) -> None:
-        if not cls._rules:
-            for rule_cls in _all_subclasses(AchievementRule):
-                if rule_cls.metric:
-                    cls._rules[rule_cls.metric] = rule_cls
+        if cls._rules:
+            return
+        for rule_cls in _all_subclasses(AchievementRule):
+            if not rule_cls.metric:
+                continue
+            registered = cls._rules.get(rule_cls.metric)
+            if registered is not None:
+                msg = (
+                    f"Two AchievementRule classes declare metric "
+                    f"{rule_cls.metric!r}: "
+                    f"{registered.__module__}.{registered.__qualname__} and "
+                    f"{rule_cls.__module__}.{rule_cls.__qualname__}. Each "
+                    f"metric must map to exactly one rule (#266)."
+                )
+                raise ImproperlyConfigured(msg)
+            cls._rules[rule_cls.metric] = rule_cls
 
     @staticmethod
     def check_achievements(

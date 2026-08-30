@@ -484,7 +484,11 @@ rules: implement `compute_value`, not `evaluate` (the engine never calls an over
 `evaluate`), and keep it threshold-independent. `register_rules()` walks the whole
 `AchievementRule` subclass tree (`_all_subclasses()`, issue #246), so an intermediate
 base class grouping shared code between concrete rules is fine — give that base
-`metric = None` (the engine skips it) and only the concrete rules a real metric.
+`metric = None` (the engine skips it) and only the concrete rules a real metric. If two
+concrete rules ever declare the *same* metric, `register_rules()` raises
+`ImproperlyConfigured` naming both classes (issue #266) instead of letting the second
+silently overwrite the first in `_rules`; the check runs inside the one-shot
+`if cls._rules:` idempotency guard, so it fires on the first `register_rules()` call.
 
 Metric → what it evaluates:
 - `COUNT_SUCHAR` → suchary authored by user
