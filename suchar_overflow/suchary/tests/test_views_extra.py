@@ -213,26 +213,30 @@ def test_create_post_requires_login(client: Client) -> None:
 # ===========================================================================
 
 
+def _make_editable_suchar(django_user_model: type[UserModel], slug: str) -> Suchar:
+    author = django_user_model.objects.create_user(
+        username=f"upd_{slug}",
+        email=f"{slug}@example.com",
+        password="pw",  # noqa: S106
+    )
+    future = timezone.now() + timedelta(days=1)
+    return Suchar.objects.create(
+        text="Future joke",
+        author=author,
+        published_at=future,
+    )
+
+
 @pytest.mark.django_db
 def test_update_non_author_forbidden(
     client: Client,
     django_user_model: type[UserModel],
 ) -> None:
-    author = django_user_model.objects.create_user(
-        username="upd_author",
-        email="ua@example.com",
-        password="pw",  # noqa: S106
-    )
+    suchar = _make_editable_suchar(django_user_model, "non_author")
     other = django_user_model.objects.create_user(
         username="upd_other",
         email="uo@example.com",
         password="pw",  # noqa: S106
-    )
-    future = timezone.now() + timedelta(days=1)
-    suchar = Suchar.objects.create(
-        text="Protected joke",
-        author=author,
-        published_at=future,
     )
 
     client.force_login(other)
@@ -250,19 +254,9 @@ def test_update_author_can_edit_unpublished(
     client: Client,
     django_user_model: type[UserModel],
 ) -> None:
-    author = django_user_model.objects.create_user(
-        username="upd_auth2",
-        email="ua2@example.com",
-        password="pw",  # noqa: S106
-    )
-    future = timezone.now() + timedelta(days=1)
-    suchar = Suchar.objects.create(
-        text="Future joke",
-        author=author,
-        published_at=future,
-    )
+    suchar = _make_editable_suchar(django_user_model, "auth2")
 
-    client.force_login(author)
+    client.force_login(suchar.author)
     response = client.get(reverse("suchary:update", kwargs={"pk": suchar.pk}))
     assert response.status_code == HTTPStatus.OK
 
@@ -272,19 +266,9 @@ def test_update_author_post_success_shows_message(
     client: Client,
     django_user_model: type[UserModel],
 ) -> None:
-    author = django_user_model.objects.create_user(
-        username="upd_auth4",
-        email="ua4@example.com",
-        password="pw",  # noqa: S106
-    )
-    future = timezone.now() + timedelta(days=1)
-    suchar = Suchar.objects.create(
-        text="Future joke",
-        author=author,
-        published_at=future,
-    )
+    suchar = _make_editable_suchar(django_user_model, "auth4")
 
-    client.force_login(author)
+    client.force_login(suchar.author)
     response = client.post(
         reverse("suchary:update", kwargs={"pk": suchar.pk}),
         {"text": "Updated future joke"},
@@ -303,20 +287,6 @@ def _suchar_select_count(ctx: CaptureQueriesContext) -> int:
     """
     return len(
         [q for q in ctx.captured_queries if 'FROM "suchary_suchar"' in q["sql"]],
-    )
-
-
-def _make_editable_suchar(django_user_model: type[UserModel], slug: str) -> Suchar:
-    author = django_user_model.objects.create_user(
-        username=f"upd_{slug}",
-        email=f"{slug}@example.com",
-        password="pw",  # noqa: S106
-    )
-    future = timezone.now() + timedelta(days=1)
-    return Suchar.objects.create(
-        text="Future joke",
-        author=author,
-        published_at=future,
     )
 
 
