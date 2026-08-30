@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 import pytest
 from django.core.cache import cache
 
+from suchar_overflow.achievements.cache import pending_cache_key
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
@@ -74,7 +75,7 @@ def test_unseen_achievements_returns_awarded(client: Client) -> None:
     UserAchievement.objects.create(user=user, achievement=ach, is_seen=False)
 
     # Set pending cache key
-    cache.set(f"achievements_pending:{user.pk}", value=True)
+    cache.set(pending_cache_key(user.pk), value=True)
 
     response = client.get(UNSEEN_ACHIEVEMENTS_URL)
     assert response.status_code == HTTPStatus.OK
@@ -94,7 +95,7 @@ def test_unseen_achievements_returns_awarded(client: Client) -> None:
     # Cache is cleared; is_seen stays False (bell/mine page marks it)
     user_ach = UserAchievement.objects.get(user=user, achievement=ach)
     assert user_ach.is_seen is False
-    assert cache.get(f"achievements_pending:{user.pk}") is None
+    assert cache.get(pending_cache_key(user.pk)) is None
 
 
 # ---------------------------------------------------------------------------
@@ -299,7 +300,7 @@ def test_frontend_event_sets_cache_key_on_new_award(client: Client) -> None:
     client.force_login(user)
 
     make_frontend_achievement("frontend-odkrywca", name="Odkrywca")
-    cache.delete(f"achievements_pending:{user.pk}")
+    cache.delete(pending_cache_key(user.pk))
 
     response = client.post(
         FRONTEND_EVENT_URL,
@@ -308,7 +309,7 @@ def test_frontend_event_sets_cache_key_on_new_award(client: Client) -> None:
     )
     assert response.status_code == HTTPStatus.OK
 
-    assert cache.get(f"achievements_pending:{user.pk}") is True
+    assert cache.get(pending_cache_key(user.pk)) is True
 
 
 @pytest.mark.django_db
@@ -320,7 +321,7 @@ def test_frontend_event_does_not_set_cache_key_when_already_owned(
 
     ach = make_frontend_achievement("frontend-odkrywca", name="Odkrywca")
     UserAchievement.objects.create(user=user, achievement=ach)
-    cache.delete(f"achievements_pending:{user.pk}")
+    cache.delete(pending_cache_key(user.pk))
 
     response = client.post(
         FRONTEND_EVENT_URL,
@@ -329,4 +330,4 @@ def test_frontend_event_does_not_set_cache_key_when_already_owned(
     )
     assert response.status_code == HTTPStatus.OK
 
-    assert cache.get(f"achievements_pending:{user.pk}") is None
+    assert cache.get(pending_cache_key(user.pk)) is None

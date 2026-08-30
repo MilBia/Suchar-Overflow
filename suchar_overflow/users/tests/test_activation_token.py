@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.db import IntegrityError
 from django.utils import timezone
 
+from suchar_overflow.achievements.cache import pending_cache_key
 from suchar_overflow.achievements.engine import AchievementEngine
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.conftest import make_user
@@ -73,7 +74,7 @@ def test_engine_sets_cache_flag_when_achievement_awarded() -> None:
     # Signal fires here → engine checks achievements → awards → sets cache flag.
     Suchar.objects.create(text="Hello world", author=user)
 
-    assert cache.get(f"achievements_pending:{user.pk}") is True
+    assert cache.get(pending_cache_key(user.pk)) is True
 
 
 @pytest.mark.django_db
@@ -82,4 +83,4 @@ def test_engine_does_not_set_cache_flag_when_no_achievement_awarded() -> None:
     # No achievements in DB — nothing to award.
     AchievementEngine.check_achievements(user, Achievement.EventType.SUCHAR_POSTED)
 
-    assert cache.get(f"achievements_pending:{user.pk}") is None
+    assert cache.get(pending_cache_key(user.pk)) is None

@@ -2,6 +2,9 @@ from typing import TYPE_CHECKING
 
 from django.core.cache import cache
 
+from .cache import BELL_CACHE_TTL
+from .cache import BELL_PREVIEW_LIMIT
+from .cache import bell_cache_key
 from .models import UserAchievement
 
 if TYPE_CHECKING:
@@ -12,46 +15,6 @@ if TYPE_CHECKING:
     class AchievementsBellContext(TypedDict):
         unseen_achievements_count: int
         unseen_achievements_preview: list[UserAchievement]
-
-
-# How many unseen achievements the bell dropdown renders inline.
-BELL_PREVIEW_LIMIT = 5
-
-# Backstop TTL only — correctness comes from invalidation (see
-# invalidate_bell_cache below), not from expiry. Matches
-# stats.views.LEADERBOARD_CACHE_TTL so both caches age the same way.
-BELL_CACHE_TTL = 60 * 5
-
-
-def bell_cache_key(user_id: int) -> str:
-    """Cache key holding the unseen-achievement *count* for one user.
-
-    Deliberately distinct from ``achievements_pending:{pk}`` (set by
-    ``AchievementEngine``, cleared by ``GET /api/achievements/unseen``): that
-    key is a one-shot "the SSE client still has to fetch its toast" flag, this
-    one mirrors the persisted ``is_seen=False`` rows behind the bell badge and
-    survives the toast fetch.
-    """
-    return f"achievements_bell:{user_id}"
-
-
-def invalidate_bell_cache(user_id: int) -> None:
-    """Drop a user's cached bell count so the next request recomputes it.
-
-    Called from the write paths that change the number of unseen achievements
-    without leaving a fresh cache entry behind them: the ``UserAchievement``
-    post_save/post_delete receivers in ``signals.py`` (covering the engine, the
-    periodic tasks, the frontend-event endpoint and the admin) and
-    ``POST /api/achievements/mark-seen``, whose bulk ``.update()`` fires no
-    model signals.
-
-    Not every bulk ``is_seen`` write calls this: ``MyAchievementsView.get``
-    also does a signal-less ``.aupdate(is_seen=True)``, but it renders a
-    template in the same request, so the short-preview branch in
-    ``achievements_bell`` below recomputes the count to 0 on the spot (see the
-    comment there).
-    """
-    cache.delete(bell_cache_key(user_id))
 
 
 def achievements_bell(request: HttpRequest) -> AchievementsBellContext:

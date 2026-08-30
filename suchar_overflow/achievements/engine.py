@@ -15,6 +15,7 @@ from django.utils import timezone
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
+from .cache import pending_cache_key
 from .models import Achievement
 from .models import UserAchievement
 
@@ -280,7 +281,7 @@ class AchievementEngine:
 
         if awarded:
             cache.set(
-                f"achievements_pending:{user.pk}",
+                pending_cache_key(user.pk),
                 value=True,
                 timeout=60 * 60 * 24 * 30,
             )

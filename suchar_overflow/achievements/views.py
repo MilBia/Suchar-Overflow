@@ -10,6 +10,7 @@ from django.shortcuts import render
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 from suchar_overflow.users.models import User
 
+from .cache import pending_cache_key
 from .models import Achievement
 from .models import UserAchievement
 
@@ -24,9 +25,11 @@ if TYPE_CHECKING:
 async def achievement_stream(request: HttpRequest) -> StreamingHttpResponse:
     """SSE: check for pending achievements in a loop, keeping connection open."""
     user = await request.auser()
+    # @login_required already rejects anonymous requests.
+    assert isinstance(user, User)
+    cache_key = pending_cache_key(user.pk)
 
     async def event_stream() -> AsyncGenerator[str]:
-        cache_key = f"achievements_pending:{user.pk}"
         yield "retry: 5000\n\n"
         while True:
             try:
@@ -54,10 +57,11 @@ class MyAchievementsView(AsyncLoginRequiredMixin):
         assert isinstance(user, User)
         # Bulk .aupdate() fires no post_save, so the bell-cache signal receiver
         # in signals.py doesn't run here. We deliberately don't call
-        # invalidate_bell_cache either (it's sync — wrong for an async view):
-        # the render below runs the achievements_bell context processor in the
-        # same request, and with zero unseen rows left its short-preview branch
-        # recomputes the cached count to 0. Keep that branch load-bearing.
+        # invalidate_bell_cache (now in achievements/cache.py) either — it's
+        # sync, wrong for an async view: the render below runs the
+        # achievements_bell context processor in the same request, and with
+        # zero unseen rows left its short-preview branch recomputes the cached
+        # count to 0. Keep that branch load-bearing.
         await UserAchievement.objects.filter(
             user=user,
             is_seen=False,
