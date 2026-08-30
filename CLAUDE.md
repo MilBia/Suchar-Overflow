@@ -348,6 +348,35 @@ curl -sSfL -o suchar_overflow/static/js/flatpickr.min.js \
   https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.js
 ```
 
+**Then strip any trailing `//# sourceMappingURL=...` line** from every vendored
+file you just pulled (`.js` *and* `.css`) — the jsdelivr `dist/` builds end with
+one, but the `.map` file is deliberately *not* vendored (see below), and
+production's `CompressedManifestStaticFilesStorage`
+(`config/settings/production.py`) hard-fails `collectstatic` when a
+`sourceMappingURL` points at a missing file (issue #249) — `set -o errexit` in
+`compose/production/django/start` then stops the container before
+`compress --force` ever runs:
+
+```bash
+sed -i '/sourceMappingURL=/d' \
+  suchar_overflow/static/js/chart.umd.min.js \
+  suchar_overflow/static/js/flatpickr.min.js \
+  suchar_overflow/static/css/pages/flatpickr.min.css
+```
+
+(Covers both the JS `//# sourceMappingURL=` and the CSS `/*# sourceMappingURL=... */`
+banner forms. As of the last refresh only `chart.umd.min.js` actually carried one;
+running it against a file with none is a harmless no-op.)
+
+Vendoring the `.map` instead was rejected: it is a large file nobody debugs
+into, and it adds another no-Dependabot artifact to keep in sync by hand. The
+rule is **no `sourceMappingURL` reference in any vendored asset** —
+`tests/test_vendored_static_no_sourcemap.py` is the regression guard, and
+verifying `collectstatic --noinput` under production `STORAGES` in the container
+is the belt-and-braces check (`DJANGO_SETTINGS_MODULE=config.settings.production`
+plus dummy `DJANGO_SECRET_KEY`/`DJANGO_ADMIN_URL`/`DJANGO_ALLOWED_HOSTS`/
+`DATABASE_URL`/`REDIS_URL`, then `python manage.py collectstatic --noinput --clear`).
+
 Flatpickr also vendors a stylesheet at `suchar_overflow/static/css/pages/flatpickr.min.css`
 — when bumping `flatpickr.min.js`, refresh the CSS from the same release too
 (`https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.css`), or the JS
