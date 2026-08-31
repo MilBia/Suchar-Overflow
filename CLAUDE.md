@@ -387,6 +387,22 @@ Flatpickr also vendors a stylesheet at `suchar_overflow/static/css/pages/flatpic
 (`https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.css`), or the JS
 and CSS builds can drift out of sync.
 
+`suchar_overflow/static/js/flatpickr.LICENSE.txt` carries flatpickr's MIT notice
+and **must be refreshed in lockstep with `flatpickr.min.js`** (its first line is a
+`flatpickr v<version>` marker; `tests/test_vendored_flatpickr_license.py` fails the
+build if it drifts from the bundle's banner). It exists because `flatpickr.min.js`
+now passes through `RJSMinFilter` (`COMPRESS_JS_FILTERS`), which keeps only bang
+comments (`/*!`) — flatpickr's banner is a plain `/*` comment, so it is stripped
+from the served `/static/CACHE/` bundle and the licence text would otherwise appear
+in nothing production serves (issue #251). `collectstatic` ships the `.txt` next to
+the bundle at `/static/js/flatpickr.LICENSE.txt`. Chart.js needs no such file — its
+banner is `/*!`, which `rjsmin` preserves. Grab the text from the matching tag:
+`curl -sSfL https://raw.githubusercontent.com/flatpickr/flatpickr/v<version>/LICENSE.md`
+— but paste it *below* the file's existing header (the `flatpickr v<version>` marker
+line plus the short explanatory block above the `---` rule), don't `curl` straight over
+the file: that header is local, not upstream, and the version-marker test reads its
+first line.
+
 After swapping either file, check the upstream changelog for breaking changes in the
 APIs this project actually uses, then manually verify in a browser (console clean, no
 CSP violations) — `just test` has no JS test coverage, so a green suite is not
