@@ -397,7 +397,11 @@ from the served `/static/CACHE/` bundle and the licence text would otherwise app
 in nothing production serves (issue #251). `collectstatic` ships the `.txt` next to
 the bundle at `/static/js/flatpickr.LICENSE.txt`. Chart.js needs no such file — its
 banner is `/*!`, which `rjsmin` preserves. Grab the text from the matching tag:
-`curl -sSfL https://raw.githubusercontent.com/flatpickr/flatpickr/v<version>/LICENSE.md`.
+`curl -sSfL https://raw.githubusercontent.com/flatpickr/flatpickr/v<version>/LICENSE.md`
+— but paste it *below* the file's existing header (the `flatpickr v<version>` marker
+line plus the short explanatory block above the `---` rule), don't `curl` straight over
+the file: that header is local, not upstream, and the version-marker test reads its
+first line.
 
 After swapping either file, check the upstream changelog for breaking changes in the
 APIs this project actually uses, then manually verify in a browser (console clean, no

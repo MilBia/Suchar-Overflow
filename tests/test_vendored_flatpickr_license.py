@@ -40,14 +40,14 @@ def test_license_file_carries_the_full_mit_notice() -> None:
 
 def test_license_version_matches_the_vendored_bundle() -> None:
     """A refresh of `flatpickr.min.js` must refresh this file in lockstep."""
-    bundle_banner = BUNDLE.read_text(encoding="utf-8").splitlines()[0]
-    license_marker = LICENSE_FILE.read_text(encoding="utf-8").splitlines()[0]
+    # Search the whole file, not `.splitlines()[0]` — an empty file would raise
+    # IndexError before the assertion below could report it. The version token
+    # only appears in the banner / marker line of each file anyway.
+    bundle_match = _VERSION_RE.search(BUNDLE.read_text(encoding="utf-8"))
+    license_match = _VERSION_RE.search(LICENSE_FILE.read_text(encoding="utf-8"))
 
-    bundle_match = _VERSION_RE.search(bundle_banner)
-    license_match = _VERSION_RE.search(license_marker)
-
-    assert bundle_match, bundle_banner
-    assert license_match, license_marker
+    assert bundle_match, "no `flatpickr v<x.y.z>` banner in flatpickr.min.js"
+    assert license_match, "no `flatpickr v<x.y.z>` marker in flatpickr.LICENSE.txt"
     assert bundle_match.group(1) == license_match.group(1), (
         f"flatpickr.LICENSE.txt marks v{license_match.group(1)} but "
         f"flatpickr.min.js is v{bundle_match.group(1)} — refresh the notice "
