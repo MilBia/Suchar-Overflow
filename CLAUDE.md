@@ -619,6 +619,12 @@ After completing **any** task (feature, fix, refactor):
    `docker compose -f docker-compose.local.yml run --rm django python manage.py makemigrations --check`.
    CI blocks the build on this — a model change without a matching migration will pass
    `just test` locally but fail CI.
+4. If you changed any `.py` file, run mypy. It is **not** in `pre-commit` or
+   `just test` — only a separate blocking CI step (`.github/workflows/ci.yml`,
+   "Run mypy") — so a type error passes every local gate above and only fails the
+   build:
+   `docker compose -f docker-compose.local.yml run --rm django python -m mypy .`
+   (or scope it to the changed files).
 
 All steps are **blocking** — do not propose a commit or mark a task complete until they
 all pass with no errors.
@@ -696,8 +702,9 @@ problem discovered on the side (which still needs confirmation, as above).
 
 The default is one task at a time. As an explicitly requested alternative, a
 long-lived orchestrator can work a queue of open issues, dispatching one fresh,
-single-use subagent per issue (each starts on Opus and may spawn its own
-subagents). The orchestrator never waits for a human or a merge inside the loop —
+single-use subagent per issue (each starts on a high-capability model — Opus —
+and may spawn its own subagents). The orchestrator never waits for a human or a
+merge inside the loop —
 it moves to the next issue as soon as the subagent finishes. Merging the
 resulting PRs (including resolving conflicts between PRs built in parallel off the
 same `main`) is a separate process outside the loop, and code review of those PRs
@@ -705,7 +712,9 @@ is left to the human — the loop only creates PRs.
 
 Before each dispatch, re-check the live state (`gh issue list --state open`,
 `gh pr list --state open`) — an issue may have been closed by hand or picked up
-elsewhere since the queue was drawn up.
+elsewhere since the queue was drawn up. If subagents share one workspace rather
+than a worktree each, confirm it is clean and back on `main` (`git status`,
+`git switch main`) before the next branch is cut.
 
 Each dispatched subagent ends its issue one of three ways:
 
