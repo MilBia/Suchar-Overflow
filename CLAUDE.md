@@ -619,6 +619,12 @@ After completing **any** task (feature, fix, refactor):
    `docker compose -f docker-compose.local.yml run --rm django python manage.py makemigrations --check`.
    CI blocks the build on this — a model change without a matching migration will pass
    `just test` locally but fail CI.
+4. If you changed any `.py` file, run mypy. It is **not** in `pre-commit` or
+   `just test` — only a separate blocking CI step (`.github/workflows/ci.yml`,
+   "Run mypy") — so a type error passes every local gate above and only fails the
+   build:
+   `docker compose -f docker-compose.local.yml run --rm django python -m mypy .`
+   (or scope it to the changed files).
 
 All steps are **blocking** — do not propose a commit or mark a task complete until they
 all pass with no errors.
@@ -648,6 +654,19 @@ that's expected, not a regression.
 - Commit messages: imperative mood, explain *why* not *what*.
 - Never force-push `main`.
 - Run `pre-commit run --all-files` and `just test` before proposing a commit.
+- Always branch from the current `main`, never from another unmerged branch. If
+  another open PR already touches the same files, still implement against `main`
+  — a purely textual merge conflict is resolved when that PR is integrated and is
+  not a reason to hold off. The one exception is a genuine functional dependency:
+  the change can only be done correctly (or without duplicating work) on top of
+  code that exists solely in an unmerged PR — then don't implement it, just note
+  "waiting on PR #N" and stop.
+- After opening a PR, own its CI result. A green local `pre-commit` / `just test`
+  does not guarantee green CI (different Docker cache state, and mypy runs as its
+  own CI step — see the mypy note above). Check `gh pr checks`; if a job fails,
+  read the logs, fix on the same branch, push, and re-check until green — unless
+  the failure has a documented out-of-scope cause (e.g. an unrelated flaky test),
+  which you call out in the PR rather than chasing.
 
 ### Working from a GitHub issue
 
@@ -669,3 +688,75 @@ If you find a problem unrelated to the current issue while working (e.g. an
 unrelated bug), you may propose opening a new issue with `gh issue create`,
 but always ask for explicit confirmation first — never create an issue
 unprompted.
+
+Splitting the *current* issue is a different case and needs no confirmation. If
+part of the issue's own scope is better done in its own PR (the diff is too large
+for one review, or one part is independent in risk/mechanics from the rest), you
+may create a new issue for the carved-out part yourself — referencing the parent
+issue if the original had one — then comment the original explaining the split
+and the new number, and finish only the remaining part. This standing
+authorization covers only dividing the scope of the task you were given, not a
+problem discovered on the side (which still needs confirmation, as above).
+
+### Orchestrated multi-issue processing (alternative to single-task work)
+
+The default is one task at a time. As an explicitly requested alternative, a
+long-lived orchestrator can work a queue of open issues, dispatching one fresh,
+single-use subagent per issue (each starts on a high-capability model — Opus —
+and may spawn its own subagents). The orchestrator never waits for a human or a
+merge inside the loop —
+it moves to the next issue as soon as the subagent finishes. Merging the
+resulting PRs (including resolving conflicts between PRs built in parallel off the
+same `main`) is a separate process outside the loop, and code review of those PRs
+is left to the human — the loop only creates PRs.
+
+Before each dispatch, re-check the live state (`gh issue list --state open`,
+`gh pr list --state open`) — an issue may have been closed by hand or picked up
+elsewhere since the queue was drawn up. If subagents share one workspace rather
+than a worktree each, confirm it is clean and back on `main` (`git status`,
+`git switch main`) before the next branch is cut.
+
+Each dispatched subagent ends its issue one of three ways:
+
+- **Nothing to do** — the issue's condition hasn't occurred yet, the feature
+  already exists, or (for an umbrella issue) not all child issues are closed.
+  Comment on the issue explaining why. Close it if it was a one-off that is
+  genuinely no longer relevant; leave it open with a status comment if it's a
+  watch/tracker or an umbrella with open children. This conclusion must come from
+  real verification (the actual upstream release state, the actual child-issue
+  states), never an assumption — the quality gates still apply.
+- **Blocked by an unmerged PR** — only when correct, non-duplicate work genuinely
+  requires code that exists solely in another unmerged PR (not a mere textual
+  conflict — see the PR rules above). Leave a "waiting on PR #N" comment and stop,
+  without opening a PR.
+- **Work to do** — branch from the current `main` as
+  `<type>/<issue-number>-<slug>`, implement, write tests, run the full mandatory
+  workflow, and open a PR with `Closes #<number>` — even if another still-open PR
+  touches the same files. The subagent owns its PR to green CI before handing back
+  control (see the CI-ownership rule above).
+
+Umbrella / tracker issues have no technical scope of their own — they are just a
+checklist of child issues. The assigned subagent checks every child: all closed →
+close the umbrella with a summary comment; otherwise → short progress comment,
+no close. A pure "watch" tracker (e.g. an upstream release) is the same shape:
+verify the real status, comment, and touch code only if the tracked condition has
+actually been met.
+
+**Queue ordering**, most important criterion first:
+
+1. Real logic bugs before optimizations — wrong output shown to users outranks a
+   speed-up.
+2. Foundational changes before follow-ups that depend on them (an index, or a
+   compressor-loading fix, that a later issue only extends).
+3. Backend before frontend — backend changes here carry `assertNumQueries` /
+   regression unit coverage the pipeline verifies automatically, while most
+   frontend work needs manual browser verification (`just test` has no JS/CSS
+   coverage), so backend-first builds a tested history before the
+   harder-to-verify PRs.
+4. Simple, well-isolated fixes before ones needing a design decision — the latter
+   get more room once the simpler items in the same group have gone through
+   cleanly.
+5. Grab-bag / sweep tasks after the targeted fixes that already touched some of
+   the same files.
+6. Umbrella / tracker issues last in their group — closed only once all children
+   really are closed.
