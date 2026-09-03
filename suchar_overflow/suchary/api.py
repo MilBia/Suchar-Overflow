@@ -14,6 +14,7 @@ from ninja import Router
 from ninja import Schema
 from ninja.security import django_auth
 
+from suchar_overflow.achievements.cache import set_pending_toast
 from suchar_overflow.users.models import User
 
 from .models import Suchar
@@ -99,6 +100,15 @@ def vote_suchar(
         funny=Count("pk", filter=Q(is_funny=True)),
         dry=Count("pk", filter=Q(is_dry=True)),
     )
+
+    # First funny vote on the suchar → send the author a lightweight 🥁 toast
+    # over the existing SSE stream (issue #292). `added_funny` is true for both
+    # a brand-new funny vote and a toggle that just switched `is_funny` on;
+    # `funny == 1` pins it to the 0→1 transition. Skipped for the author's own
+    # vote. Reuses the aggregate above — no extra query.
+    added_funny = vote_type == "funny" and (created or vote.is_funny)
+    if added_funny and counts["funny"] == 1 and suchar.author_id != user.pk:
+        set_pending_toast(suchar.author_id)
 
     return {
         "funny_count": counts["funny"] or 0,

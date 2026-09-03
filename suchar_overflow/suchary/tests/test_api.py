@@ -3,9 +3,11 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
+from django.core.cache import cache
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 
+from suchar_overflow.achievements.cache import toast_cache_key
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
@@ -489,6 +491,126 @@ def test_toggle_after_first_vote_does_not_duplicate_vote_cast_award(
         assert response.status_code == HTTPStatus.OK
 
     assert UserAchievement.objects.filter(user=voter, achievement=ach).count() == 1
+
+
+# ---------------------------------------------------------------------------
+# vote_suchar — first-funny-vote 🥁 toast flag (issue #292)
+# ---------------------------------------------------------------------------
+
+
+def _post_vote(client: Client, suchar_pk: int, vote_type: str) -> None:
+    response = client.post(
+        vote_url(suchar_pk),
+        data=json.dumps({"vote_type": vote_type}),
+        content_type="application/json",
+    )
+    assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.django_db
+def test_first_funny_vote_sets_author_toast_flag(client: Client) -> None:
+    author = make_user("rimshot_author")
+    voter = make_user("rimshot_voter")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    cache.delete(toast_cache_key(author.pk))
+
+    client.force_login(voter)
+    _post_vote(client, suchar.pk, "funny")
+
+    assert cache.get(toast_cache_key(author.pk)) is True
+
+
+@pytest.mark.django_db
+def test_second_funny_vote_does_not_set_toast_flag(client: Client) -> None:
+    author = make_user("rimshot_author_2")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    Vote.objects.create(suchar=suchar, user=make_user("rimshot_first"), is_funny=True)
+    cache.delete(toast_cache_key(author.pk))
+
+    client.force_login(make_user("rimshot_second"))
+    _post_vote(client, suchar.pk, "funny")
+
+    assert cache.get(toast_cache_key(author.pk)) is None
+
+
+@pytest.mark.django_db
+def test_dry_vote_does_not_set_toast_flag(client: Client) -> None:
+    author = make_user("rimshot_author_dry")
+    voter = make_user("rimshot_voter_dry")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    cache.delete(toast_cache_key(author.pk))
+
+    client.force_login(voter)
+    _post_vote(client, suchar.pk, "dry")
+
+    assert cache.get(toast_cache_key(author.pk)) is None
+
+
+@pytest.mark.django_db
+def test_dry_vote_on_suchar_with_one_funny_does_not_refire_toast(
+    client: Client,
+) -> None:
+    """The `vote_type == "funny"` guard, not just the count, must gate the toast.
+
+    A suchar already sitting at exactly one funny vote has ``counts["funny"]
+    == 1``; a *dry* vote landing on it must not be mistaken for the 0→1 funny
+    transition.
+    """
+    author = make_user("rimshot_author_onefunny")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    Vote.objects.create(
+        suchar=suchar,
+        user=make_user("rimshot_the_funny_one"),
+        is_funny=True,
+    )
+    cache.delete(toast_cache_key(author.pk))
+
+    client.force_login(make_user("rimshot_dry_latecomer"))
+    _post_vote(client, suchar.pk, "dry")
+
+    assert cache.get(toast_cache_key(author.pk)) is None
+
+
+@pytest.mark.django_db
+def test_author_self_funny_vote_does_not_set_toast_flag(client: Client) -> None:
+    author = make_user("rimshot_selfvoter")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    cache.delete(toast_cache_key(author.pk))
+
+    client.force_login(author)
+    _post_vote(client, suchar.pk, "funny")
+
+    assert cache.get(toast_cache_key(author.pk)) is None
+
+
+@pytest.mark.django_db
+def test_toggling_funny_on_existing_vote_sets_toast_flag(client: Client) -> None:
+    """A dry-only vote flipped to funny is still the suchar's 0→1 funny move."""
+    author = make_user("rimshot_author_toggle")
+    voter = make_user("rimshot_voter_toggle")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    Vote.objects.create(suchar=suchar, user=voter, is_dry=True)
+    cache.delete(toast_cache_key(author.pk))
+
+    client.force_login(voter)
+    _post_vote(client, suchar.pk, "funny")
+
+    assert cache.get(toast_cache_key(author.pk)) is True
+
+
+@pytest.mark.django_db
+def test_removing_only_funny_vote_does_not_set_toast_flag(client: Client) -> None:
+    author = make_user("rimshot_author_remove")
+    voter = make_user("rimshot_voter_remove")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+    cache.delete(toast_cache_key(author.pk))
+
+    client.force_login(voter)
+    _post_vote(client, suchar.pk, "funny")  # toggles the only funny vote off
+
+    assert not Vote.objects.filter(user=voter, suchar=suchar).exists()
+    assert cache.get(toast_cache_key(author.pk)) is None
 
 
 # ---------------------------------------------------------------------------

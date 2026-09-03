@@ -289,6 +289,13 @@ are built by helpers in `suchar_overflow/achievements/cache.py` (`pending_cache_
 `invalidate_bell_cache`; nothing should re-derive an `achievements_*:{pk}` string by
 hand, and the signal/API layers import from there, not from `context_processors.py`.
 
+`cache.py` also owns a third, unrelated key, `toast_pending:{user.pk}`
+(`toast_cache_key` / `set_pending_toast`, issue #292): a one-shot flag for the
+first-funny-vote 🥁 toast (umbrella #279). It drives **no** achievement and no bell
+row — it is pure UI delight. `suchary/api.py:vote_suchar` sets it (via
+`set_pending_toast`) when a suchar's funny-vote count goes `0 → 1` for someone other
+than the author; the SSE loop reports it and `GET /api/achievements/toast` clears it.
+
 ### SSE stream (`/achievements/stream/`)
 
 `suchar_overflow/achievements/views.py:achievement_stream` is a **long-lived polling
@@ -296,6 +303,16 @@ loop**, not single-shot: it yields an initial `retry: 5000\n\n`, then loops
 `while True`, checking `achievements_pending:{user.pk}` (via `pending_cache_key`, see
 above) every 2 seconds and yielding `data: new\n\n` when set; it only ends on
 `asyncio.CancelledError` (client disconnect).
+
+The loop also carries a **second, deliberately minimal** signal (issue #292, umbrella
+#279): if `toast_pending:{user.pk}` (`toast_cache_key`) is set it additionally yields
+`data: toast\n\n` on the same default event. This is the first-funny-vote 🥁 toast —
+the loop still only *reads* both keys (never clears them); the browser branches on
+`event.data` (`new` → `GET /api/achievements/unseen`; `toast` → `GET
+/api/achievements/toast`) and each fetch clears its own key. Keep this scope tight —
+one flag, one canned toast, no per-message payload in the cache; anything richer
+belongs behind its own endpoint, not a wider SSE protocol.
+
 Because the generator never completes on its own, the general test advice
 "consume with `b"".join(response.streaming_content)`" (see Test patterns above)
 **does not apply to this endpoint** — it would hang. Tests instead iterate
@@ -308,7 +325,11 @@ they need (see `achievements/tests/test_stream.py`).
 `config/urls.py`: `GET /achievements/unseen`, `POST /achievements/mark-seen`,
 `GET /achievements/frontend-owned`, `POST /achievements/frontend-event` (the last is
 how the frontend awards `FRONTEND_EVENT`-metric achievements for client-only actions,
-gated by an allowlist of slugs in `VALID_FRONTEND_SLUGS`).
+gated by an allowlist of slugs in `VALID_FRONTEND_SLUGS`), and `GET
+/achievements/toast` — reads-and-clears `toast_pending:{pk}` and returns the
+translated first-funny-vote 🥁 toast (`{"toast": {"title", "body"}}` or `{"toast":
+null}`); the text is `gettext`-ed here so it lands in the *author's* language, not the
+voter's (issue #292).
 
 `static/js/features/hidden_achievements.js` sets `window.__hiddenAchievementsReady =
 true` at the end of its `DOMContentLoaded` handler — this looks like a no-op (no

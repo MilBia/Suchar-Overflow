@@ -15,6 +15,7 @@ from suchar_overflow.users.models import User
 
 from .cache import invalidate_bell_cache
 from .cache import pending_cache_key
+from .cache import toast_cache_key
 from .models import Achievement
 from .models import UserAchievement
 
@@ -80,6 +81,31 @@ def list_unseen_achievements(request: HttpRequest) -> list[dict]:
 
     cache.delete(cache_key)
     return response_data
+
+
+@router.get("/toast", auth=django_auth)
+def get_pending_toast(request: HttpRequest) -> dict[str, dict[str, str] | None]:
+    """Return (and clear) the pending first-funny-vote 🥁 toast, if any.
+
+    Called by the SSE client when the stream emits ``data: toast`` (issue
+    #292). Mirrors ``GET /unseen``: the stream only flags, this read is what
+    actually clears ``toast_pending:{pk}``. The text is translated here so it
+    lands in the *author's* language, not the voter's.
+    """
+    user = request.user
+    assert isinstance(user, User)  # django_auth already rejects anonymous requests
+    cache_key = toast_cache_key(user.pk)
+
+    if not cache.get(cache_key):
+        return {"toast": None}
+
+    cache.delete(cache_key)
+    return {
+        "toast": {
+            "title": _("Ba dum tss 🥁"),
+            "body": _("Your suchar just landed its first funny vote."),
+        },
+    }
 
 
 @router.post("/mark-seen", auth=django_auth)

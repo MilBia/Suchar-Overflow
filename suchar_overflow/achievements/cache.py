@@ -12,12 +12,27 @@ unread achievement"), with deliberately different lifecycles:
 
 Merging the two was considered and rejected (see issue #231): their lifecycles
 genuinely differ.
+
+A third, unrelated key lives here too:
+
+- ``toast_pending:{pk}`` (``toast_cache_key``) — a one-shot "the SSE client
+  still has to fetch a lightweight 🥁 toast" flag, set by the voting path when
+  a suchar gets its *first* funny vote (issue #292) and cleared by
+  ``GET /api/achievements/toast``. It is deliberately separate from
+  ``achievements_pending`` because it drives no achievement and no bell row —
+  it is pure UI delight (umbrella #279).
 """
 
 from django.core.cache import cache
 
 # How many unseen achievements the bell dropdown renders inline.
 BELL_PREVIEW_LIMIT = 5
+
+# Backstop TTL for the first-funny-vote toast flag. The SSE loop normally
+# drains it within seconds; this only bounds how stale a "your suchar got its
+# first funny vote" toast can be for an author who had no stream open when the
+# vote landed.
+TOAST_CACHE_TTL = 60 * 60
 
 # Backstop TTL only — correctness comes from invalidation (see
 # invalidate_bell_cache below), not from expiry. Matches
@@ -44,6 +59,26 @@ def bell_cache_key(user_id: int) -> str:
     survives the toast fetch.
     """
     return f"achievements_bell:{user_id}"
+
+
+def toast_cache_key(user_id: int) -> str:
+    """Cache key holding the "SSE 🥁 toast still pending" flag for one user.
+
+    Set by the voting path on a suchar's first funny vote (issue #292),
+    cleared by ``GET /api/achievements/toast``. Unrelated to the two
+    achievement keys above — see this module's docstring.
+    """
+    return f"toast_pending:{user_id}"
+
+
+def set_pending_toast(user_id: int) -> None:
+    """Flag that ``user_id`` has a first-funny-vote 🥁 toast to be delivered.
+
+    The SSE stream (``achievements/views.py``) picks the flag up on its next
+    poll and emits ``data: toast``; the browser then fetches and clears it via
+    ``GET /api/achievements/toast``.
+    """
+    cache.set(toast_cache_key(user_id), value=True, timeout=TOAST_CACHE_TTL)
 
 
 def invalidate_bell_cache(user_id: int) -> None:

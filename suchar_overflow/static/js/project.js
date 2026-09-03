@@ -439,7 +439,34 @@ document.addEventListener('DOMContentLoaded', () => {
         let streamDisabled = false;
         let hiddenTimeoutId = null;
 
-        const handleStreamMessage = async () => {
+        const handleFirstFunnyToast = async () => {
+            try {
+                const response = await fetch('/api/achievements/toast');
+                if (response.status === 401 || response.status === 403) {
+                    streamDisabled = true;
+                    es.close();
+                    return;
+                }
+                if (!response.ok) return;
+
+                const data = await response.json();
+                if (!data || !data.toast || !window.showToast) return;
+
+                window.showToast(data.toast.body, data.toast.title, 'success');
+            } catch (err) {
+                console.error('Error fetching first-funny toast:', err);
+            }
+        };
+
+        const handleStreamMessage = async (event) => {
+            // The stream multiplexes two independent signals on the default
+            // event: `new` (an awarded achievement) and `toast` (a first
+            // funny vote on one of your suchary — issue #292).
+            if (event && event.data === 'toast') {
+                await handleFirstFunnyToast();
+                return;
+            }
+
             try {
                 const response = await fetch('/api/achievements/unseen');
                 if (response.status === 401 || response.status === 403) {
