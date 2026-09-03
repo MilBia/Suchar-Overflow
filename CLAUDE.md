@@ -185,6 +185,14 @@ here, Playwright E2E for the integration path — audio, the real
   combo handlers a #283+ easter egg attaches to `document` are not — such a test
   must call `window.easterEggs.teardownAll()` (the module's own detach) in
   `afterEach` so the next test starts clean.
+- **`vi.resetModules()` also does not re-run a CJS module reached via
+  `require()`** — so a module's mutable module-level state (e.g. `easter_eggs.js`'s
+  in-memory dedupe `Set`, its audio cache) survives between tests too.
+  `easter_eggs.js` exposes `_resetForTests()` (attached only in the CJS tail,
+  never on the browser `window.easterEggs`) which clears all of it; `beforeEach`
+  in *both* `tests/js/easter_eggs.test.js` and `tests/js/hidden_achievements.test.js`
+  calls it right after the `require`. New modules with module-level mutable state
+  should follow the same pattern.
 
 ## Code style — ruff rules in force
 

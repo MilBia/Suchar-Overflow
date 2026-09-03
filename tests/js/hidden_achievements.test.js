@@ -46,9 +46,13 @@ beforeEach(() => {
   globalThis.getCsrfToken = vi.fn(() => "test-token");
   globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => [] }));
 
-  // The shared helpers hidden_achievements.js now delegates to (#282). Load the
-  // real module so `award()`'s dedupe + POST are exercised for real.
-  globalThis.easterEggs = require(EASTER_EGGS_PATH);
+  // The shared helpers hidden_achievements.js now delegates to via
+  // `window.easterEggs` (#282). Requiring the real module sets that global as a
+  // side effect, so `award()`'s dedupe + POST are exercised for real.
+  // `_resetForTests()` clears its module-level state, which vi.resetModules()
+  // does not (a required CJS module is not re-run).
+  require(EASTER_EGGS_PATH);
+  window.easterEggs._resetForTests();
 
   hiddenAchievements = require(MODULE_PATH);
 });

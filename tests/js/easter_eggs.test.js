@@ -29,6 +29,9 @@ beforeEach(() => {
   delete window.matchMedia;
 
   ee = require(MODULE_PATH);
+  // vi.resetModules() doesn't re-run a required CJS module, so its module-level
+  // state (dedupe Set, audio cache, teardown registry) leaks between tests.
+  ee._resetForTests();
 });
 
 afterEach(() => {
@@ -52,6 +55,19 @@ describe("session dedupe — alreadyAwarded / markAwarded", () => {
     expect(ee.alreadyAwarded("frontend-ee-x")).toBe(false);
     spy.mockRestore();
   });
+
+  it("still dedupes within the page when storage is unavailable", () => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+
+    expect(ee.alreadyAwarded("frontend-ee-x")).toBe(false);
+    ee.markAwarded("frontend-ee-x");
+    expect(ee.alreadyAwarded("frontend-ee-x")).toBe(true); // in-memory Set
+  });
 });
 
 describe("award() — dedupe + POST in one call", () => {
@@ -71,12 +87,29 @@ describe("award() — dedupe + POST in one call", () => {
     expect(JSON.parse(sent[0][1].body)).toEqual({ event_slug: "frontend-ee-x" });
     expect(sent[0][1].headers["X-CSRFToken"]).toBe("test-token");
     expect(sent[0][1].method).toBe("POST");
+    // Survives an unload that races the award (submit / navigation eggs).
+    expect(sent[0][1].keepalive).toBe(true);
   });
 
   it("does not POST when the slug is already marked", () => {
     sessionStorage.setItem("awarded_frontend-ee-x", "1");
     expect(ee.award("frontend-ee-x")).toBe(false);
     expect(posts()).toHaveLength(0);
+  });
+
+  it("POSTs only once even when sessionStorage is unavailable", () => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+
+    ee.award("frontend-ee-x");
+    ee.award("frontend-ee-x");
+    ee.award("frontend-ee-x");
+
+    expect(posts()).toHaveLength(1);
   });
 });
 
@@ -98,6 +131,13 @@ describe("mute preference — DEFAULT MUTED", () => {
     expect(ee.isMuted()).toBe(false);
 
     ee.setMuted(true);
+    expect(localStorage.getItem("ee_muted")).toBe("1");
+    expect(ee.isMuted()).toBe(true);
+  });
+
+  it("re-mutes on a no-argument setMuted()", () => {
+    ee.setMuted(false);
+    ee.setMuted();
     expect(localStorage.getItem("ee_muted")).toBe("1");
     expect(ee.isMuted()).toBe(true);
   });
@@ -186,6 +226,11 @@ describe("reduced-motion gate — reducedJuice / withJuice", () => {
     });
     expect(ee.reducedJuice()).toBe(true);
   });
+
+  it("does not throw on a non-function argument", () => {
+    window.matchMedia = vi.fn((q) => ({ matches: false, media: q }));
+    expect(() => ee.withJuice(undefined)).not.toThrow();
+  });
 });
 
 describe("DOMContentLoaded init", () => {
@@ -220,6 +265,19 @@ describe("teardown registry", () => {
     ee.teardownAll(); // second drain is a no-op
     expect(a).toHaveBeenCalledTimes(1);
     expect(b).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps draining after a callback throws", () => {
+    const boom = vi.fn(() => {
+      throw new Error("bad teardown");
+    });
+    const after = vi.fn();
+    ee.registerTeardown("boom", boom);
+    ee.registerTeardown("after", after);
+
+    expect(() => ee.teardownAll()).not.toThrow();
+    expect(boom).toHaveBeenCalledTimes(1);
+    expect(after).toHaveBeenCalledTimes(1);
   });
 
   it("exposes the same surface on window.easterEggs", () => {

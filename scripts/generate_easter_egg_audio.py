@@ -21,8 +21,6 @@ Usage::
 Writes ``rimshot.wav`` and ``dust.wav`` into ``suchar_overflow/static/audio/``.
 """
 
-from __future__ import annotations
-
 import math
 import random
 import struct

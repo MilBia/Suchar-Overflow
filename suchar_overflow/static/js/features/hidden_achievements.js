@@ -21,13 +21,14 @@ async function getOwnedSlugs() {
 // features/easter_eggs.js (#282); only the teardown-registry call is specific to
 // this file's setupX() pattern.
 function award(slug, teardownRegistry) {
-    if (easterEggs.alreadyAwarded(slug)) return;
-    easterEggs.markAwarded(slug);
+    const ee = window.easterEggs;
+    if (ee.alreadyAwarded(slug)) return;
+    ee.markAwarded(slug);
 
     const teardown = teardownRegistry[slug];
     if (teardown) teardown();
 
-    easterEggs.awardFrontendAchievement(slug);
+    ee.awardFrontendAchievement(slug);
 }
 
 // ── Achievement 1: Recenzent Totalny ────────────────────────────────────────

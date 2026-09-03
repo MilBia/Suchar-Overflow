@@ -25,9 +25,14 @@ function awardedKey(slug) {
 }
 
 // Guard against double-award within the same page session (rapid re-triggers,
-// or a second listener for the same slug). Storage can throw in private mode —
-// treat any failure as "not yet awarded" so the POST still gets a chance.
+// or a second listener for the same slug). `sessionStorage` survives a reload;
+// the in-memory Set is the fallback for when storage throws (private mode /
+// storage blocked), so repeated `award()` calls on one page still POST only
+// once even then.
+const awardedThisPage = new Set();
+
 function alreadyAwarded(slug) {
+    if (awardedThisPage.has(slug)) return true;
     try {
         return sessionStorage.getItem(awardedKey(slug)) === '1';
     } catch {
@@ -36,11 +41,11 @@ function alreadyAwarded(slug) {
 }
 
 function markAwarded(slug) {
+    awardedThisPage.add(slug);
     try {
         sessionStorage.setItem(awardedKey(slug), '1');
     } catch {
-        // No session storage (private mode) — the in-memory listener guards in
-        // each egg still prevent a tight double-fire within one page load.
+        // Storage unavailable — the Set above still dedupes within this page.
     }
 }
 
@@ -48,6 +53,11 @@ function awardFrontendAchievement(slug) {
     try {
         return fetch('/api/achievements/frontend-event', {
             method: 'POST',
+            // Some eggs award on `submit` / just before navigation
+            // (setupNiecierpliwy, setupZbieraczSucharow). Without keepalive the
+            // browser cancels the in-flight POST on unload and — markAwarded()
+            // having already run — the achievement is lost for the session.
+            keepalive: true,
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCsrfToken(),
@@ -85,7 +95,7 @@ function isMuted() {
     }
 }
 
-function setMuted(muted) {
+function setMuted(muted = true) {
     try {
         localStorage.setItem(MUTE_KEY, muted ? '1' : '0');
     } catch {
@@ -143,7 +153,7 @@ function reducedJuice() {
 // shake / bounce here so the reduced-motion check lives in exactly one place.
 function withJuice(fn) {
     if (reducedJuice()) return;
-    fn();
+    if (typeof fn === 'function') fn();
 }
 
 // ── Teardown registry ────────────────────────────────────────────────────────
@@ -162,8 +172,13 @@ function registerTeardown(key, fn) {
 function teardownAll() {
     Object.keys(teardownRegistry).forEach((key) => {
         const fn = teardownRegistry[key];
-        if (typeof fn === 'function') fn();
         delete teardownRegistry[key];
+        // One throwing callback must not strand the rest still attached.
+        try {
+            if (typeof fn === 'function') fn();
+        } catch {
+            // Best-effort cleanup.
+        }
     });
 }
 
@@ -207,7 +222,18 @@ document.addEventListener('DOMContentLoaded', () => {
 /* Test-only export for Vitest + jsdom (tests/js/easter_eggs.test.js).
  * `module` is undefined in the browser, so this block is inert there and is
  * preserved verbatim by rjsmin inside {% compress js %}. NOT dead code — see
- * CLAUDE.md "JS tests (Vitest)" and the same tail in hidden_achievements.js. */
+ * CLAUDE.md "JS tests (Vitest)" and the same tail in hidden_achievements.js.
+ *
+ * `vi.resetModules()` does NOT re-run a CJS module reached via `require()`, so
+ * this module's mutable module-level state (the dedupe Set, the audio cache, the
+ * teardown registry) survives between tests. `_resetForTests()` is the per-test
+ * reset the `beforeEach` in both JS test files must call; it is attached here
+ * only, so it never reaches `window.easterEggs` in a real browser. */
 if (typeof module !== 'undefined' && module.exports) {
+    easterEggs._resetForTests = () => {
+        awardedThisPage.clear();
+        Object.keys(audioCache).forEach((key) => delete audioCache[key]);
+        Object.keys(teardownRegistry).forEach((key) => delete teardownRegistry[key]);
+    };
     module.exports = easterEggs;
 }
