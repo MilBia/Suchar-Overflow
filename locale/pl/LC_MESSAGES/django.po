@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 15:13+0000\n"
+"POT-Creation-Date: 2026-09-03 16:27+0000\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -223,7 +223,7 @@ msgid "Your suchar just landed its first funny vote."
 msgstr "Twój suchar właśnie dostał pierwszy głos „śmieszne”."
 
 #: suchar_overflow/achievements/apps.py:26
-#: suchar_overflow/achievements/models.py:92
+#: suchar_overflow/achievements/models.py:94
 #: suchar_overflow/templates/base.html:164
 #: suchar_overflow/templates/users/user_detail.html:89
 msgid "Achievements"
@@ -246,172 +246,180 @@ msgid "Suchar Posted"
 msgstr "Suchar dodany"
 
 #: suchar_overflow/achievements/models.py:14
+msgid "Suchar Edited"
+msgstr "Suchar zedytowany"
+
+#: suchar_overflow/achievements/models.py:15
 msgid "Vote Received"
 msgstr "Głos otrzymany"
 
-#: suchar_overflow/achievements/models.py:15
+#: suchar_overflow/achievements/models.py:16
 msgid "Vote Cast"
 msgstr "Głos oddany"
 
-#: suchar_overflow/achievements/models.py:16
+#: suchar_overflow/achievements/models.py:17
 msgid "Frontend"
 msgstr "Frontend"
 
-#: suchar_overflow/achievements/models.py:19
+#: suchar_overflow/achievements/models.py:20
 msgid "Suchar Count"
 msgstr "Liczba sucharów"
 
-#: suchar_overflow/achievements/models.py:20
+#: suchar_overflow/achievements/models.py:21
 msgid "Funny Vote Count"
 msgstr "Liczba śmiesznych głosów"
 
-#: suchar_overflow/achievements/models.py:21
+#: suchar_overflow/achievements/models.py:22
 msgid "Dry Vote Count"
 msgstr "Liczba suchych głosów"
 
-#: suchar_overflow/achievements/models.py:22
+#: suchar_overflow/achievements/models.py:23
 msgid "Vote Cast Count"
 msgstr "Liczba oddanych głosów"
 
-#: suchar_overflow/achievements/models.py:23
+#: suchar_overflow/achievements/models.py:24
 msgid "Total Score"
 msgstr "Wynik całkowity"
 
-#: suchar_overflow/achievements/models.py:24
+#: suchar_overflow/achievements/models.py:25
 msgid "Night Owl"
 msgstr "Nocny marek"
 
-#: suchar_overflow/achievements/models.py:25
+#: suchar_overflow/achievements/models.py:26
 msgid "Login Streak"
 msgstr "Seria logowań"
 
-#: suchar_overflow/achievements/models.py:26
+#: suchar_overflow/achievements/models.py:27
 msgid "Polarizer"
 msgstr "Polaryzator"
 
-#: suchar_overflow/achievements/models.py:27
+#: suchar_overflow/achievements/models.py:28
 msgid "Dry Master"
 msgstr "Mistrz Suszu"
 
-#: suchar_overflow/achievements/models.py:28
+#: suchar_overflow/achievements/models.py:29
+msgid "Edit Count"
+msgstr "Liczba edycji"
+
+#: suchar_overflow/achievements/models.py:30
 msgid "Frontend Event"
 msgstr "Zdarzenie frontendu"
 
-#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/achievements/models.py:33
 #: suchar_overflow/achievements/tests/test_views.py:97
 msgid "Common"
 msgstr "Pospolite"
 
-#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/achievements/models.py:34
 msgid "Bronze"
 msgstr "Brąz"
 
-#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/achievements/models.py:35
 msgid "Silver"
 msgstr "Srebro"
 
-#: suchar_overflow/achievements/models.py:34
+#: suchar_overflow/achievements/models.py:36
 msgid "Gold"
 msgstr "Złoto"
 
-#: suchar_overflow/achievements/models.py:35
+#: suchar_overflow/achievements/models.py:37
 msgid "Platinum"
 msgstr "Platyna"
 
-#: suchar_overflow/achievements/models.py:36
+#: suchar_overflow/achievements/models.py:38
 msgid "Diamond"
 msgstr "Diament"
 
-#: suchar_overflow/achievements/models.py:38
+#: suchar_overflow/achievements/models.py:40
 msgid "Name"
 msgstr "Nazwa"
 
-#: suchar_overflow/achievements/models.py:39
+#: suchar_overflow/achievements/models.py:41
 msgid "Slug"
 msgstr "Slug"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Description"
 msgstr "Opis"
 
-#: suchar_overflow/achievements/models.py:43
+#: suchar_overflow/achievements/models.py:45
 msgid "Icon Content"
 msgstr "Zawartość ikony"
 
-#: suchar_overflow/achievements/models.py:43
+#: suchar_overflow/achievements/models.py:45
 msgid "Raw SVG XML"
 msgstr "Surowy kod XML SVG"
 
-#: suchar_overflow/achievements/models.py:47
+#: suchar_overflow/achievements/models.py:49
 msgid "Category"
 msgstr "Kategoria"
 
-#: suchar_overflow/achievements/models.py:53
+#: suchar_overflow/achievements/models.py:55
 msgid "Event Type"
 msgstr "Typ wydarzenia"
 
-#: suchar_overflow/achievements/models.py:59
+#: suchar_overflow/achievements/models.py:61
 msgid "Metric"
 msgstr "Metryka"
 
-#: suchar_overflow/achievements/models.py:64
+#: suchar_overflow/achievements/models.py:66
 msgid "Threshold"
 msgstr "Próg"
 
-#: suchar_overflow/achievements/models.py:68
+#: suchar_overflow/achievements/models.py:70
 msgid "Theme"
 msgstr "Motyw"
 
-#: suchar_overflow/achievements/models.py:71
+#: suchar_overflow/achievements/models.py:73
 msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
 msgstr ""
 "Np. „Boże Narodzenie”, „Programowanie”. Pozostaw puste, aby ustawić ogólne."
 
-#: suchar_overflow/achievements/models.py:74
+#: suchar_overflow/achievements/models.py:76
 msgid "Tier"
 msgstr "Poziom"
 
-#: suchar_overflow/achievements/models.py:77
+#: suchar_overflow/achievements/models.py:79
 msgid "Difficulty/Rarity tier of the achievement"
 msgstr "Poziom trudności/rzadkości osiągnięcia"
 
-#: suchar_overflow/achievements/models.py:80
+#: suchar_overflow/achievements/models.py:82
 msgid "Secret Achievement"
 msgstr "Sekretne osiągnięcie"
 
-#: suchar_overflow/achievements/models.py:82
+#: suchar_overflow/achievements/models.py:84
 msgid "If checked, name and description are hidden until unlocked."
 msgstr "Jeśli zaznaczone, nazwa i opis są ukryte do momentu odblokowania."
 
-#: suchar_overflow/achievements/models.py:91
+#: suchar_overflow/achievements/models.py:93
 msgid "Achievement"
 msgstr "Osiągnięcie"
 
-#: suchar_overflow/achievements/models.py:110
+#: suchar_overflow/achievements/models.py:112
 msgid "Seen by user"
 msgstr "Widziane przez użytkownika"
 
-#: suchar_overflow/achievements/models.py:113
+#: suchar_overflow/achievements/models.py:115
 msgid "User Achievement"
 msgstr "Osiągnięcie użytkownika"
 
-#: suchar_overflow/achievements/models.py:114
+#: suchar_overflow/achievements/models.py:116
 msgid "User Achievements"
 msgstr "Osiągnięcia użytkownika"
 
-#: suchar_overflow/achievements/models.py:138
+#: suchar_overflow/achievements/models.py:140
 msgid "Job ID"
 msgstr "ID zadania"
 
-#: suchar_overflow/achievements/models.py:139
+#: suchar_overflow/achievements/models.py:141
 msgid "Ran At"
 msgstr "Data uruchomienia"
 
-#: suchar_overflow/achievements/models.py:143
+#: suchar_overflow/achievements/models.py:145
 msgid "Scheduler Run"
 msgstr "Uruchomienie harmonogramu"
 
-#: suchar_overflow/achievements/models.py:144
+#: suchar_overflow/achievements/models.py:146
 msgid "Scheduler Runs"
 msgstr "Uruchomienia harmonogramu"
 
@@ -515,8 +523,22 @@ msgstr ""
 "„suchar” i żadnego „śmieszne” w ciągu godziny od publikacji. Nigdy nie "
 "zdejmowane — frontend używa tego do nakładki craquelure."
 
+#: suchar_overflow/suchary/models.py:39
+msgid "Edit count"
+msgstr "Liczba edycji"
+
+#: suchar_overflow/suchary/models.py:42
+msgid ""
+"Incremented on every successful save from the edit view. Drives the "
+"'Recydywa' achievement (5 edits of one suchar). Never decremented — the "
+"engine only awards."
+msgstr ""
+"Zwiększana przy każdym udanym zapisie z widoku edycji. Napędza osiągnięcie "
+"„Recydywa” (5 edycji jednego suchara). Nigdy nie zmniejszana — silnik tylko "
+"przyznaje."
+
 #: suchar_overflow/suchary/tests/test_views.py:50
-#: suchar_overflow/suchary/views.py:158
+#: suchar_overflow/suchary/views.py:160
 msgid "Your suchar has been posted."
 msgstr "Twój suchar został opublikowany."
 
@@ -527,7 +549,7 @@ msgid "You don't have permission to do that."
 msgstr "Nie masz uprawnień, aby to zrobić."
 
 #: suchar_overflow/suchary/tests/test_views_extra.py:278
-#: suchar_overflow/suchary/views.py:229
+#: suchar_overflow/suchary/views.py:243
 msgid "Your suchar has been updated."
 msgstr "Twój suchar został zaktualizowany."
 

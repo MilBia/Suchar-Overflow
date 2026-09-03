@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 15:13+0000\n"
+"POT-Creation-Date: 2026-09-03 16:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -227,7 +227,7 @@ msgid "Your suchar just landed its first funny vote."
 msgstr ""
 
 #: suchar_overflow/achievements/apps.py:26
-#: suchar_overflow/achievements/models.py:92
+#: suchar_overflow/achievements/models.py:94
 #: suchar_overflow/templates/base.html:164
 #: suchar_overflow/templates/users/user_detail.html:89
 msgid "Achievements"
@@ -250,171 +250,179 @@ msgid "Suchar Posted"
 msgstr "Suchar Posted"
 
 #: suchar_overflow/achievements/models.py:14
+msgid "Suchar Edited"
+msgstr "Suchar Edited"
+
+#: suchar_overflow/achievements/models.py:15
 msgid "Vote Received"
 msgstr "Vote Received"
 
-#: suchar_overflow/achievements/models.py:15
+#: suchar_overflow/achievements/models.py:16
 msgid "Vote Cast"
 msgstr "Vote Cast"
 
-#: suchar_overflow/achievements/models.py:16
+#: suchar_overflow/achievements/models.py:17
 msgid "Frontend"
 msgstr "Frontend"
 
-#: suchar_overflow/achievements/models.py:19
+#: suchar_overflow/achievements/models.py:20
 msgid "Suchar Count"
 msgstr "Suchar Count"
 
-#: suchar_overflow/achievements/models.py:20
+#: suchar_overflow/achievements/models.py:21
 msgid "Funny Vote Count"
 msgstr "Funny Vote Count"
 
-#: suchar_overflow/achievements/models.py:21
+#: suchar_overflow/achievements/models.py:22
 msgid "Dry Vote Count"
 msgstr "Dry Vote Count"
 
-#: suchar_overflow/achievements/models.py:22
+#: suchar_overflow/achievements/models.py:23
 msgid "Vote Cast Count"
 msgstr "Vote Cast Count"
 
-#: suchar_overflow/achievements/models.py:23
+#: suchar_overflow/achievements/models.py:24
 msgid "Total Score"
 msgstr "Total Score"
 
-#: suchar_overflow/achievements/models.py:24
+#: suchar_overflow/achievements/models.py:25
 msgid "Night Owl"
 msgstr "Night Owl"
 
-#: suchar_overflow/achievements/models.py:25
+#: suchar_overflow/achievements/models.py:26
 msgid "Login Streak"
 msgstr "Login Streak"
 
-#: suchar_overflow/achievements/models.py:26
+#: suchar_overflow/achievements/models.py:27
 msgid "Polarizer"
 msgstr "Polarizer"
 
-#: suchar_overflow/achievements/models.py:27
+#: suchar_overflow/achievements/models.py:28
 msgid "Dry Master"
 msgstr "Dry Master"
 
-#: suchar_overflow/achievements/models.py:28
+#: suchar_overflow/achievements/models.py:29
+msgid "Edit Count"
+msgstr "Edit Count"
+
+#: suchar_overflow/achievements/models.py:30
 msgid "Frontend Event"
 msgstr "Frontend Event"
 
-#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/achievements/models.py:33
 #: suchar_overflow/achievements/tests/test_views.py:97
 msgid "Common"
 msgstr "Common"
 
-#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/achievements/models.py:34
 msgid "Bronze"
 msgstr "Bronze"
 
-#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/achievements/models.py:35
 msgid "Silver"
 msgstr "Silver"
 
-#: suchar_overflow/achievements/models.py:34
+#: suchar_overflow/achievements/models.py:36
 msgid "Gold"
 msgstr "Gold"
 
-#: suchar_overflow/achievements/models.py:35
+#: suchar_overflow/achievements/models.py:37
 msgid "Platinum"
 msgstr "Platinum"
 
-#: suchar_overflow/achievements/models.py:36
+#: suchar_overflow/achievements/models.py:38
 msgid "Diamond"
 msgstr "Diamond"
 
-#: suchar_overflow/achievements/models.py:38
+#: suchar_overflow/achievements/models.py:40
 msgid "Name"
 msgstr "Name"
 
-#: suchar_overflow/achievements/models.py:39
+#: suchar_overflow/achievements/models.py:41
 msgid "Slug"
 msgstr "Slug"
 
-#: suchar_overflow/achievements/models.py:40
+#: suchar_overflow/achievements/models.py:42
 msgid "Description"
 msgstr "Description"
 
-#: suchar_overflow/achievements/models.py:43
+#: suchar_overflow/achievements/models.py:45
 msgid "Icon Content"
 msgstr "Icon Content"
 
-#: suchar_overflow/achievements/models.py:43
+#: suchar_overflow/achievements/models.py:45
 msgid "Raw SVG XML"
 msgstr "Raw SVG XML"
 
-#: suchar_overflow/achievements/models.py:47
+#: suchar_overflow/achievements/models.py:49
 msgid "Category"
 msgstr "Category"
 
-#: suchar_overflow/achievements/models.py:53
+#: suchar_overflow/achievements/models.py:55
 msgid "Event Type"
 msgstr "Event Type"
 
-#: suchar_overflow/achievements/models.py:59
+#: suchar_overflow/achievements/models.py:61
 msgid "Metric"
 msgstr "Metric"
 
-#: suchar_overflow/achievements/models.py:64
+#: suchar_overflow/achievements/models.py:66
 msgid "Threshold"
 msgstr "Threshold"
 
-#: suchar_overflow/achievements/models.py:68
+#: suchar_overflow/achievements/models.py:70
 msgid "Theme"
 msgstr "Theme"
 
-#: suchar_overflow/achievements/models.py:71
+#: suchar_overflow/achievements/models.py:73
 msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
 msgstr "E.g. 'Christmas', 'Programming'. Leave blank for general."
 
-#: suchar_overflow/achievements/models.py:74
+#: suchar_overflow/achievements/models.py:76
 msgid "Tier"
 msgstr "Tier"
 
-#: suchar_overflow/achievements/models.py:77
+#: suchar_overflow/achievements/models.py:79
 msgid "Difficulty/Rarity tier of the achievement"
 msgstr "Difficulty/Rarity tier of the achievement"
 
-#: suchar_overflow/achievements/models.py:80
+#: suchar_overflow/achievements/models.py:82
 msgid "Secret Achievement"
 msgstr "Secret Achievement"
 
-#: suchar_overflow/achievements/models.py:82
+#: suchar_overflow/achievements/models.py:84
 msgid "If checked, name and description are hidden until unlocked."
 msgstr "If checked, name and description are hidden until unlocked."
 
-#: suchar_overflow/achievements/models.py:91
+#: suchar_overflow/achievements/models.py:93
 msgid "Achievement"
 msgstr "Achievement"
 
-#: suchar_overflow/achievements/models.py:110
+#: suchar_overflow/achievements/models.py:112
 msgid "Seen by user"
 msgstr "Seen by user"
 
-#: suchar_overflow/achievements/models.py:113
+#: suchar_overflow/achievements/models.py:115
 msgid "User Achievement"
 msgstr "User Achievement"
 
-#: suchar_overflow/achievements/models.py:114
+#: suchar_overflow/achievements/models.py:116
 msgid "User Achievements"
 msgstr "User Achievements"
 
-#: suchar_overflow/achievements/models.py:138
+#: suchar_overflow/achievements/models.py:140
 msgid "Job ID"
 msgstr "Job ID"
 
-#: suchar_overflow/achievements/models.py:139
+#: suchar_overflow/achievements/models.py:141
 msgid "Ran At"
 msgstr "Ran At"
 
-#: suchar_overflow/achievements/models.py:143
+#: suchar_overflow/achievements/models.py:145
 msgid "Scheduler Run"
 msgstr "Scheduler Run"
 
-#: suchar_overflow/achievements/models.py:144
+#: suchar_overflow/achievements/models.py:146
 msgid "Scheduler Runs"
 msgstr "Scheduler Runs"
 
@@ -518,8 +526,22 @@ msgstr ""
 "funny votes within an hour of publication. Never cleared — the frontend uses "
 "it for the craquelure overlay."
 
+#: suchar_overflow/suchary/models.py:39
+msgid "Edit count"
+msgstr "Edit count"
+
+#: suchar_overflow/suchary/models.py:42
+msgid ""
+"Incremented on every successful save from the edit view. Drives the "
+"'Recydywa' achievement (5 edits of one suchar). Never decremented — the "
+"engine only awards."
+msgstr ""
+"Incremented on every successful save from the edit view. Drives the "
+"'Recydywa' achievement (5 edits of one suchar). Never decremented — the "
+"engine only awards."
+
 #: suchar_overflow/suchary/tests/test_views.py:50
-#: suchar_overflow/suchary/views.py:158
+#: suchar_overflow/suchary/views.py:160
 msgid "Your suchar has been posted."
 msgstr "Your suchar has been posted."
 
@@ -530,7 +552,7 @@ msgid "You don't have permission to do that."
 msgstr "You don't have permission to do that."
 
 #: suchar_overflow/suchary/tests/test_views_extra.py:278
-#: suchar_overflow/suchary/views.py:229
+#: suchar_overflow/suchary/views.py:243
 msgid "Your suchar has been updated."
 msgstr "Your suchar has been updated."
 
