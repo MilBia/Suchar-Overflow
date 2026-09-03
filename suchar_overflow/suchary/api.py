@@ -35,6 +35,9 @@ class VoteResponse(Schema):
     dry_count: int
     user_is_funny: bool
     user_is_dry: bool
+    # Latched by the achievement engine (#294); lets the frontend drop the
+    # craquelure overlay on the card in place, without a reload (#295).
+    is_overdried: bool
 
 
 class TagSchema(Schema):
@@ -138,4 +141,7 @@ def vote_suchar(
         # If deleted, object still has state but pk might be irrelevant
         else False,
         "user_is_dry": vote.is_dry if vote.pk else False,
+        # The vote signals mutate this same `suchar` instance in place when
+        # they latch it, so this reflects the post-vote state (#294).
+        "is_overdried": suchar.is_overdried,
     }

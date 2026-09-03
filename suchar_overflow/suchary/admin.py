@@ -36,7 +36,14 @@ class VoteInline(admin.TabularInline):
 
 @admin.register(Suchar)
 class SucharAdmin(admin.ModelAdmin):
-    list_display = ["id", "short_text_display", "author", "created_at", "total_votes"]
+    list_display = [
+        "id",
+        "short_text_display",
+        "author",
+        "created_at",
+        "total_votes",
+        "is_overdried",
+    ]
     # Pins the changelist join explicitly. Django 6.1's ChangeList would derive
     # the same set from the FKs in list_display on its own
     # (ChangeList.get_select_related_fields), but ONLY while list_select_related

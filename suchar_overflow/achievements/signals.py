@@ -50,14 +50,17 @@ def _maybe_mark_overdried(suchar: Suchar) -> None:
     a single funny one. This runs on every vote event; it only ever *sets*
     the flag, matching the engine's award-only contract.
 
-    ``Vote`` has no timestamp, but every vote necessarily lands at or after
-    ``published_at`` and this only counts while ``now`` is still inside the
-    window, so all current votes are in-window by construction — no per-vote
-    time filter is needed.
+    ``Vote`` has no timestamp, but this only runs while ``now`` is inside
+    ``[published_at, published_at + OVERDRIED_WINDOW]``, so every current
+    vote is in-window by construction — no per-vote time filter is needed.
+    The lower bound matters because ``vote_suchar`` does not reject votes on
+    a not-yet-published suchar; without it a scheduled suchar could latch
+    before it goes live, over an unbounded window.
     """
     if suchar.is_overdried:
         return
-    if timezone.now() > suchar.published_at + OVERDRIED_WINDOW:
+    now = timezone.now()
+    if not suchar.published_at <= now <= suchar.published_at + OVERDRIED_WINDOW:
         return
     counts = suchar.votes.aggregate(
         dry=Count("pk", filter=Q(is_dry=True)),
@@ -107,7 +110,12 @@ def check_vote_achievements(
         # so on the first vote this already sees the final state (#247).
         # instance.suchar.author resolves without a query — the endpoint
         # loads the suchar with select_related("author") (#203).
-        _maybe_mark_overdried(instance.suchar)
+        if instance.is_dry:
+            # A brand-new funny vote can never make a suchar "overdried"
+            # (dry count unchanged, funny count now >= 1), so skip the
+            # aggregate for it. The toggle path stays unconditional — pulling
+            # a funny vote there can latch it.
+            _maybe_mark_overdried(instance.suchar)
         _award_vote_achievements(instance.user, instance.suchar.author, instance)
 
 

@@ -806,12 +806,30 @@ def test_vote_endpoint_latches_overdried_and_awards_dry_master(
     )
 
     assert response.status_code == HTTPStatus.OK
+    assert response.json()["is_overdried"] is True
     suchar.refresh_from_db()
     assert suchar.is_overdried is True
     assert UserAchievement.objects.filter(
         user=author,
         achievement__slug="dry-master",
     ).exists()
+
+
+@pytest.mark.django_db
+def test_vote_response_is_overdried_false_for_a_normal_vote(client: Client) -> None:
+    author = make_user("nd_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    voter = make_user("nd_voter")
+
+    client.force_login(voter)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json()["is_overdried"] is False
 
 
 @pytest.mark.django_db
@@ -843,6 +861,7 @@ def test_vote_endpoint_removing_last_funny_latches_overdried(
     )
 
     assert response.status_code == HTTPStatus.OK
+    assert response.json()["is_overdried"] is True
     assert not Vote.objects.filter(user=funny_voter, suchar=suchar).exists()
     suchar.refresh_from_db()
     assert suchar.is_overdried is True

@@ -145,6 +145,28 @@ def test_nine_dry_votes_do_not_latch() -> None:
 
 @pytest.mark.django_db
 @pytest.mark.usefixtures("dry_master_achievement")
+def test_votes_before_publication_do_not_latch() -> None:
+    """A scheduled suchar must not latch before it goes live — the vote
+    endpoint does not block votes on an unpublished suchar, so the window
+    is bounded below by ``published_at`` (#294 review 2.1)."""
+    author = make_user("author")
+    suchar = Suchar.objects.create(text="joke", author=author)
+    future = timezone.now() + datetime.timedelta(hours=2)
+    Suchar.objects.filter(pk=suchar.pk).update(published_at=future)
+    suchar.refresh_from_db()
+
+    _cast_dry_votes(suchar, DRY_THRESHOLD)
+
+    suchar.refresh_from_db()
+    assert suchar.is_overdried is False
+    assert not UserAchievement.objects.filter(
+        user=author,
+        achievement__slug=DRY_SLUG,
+    ).exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.usefixtures("dry_master_achievement")
 def test_votes_after_the_window_do_not_latch() -> None:
     author = make_user("author")
     suchar = Suchar.objects.create(text="joke", author=author)
