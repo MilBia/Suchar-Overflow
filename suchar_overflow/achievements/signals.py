@@ -14,6 +14,7 @@ from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
+from suchar_overflow.suchary.signals import suchar_edited
 from suchar_overflow.suchary.signals import vote_changed
 
 if TYPE_CHECKING:
@@ -135,6 +136,23 @@ def check_vote_achievements_on_toggle(
     # (#294).
     _maybe_mark_overdried(suchar)
     _award_vote_achievements(voter, author)
+
+
+@receiver(suchar_edited)
+def check_suchar_edit_achievements(
+    sender: type[Suchar],  # noqa: ARG001
+    author: User,
+    suchar: Suchar,
+    **kwargs: object,  # noqa: ARG001
+) -> None:
+    # SucharUpdateView has already persisted the edit_count bump before
+    # sending this, so EditCountRule.compute_value sees the final value.
+    # Awarding is idempotent (the engine skips owned achievements).
+    AchievementEngine.check_achievements(
+        author,
+        Achievement.EventType.SUCHAR_EDITED,
+        suchar,
+    )
 
 
 @receiver(post_save, sender=UserAchievement)

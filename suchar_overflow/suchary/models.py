@@ -35,6 +35,15 @@ class Suchar(models.Model):
             "cleared — the frontend uses it for the craquelure overlay.",
         ),
     )
+    edit_count = models.PositiveIntegerField(
+        _("Edit count"),
+        default=0,
+        help_text=_(
+            "Incremented on every successful save from the edit view. Drives "
+            "the 'Recydywa' achievement (5 edits of one suchar). Never "
+            "decremented — the engine only awards.",
+        ),
+    )
 
     def __str__(self) -> str:
         author_name = (

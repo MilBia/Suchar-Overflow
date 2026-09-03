@@ -94,7 +94,15 @@ class SucharForm(forms.ModelForm):
     def save(self, commit: bool = True) -> Suchar:  # noqa: FBT001, FBT002
         instance = super().save(commit=False)
         if commit:
-            instance.save()
+            if instance.pk:
+                # Editing: persist only the fields this form owns. A full-row
+                # UPDATE would write back a possibly-stale in-memory value for
+                # a field this form never touches — racing SucharUpdateView's
+                # atomic ``edit_count`` bump (#297) or clobbering the
+                # engine-managed ``is_overdried`` latch (#294).
+                instance.save(update_fields=["text", "published_at"])
+            else:
+                instance.save()
             self._save_tags(instance)
         else:
             _base_save_m2m = self.save_m2m

@@ -11,6 +11,7 @@ class Achievement(models.Model):
 
     class EventType(models.TextChoices):
         SUCHAR_POSTED = "SUCHAR_POSTED", _("Suchar Posted")
+        SUCHAR_EDITED = "SUCHAR_EDITED", _("Suchar Edited")
         VOTE_RECEIVED = "VOTE_RECEIVED", _("Vote Received")
         VOTE_CAST = "VOTE_CAST", _("Vote Cast")
         FRONTEND = "FRONTEND", _("Frontend")
@@ -25,6 +26,7 @@ class Achievement(models.Model):
         STREAK_LOGIN = "STREAK_LOGIN", _("Login Streak")
         POLARIZER = "POLARIZER", _("Polarizer")
         DRY_MASTER = "DRY_MASTER", _("Dry Master")
+        EDIT_COUNT = "EDIT_COUNT", _("Edit Count")
         FRONTEND_EVENT = "FRONTEND_EVENT", _("Frontend Event")
 
     class Tier(models.IntegerChoices):

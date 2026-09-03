@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator
 from django.db.models import Count
+from django.db.models import F
 from django.db.models import OuterRef
 from django.db.models import Q
 from django.db.models import Subquery
@@ -24,6 +25,7 @@ from .forms import SucharForm
 from .models import Suchar
 from .models import Tag
 from .models import Vote
+from .signals import suchar_edited
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -225,6 +227,20 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin):  # ty
                 self.template_name,
                 {"form": form},
             )
-        await sync_to_async(form.save)()
+
+        def _save_and_signal() -> None:
+            # form.save() now writes only text/published_at (see
+            # SucharForm.save), so this atomic bump can't be clobbered by a
+            # stale in-memory edit_count and concurrent edits each count once.
+            form.save()
+            Suchar.objects.filter(pk=suchar.pk).update(
+                edit_count=F("edit_count") + 1,
+            )
+            # Best-effort local value for signal receivers; the engine ignores
+            # it and re-reads edit_count from the DB anyway.
+            suchar.edit_count += 1
+            suchar_edited.send(sender=Suchar, author=suchar.author, suchar=suchar)
+
+        await sync_to_async(_save_and_signal)()
         messages.success(request, gettext("Your suchar has been updated."))
         return redirect(self.success_url)
