@@ -20,6 +20,12 @@ from .models import UserAchievement
 
 router = Router()
 
+# Exact-match allowlist for POST /frontend-event. Every client-awardable slug
+# must be listed here explicitly — an existing Achievement row is necessary but
+# not sufficient. Group-A easter eggs (umbrella #278) use the `frontend-ee-`
+# prefix by convention; each child issue adds its own concrete slug(s) to this
+# set alongside the Achievement data migration. #282 only establishes the
+# convention — no easter-egg slug exists yet.
 VALID_FRONTEND_SLUGS = frozenset(
     {
         "frontend-recenzent-totalny",

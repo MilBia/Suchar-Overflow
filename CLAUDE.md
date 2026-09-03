@@ -167,10 +167,13 @@ here, Playwright E2E for the integration path — audio, the real
   `if (typeof module !== "undefined" && module.exports) { module.exports = {...} }`.
   `module` is undefined in the browser, so it is inert there and survives `rjsmin`.
   It is **not** dead code (like `window.__hiddenAchievementsReady`) — don't strip it
-  in a JS sweep. `hidden_achievements.js` is the reference; new modules
-  (`easter_eggs.js`, #282) follow the same pattern. Don't add to or reorder any
-  `{% compress js %}` block for this; `tests/test_compressed_page_assets.py` guards
-  that the served bundle stays a valid classic script.
+  in a JS sweep. `hidden_achievements.js` is the reference; `easter_eggs.js` (#282)
+  follows the same pattern. Don't restructure a `{% compress js %}` block *to reach
+  a script from a test* — the CJS tail is what makes that unnecessary;
+  `tests/test_compressed_page_assets.py` guards that the served bundle stays a valid
+  classic script. (Adding a genuinely global module to `base.html`'s block for a
+  product reason, as #282 did with `easter_eggs.js`, is a different thing and is
+  fine — same-block scripts still concatenate to one bundle.)
 - **jsdom gotchas**: `require()` of a script registers its `DOMContentLoaded`
   listener but jsdom is already past `load`, so init never runs — test the exported
   helpers, not init. Stub `globalThis.getCsrfToken` and `globalThis.fetch` per test
@@ -178,9 +181,18 @@ here, Playwright E2E for the integration path — audio, the real
   `document.body.innerHTML` in `beforeEach`. **`vi.resetModules()` does not detach
   listeners a `setupX()` added to `document`** — they accumulate across tests in a
   file. It's harmless where the handler is idempotent (`hidden_achievements.js`'s
-  storage writes) but `easter_eggs.js`'s key-buffer / combo handlers on `document`
-  are not — a test that leaves them attached must call the `teardownRegistry` entry
-  (or the module must expose its own detach) so the next test starts clean.
+  storage writes, `easter_eggs.js`'s own `DOMContentLoaded`) but the key-buffer /
+  combo handlers a #283+ easter egg attaches to `document` are not — such a test
+  must call `window.easterEggs.teardownAll()` (the module's own detach) in
+  `afterEach` so the next test starts clean.
+- **`vi.resetModules()` also does not re-run a CJS module reached via
+  `require()`** — so a module's mutable module-level state (e.g. `easter_eggs.js`'s
+  in-memory dedupe `Set`, its audio cache) survives between tests too.
+  `easter_eggs.js` exposes `_resetForTests()` (attached only in the CJS tail,
+  never on the browser `window.easterEggs`) which clears all of it; `beforeEach`
+  in *both* `tests/js/easter_eggs.test.js` and `tests/js/hidden_achievements.test.js`
+  calls it right after the `require`. New modules with module-level mutable state
+  should follow the same pattern.
 
 ## Code style — ruff rules in force
 
@@ -304,6 +316,38 @@ production code reads it) but `tests/e2e/test_hidden_achievements.py` waits on i
 instead of `wait_for_load_state("networkidle")`, because the achievement listeners
 are only attached after an awaited `GET /achievements/frontend-owned` that the `load`
 event isn't synced with (issue #221). Don't delete it as dead code in a JS cleanup.
+
+### Easter-egg foundation (`features/easter_eggs.js`)
+
+Issue #282, umbrella #278 (group A "delight" easter eggs). This module is the
+shared groundwork; the child issues (#283+) each add one easter egg on top and
+wire nothing global themselves. It exposes `window.easterEggs` with:
+`awardFrontendAchievement(slug)` / `alreadyAwarded(slug)` / `markAwarded(slug)` /
+`award(slug)` (the session-dedupe + `POST /api/achievements/frontend-event` that
+`hidden_achievements.js` used to carry its own copy of — it now delegates here);
+`isMuted()` / `setMuted(bool)` (localStorage `ee_muted`, **default muted** — sound
+only plays after an explicit `ee_muted === "0"` opt-in); `playSound(name)`;
+`reducedJuice()` / `withJuice(fn)` (the single `prefers-reduced-motion` gate);
+`registerTeardown(key, fn)` / `teardownAll()`.
+
+- **It IS in `base.html`'s global `{% compress js %}` block**, after `project.js`
+  (deliberate — children need `window.getCsrfToken`/`window.showToast`, and being
+  global means it loads before every per-page bundle, so `hidden_achievements.js`
+  can rely on `window.easterEggs`). Same-block scripts concatenate into one output
+  file, so `BASE_JS_BUNDLES` in `tests/test_compressed_page_assets.py` stays `1`.
+- **Sound**: `rimshot.wav` / `dust.wav` in `suchar_overflow/static/audio/`,
+  regenerate with `just gen-audio` (`scripts/generate_easter_egg_audio.py`). They
+  are **original CC0** works synthesised from the stdlib alone — no external
+  encoder, so it runs anywhere, and plain 16-bit mono WAV is byte-deterministic
+  (a Vorbis/Opus re-encode is not), so a no-op run leaves `git diff` clean. Both
+  files together are ~42 kB. See `static/audio/AUDIO_CREDITS.txt`; unlike
+  `flatpickr.LICENSE.txt` there is no upstream and no drift-guard test. A classic
+  script can't resolve `{% static %}`, so `base.html` emits a small nonce'd
+  `window.EE_AUDIO` map of the hashed URLs, for authenticated users only.
+- `window.__easterEggsReady` is the same kind of init-complete signal as
+  `window.__hiddenAchievementsReady`. No child needs it as a sync point yet, so
+  `tests/js/easter_eggs.test.js` is currently its only reader (asserted there) —
+  not dead code.
 
 ### Background scheduling — APScheduler, not Django-RQ
 

@@ -145,6 +145,9 @@ ignore = [
 # AppConfig.ready() intentionally defers imports to avoid circular-import issues
 # at module load time; these inside-function imports are unavoidable in Django.
 "*/apps.py" = ["PLC0415"]
+# One-off dev build scripts (run on the host, never imported) — progress output
+# on stdout is the point.
+"scripts/*" = ["T201"]
 
 [tool.ruff.lint.isort]
 force-single-line = true

@@ -1,0 +1,20 @@
+Easter-egg sound effects
+========================
+
+rimshot.wav  — a short "ba dum tss" sting
+dust.wav     — a soft puff of settling dust
+
+Both files are original works, synthesised from scratch by the Suchar Overflow
+project with `scripts/generate_easter_egg_audio.py` (Python standard library
+only — no external encoder, no third-party samples). The output is plain 16-bit
+mono WAV and byte-deterministic, so re-running the script with unchanged
+parameters regenerates them identically.
+
+To the extent possible under law, the Suchar Overflow contributors have waived
+all copyright and related or neighbouring rights to these two audio files. They
+are released under the Creative Commons CC0 1.0 Universal Public Domain
+Dedication: https://creativecommons.org/publicdomain/zero/1.0/
+
+No attribution is required. There are no third-party audio assets in this
+directory, so — unlike the vendored JavaScript libraries — nothing here needs to
+be tracked against an upstream release.

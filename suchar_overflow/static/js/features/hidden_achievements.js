@@ -1,7 +1,9 @@
 /* Hidden frontend achievements tracker.
  * Only runs for authenticated users. Fetches already-owned slugs on init
  * and skips monitors for achievements the user already has.
- * Relies on window.getCsrfToken, defined in project.js (loaded first).
+ * Relies on window.easterEggs (features/easter_eggs.js, #282) for the shared
+ * CSRF POST and the sessionStorage dedupe — base.html loads it globally,
+ * before this per-page script.
  */
 
 async function getOwnedSlugs() {
@@ -14,30 +16,19 @@ async function getOwnedSlugs() {
     }
 }
 
-async function awardAchievement(slug) {
-    try {
-        await fetch('/api/achievements/frontend-event', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCsrfToken(),
-            },
-            body: JSON.stringify({ event_slug: slug }),
-        });
-    } catch {
-        // Silent fail — user will get another chance next session.
-    }
-}
-
-// Guard against double-award within the same page session (e.g. rapid threshold hits).
+// Guard against double-award within the same page session (e.g. rapid threshold
+// hits). The dedupe marker + the frontend-event POST are the shared helpers from
+// features/easter_eggs.js (#282); only the teardown-registry call is specific to
+// this file's setupX() pattern.
 function award(slug, teardownRegistry) {
-    if (sessionStorage.getItem('awarded_' + slug)) return;
-    sessionStorage.setItem('awarded_' + slug, '1');
+    const ee = window.easterEggs;
+    if (ee.alreadyAwarded(slug)) return;
+    ee.markAwarded(slug);
 
     const teardown = teardownRegistry[slug];
     if (teardown) teardown();
 
-    awardAchievement(slug);
+    ee.awardFrontendAchievement(slug);
 }
 
 // ── Achievement 1: Recenzent Totalny ────────────────────────────────────────
@@ -237,7 +228,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         award,
-        awardAchievement,
         getOwnedSlugs,
         setupRecenzentTotalny,
         setupStluczonaMysz,

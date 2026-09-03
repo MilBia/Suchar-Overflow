@@ -4,15 +4,24 @@
  *
  * The file is a classic browser script; its guarded CommonJS tail exposes the
  * internal helpers to Vitest (inert in the browser — see the file and
- * CLAUDE.md "JS tests (Vitest)"). These tests are the regression net for the
- * `sessionStorage`/`localStorage` dedupe behaviour that #282 will later extract
- * into a shared helper.
+ * CLAUDE.md "JS tests (Vitest)").
+ *
+ * Since #282 the `sessionStorage` dedupe marker and the frontend-event POST
+ * live in features/easter_eggs.js and reach this file as `window.easterEggs`
+ * (base.html loads it globally, first). `beforeEach` wires the *real* module in
+ * so these tests still exercise the actual dedupe behaviour end to end;
+ * easter_eggs' own edge cases (mute default, reduced-motion gate, teardown) are
+ * covered in tests/js/easter_eggs.test.js.
  */
 const path = require("node:path");
 
 const MODULE_PATH = path.resolve(
   __dirname,
   "../../suchar_overflow/static/js/features/hidden_achievements.js",
+);
+const EASTER_EGGS_PATH = path.resolve(
+  __dirname,
+  "../../suchar_overflow/static/js/features/easter_eggs.js",
 );
 
 let hiddenAchievements;
@@ -33,9 +42,17 @@ beforeEach(() => {
   window.history.pushState({}, "", "/");
   teardownRegistry = {};
 
-  // Free globals the script reaches for without declaring them.
+  // Free globals the scripts reach for without declaring them.
   globalThis.getCsrfToken = vi.fn(() => "test-token");
   globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => [] }));
+
+  // The shared helpers hidden_achievements.js now delegates to via
+  // `window.easterEggs` (#282). Requiring the real module sets that global as a
+  // side effect, so `award()`'s dedupe + POST are exercised for real.
+  // `_resetForTests()` clears its module-level state, which vi.resetModules()
+  // does not (a required CJS module is not re-run).
+  require(EASTER_EGGS_PATH);
+  window.easterEggs._resetForTests();
 
   hiddenAchievements = require(MODULE_PATH);
 });
