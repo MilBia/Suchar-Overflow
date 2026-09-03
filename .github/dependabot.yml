@@ -65,3 +65,15 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
+
+  # Dev-only JS test runner (Vitest + jsdom). Not a runtime/vendored dependency —
+  # see CLAUDE.md "JS tests (Vitest)". Kept on Dependabot so it doesn't become
+  # the same no-bot blind spot as the hand-vendored libs (issue #177).
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    groups:
+      js-dev:
+        patterns:
+          - '*'

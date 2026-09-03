@@ -32,6 +32,27 @@ jobs:
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1
 
+  # Vitest + jsdom unit tests for static/js/ logic. Runs on the host with Node,
+  # not in the Django image — the runner has no Django/DB dependency. Separate
+  # job so it runs in parallel with `pytest` and never bloats the backend image.
+  js-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install JS dev dependencies
+        run: npm ci
+
+      - name: Run Vitest
+        run: npm test
+
   # With no caching at all the entire ci process takes 3m to complete!
   pytest:
     runs-on: ubuntu-latest

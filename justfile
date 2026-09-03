@@ -54,6 +54,13 @@ test-all:
     @just test
     @just test-e2e
 
+# test-js: Run the Vitest + jsdom unit tests for static/js/ logic.
+# Runs on the host, NOT in a container — like `pre-commit`, this tool has no
+# Django/DB dependency and lives outside the Docker image. Needs Node + a one-off
+# `npm ci`. See CLAUDE.md "JS tests (Vitest)".
+test-js *args:
+    @npx vitest run {{args}}
+
 # coverage: Run unit tests under coverage and print the report — same gate CI enforces (fail_under in pyproject.toml).
 coverage *args:
     @docker compose run --rm django coverage run -m pytest -m "not e2e" {{args}}
