@@ -203,6 +203,25 @@ class PolarizerRule(AchievementRule):
         )
 
 
+class DryMasterRule(AchievementRule):
+    metric = Achievement.Metric.DRY_MASTER
+
+    @classmethod
+    def compute_value(
+        cls,
+        user: User,
+        instance: Suchar | Vote | None = None,  # noqa: ARG003
+    ) -> int | None:
+        # The time-sensitive test — >=10 dry votes and 0 funny within an hour
+        # of publication — runs once, at vote time, in
+        # ``signals._maybe_mark_overdried``, which latches
+        # ``Suchar.is_overdried``. Here the metric is simply how many of the
+        # user's suchary carry that latch: threshold-independent, so a future
+        # tiered series only needs extra ``Achievement`` rows (#294).
+        count = Suchar.objects.filter(author=user, is_overdried=True).count()
+        return count or None
+
+
 class StreakLoginRule(AchievementRule):
     metric = Achievement.Metric.STREAK_LOGIN
 

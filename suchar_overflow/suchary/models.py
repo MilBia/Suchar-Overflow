@@ -26,6 +26,15 @@ class Suchar(models.Model):
         db_index=True,
     )
     tags = models.ManyToManyField(Tag, related_name="suchary", blank=True)
+    is_overdried = models.BooleanField(
+        _("Overdried"),
+        default=False,
+        help_text=_(
+            "Latched by the achievement engine when the suchar drew >=10 dry "
+            "votes and no funny votes within an hour of publication. Never "
+            "cleared — the frontend uses it for the craquelure overlay.",
+        ),
+    )
 
     def __str__(self) -> str:
         author_name = (

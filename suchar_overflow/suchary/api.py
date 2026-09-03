@@ -94,7 +94,12 @@ def vote_suchar(
         # achievements on the final state now — this also lets removing an
         # opposing vote award a threshold it newly crosses, e.g. deleting a
         # dry vote raises the author's SUM_SCORE (#247).
-        vote_changed.send(sender=Vote, voter=user, author=suchar.author)
+        vote_changed.send(
+            sender=Vote,
+            voter=user,
+            author=suchar.author,
+            suchar=suchar,
+        )
 
     # Calculate counts using aggregation. `community_funny` deliberately
     # excludes the author's own vote — it drives the first-funny-vote toast

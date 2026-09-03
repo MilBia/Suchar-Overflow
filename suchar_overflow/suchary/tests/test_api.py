@@ -51,6 +51,30 @@ def _make_vote_achievement(
     )
 
 
+@pytest.fixture
+def dry_master_achievement() -> Achievement:
+    """The "Mistrz Suszu" row (#294).
+
+    Migration 0017 seeds it, but a ``transaction=True`` test elsewhere in the
+    suite can flush migration-seeded rows under ``--reuse-db`` (see the
+    reuse-db flush note in CLAUDE.md), so tests that assert on it recreate it
+    explicitly rather than trusting the baseline.
+    """
+    achievement, _ = Achievement.objects.update_or_create(
+        slug="dry-master",
+        defaults={
+            "name": "Mistrz Suszu",
+            "description": "desc",
+            "icon_content": "<svg/>",
+            "category": Achievement.Category.LIFETIME,
+            "event_type": Achievement.EventType.VOTE_RECEIVED,
+            "metric": Achievement.Metric.DRY_MASTER,
+            "threshold": 1,
+        },
+    )
+    return achievement
+
+
 # ---------------------------------------------------------------------------
 # list_tags
 # ---------------------------------------------------------------------------
@@ -749,3 +773,80 @@ def test_vote_loads_author_with_the_suchar(client: Client) -> None:
         "the author was re-fetched in a standalone query despite select_related "
         f"({standalone_author_lookups})"
     )
+
+
+# ---------------------------------------------------------------------------
+# vote_suchar — "Mistrz Suszu" / overdried latch (issue #294)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+@pytest.mark.usefixtures("dry_master_achievement")
+def test_vote_endpoint_latches_overdried_and_awards_dry_master(
+    client: Client,
+) -> None:
+    """The 10th dry vote in-window, cast through the endpoint, latches the
+    suchar and awards the migration-seeded "dry-master" achievement."""
+    author = make_user("dm_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    for i in range(9):
+        Vote.objects.create(
+            suchar=suchar,
+            user=make_user(f"dm_dry_{i}"),
+            is_dry=True,
+        )
+    assert not suchar.is_overdried
+
+    last_voter = make_user("dm_last")
+    client.force_login(last_voter)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    suchar.refresh_from_db()
+    assert suchar.is_overdried is True
+    assert UserAchievement.objects.filter(
+        user=author,
+        achievement__slug="dry-master",
+    ).exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.usefixtures("dry_master_achievement")
+def test_vote_endpoint_removing_last_funny_latches_overdried(
+    client: Client,
+) -> None:
+    """Pulling the only funny vote through the endpoint emits vote_changed
+    with the suchar, so the overdried latch can still fire in-window (#294)."""
+    author = make_user("dm2_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    # Funny vote first, so the latch stays blocked while the dry votes land.
+    funny_voter = make_user("dm2_funny")
+    Vote.objects.create(suchar=suchar, user=funny_voter, is_funny=True)
+    for i in range(10):
+        Vote.objects.create(
+            suchar=suchar,
+            user=make_user(f"dm2_dry_{i}"),
+            is_dry=True,
+        )
+    suchar.refresh_from_db()
+    assert suchar.is_overdried is False
+
+    client.force_login(funny_voter)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "funny"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert not Vote.objects.filter(user=funny_voter, suchar=suchar).exists()
+    suchar.refresh_from_db()
+    assert suchar.is_overdried is True
+    assert UserAchievement.objects.filter(
+        user=author,
+        achievement__slug="dry-master",
+    ).exists()

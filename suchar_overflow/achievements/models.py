@@ -24,6 +24,7 @@ class Achievement(models.Model):
         NIGHT_OWL = "NIGHT_OWL", _("Night Owl")
         STREAK_LOGIN = "STREAK_LOGIN", _("Login Streak")
         POLARIZER = "POLARIZER", _("Polarizer")
+        DRY_MASTER = "DRY_MASTER", _("Dry Master")
         FRONTEND_EVENT = "FRONTEND_EVENT", _("Frontend Event")
 
     class Tier(models.IntegerChoices):

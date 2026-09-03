@@ -1,8 +1,12 @@
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
+from django.db.models import Count
+from django.db.models import Q
 from django.db.models.signals import post_delete
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 from suchar_overflow.achievements.cache import invalidate_bell_cache
 from suchar_overflow.achievements.engine import AchievementEngine
@@ -30,6 +34,41 @@ def check_suchar_achievements(
             Achievement.EventType.SUCHAR_POSTED,
             instance,
         )
+
+
+#: How long after publication a suchar can still turn "overdried" (#294).
+OVERDRIED_WINDOW = timedelta(hours=1)
+#: Dry votes needed within that window, with zero funny votes, to latch it.
+OVERDRIED_DRY_MIN = 10
+
+
+def _maybe_mark_overdried(suchar: Suchar) -> None:
+    """Latch ``Suchar.is_overdried`` for the "Mistrz Suszu" achievement (#294).
+
+    A suchar is "overdried" when, within :data:`OVERDRIED_WINDOW` of its
+    publication, it drew at least :data:`OVERDRIED_DRY_MIN` dry votes and not
+    a single funny one. This runs on every vote event; it only ever *sets*
+    the flag, matching the engine's award-only contract.
+
+    ``Vote`` has no timestamp, but every vote necessarily lands at or after
+    ``published_at`` and this only counts while ``now`` is still inside the
+    window, so all current votes are in-window by construction — no per-vote
+    time filter is needed.
+    """
+    if suchar.is_overdried:
+        return
+    if timezone.now() > suchar.published_at + OVERDRIED_WINDOW:
+        return
+    counts = suchar.votes.aggregate(
+        dry=Count("pk", filter=Q(is_dry=True)),
+        funny=Count("pk", filter=Q(is_funny=True)),
+    )
+    if (counts["dry"] or 0) >= OVERDRIED_DRY_MIN and not counts["funny"]:
+        # .update() rather than .save(): a targeted single write, and no
+        # redundant Suchar post_save (the SUCHAR_POSTED check only acts on
+        # created=True anyway).
+        Suchar.objects.filter(pk=suchar.pk).update(is_overdried=True)
+        suchar.is_overdried = True
 
 
 def _award_vote_achievements(
@@ -68,6 +107,7 @@ def check_vote_achievements(
         # so on the first vote this already sees the final state (#247).
         # instance.suchar.author resolves without a query — the endpoint
         # loads the suchar with select_related("author") (#203).
+        _maybe_mark_overdried(instance.suchar)
         _award_vote_achievements(instance.user, instance.suchar.author, instance)
 
 
@@ -76,12 +116,16 @@ def check_vote_achievements_on_toggle(
     sender: type[Vote],  # noqa: ARG001
     voter: User,
     author: User,
+    suchar: Suchar,
     **kwargs: object,  # noqa: ARG001
 ) -> None:
     # vote_changed fires from the vote endpoint after a toggle or removal on
     # an existing row, where post_save(created=True) never runs. Awarding is
     # idempotent (the engine skips owned achievements); it can also award a
-    # threshold newly crossed by removing an opposing vote (#247).
+    # threshold newly crossed by removing an opposing vote (#247), including
+    # the "overdried" latch when the last funny vote is pulled in-window
+    # (#294).
+    _maybe_mark_overdried(suchar)
     _award_vote_achievements(voter, author)
 
 
