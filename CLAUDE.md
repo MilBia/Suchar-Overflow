@@ -356,8 +356,14 @@ event isn't synced with (issue #221). Don't delete it as dead code in a JS clean
 ### Easter-egg foundation (`features/easter_eggs.js`)
 
 Issue #282, umbrella #278 (group A "delight" easter eggs). This module is the
-shared groundwork; the child issues (#283+) each add one easter egg on top and
-wire nothing global themselves. It exposes `window.easterEggs` with:
+shared groundwork; the child issues (#283+) each add one easter egg on top.
+"Wire nothing global themselves" means a child adds **no new helper to
+`window.easterEggs`** and no new global data blob — it consumes the surface
+below. A child whose *trigger* must listen on every page (e.g. `konami.js`, #283)
+still gets its own `<script>` in `base.html`'s global `{% compress js %}` block,
+right after `easter_eggs.js`; that is expected, not a violation (same-block
+scripts concatenate to one bundle, so `BASE_JS_BUNDLES` stays `1`). It exposes
+`window.easterEggs` with:
 `awardFrontendAchievement(slug)` / `alreadyAwarded(slug)` / `markAwarded(slug)` /
 `award(slug)` (the session-dedupe + `POST /api/achievements/frontend-event` that
 `hidden_achievements.js` used to carry its own copy of — it now delegates here);
@@ -384,6 +390,43 @@ only plays after an explicit `ee_muted === "0"` opt-in); `playSound(name)`;
   `window.__hiddenAchievementsReady`. No child needs it as a sync point yet, so
   `tests/js/easter_eggs.test.js` is currently its only reader (asserted there) —
   not dead code.
+
+### Konami easter egg (`features/konami.js`)
+
+Issue #283, umbrella #278 — the **first** group-A child on the #282 foundation,
+and the first live `frontend-ee-` slug (`frontend-ee-konami` in
+`VALID_FRONTEND_SLUGS`, seeded by migration `0020_konami_achievement_data`).
+Detects `↑ ↑ ↓ ↓ ← → ← → B A` on any page for a logged-in user; on every correct
+entry (it **replays**, deliberately — not one-shot) it fires a cracker overlay,
+a wink toast, and `window.easterEggs.award('frontend-ee-konami')` (which POSTs
+once per session via the sessionStorage dedupe). `window.__konamiReady` is its
+init-complete signal — the E2E test waits on it before pressing keys.
+
+- **Particles are authored in JS (`makeCrackerEl()` — `createElementNS`), never
+  cloned from `svgs/icon-cracker-stack.svg`.** That file's body is
+  `<defs><g id="cracker-stack">` + `<use href="#cracker-stack">`; N copies in one
+  document collide on the `id` and every `<use>` resolves the first. The rain
+  particles carry no `id` and no `<use>`.
+- **Inline styles are set property-by-property (`el.style.foo = …` /
+  `el.style.setProperty('--ee-dx', …)`), not via `el.style.cssText`.** jsdom's
+  CSSOM silently drops CSS custom properties (and some shorthands) assigned
+  through `cssText`, so a `cssText` particle style passes in a real browser but
+  the Vitest assertions on `--ee-dx` / `animationName` fail. The `@keyframes`
+  block is injected once as a `<style id="ee-konami-style">` — CSP `style-src`
+  has `'unsafe-inline'`, which covers both it and the inline `style=` attrs.
+- The reduced-motion branch (`easterEggs.reducedJuice()` true — also the jsdom
+  default, since it has no `matchMedia`) renders a **motion-free static scatter**
+  (16 crackers, no `<style>` injected); the full branch is the ~42-particle
+  falling downpour. Vitest tests must stub `window.matchMedia` to exercise the
+  full branch.
+- Its `keydown` handler is on `document` and its match buffer is module-level
+  mutable state, so — per "JS tests (Vitest)" above — `tests/js/konami.test.js`
+  calls `konami._resetForTests()` (its own detach + buffer reset, aliased to
+  `teardownKonami`) each `beforeEach`/`afterEach`, and `easter_eggs.js`'s
+  `teardownAll()` also reaches it (it registers via `registerTeardown('konami')`).
+- rjsmin (in `{% compress js %}`) preserves the non-ASCII toast string (emoji,
+  `…`, Polish diacritics) — verified against the production-storage
+  `collectstatic` + `compress --force` bundle, not just `just test`.
 
 ### Background scheduling — APScheduler, not Django-RQ
 
