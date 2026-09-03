@@ -438,13 +438,20 @@ document.addEventListener('DOMContentLoaded', () => {
         let es = null;
         let streamDisabled = false;
         let hiddenTimeoutId = null;
+        let isFetchingToast = false;
 
         const handleFirstFunnyToast = async () => {
+            // The stream keeps re-emitting `data: toast` every ~2s until the
+            // shared cache key is cleared server-side. If a fetch is slow, a
+            // second event can land before the first response — guard against
+            // firing two overlapping requests (and two toasts).
+            if (isFetchingToast) return;
+            isFetchingToast = true;
             try {
                 const response = await fetch('/api/achievements/toast');
                 if (response.status === 401 || response.status === 403) {
                     streamDisabled = true;
-                    es.close();
+                    es?.close();
                     return;
                 }
                 if (!response.ok) return;
@@ -455,6 +462,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.showToast(data.toast.body, data.toast.title, 'success');
             } catch (err) {
                 console.error('Error fetching first-funny toast:', err);
+            } finally {
+                isFetchingToast = false;
             }
         };
 
@@ -463,15 +472,21 @@ document.addEventListener('DOMContentLoaded', () => {
             // event: `new` (an awarded achievement) and `toast` (a first
             // funny vote on one of your suchary — issue #292).
             if (event && event.data === 'toast') {
+                // The toast payload is single-use and shared across tabs. A
+                // hidden tab would consume it into a DOM nobody sees and clear
+                // the key for the visible one. Let the visible tab take it; a
+                // backgrounded tab re-reads it on its next poll once shown.
+                if (document.visibilityState === 'hidden') return;
                 await handleFirstFunnyToast();
                 return;
             }
+            if (!event || event.data !== 'new') return;
 
             try {
                 const response = await fetch('/api/achievements/unseen');
                 if (response.status === 401 || response.status === 403) {
                     streamDisabled = true;
-                    es.close();
+                    es?.close();
                     return;
                 }
                 if (!response.ok) return;

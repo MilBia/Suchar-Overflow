@@ -49,6 +49,15 @@ class FrontendEventSchema(Schema):
     event_slug: str
 
 
+class ToastPayloadSchema(Schema):
+    title: str
+    body: str
+
+
+class ToastResponseSchema(Schema):
+    toast: ToastPayloadSchema | None = None
+
+
 @router.get("/unseen", response=list[AchievementSchema], auth=django_auth)
 def list_unseen_achievements(request: HttpRequest) -> list[dict]:
     user = request.user
@@ -83,7 +92,7 @@ def list_unseen_achievements(request: HttpRequest) -> list[dict]:
     return response_data
 
 
-@router.get("/toast", auth=django_auth)
+@router.get("/toast", response=ToastResponseSchema, auth=django_auth)
 def get_pending_toast(request: HttpRequest) -> dict[str, dict[str, str] | None]:
     """Return (and clear) the pending first-funny-vote 🥁 toast, if any.
 
@@ -91,15 +100,18 @@ def get_pending_toast(request: HttpRequest) -> dict[str, dict[str, str] | None]:
     #292). Mirrors ``GET /unseen``: the stream only flags, this read is what
     actually clears ``toast_pending:{pk}``. The text is translated here so it
     lands in the *author's* language, not the voter's.
+
+    ``cache.delete`` returns whether the key existed, so it doubles as the
+    "was a toast actually pending?" check — a single atomic op. Two racing
+    SSE-driven fetches (a slow ``fetch`` that outlives the stream's 2 s poll)
+    can't then both come back with a payload.
     """
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
-    cache_key = toast_cache_key(user.pk)
 
-    if not cache.get(cache_key):
+    if not cache.delete(toast_cache_key(user.pk)):
         return {"toast": None}
 
-    cache.delete(cache_key)
     return {
         "toast": {
             "title": _("Ba dum tss 🥁"),

@@ -13,14 +13,19 @@ unread achievement"), with deliberately different lifecycles:
 Merging the two was considered and rejected (see issue #231): their lifecycles
 genuinely differ.
 
-A third, unrelated key lives here too:
+Two more, unrelated keys live here too (issue #292, umbrella #279 — pure UI
+delight, no achievement and no bell row behind them):
 
 - ``toast_pending:{pk}`` (``toast_cache_key``) — a one-shot "the SSE client
   still has to fetch a lightweight 🥁 toast" flag, set by the voting path when
-  a suchar gets its *first* funny vote (issue #292) and cleared by
-  ``GET /api/achievements/toast``. It is deliberately separate from
-  ``achievements_pending`` because it drives no achievement and no bell row —
-  it is pure UI delight (umbrella #279).
+  a suchar gets its first *community* funny vote and cleared by
+  ``GET /api/achievements/toast``.
+- ``toast_sent_suchar:{pk}`` (``suchar_toast_sent_cache_key``) — a
+  per-suchar "the 🥁 already fired for this one" latch, added via
+  ``mark_suchar_toast_sent`` so un-voting and re-voting a suchar back through
+  0 → 1 does not keep re-toasting its author. Best-effort only: the cache is
+  not durable, so an eviction or the TTL lapsing can let a later genuine
+  first-community-vote toast again — an acceptable outcome for a delight.
 """
 
 from django.core.cache import cache
@@ -33,6 +38,11 @@ BELL_PREVIEW_LIMIT = 5
 # first funny vote" toast can be for an author who had no stream open when the
 # vote landed.
 TOAST_CACHE_TTL = 60 * 60
+
+# How long the per-suchar "already toasted" latch lives. Long enough that
+# ordinary un-vote / re-vote churn can't re-toast the author; not "forever",
+# so the key space stays bounded. Mirrors ``pending_cache_key``'s 30 days.
+TOAST_SENT_CACHE_TTL = 60 * 60 * 24 * 30
 
 # Backstop TTL only — correctness comes from invalidation (see
 # invalidate_bell_cache below), not from expiry. Matches
@@ -79,6 +89,26 @@ def set_pending_toast(user_id: int) -> None:
     ``GET /api/achievements/toast``.
     """
     cache.set(toast_cache_key(user_id), value=True, timeout=TOAST_CACHE_TTL)
+
+
+def suchar_toast_sent_cache_key(suchar_id: int) -> str:
+    """Cache key for the per-suchar "🥁 already fired for this one" latch."""
+    return f"toast_sent_suchar:{suchar_id}"
+
+
+def mark_suchar_toast_sent(suchar_id: int) -> bool:
+    """Claim the one-time 🥁 toast for ``suchar_id``.
+
+    Returns ``True`` exactly once per suchar (per TTL window): the first
+    caller adds the latch key, every later caller sees it already there. Lets
+    the voting path fire the author's toast only on the *first* time a suchar
+    crosses 0 → 1 community funny votes, not on every re-vote.
+    """
+    return cache.add(
+        suchar_toast_sent_cache_key(suchar_id),
+        value=True,
+        timeout=TOAST_SENT_CACHE_TTL,
+    )
 
 
 def invalidate_bell_cache(user_id: int) -> None:

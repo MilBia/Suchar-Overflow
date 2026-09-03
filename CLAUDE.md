@@ -289,12 +289,22 @@ are built by helpers in `suchar_overflow/achievements/cache.py` (`pending_cache_
 `invalidate_bell_cache`; nothing should re-derive an `achievements_*:{pk}` string by
 hand, and the signal/API layers import from there, not from `context_processors.py`.
 
-`cache.py` also owns a third, unrelated key, `toast_pending:{user.pk}`
-(`toast_cache_key` / `set_pending_toast`, issue #292): a one-shot flag for the
-first-funny-vote 🥁 toast (umbrella #279). It drives **no** achievement and no bell
-row — it is pure UI delight. `suchary/api.py:vote_suchar` sets it (via
-`set_pending_toast`) when a suchar's funny-vote count goes `0 → 1` for someone other
-than the author; the SSE loop reports it and `GET /api/achievements/toast` clears it.
+`cache.py` also owns two more unrelated keys for the first-funny-vote 🥁 toast
+(issue #292, umbrella #279 — pure UI delight, **no** achievement and no bell row):
+`toast_pending:{user.pk}` (`toast_cache_key` / `set_pending_toast`), the one-shot
+SSE-delivery flag, and `toast_sent_suchar:{suchar.pk}`
+(`suchar_toast_sent_cache_key` / `mark_suchar_toast_sent`), a per-suchar
+"already fired" latch (`cache.add`, 30-day TTL) so un-voting and re-voting a suchar
+back through 0 → 1 does not keep re-toasting its author.
+`suchary/api.py:vote_suchar` sets `toast_pending` when a suchar's **community**
+funny-vote count (`community_funny` — a third `Count(... FILTER ...)` on the *same*
+`suchar.votes.aggregate(...)`, so no extra query; `~Q(user_id=suchar.author_id)`
+excludes the author's own vote) crosses `0 → 1` *and* `mark_suchar_toast_sent`
+returns `True`. Excluding the author means a self-vote first no longer permanently
+eats the toast — the next genuine community vote still fires it.
+`GET /api/achievements/toast` clears `toast_pending` with a single
+`cache.delete` whose return value doubles as the "was one pending?" check
+(atomic — two racing fetches can't both return a payload).
 
 ### SSE stream (`/achievements/stream/`)
 
@@ -307,11 +317,15 @@ above) every 2 seconds and yielding `data: new\n\n` when set; it only ends on
 The loop also carries a **second, deliberately minimal** signal (issue #292, umbrella
 #279): if `toast_pending:{user.pk}` (`toast_cache_key`) is set it additionally yields
 `data: toast\n\n` on the same default event. This is the first-funny-vote 🥁 toast —
-the loop still only *reads* both keys (never clears them); the browser branches on
-`event.data` (`new` → `GET /api/achievements/unseen`; `toast` → `GET
-/api/achievements/toast`) and each fetch clears its own key. Keep this scope tight —
-one flag, one canned toast, no per-message payload in the cache; anything richer
-belongs behind its own endpoint, not a wider SSE protocol.
+the loop still only *reads* both keys (never clears them); the browser
+(`project.js`) branches on `event.data` (`new` → `GET /api/achievements/unseen`;
+`toast` → `GET /api/achievements/toast`) and each fetch clears its own key. Two
+guards keep the toast single-surface: `handleFirstFunnyToast` bails if
+`document.visibilityState === 'hidden'` (a background tab must not consume the
+shared key out from under the visible one) and holds an in-flight flag (the loop
+re-emits `data: toast` every 2 s until the fetch clears the key). Keep this scope
+tight — one flag, one canned toast, no per-message payload in the cache; anything
+richer belongs behind its own endpoint, not a wider SSE protocol.
 
 Because the generator never completes on its own, the general test advice
 "consume with `b"".join(response.streaming_content)`" (see Test patterns above)
@@ -326,10 +340,11 @@ they need (see `achievements/tests/test_stream.py`).
 `GET /achievements/frontend-owned`, `POST /achievements/frontend-event` (the last is
 how the frontend awards `FRONTEND_EVENT`-metric achievements for client-only actions,
 gated by an allowlist of slugs in `VALID_FRONTEND_SLUGS`), and `GET
-/achievements/toast` — reads-and-clears `toast_pending:{pk}` and returns the
-translated first-funny-vote 🥁 toast (`{"toast": {"title", "body"}}` or `{"toast":
-null}`); the text is `gettext`-ed here so it lands in the *author's* language, not the
-voter's (issue #292).
+/achievements/toast` — pops `toast_pending:{pk}` with one atomic `cache.delete`
+(its bool return *is* the "was one pending?" check) and returns the translated
+first-funny-vote 🥁 toast (`ToastResponseSchema`: `{"toast": {"title", "body"}}` or
+`{"toast": null}`); the text is `gettext`-ed here so it lands in the *author's*
+language, not the voter's (issue #292).
 
 `static/js/features/hidden_achievements.js` sets `window.__hiddenAchievementsReady =
 true` at the end of its `DOMContentLoaded` handler — this looks like a no-op (no

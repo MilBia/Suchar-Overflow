@@ -14,6 +14,7 @@ from ninja import Router
 from ninja import Schema
 from ninja.security import django_auth
 
+from suchar_overflow.achievements.cache import mark_suchar_toast_sent
 from suchar_overflow.achievements.cache import set_pending_toast
 from suchar_overflow.users.models import User
 
@@ -95,19 +96,33 @@ def vote_suchar(
         # dry vote raises the author's SUM_SCORE (#247).
         vote_changed.send(sender=Vote, voter=user, author=suchar.author)
 
-    # Calculate counts using aggregation
+    # Calculate counts using aggregation. `community_funny` deliberately
+    # excludes the author's own vote — it drives the first-funny-vote toast
+    # below and must not be satisfied by a self-vote. It is one extra
+    # `COUNT(...) FILTER (...)` on the same row scan, not another query.
     counts = suchar.votes.aggregate(
         funny=Count("pk", filter=Q(is_funny=True)),
         dry=Count("pk", filter=Q(is_dry=True)),
+        community_funny=Count(
+            "pk",
+            filter=Q(is_funny=True) & ~Q(user_id=suchar.author_id),
+        ),
     )
 
-    # First funny vote on the suchar → send the author a lightweight 🥁 toast
-    # over the existing SSE stream (issue #292). `added_funny` is true for both
-    # a brand-new funny vote and a toggle that just switched `is_funny` on;
-    # `funny == 1` pins it to the 0→1 transition. Skipped for the author's own
-    # vote. Reuses the aggregate above — no extra query.
+    # First funny vote from someone *other than the author* → send the author a
+    # lightweight 🥁 toast over the existing SSE stream (issue #292).
+    # `added_funny` is true for both a brand-new funny vote and a toggle that
+    # just switched `is_funny` on; `community_funny == 1` pins it to the 0 → 1
+    # transition among non-author votes (so the author self-voting first no
+    # longer eats it). `mark_suchar_toast_sent` (last, and only reached once
+    # the rest already qualifies) latches it to once per suchar.
     added_funny = vote_type == "funny" and (created or vote.is_funny)
-    if added_funny and counts["funny"] == 1 and suchar.author_id != user.pk:
+    if (
+        added_funny
+        and user.pk != suchar.author_id
+        and counts["community_funny"] == 1
+        and mark_suchar_toast_sent(suchar.pk)
+    ):
         set_pending_toast(suchar.author_id)
 
     return {
