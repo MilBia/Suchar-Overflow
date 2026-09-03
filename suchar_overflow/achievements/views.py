@@ -11,6 +11,7 @@ from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 from suchar_overflow.users.models import User
 
 from .cache import pending_cache_key
+from .cache import toast_cache_key
 from .models import Achievement
 from .models import UserAchievement
 
@@ -28,6 +29,11 @@ async def achievement_stream(request: HttpRequest) -> StreamingHttpResponse:
     # @login_required already rejects anonymous requests.
     assert isinstance(user, User)
     cache_key = pending_cache_key(user.pk)
+    # Second, independent flag: a first-funny-vote 🥁 toast (issue #292). Kept
+    # deliberately minimal — the loop only reads both keys; the browser clears
+    # this one via GET /api/achievements/toast, exactly like `data: new` is
+    # cleared by GET /api/achievements/unseen.
+    toast_key = toast_cache_key(user.pk)
 
     async def event_stream() -> AsyncGenerator[str]:
         yield "retry: 5000\n\n"
@@ -35,6 +41,8 @@ async def achievement_stream(request: HttpRequest) -> StreamingHttpResponse:
             try:
                 if await cache.aget(cache_key):
                     yield "data: new\n\n"
+                if await cache.aget(toast_key):
+                    yield "data: toast\n\n"
                 await asyncio.sleep(2)
             except asyncio.CancelledError:
                 break

@@ -9,6 +9,7 @@ from django.core.cache import cache
 from django.urls import reverse
 
 from suchar_overflow.achievements.cache import pending_cache_key
+from suchar_overflow.achievements.cache import toast_cache_key
 from suchar_overflow.conftest import make_user
 
 if TYPE_CHECKING:
@@ -100,3 +101,40 @@ async def test_stream_does_not_send_data_without_cache_flag(
         content += chunk.decode()
         break
     assert "data: new" not in content
+
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_stream_sends_data_toast_when_toast_pending(
+    async_client: AsyncClient,
+) -> None:
+    user = await sync_to_async(make_user)("u1")
+    await async_client.aforce_login(user)
+    await cache.adelete(pending_cache_key(user.pk))
+    await cache.aset(toast_cache_key(user.pk), True, timeout=60)  # noqa: FBT003
+
+    response = await async_client.get(reverse(STREAM_URL))
+    content = ""
+    async for chunk in response.streaming_content:  # type: ignore[attr-defined]
+        content += chunk.decode()
+        if "data: toast" in content:
+            break
+    assert "data: toast" in content
+
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_stream_does_not_send_data_toast_without_flag(
+    async_client: AsyncClient,
+) -> None:
+    user = await sync_to_async(make_user)("u1")
+    await async_client.aforce_login(user)
+    await cache.adelete(pending_cache_key(user.pk))
+    await cache.adelete(toast_cache_key(user.pk))
+
+    response = await async_client.get(reverse(STREAM_URL))
+    content = ""
+    async for chunk in response.streaming_content:  # type: ignore[attr-defined]
+        content += chunk.decode()
+        break
+    assert "data: toast" not in content

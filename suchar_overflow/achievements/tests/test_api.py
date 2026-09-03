@@ -5,6 +5,7 @@ import pytest
 from django.core.cache import cache
 
 from suchar_overflow.achievements.cache import pending_cache_key
+from suchar_overflow.achievements.cache import toast_cache_key
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
@@ -16,6 +17,7 @@ UNSEEN_ACHIEVEMENTS_URL = "/api/achievements/unseen"
 MARK_SEEN_URL = "/api/achievements/mark-seen"
 FRONTEND_OWNED_URL = "/api/achievements/frontend-owned"
 FRONTEND_EVENT_URL = "/api/achievements/frontend-event"
+TOAST_URL = "/api/achievements/toast"
 
 
 def make_achievement(slug: str, name: str = "Achievement") -> Achievement:
@@ -142,6 +144,46 @@ def test_mark_seen_idempotent(client: Client) -> None:
 
     ua.refresh_from_db()
     assert ua.is_seen is True
+
+
+# ---------------------------------------------------------------------------
+# GET /api/achievements/toast  (first-funny-vote 🥁, issue #292)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_toast_requires_login(client: Client) -> None:
+    response = client.get(TOAST_URL)
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+
+@pytest.mark.django_db
+def test_toast_returns_null_when_no_flag(client: Client) -> None:
+    user = make_user("user_toast_none")
+    client.force_login(user)
+    cache.delete(toast_cache_key(user.pk))
+
+    response = client.get(TOAST_URL)
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {"toast": None}
+
+
+@pytest.mark.django_db
+def test_toast_returns_payload_and_clears_flag(client: Client) -> None:
+    user = make_user("user_toast_set")
+    client.force_login(user)
+    cache.set(toast_cache_key(user.pk), value=True, timeout=60)
+
+    response = client.get(TOAST_URL)
+    assert response.status_code == HTTPStatus.OK
+    body = response.json()
+    assert body["toast"] is not None
+    assert body["toast"]["title"]
+    assert body["toast"]["body"]
+
+    # The read is what clears the flag (mirrors GET /unseen).
+    assert cache.get(toast_cache_key(user.pk)) is None
+    assert client.get(TOAST_URL).json() == {"toast": None}
 
 
 # ---------------------------------------------------------------------------

@@ -15,6 +15,7 @@ from suchar_overflow.users.models import User
 
 from .cache import invalidate_bell_cache
 from .cache import pending_cache_key
+from .cache import toast_cache_key
 from .models import Achievement
 from .models import UserAchievement
 
@@ -46,6 +47,15 @@ class AchievementSchema(Schema):
 
 class FrontendEventSchema(Schema):
     event_slug: str
+
+
+class ToastPayloadSchema(Schema):
+    title: str
+    body: str
+
+
+class ToastResponseSchema(Schema):
+    toast: ToastPayloadSchema | None = None
 
 
 @router.get("/unseen", response=list[AchievementSchema], auth=django_auth)
@@ -80,6 +90,34 @@ def list_unseen_achievements(request: HttpRequest) -> list[dict]:
 
     cache.delete(cache_key)
     return response_data
+
+
+@router.get("/toast", response=ToastResponseSchema, auth=django_auth)
+def get_pending_toast(request: HttpRequest) -> dict[str, dict[str, str] | None]:
+    """Return (and clear) the pending first-funny-vote 🥁 toast, if any.
+
+    Called by the SSE client when the stream emits ``data: toast`` (issue
+    #292). Mirrors ``GET /unseen``: the stream only flags, this read is what
+    actually clears ``toast_pending:{pk}``. The text is translated here so it
+    lands in the *author's* language, not the voter's.
+
+    ``cache.delete`` returns whether the key existed, so it doubles as the
+    "was a toast actually pending?" check — a single atomic op. Two racing
+    SSE-driven fetches (a slow ``fetch`` that outlives the stream's 2 s poll)
+    can't then both come back with a payload.
+    """
+    user = request.user
+    assert isinstance(user, User)  # django_auth already rejects anonymous requests
+
+    if not cache.delete(toast_cache_key(user.pk)):
+        return {"toast": None}
+
+    return {
+        "toast": {
+            "title": _("Ba dum tss 🥁"),
+            "body": _("Your suchar just landed its first funny vote."),
+        },
+    }
 
 
 @router.post("/mark-seen", auth=django_auth)
