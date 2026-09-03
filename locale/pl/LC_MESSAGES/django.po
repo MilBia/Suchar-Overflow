@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 11:48+0000\n"
+"POT-Creation-Date: 2026-09-03 12:15+0000\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -214,11 +214,11 @@ msgstr "Chiński (uproszczony)"
 msgid "Chinese (Traditional)"
 msgstr "Chiński (tradycyjny)"
 
-#: suchar_overflow/achievements/api.py:105
+#: suchar_overflow/achievements/api.py:117
 msgid "Ba dum tss 🥁"
 msgstr "Ba dum tss 🥁"
 
-#: suchar_overflow/achievements/api.py:106
+#: suchar_overflow/achievements/api.py:118
 msgid "Your suchar just landed its first funny vote."
 msgstr "Twój suchar właśnie dostał pierwszy głos „śmieszne”."
 

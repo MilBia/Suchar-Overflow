@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 11:48+0000\n"
+"POT-Creation-Date: 2026-09-03 12:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,11 +218,11 @@ msgstr "Chinese (Simplified)"
 msgid "Chinese (Traditional)"
 msgstr "Chinese (Traditional)"
 
-#: suchar_overflow/achievements/api.py:105
+#: suchar_overflow/achievements/api.py:117
 msgid "Ba dum tss 🥁"
 msgstr ""
 
-#: suchar_overflow/achievements/api.py:106
+#: suchar_overflow/achievements/api.py:118
 msgid "Your suchar just landed its first funny vote."
 msgstr ""
 
