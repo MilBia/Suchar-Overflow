@@ -228,3 +228,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.__hiddenAchievementsReady = true;
     }
 });
+
+/* Test-only export for Vitest + jsdom (tests/js/hidden_achievements.test.js).
+ * `module` is undefined in the browser, so this block is inert there and is
+ * preserved verbatim by rjsmin inside {% compress js %}. It is NOT dead code —
+ * do not remove it in a JS sweep (cf. window.__hiddenAchievementsReady above).
+ * See CLAUDE.md "JS tests (Vitest)". */
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        award,
+        awardAchievement,
+        getOwnedSlugs,
+        setupRecenzentTotalny,
+        setupStluczonaMysz,
+        setupZbieraczSucharow,
+        setupNiecierpliwy,
+        setupOdkrywca,
+    };
+}

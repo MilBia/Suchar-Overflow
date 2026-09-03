@@ -133,6 +133,55 @@ Always run a second time after auto-fixes to confirm all hooks pass.
 - **Template language**: templates render in Polish (LANGUAGE_CODE = "pl").
   Don't assert on English strings in rendered HTML content.
 
+## JS tests (Vitest)
+
+`just test` has no JS coverage. Client-side logic in `suchar_overflow/static/js/`
+— sequence matchers, key buffers, idle/combo timers, `sessionStorage`/`localStorage`
+dedupe — is unit-tested with **Vitest + jsdom** (issue #281, option C: pure logic
+here, Playwright E2E for the integration path — audio, the real
+`POST /api/achievements/frontend-event`, toasts, CSP).
+
+- **Why Vitest and not more E2E**: the logic that needs the most coverage is
+  time-window logic (idle timers, combo windows, the 3s hover dwell). `vi.useFake
+  Timers()` / `vi.advanceTimersByTime()` makes it deterministic and instant;
+  `page.clock` against a real browser + a `transaction=True` DB per test does not.
+- **Not a build step.** Vitest is a dev-only runner in the same category as pytest
+  — it never transforms, bundles, or ships anything. The "no JS build step" rule
+  (see *Vendored JS libraries* / *Content Security Policy*) is unaffected: npm for
+  vendoring or bundling runtime assets stays rejected; npm as a test runner is the
+  accepted, separate case.
+- **Run it**: `just test-js` (or `npm test`). Runs on the **host**, not in a
+  container — like `pre-commit`, no Django/DB dependency, Node is not in the Django
+  image. Needs Node (`.nvmrc`) + a one-off `npm ci`. Config: `vitest.config.mjs`
+  (`.mjs` because `package.json` is `"type": "commonjs"` so `.test.js` files can
+  `require()` the plain scripts under test). Tests live in `tests/js/` — inert to
+  pytest, kept out of `tests/e2e/`.
+- **CI**: a dedicated `js-tests` job (`actions/setup-node` + `npm ci` + `npm test`),
+  parallel to `linter`/`pytest`, no Docker. `package-lock.json` is committed and CI
+  uses `npm ci`. Dependabot tracks the `npm` ecosystem (`.github/dependabot.yml`).
+- **No JS coverage gate.** `fail_under = 90` stays Python-only; the two suites'
+  coverage is never combined (deliberate, issue #180).
+- **Reaching a classic script from a test**: the files under `static/js/` are
+  classic `<script>`s concatenated inside `{% compress js %}` — adding `export` is
+  a bundle-breaking SyntaxError. Instead, append a guarded CommonJS tail:
+  `if (typeof module !== "undefined" && module.exports) { module.exports = {...} }`.
+  `module` is undefined in the browser, so it is inert there and survives `rjsmin`.
+  It is **not** dead code (like `window.__hiddenAchievementsReady`) — don't strip it
+  in a JS sweep. `hidden_achievements.js` is the reference; new modules
+  (`easter_eggs.js`, #282) follow the same pattern. Don't add to or reorder any
+  `{% compress js %}` block for this; `tests/test_compressed_page_assets.py` guards
+  that the served bundle stays a valid classic script.
+- **jsdom gotchas**: `require()` of a script registers its `DOMContentLoaded`
+  listener but jsdom is already past `load`, so init never runs — test the exported
+  helpers, not init. Stub `globalThis.getCsrfToken` and `globalThis.fetch` per test
+  for any path that awards. Clear `sessionStorage`/`localStorage` and reset
+  `document.body.innerHTML` in `beforeEach`. **`vi.resetModules()` does not detach
+  listeners a `setupX()` added to `document`** — they accumulate across tests in a
+  file. It's harmless where the handler is idempotent (`hidden_achievements.js`'s
+  storage writes) but `easter_eggs.js`'s key-buffer / combo handlers on `document`
+  are not — a test that leaves them attached must call the `teardownRegistry` entry
+  (or the module must expose its own detach) so the next test starts clean.
+
 ## Code style — ruff rules in force
 
 Active rule sets include: F, E, W, C90, I, N, UP, S, B, SLF, PL (covers PLC/PLE/PLR/PLW),
@@ -323,10 +372,13 @@ be blocked in browsers that enforce CSP.
 `chart.umd.min.js` and `flatpickr.min.js` under `static/js/` are hand-vendored, not
 managed by any package manager — `.github/dependabot.yml` only tracks `uv`, `docker`,
 `docker-compose`, and `github-actions`, so neither Dependabot nor any bot notices when
-a newer release ships (see issue #177). Adding a `package.json` + npm just for these
-two files was considered and rejected — it would require introducing a JS build step
-the project deliberately doesn't have (see Content Security Policy above), for two
-files that don't need one.
+a newer release ships (see issue #177). Adding a `package.json` + npm *to manage or
+bundle these vendored runtime assets* was considered and rejected — it would require
+introducing a JS build step the project deliberately doesn't have (see Content
+Security Policy above), for two files that don't need one. (This is narrower than it
+used to read: a `package.json` does now exist, but only for the **dev-only Vitest
+test runner** — see *JS tests (Vitest)* above. That runner never touches served
+assets, so it is not the build step this paragraph rejects.)
 
 Instead: **check manually, roughly each time you touch this area or do a periodic
 dependency review** (see #176-style project reviews). To check current vs. latest:

@@ -1,0 +1,15 @@
+{
+  "name": "suchar-overflow-js-tests",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dev-only JS test runner (Vitest + jsdom). Not a build step — never transforms or bundles served assets. See CLAUDE.md 'JS tests (Vitest)'.",
+  "type": "commonjs",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1",
+    "vitest": "^4.1.11"
+  }
+}
