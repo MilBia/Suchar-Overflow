@@ -229,13 +229,15 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin):  # ty
             )
 
         def _save_and_signal() -> None:
+            # form.save() now writes only text/published_at (see
+            # SucharForm.save), so this atomic bump can't be clobbered by a
+            # stale in-memory edit_count and concurrent edits each count once.
             form.save()
-            # Atomic bump so concurrent edits can't lose a count; the engine
-            # re-reads it, so the fresh in-memory value only needs to be
-            # right for anything downstream of the signal.
             Suchar.objects.filter(pk=suchar.pk).update(
                 edit_count=F("edit_count") + 1,
             )
+            # Best-effort local value for signal receivers; the engine ignores
+            # it and re-reads edit_count from the DB anyway.
             suchar.edit_count += 1
             suchar_edited.send(sender=Suchar, author=suchar.author, suchar=suchar)
 

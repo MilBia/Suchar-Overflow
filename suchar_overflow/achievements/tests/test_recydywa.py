@@ -24,6 +24,7 @@ from suchar_overflow.achievements.engine import EditCountRule
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
+from suchar_overflow.suchary.forms import SucharForm
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.signals import suchar_edited
 
@@ -244,3 +245,60 @@ def test_too_late_page_does_not_increment_edit_count(client: Client) -> None:
     assert response.status_code == HTTPStatus.FORBIDDEN
     suchar.refresh_from_db()
     assert suchar.edit_count == 0
+
+
+@pytest.mark.django_db
+@pytest.mark.usefixtures("recydywa_achievement")
+def test_invalid_form_does_not_increment_edit_count(client: Client) -> None:
+    author = make_user("author")
+    future = timezone.now() + timedelta(days=1)
+    suchar = Suchar.objects.create(text="joke", author=author, published_at=future)
+    client.force_login(author)
+    url = reverse("suchary:update", kwargs={"pk": suchar.pk})
+
+    page = client.get(url)
+    response = client.post(
+        url,
+        {
+            "text": "x" * 2001,  # over the 2000-char limit -> form invalid
+            "published_at": _rendered_publish_value(page.content.decode()),
+        },
+    )
+
+    assert response.status_code == HTTPStatus.OK  # re-rendered form, no redirect
+    suchar.refresh_from_db()
+    assert suchar.edit_count == 0
+    assert not UserAchievement.objects.filter(
+        user=author,
+        achievement__slug=RECYDYWA_SLUG,
+    ).exists()
+
+
+@pytest.mark.django_db
+def test_form_save_does_not_clobber_engine_managed_fields() -> None:
+    """A stale-in-memory edit must not roll back edit_count / is_overdried.
+
+    Regression guard for the concurrent-edit race: `SucharForm.save` now
+    writes only its own fields, so an edit started before another request
+    (or the achievement engine) bumped `edit_count` no longer overwrites
+    that bump with the value the form loaded.
+    """
+    author = make_user("author")
+    suchar = Suchar.objects.create(text="before", author=author)
+
+    # Load a form bound to the current row (edit_count == 0 in memory) ...
+    stale_form = SucharForm(
+        data={"text": "after", "tags_input": ""},
+        instance=Suchar.objects.get(pk=suchar.pk),
+    )
+    assert stale_form.is_valid(), stale_form.errors
+
+    # ... then another writer advances the row underneath it.
+    Suchar.objects.filter(pk=suchar.pk).update(edit_count=4, is_overdried=True)
+
+    stale_form.save()
+
+    suchar.refresh_from_db()
+    assert suchar.text == "after"
+    assert suchar.edit_count == 4  # noqa: PLR2004 — not reset to the stale 0
+    assert suchar.is_overdried is True

@@ -43,6 +43,7 @@ class SucharAdmin(admin.ModelAdmin):
         "created_at",
         "total_votes",
         "is_overdried",
+        "edit_count",
     ]
     # Pins the changelist join explicitly. Django 6.1's ChangeList would derive
     # the same set from the FKs in list_display on its own
@@ -56,8 +57,10 @@ class SucharAdmin(admin.ModelAdmin):
     list_filter = ["created_at", "tags", "is_overdried"]
     search_fields = ["text", "author__username", "author__name"]
     autocomplete_fields = ["author", "tags"]
-    # Engine-managed latch (#294) — surfaced for moderation, never hand-edited.
-    readonly_fields = ["is_overdried"]
+    # Engine-managed state — surfaced for moderation, never hand-edited:
+    # is_overdried is the dry-out latch (#294), edit_count the repeat-edit
+    # counter (#297, "never decremented — the engine only awards").
+    readonly_fields = ["is_overdried", "edit_count"]
     inlines = [VoteInline]
     date_hierarchy = "created_at"
 

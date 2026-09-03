@@ -279,20 +279,24 @@ def test_update_author_post_success_shows_message(
 
 
 def _suchar_select_count(ctx: CaptureQueriesContext) -> int:
-    """Count row-fetching SELECTs against the suchar table itself.
+    """Count the authorship-row fetches — SELECTs of a single suchar by pk.
 
-    Matching the quoted table name excludes the m2m table
-    (`"suchary_suchar_tags"`) and the `UPDATE "suchary_suchar" SET ...`
-    issued by `form.save()` / the `edit_count` bump. `MAX(` filters out the
-    `EditCountRule` aggregate the `suchar_edited` signal runs for the
-    "Recydywa" achievement (#297) — that is not the authorship row fetch
-    this #201 guard is about.
+    The #201 guard is specifically about `_get_suchar` loading the edited row
+    once, not twice. Requiring both `FROM "suchary_suchar"` and a
+    `"suchary_suchar"."id" =` filter pins it to that `.aget(pk=...)`:
+
+    * `UPDATE "suchary_suchar" SET ... WHERE "id" =` from `form.save()` / the
+      `edit_count` bump has the id filter but no `FROM`, so it is excluded;
+    * the `EditCountRule` aggregate the `suchar_edited` signal runs for the
+      "Recydywa" achievement (#297) has `FROM "suchary_suchar"` but filters on
+      `author_id`, not `id`, so it is excluded too.
     """
     return len(
         [
             q
             for q in ctx.captured_queries
-            if 'FROM "suchary_suchar"' in q["sql"] and "MAX(" not in q["sql"]
+            if 'FROM "suchary_suchar"' in q["sql"]
+            and '"suchary_suchar"."id" =' in q["sql"]
         ],
     )
 
