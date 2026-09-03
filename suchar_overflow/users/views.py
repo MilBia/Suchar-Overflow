@@ -19,6 +19,7 @@ from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
+from suchar_overflow.users.comedy_ranks import comedy_rank_name
 from suchar_overflow.users.mixins import AsyncLoginRequiredMixin
 from suchar_overflow.users.models import User
 
@@ -49,8 +50,10 @@ USER_RANK_CACHE_TTL = 60 * 5
 # of that number, and two users tied on it share a rank under dense ranking
 # (#229), so they correctly share an entry. `user_funny_rank:` encodes the
 # metric so entries can't be served under a new meaning if the ranking ever
-# switches away from funny-only votes.
-USER_RANK_CACHE_KEY_TEMPLATE = "user_funny_rank:score:{score}"
+# switches away from funny-only votes. `:v2:` — the cached value grew from a bare
+# rank int to a dict of counts for the Comedy Rank name (#291); the version tag
+# stops a post-deploy read of an old int entry crashing the new code mid-TTL.
+USER_RANK_CACHE_KEY_TEMPLATE = "user_funny_rank:v2:score:{score}"
 
 
 def user_rank_cache_key(score: int) -> str:
@@ -110,7 +113,17 @@ class UserDetailView(AsyncLoginRequiredMixin):
         context["total_dry_score"] = stats["dry_score"] or 0
         context["suchar_count"] = stats["total_count"] or 0
 
-        context["global_rank"] = self._get_cached_rank(context["total_funny_score"])
+        rank_stats = self._get_cached_rank_stats(context["total_funny_score"])
+        context["global_rank"] = rank_stats["rank"]
+        # Playful rank name shown as the main text on the profile; the raw number
+        # stays as small secondary text and in the element's title (#291). Kept
+        # out of the cache (which holds only ints) so it renders in the viewer's
+        # active language.
+        context["global_rank_name"] = comedy_rank_name(
+            funny_score=context["total_funny_score"],
+            higher_users=rank_stats["higher_users"],
+            ranked_population=rank_stats["ranked_population"],
+        )
 
         # Best Joke (highest funny count). `funny_count` doubles as the
         # ordering key (no separate `score` annotation) since the two were
@@ -162,27 +175,55 @@ class UserDetailView(AsyncLoginRequiredMixin):
         )
         return context
 
-    def _get_cached_rank(self, funny_score: int) -> int:
-        """Global rank by funny votes received, cached for `USER_RANK_CACHE_TTL`.
+    def _get_cached_rank_stats(self, funny_score: int) -> dict[str, int]:
+        """Rank + population counts by funny votes, cached for `USER_RANK_CACHE_TTL`.
 
-        The underlying query is a full `User x Suchar x Vote` join with a
+        The underlying queries are full `User x Suchar x Vote` joins with a
         `GROUP BY` over the whole user table, and used to run on every profile
         view — same cost profile as the leaderboard aggregate cached in #182.
-        Keyed by `funny_score` itself: the rank is a pure function of it, so an
-        owner whose own funny total just changed lands on a different key and
-        sees the move immediately — only *other* users' votes wait for the TTL.
-        Max staleness is the TTL either way; a hot key like `score=0` (most
+        Keyed by `funny_score` itself: every value here is a pure function of it,
+        so an owner whose own funny total just changed lands on a different key
+        and sees the move immediately — only *other* users' votes wait for the
+        TTL. Max staleness is the TTL either way; a hot key like `score=0` (most
         accounts) is just rewritten once per TTL instead of recomputed per
         viewer.
         """
-        rank = cache.get_or_set(
+        stats = cache.get_or_set(
             user_rank_cache_key(funny_score),
-            lambda: self._compute_rank(funny_score),
+            lambda: self._compute_rank_stats(funny_score),
             USER_RANK_CACHE_TTL,
         )
-        # _compute_rank (the default factory passed above) never returns None.
-        assert rank is not None
-        return rank
+        # _compute_rank_stats (the default factory passed above) never returns None.
+        assert stats is not None
+        return stats
+
+    @classmethod
+    def _compute_rank_stats(cls, threshold: int) -> dict[str, int]:
+        """Dense rank plus the two counts the Comedy Rank name needs (#291).
+
+        `higher_users` / `ranked_population` are user counts (not distinct-score
+        counts like `rank`): the name maps the fraction of *ranked users* — those
+        with at least one funny vote received — sitting strictly above this one.
+        When `threshold` is 0 (most accounts, and the hottest cache key) the two
+        `.count()`s would run the identical 3-table aggregate twice, so reuse it.
+        """
+        scored_users = User.objects.annotate(
+            funny_score=Count(
+                "suchary__votes",
+                filter=Q(suchary__votes__is_funny=True),
+            ),
+        )
+        ranked_population = scored_users.filter(funny_score__gt=0).count()
+        higher_users = (
+            ranked_population
+            if threshold == 0
+            else scored_users.filter(funny_score__gt=threshold).count()
+        )
+        return {
+            "rank": cls._compute_rank(threshold),
+            "higher_users": higher_users,
+            "ranked_population": ranked_population,
+        }
 
     @staticmethod
     def _compute_rank(threshold: int) -> int:
