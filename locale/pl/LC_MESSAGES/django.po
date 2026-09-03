@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-03 12:15+0000\n"
+"POT-Creation-Date: 2026-09-03 15:13+0000\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -223,7 +223,7 @@ msgid "Your suchar just landed its first funny vote."
 msgstr "Twój suchar właśnie dostał pierwszy głos „śmieszne”."
 
 #: suchar_overflow/achievements/apps.py:26
-#: suchar_overflow/achievements/models.py:91
+#: suchar_overflow/achievements/models.py:92
 #: suchar_overflow/templates/base.html:164
 #: suchar_overflow/templates/users/user_detail.html:89
 msgid "Achievements"
@@ -290,124 +290,128 @@ msgid "Polarizer"
 msgstr "Polaryzator"
 
 #: suchar_overflow/achievements/models.py:27
+msgid "Dry Master"
+msgstr "Mistrz Suszu"
+
+#: suchar_overflow/achievements/models.py:28
 msgid "Frontend Event"
 msgstr "Zdarzenie frontendu"
 
-#: suchar_overflow/achievements/models.py:30
+#: suchar_overflow/achievements/models.py:31
 #: suchar_overflow/achievements/tests/test_views.py:97
 msgid "Common"
 msgstr "Pospolite"
 
-#: suchar_overflow/achievements/models.py:31
+#: suchar_overflow/achievements/models.py:32
 msgid "Bronze"
 msgstr "Brąz"
 
-#: suchar_overflow/achievements/models.py:32
+#: suchar_overflow/achievements/models.py:33
 msgid "Silver"
 msgstr "Srebro"
 
-#: suchar_overflow/achievements/models.py:33
+#: suchar_overflow/achievements/models.py:34
 msgid "Gold"
 msgstr "Złoto"
 
-#: suchar_overflow/achievements/models.py:34
+#: suchar_overflow/achievements/models.py:35
 msgid "Platinum"
 msgstr "Platyna"
 
-#: suchar_overflow/achievements/models.py:35
+#: suchar_overflow/achievements/models.py:36
 msgid "Diamond"
 msgstr "Diament"
 
-#: suchar_overflow/achievements/models.py:37
+#: suchar_overflow/achievements/models.py:38
 msgid "Name"
 msgstr "Nazwa"
 
-#: suchar_overflow/achievements/models.py:38
+#: suchar_overflow/achievements/models.py:39
 msgid "Slug"
 msgstr "Slug"
 
-#: suchar_overflow/achievements/models.py:39
+#: suchar_overflow/achievements/models.py:40
 msgid "Description"
 msgstr "Opis"
 
-#: suchar_overflow/achievements/models.py:42
+#: suchar_overflow/achievements/models.py:43
 msgid "Icon Content"
 msgstr "Zawartość ikony"
 
-#: suchar_overflow/achievements/models.py:42
+#: suchar_overflow/achievements/models.py:43
 msgid "Raw SVG XML"
 msgstr "Surowy kod XML SVG"
 
-#: suchar_overflow/achievements/models.py:46
+#: suchar_overflow/achievements/models.py:47
 msgid "Category"
 msgstr "Kategoria"
 
-#: suchar_overflow/achievements/models.py:52
+#: suchar_overflow/achievements/models.py:53
 msgid "Event Type"
 msgstr "Typ wydarzenia"
 
-#: suchar_overflow/achievements/models.py:58
+#: suchar_overflow/achievements/models.py:59
 msgid "Metric"
 msgstr "Metryka"
 
-#: suchar_overflow/achievements/models.py:63
+#: suchar_overflow/achievements/models.py:64
 msgid "Threshold"
 msgstr "Próg"
 
-#: suchar_overflow/achievements/models.py:67
+#: suchar_overflow/achievements/models.py:68
 msgid "Theme"
 msgstr "Motyw"
 
-#: suchar_overflow/achievements/models.py:70
+#: suchar_overflow/achievements/models.py:71
 msgid "E.g. 'Christmas', 'Programming'. Leave blank for general."
 msgstr ""
 "Np. „Boże Narodzenie”, „Programowanie”. Pozostaw puste, aby ustawić ogólne."
 
-#: suchar_overflow/achievements/models.py:73
+#: suchar_overflow/achievements/models.py:74
 msgid "Tier"
 msgstr "Poziom"
 
-#: suchar_overflow/achievements/models.py:76
+#: suchar_overflow/achievements/models.py:77
 msgid "Difficulty/Rarity tier of the achievement"
 msgstr "Poziom trudności/rzadkości osiągnięcia"
 
-#: suchar_overflow/achievements/models.py:79
+#: suchar_overflow/achievements/models.py:80
 msgid "Secret Achievement"
 msgstr "Sekretne osiągnięcie"
 
-#: suchar_overflow/achievements/models.py:81
+#: suchar_overflow/achievements/models.py:82
 msgid "If checked, name and description are hidden until unlocked."
 msgstr "Jeśli zaznaczone, nazwa i opis są ukryte do momentu odblokowania."
 
-#: suchar_overflow/achievements/models.py:90
+#: suchar_overflow/achievements/models.py:91
 msgid "Achievement"
 msgstr "Osiągnięcie"
 
-#: suchar_overflow/achievements/models.py:109
+#: suchar_overflow/achievements/models.py:110
 msgid "Seen by user"
 msgstr "Widziane przez użytkownika"
 
-#: suchar_overflow/achievements/models.py:112
+#: suchar_overflow/achievements/models.py:113
 msgid "User Achievement"
 msgstr "Osiągnięcie użytkownika"
 
-#: suchar_overflow/achievements/models.py:113
+#: suchar_overflow/achievements/models.py:114
 msgid "User Achievements"
 msgstr "Osiągnięcia użytkownika"
 
-#: suchar_overflow/achievements/models.py:137
+#: suchar_overflow/achievements/models.py:138
 msgid "Job ID"
 msgstr "ID zadania"
 
-#: suchar_overflow/achievements/models.py:138
+#: suchar_overflow/achievements/models.py:139
 msgid "Ran At"
 msgstr "Data uruchomienia"
 
-#: suchar_overflow/achievements/models.py:142
+#: suchar_overflow/achievements/models.py:143
 msgid "Scheduler Run"
 msgstr "Uruchomienie harmonogramu"
 
-#: suchar_overflow/achievements/models.py:143
+#: suchar_overflow/achievements/models.py:144
 msgid "Scheduler Runs"
 msgstr "Uruchomienia harmonogramu"
 
@@ -446,11 +450,11 @@ msgstr "Władcy Suszy"
 msgid "Top Dry Jokes"
 msgstr "Najlepsze sucharskie dowcipy"
 
-#: suchar_overflow/suchary/admin.py:59
+#: suchar_overflow/suchary/admin.py:68
 msgid "Text"
 msgstr "Treść"
 
-#: suchar_overflow/suchary/admin.py:64
+#: suchar_overflow/suchary/admin.py:73
 #: suchar_overflow/templates/stats/_leaderboard_author_card.html:20
 #: suchar_overflow/templates/stats/_leaderboard_suchar_card.html:21
 #: suchar_overflow/templates/users/user_detail.html:132
@@ -496,6 +500,20 @@ msgstr "Suchar nie może przekraczać 2000 znaków (obecnie %(count)d)."
 #: suchar_overflow/suchary/models.py:16
 msgid "Suchar text"
 msgstr "Tekst suchara"
+
+#: suchar_overflow/suchary/models.py:30
+msgid "Overdried"
+msgstr "Przesuszony"
+
+#: suchar_overflow/suchary/models.py:33
+msgid ""
+"Latched by the achievement engine when the suchar drew >=10 dry votes and no "
+"funny votes within an hour of publication. Never cleared — the frontend uses "
+"it for the craquelure overlay."
+msgstr ""
+"Zatrzaśnięte przez silnik osiągnięć, gdy suchar zebrał co najmniej 10 głosów "
+"„suchar” i żadnego „śmieszne” w ciągu godziny od publikacji. Nigdy nie "
+"zdejmowane — frontend używa tego do nakładki craquelure."
 
 #: suchar_overflow/suchary/tests/test_views.py:50
 #: suchar_overflow/suchary/views.py:158

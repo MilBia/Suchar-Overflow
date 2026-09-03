@@ -36,7 +36,14 @@ class VoteInline(admin.TabularInline):
 
 @admin.register(Suchar)
 class SucharAdmin(admin.ModelAdmin):
-    list_display = ["id", "short_text_display", "author", "created_at", "total_votes"]
+    list_display = [
+        "id",
+        "short_text_display",
+        "author",
+        "created_at",
+        "total_votes",
+        "is_overdried",
+    ]
     # Pins the changelist join explicitly. Django 6.1's ChangeList would derive
     # the same set from the FKs in list_display on its own
     # (ChangeList.get_select_related_fields), but ONLY while list_select_related
@@ -46,9 +53,11 @@ class SucharAdmin(admin.ModelAdmin):
     # guards that this list stays equal to what list_display would derive, so a
     # later FK added to list_display isn't silently dropped from the join.
     list_select_related = ["author"]
-    list_filter = ["created_at", "tags"]
+    list_filter = ["created_at", "tags", "is_overdried"]
     search_fields = ["text", "author__username", "author__name"]
     autocomplete_fields = ["author", "tags"]
+    # Engine-managed latch (#294) — surfaced for moderation, never hand-edited.
+    readonly_fields = ["is_overdried"]
     inlines = [VoteInline]
     date_hierarchy = "created_at"
 

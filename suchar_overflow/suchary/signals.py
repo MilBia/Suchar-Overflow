@@ -11,5 +11,5 @@ achievements, keeping the app dependency one-way.
 
 from django.dispatch import Signal
 
-# kwargs: voter (User), author (User)
+# kwargs: voter (User), author (User), suchar (Suchar)
 vote_changed = Signal()
