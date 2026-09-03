@@ -402,6 +402,20 @@ a wink toast, and `window.easterEggs.award('frontend-ee-konami')` (which POSTs
 once per session via the sessionStorage dedupe). `window.__konamiReady` is its
 init-complete signal — the E2E test waits on it before pressing keys.
 
+- **The whole file is an IIFE.** Unlike `easter_eggs.js` / `project.js` (which
+  also dump names at bundle top level but predate this and mostly namespace via
+  `window.*`), `konami.js` keeps its many generic helpers (`rand`, `STYLE_ID`,
+  `SVG_NS`, `keyBuffer`, …) private — a top-level `const` collision with a future
+  group-A egg (#284+) sharing the same global `{% compress js %}` block is a
+  bundle-wide `SyntaxError`, not a localised bug. The guarded CJS export tail
+  lives *inside* the IIFE (closures still see `module`).
+- **The key matcher is a fixed-length sliding window, not a rolling index.** A
+  hand-rolled state machine desyncs on the repeated `↑ ↑` prefix: an odd run of
+  `ArrowUp` before the real code (`↑ ↑ ↑ ↓ …`) leaves the index pointing at the
+  wrong step and the egg never fires. `konami.js` keeps the last
+  `SEQUENCE.length` keys and compares the buffer — O(1), immune to any junk or
+  repeated prefix. `handleKeydown` also drops chords with `ctrlKey/altKey/metaKey`
+  (browser/OS shortcuts like Ctrl+A, Alt+←) so they can't poison the buffer.
 - **Particles are authored in JS (`makeCrackerEl()` — `createElementNS`), never
   cloned from `svgs/icon-cracker-stack.svg`.** That file's body is
   `<defs><g id="cracker-stack">` + `<use href="#cracker-stack">`; N copies in one

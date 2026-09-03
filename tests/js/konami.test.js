@@ -43,8 +43,10 @@ const STATIC_PARTICLES = 16;
 
 let konami;
 
-function feed(keys, target) {
-  keys.forEach((key) => konami.handleKeydown({ key, target: target ?? null }));
+function feed(keys, extra) {
+  keys.forEach((key) =>
+    konami.handleKeydown({ key, target: null, ...(extra ?? {}) }),
+  );
 }
 
 function frontendEventPosts() {
@@ -102,7 +104,7 @@ describe("sequence matcher — handleKeydown", () => {
     expect(frontendEventPosts()).toHaveLength(0);
   });
 
-  it("resets after a wrong key, but a fresh full run still fires", () => {
+  it("a mistyped key does not block a subsequent clean run", () => {
     feed(["ArrowUp", "ArrowUp", "KeyX"]);
     feed(KONAMI_SEQUENCE);
 
@@ -116,6 +118,16 @@ describe("sequence matcher — handleKeydown", () => {
     expect(window.showToast).toHaveBeenCalledTimes(1);
   });
 
+  it("fires with an odd-length ArrowUp prefix (sliding window, not a rolling index)", () => {
+    // A hand-rolled state machine desyncs here: 3rd ArrowUp mismatches index 2,
+    // the "restart from key 0" fallback lands on index 1, and the following
+    // ArrowDown then fails against ArrowUp — the code never completes.
+    feed(["ArrowUp", "ArrowUp", "ArrowUp", ...KONAMI_SEQUENCE.slice(2)]);
+
+    expect(window.showToast).toHaveBeenCalledTimes(1);
+    expect(frontendEventPosts()).toHaveLength(1);
+  });
+
   it("accepts uppercase B and A (case-insensitive)", () => {
     feed([...KONAMI_SEQUENCE.slice(0, 8), "B", "A"]);
 
@@ -123,12 +135,27 @@ describe("sequence matcher — handleKeydown", () => {
   });
 
   it("ignores keystrokes typed into a form field", () => {
-    feed(KONAMI_SEQUENCE, { tagName: "INPUT" });
-    feed(KONAMI_SEQUENCE, { tagName: "TEXTAREA" });
-    feed(KONAMI_SEQUENCE, { isContentEditable: true });
+    feed(KONAMI_SEQUENCE, { target: { tagName: "INPUT" } });
+    feed(KONAMI_SEQUENCE, { target: { tagName: "TEXTAREA" } });
+    feed(KONAMI_SEQUENCE, { target: { isContentEditable: true } });
 
     expect(window.showToast).not.toHaveBeenCalled();
     expect(frontendEventPosts()).toHaveLength(0);
+  });
+
+  it("ignores chords with a Ctrl / Alt / Meta modifier", () => {
+    feed(KONAMI_SEQUENCE, { ctrlKey: true });
+    feed(KONAMI_SEQUENCE, { altKey: true });
+    feed(KONAMI_SEQUENCE, { metaKey: true });
+
+    expect(window.showToast).not.toHaveBeenCalled();
+
+    // A stray Ctrl+A mid-attempt is dropped, not buffered — so the real
+    // sequence around it still completes.
+    feed(KONAMI_SEQUENCE.slice(0, 5));
+    feed(["a"], { ctrlKey: true });
+    feed(KONAMI_SEQUENCE.slice(5));
+    expect(window.showToast).toHaveBeenCalledTimes(1);
   });
 
   it("replays the effect every entry but POSTs the award only once", () => {

@@ -112,8 +112,9 @@ def test_konami_code_shows_toast_rain_and_awards_achievement(
     expect(page.locator("#toast-container .toast")).to_contain_text("Kod Konami")
 
     # 2. Falling-cracker overlay + injected keyframes (full-motion default).
+    #    Web-first assertions only — `locator.count()` is a non-retrying snapshot.
     expect(page.locator("div[aria-hidden='true'] svg rect")).to_have_count(42)
-    assert page.locator("#ee-konami-style").count() == 1
+    expect(page.locator("#ee-konami-style")).to_have_count(1)
 
     # 3. Hidden achievement awarded through the frontend-event endpoint.
     page.wait_for_function(
@@ -141,7 +142,7 @@ def test_konami_code_respects_prefers_reduced_motion(
     # Toast + award still happen; the overlay is a motion-free static scatter,
     # so no @keyframes block is injected and there are fewer particles.
     expect(page.locator("#toast-container .toast")).to_contain_text("Kod Konami")
-    assert page.locator("#ee-konami-style").count() == 0
+    expect(page.locator("#ee-konami-style")).to_have_count(0)
     expect(page.locator("div[aria-hidden='true'] svg rect")).to_have_count(16)
 
     page.wait_for_function(
