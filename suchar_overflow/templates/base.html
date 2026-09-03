@@ -84,8 +84,20 @@
     {% block javascript %}
       {% compress js %}
         <script defer src="{% static 'js/project.js' %}"></script>
+        <script defer src="{% static 'js/features/easter_eggs.js' %}"></script>
       {% endcompress %}
     {% endblock javascript %}
+    {% if request.user.is_authenticated %}
+      {# Easter-egg sound URLs for easter_eggs.js (#282): a classic script cannot
+         resolve the static tag itself, and production hashes the filenames.
+         Nonce'd so CSP script-src allows the inline block. #}
+      <script nonce="{{ csp_nonce }}">
+        window.EE_AUDIO = {
+          rimshot: "{% static 'audio/rimshot.wav' %}",
+          dust: "{% static 'audio/dust.wav' %}",
+        };
+      </script>
+    {% endif %}
     <script nonce="{{ csp_nonce }}">
       (function() {
         var stored = localStorage.getItem('theme');

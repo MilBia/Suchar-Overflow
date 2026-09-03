@@ -64,6 +64,13 @@ test-all:
 test-js *args:
     @npx --no-install vitest run {{args}}
 
+# gen-audio: Regenerate the self-hosted easter-egg sound effects (#282).
+# Runs on the HOST — needs ffmpeg on PATH; the Django image has neither ffmpeg
+# nor numpy and this is a one-off asset build, not a runtime dependency. Output
+# is deterministic, so a no-op run leaves `git diff` clean.
+gen-audio:
+    @python scripts/generate_easter_egg_audio.py
+
 # coverage: Run unit tests under coverage and print the report — same gate CI enforces (fail_under in pyproject.toml).
 coverage *args:
     @docker compose run --rm django coverage run -m pytest -m "not e2e" {{args}}
