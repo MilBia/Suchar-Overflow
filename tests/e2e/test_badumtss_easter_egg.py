@@ -48,12 +48,14 @@ def test_badumtss_shows_toast_and_dust(
 
     _type_trigger(page)
 
-    # 1. The 🥁 toast.
-    expect(page.locator("#toast-container .toast")).to_contain_text("ba dum tss")
-
-    # 2. Dust overlay + injected keyframes (full-motion default).
+    # Check the dust overlay FIRST: it is removed from the DOM after ~2.2 s
+    # (OVERLAY_LIFETIME_MS), while the toast lingers ~5 s — asserting the toast
+    # first could burn enough time on a slow CI runner that the overlay is gone.
     expect(page.locator("div.ee-dust-overlay > div")).to_have_count(24)
     expect(page.locator("#ee-badumtss-style")).to_have_count(1)
+
+    # The 🥁 toast.
+    expect(page.locator("#toast-container .toast")).to_contain_text("ba dum tss")
 
 
 @pytest.mark.e2e

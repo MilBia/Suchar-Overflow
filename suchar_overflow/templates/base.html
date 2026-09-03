@@ -90,9 +90,13 @@
       {% endcompress %}
     {% endblock javascript %}
     {% if request.user.is_authenticated %}
-      {# Easter-egg sound URLs for easter_eggs.js (#282): a classic script cannot
-         resolve the static tag itself, and production hashes the filenames.
-         Nonce'd so CSP script-src allows the inline block. #}
+      {% comment %}
+        Easter-egg sound URLs for easter_eggs.js (#282): a classic script cannot
+        resolve the static tag itself, and production hashes the filenames.
+        Nonce'd so CSP script-src allows the inline block. Uses the comment tag,
+        not a multi-line hash comment: Django parses that form on a single line
+        only and would otherwise emit this text straight into the head (#310).
+      {% endcomment %}
       <script nonce="{{ csp_nonce }}">
         window.EE_AUDIO = {
           rimshot: "{% static 'audio/rimshot.wav' %}",

@@ -49,6 +49,9 @@ beforeEach(() => {
   sessionStorage.clear();
   localStorage.clear();
   document.body.innerHTML = "";
+  // innerHTML = "" drops children but not <body>'s own attributes / window flags.
+  delete document.body.dataset.userIsAuthenticated;
+  delete window.__baDumTssReady;
   document.head.querySelector(`#${STYLE_ID}`)?.remove();
 
   globalThis.getCsrfToken = vi.fn(() => "test-token");
@@ -110,10 +113,18 @@ describe("phrase matcher — handleKeydown", () => {
     expect(window.showToast).toHaveBeenCalledTimes(1);
   });
 
-  it("never touches the network (pure delight — no achievement)", () => {
+  it("is case-insensitive (buffer is lower-cased)", () => {
+    type("SUCHAR");
+    type("Ba Dum Tss");
+    expect(window.showToast).toHaveBeenCalledTimes(2);
+  });
+
+  it("never touches the network or the achievement system (pure delight)", () => {
+    const award = vi.spyOn(window.easterEggs, "award");
     type("suchar");
     type("badumtss");
     expect(globalThis.fetch).not.toHaveBeenCalled();
+    expect(award).not.toHaveBeenCalled();
   });
 
   it("ignores keystrokes typed into a form field", () => {
@@ -243,6 +254,29 @@ describe("dustBurst", () => {
     } finally {
       window.easterEggs = saved;
     }
+  });
+
+  it("falls back to matchMedia for reduced-motion when window.easterEggs is missing", () => {
+    // easter_eggs.js failed to load: without a local fallback `reduced` would be
+    // false and the dust storm would run for a reduced-motion user anyway.
+    window.matchMedia = vi.fn((q) => ({ matches: true, media: q }));
+    const saved = window.easterEggs;
+    delete window.easterEggs;
+    try {
+      type("suchar");
+      expect(window.showToast).toHaveBeenCalledTimes(1);
+      expect(overlays()).toHaveLength(0);
+      expect(document.getElementById(STYLE_ID)).toBeNull();
+    } finally {
+      window.easterEggs = saved;
+    }
+  });
+
+  it("does not throw when window.showToast is unavailable", () => {
+    window.matchMedia = vi.fn((q) => ({ matches: false, media: q }));
+    delete window.showToast;
+    expect(() => type("suchar")).not.toThrow();
+    expect(overlays()).toHaveLength(1); // the visual effect still runs
   });
 });
 

@@ -839,6 +839,12 @@ from the template-level `i18n` used elsewhere).
 - JS: `suchar_overflow/static/js/project.js` (main) + `js/features/` (split features).
 - djlint enforces template formatting. After editing templates, run `pre-commit` to
   auto-format. djlint max line length for templates is 119 chars.
+- **`{# … #}` comments are single-line only.** Django's lexer does not span newlines
+  for that form, so a multi-line `{# … #}` is emitted into the page verbatim (it bit
+  `base.html`'s `EE_AUDIO` block — #310, from #282, fixed with #284). Use
+  `{% comment %} … {% endcomment %}` for anything multi-line. Don't put a literal
+  `{% comment %}` / `{% endcomment %}` / `{# #}` token *inside* a `{% comment %}`
+  block either — djlint miscounts the nesting and de-indents the rest of the file.
 - Never use `innerHTML` with untrusted data. Use `createElement`/`textContent` or
   `appendChild` for dynamic DOM construction.
 

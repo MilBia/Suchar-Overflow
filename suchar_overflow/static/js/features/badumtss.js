@@ -71,6 +71,22 @@
         return min + Math.random() * (max - min);
     }
 
+    // Reduced-motion gate. Delegates to the #282 foundation's single check, but
+    // falls back to a direct media query if easter_eggs.js failed to load — a
+    // user who asked for reduced motion must not get the dust storm just because
+    // the foundation is missing. The fallback mirrors `easterEggs.reducedJuice()`
+    // (reduced when asked, or when the environment can't tell us).
+    function prefersReducedMotion() {
+        const ee = window.easterEggs;
+        if (ee && typeof ee.reducedJuice === 'function') return ee.reducedJuice();
+        try {
+            if (typeof window.matchMedia !== 'function') return true;
+            return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        } catch {
+            return true;
+        }
+    }
+
     function clearBuffer() {
         charBuffer = '';
         if (idleTimer !== null) {
@@ -171,8 +187,7 @@
             ee.playSound('rimshot');
         }
 
-        const reduced = !!(ee && typeof ee.reducedJuice === 'function' && ee.reducedJuice());
-        if (!reduced) dustBurst();
+        if (!prefersReducedMotion()) dustBurst();
     }
 
     // Push the key into the bounded buffer and fire when its tail matches a
