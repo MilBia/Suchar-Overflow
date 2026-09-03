@@ -141,9 +141,12 @@
             <div class="card border bg-light mb-4">
               <div class="card-body">
                 <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Statistics" %}</h6>
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="mb-2">
                   <span>{% trans "Comedy Rank" %}</span>
-                  <span class="fw-bold text-dark">#{{ global_rank }}</span>
+                  <span class="d-block fw-bold text-dark" title="#{{ global_rank }}">
+                    {{ global_rank_name }}
+                    <span class="fw-normal text-muted small">#{{ global_rank }}</span>
+                  </span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <span>{% trans "Jokes" %}</span>
