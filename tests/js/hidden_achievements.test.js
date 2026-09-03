@@ -17,12 +17,21 @@ const MODULE_PATH = path.resolve(
 
 let hiddenAchievements;
 
+// Shared registry for `setupX()` calls. jsdom's `document` survives between
+// tests and `vi.resetModules()` does not detach listeners a `setupX()` added to
+// it, so a test that never reaches its award (and so never triggers the
+// in-`award()` teardown) would otherwise leak `mouseover`/`click` handlers into
+// the next test. Draining every registered teardown in `afterEach` keeps
+// `document` clean regardless of whether the test awarded.
+let teardownRegistry;
+
 beforeEach(() => {
   vi.resetModules();
   sessionStorage.clear();
   localStorage.clear();
   document.body.innerHTML = "";
   window.history.pushState({}, "", "/");
+  teardownRegistry = {};
 
   // Free globals the script reaches for without declaring them.
   globalThis.getCsrfToken = vi.fn(() => "test-token");
@@ -32,6 +41,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  Object.values(teardownRegistry).forEach((fn) => {
+    if (typeof fn === "function") fn();
+  });
   vi.restoreAllMocks();
   vi.useRealTimers();
 });
@@ -87,7 +99,7 @@ describe("setupRecenzentTotalny() — 3s hover dwell across 20 cards", () => {
       cards.push(card);
     }
 
-    hiddenAchievements.setupRecenzentTotalny({});
+    hiddenAchievements.setupRecenzentTotalny(teardownRegistry);
 
     cards.forEach((card) => {
       card.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
@@ -113,13 +125,80 @@ describe("setupRecenzentTotalny() — 3s hover dwell across 20 cards", () => {
       document.body.appendChild(card);
     }
 
-    hiddenAchievements.setupRecenzentTotalny({});
+    hiddenAchievements.setupRecenzentTotalny(teardownRegistry);
     document.querySelectorAll(".suchar-card").forEach((card) => {
       card.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
     });
     vi.advanceTimersByTime(10000);
 
     expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("setupStluczonaMysz() — repeated clicks on one suchar's vote buttons", () => {
+  function buildVoteButton() {
+    document.body.innerHTML = `<button class="btn-vote" data-suchar-id="7">funny</button>`;
+    return document.querySelector(".btn-vote");
+  }
+
+  it("awards on the 5th click of the same suchar id, not before", () => {
+    const btn = buildVoteButton();
+    hiddenAchievements.setupStluczonaMysz(teardownRegistry);
+
+    for (let i = 0; i < 4; i += 1) {
+      btn.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    }
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+
+    btn.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+    const posts = globalThis.fetch.mock.calls.filter(
+      ([url]) => url === "/api/achievements/frontend-event",
+    );
+    expect(posts).toHaveLength(1);
+    expect(JSON.parse(posts[0][1].body)).toEqual({
+      event_slug: "frontend-stluczona-mysz",
+    });
+  });
+
+  it("counts each suchar id separately", () => {
+    document.body.innerHTML = `
+      <button class="btn-vote" data-suchar-id="1">a</button>
+      <button class="btn-vote" data-suchar-id="2">b</button>
+    `;
+    hiddenAchievements.setupStluczonaMysz(teardownRegistry);
+
+    document.querySelectorAll(".btn-vote").forEach((btn) => {
+      for (let i = 0; i < 4; i += 1) {
+        btn.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      }
+    });
+
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("getOwnedSlugs()", () => {
+  it("returns the parsed slug list on a 2xx response", async () => {
+    globalThis.fetch = vi.fn(() =>
+      Promise.resolve({ ok: true, json: async () => ["frontend-odkrywca"] }),
+    );
+
+    await expect(hiddenAchievements.getOwnedSlugs()).resolves.toEqual([
+      "frontend-odkrywca",
+    ]);
+  });
+
+  it("returns [] on a non-ok response", async () => {
+    globalThis.fetch = vi.fn(() => Promise.resolve({ ok: false, json: async () => ["x"] }));
+
+    await expect(hiddenAchievements.getOwnedSlugs()).resolves.toEqual([]);
+  });
+
+  it("returns [] when fetch rejects", async () => {
+    globalThis.fetch = vi.fn(() => Promise.reject(new Error("offline")));
+
+    await expect(hiddenAchievements.getOwnedSlugs()).resolves.toEqual([]);
   });
 });
 
@@ -134,7 +213,7 @@ describe("setupNiecierpliwy() — short-submit counter", () => {
   it("awards only on the 3rd short submit and clears the counter", () => {
     const { setupNiecierpliwy } = hiddenAchievements;
     const form = buildForm();
-    setupNiecierpliwy({});
+    setupNiecierpliwy(teardownRegistry);
 
     for (let i = 0; i < 2; i += 1) {
       form.dispatchEvent(new Event("submit"));
@@ -157,7 +236,7 @@ describe("setupNiecierpliwy() — short-submit counter", () => {
   it("does not count a submit once the textarea has 10+ trimmed chars", () => {
     const { setupNiecierpliwy } = hiddenAchievements;
     const form = buildForm();
-    setupNiecierpliwy({});
+    setupNiecierpliwy(teardownRegistry);
 
     document.getElementById("id_text").value = "   this is clearly long enough   ";
     form.dispatchEvent(new Event("submit"));
@@ -172,13 +251,13 @@ describe("setupOdkrywca() — cross-session visit counter (localStorage)", () =>
 
     for (let visit = 1; visit <= 4; visit += 1) {
       vi.resetModules();
-      require(MODULE_PATH).setupOdkrywca({});
+      require(MODULE_PATH).setupOdkrywca(teardownRegistry);
       expect(localStorage.getItem("odkrywca_visits")).toBe(String(visit));
     }
     expect(globalThis.fetch).not.toHaveBeenCalled();
 
     vi.resetModules();
-    require(MODULE_PATH).setupOdkrywca({});
+    require(MODULE_PATH).setupOdkrywca(teardownRegistry);
 
     expect(localStorage.getItem("odkrywca_visits")).toBeNull();
     const posts = globalThis.fetch.mock.calls.filter(
@@ -190,7 +269,7 @@ describe("setupOdkrywca() — cross-session visit counter (localStorage)", () =>
 
   it("ignores pages that are not the achievements list", () => {
     window.history.pushState({}, "", "/achievements/inbox");
-    hiddenAchievements.setupOdkrywca({});
+    hiddenAchievements.setupOdkrywca(teardownRegistry);
     expect(localStorage.getItem("odkrywca_visits")).toBeNull();
   });
 });
@@ -200,12 +279,12 @@ describe("setupZbieraczSucharow() — page-view counter with vote reset", () => 
     window.history.pushState({}, "", "/suchary/");
     for (let i = 0; i < 4; i += 1) {
       vi.resetModules();
-      require(MODULE_PATH).setupZbieraczSucharow({});
+      require(MODULE_PATH).setupZbieraczSucharow(teardownRegistry);
     }
     expect(sessionStorage.getItem("zbieracz_pages")).toBe("4");
 
     vi.resetModules();
-    require(MODULE_PATH).setupZbieraczSucharow({});
+    require(MODULE_PATH).setupZbieraczSucharow(teardownRegistry);
 
     expect(sessionStorage.getItem("zbieracz_pages")).toBeNull();
     const posts = globalThis.fetch.mock.calls.filter(
@@ -221,7 +300,7 @@ describe("setupZbieraczSucharow() — page-view counter with vote reset", () => 
     window.history.pushState({}, "", "/suchary/");
     document.body.innerHTML = `<button class="btn-vote">vote</button>`;
 
-    hiddenAchievements.setupZbieraczSucharow({});
+    hiddenAchievements.setupZbieraczSucharow(teardownRegistry);
     expect(sessionStorage.getItem("zbieracz_pages")).toBe("1");
 
     document.querySelector(".btn-vote").dispatchEvent(

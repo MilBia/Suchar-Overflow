@@ -50,6 +50,8 @@ test-e2e *args:
         tests/e2e/ {{args}}
 
 # test-all: Run unit tests then E2E tests sequentially.
+# Deliberately does NOT include `test-js` — that one runs on the host (Node), not
+# in Docker, so keeping it out lets `test-all` stay a pure container workflow.
 test-all:
     @just test
     @just test-e2e
@@ -57,9 +59,10 @@ test-all:
 # test-js: Run the Vitest + jsdom unit tests for static/js/ logic.
 # Runs on the host, NOT in a container — like `pre-commit`, this tool has no
 # Django/DB dependency and lives outside the Docker image. Needs Node + a one-off
-# `npm ci`. See CLAUDE.md "JS tests (Vitest)".
+# `npm ci` (`--no-install` errors out loudly instead of pulling vitest from the
+# network if that step was skipped). See CLAUDE.md "JS tests (Vitest)".
 test-js *args:
-    @npx vitest run {{args}}
+    @npx --no-install vitest run {{args}}
 
 # coverage: Run unit tests under coverage and print the report — same gate CI enforces (fail_under in pyproject.toml).
 coverage *args:
