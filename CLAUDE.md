@@ -442,6 +442,53 @@ init-complete signal — the E2E test waits on it before pressing keys.
   `…`, Polish diacritics) — verified against the production-storage
   `collectstatic` + `compress --force` bundle, not just `just test`.
 
+### "ba dum tss" / dust easter egg (`features/badumtss.js`)
+
+Issue #284, umbrella #278 — the **second** group-A child on the #282 foundation,
+the sibling of `konami.js`. Types `suchar`, `badumtss`, or `ba dum tss` (matched
+as literal suffixes of a rolling key buffer) on any page for a logged-in user;
+on every match (it **replays**, like konami — not one-shot) it shows a
+`🥁 / ba dum tss` toast and, unless `prefers-reduced-motion`, a ~24-mote
+falling-dust overlay. `window.__baDumTssReady` is its init-complete signal — the
+E2E test waits on it before typing.
+
+- **Pure delight — no achievement, no `frontend-ee-` slug, no network.** It does
+  not touch `VALID_FRONTEND_SLUGS`, `POST /api/achievements/frontend-event`, or
+  `window.easterEggs.award`; the Vitest suite asserts `fetch` is never called.
+  It consumes only `easterEggs.reducedJuice()` and `easterEggs.playSound`
+  (the muted-by-default `rimshot` cue — `EE_AUDIO.rimshot` already exists from
+  #282, no new audio file).
+- **The whole file is an IIFE**, same reason as `konami.js`: its generic helpers
+  (`rand`, `STYLE_ID`, `makeMote`, …) must not collide at bundle top level with
+  konami's or a future #285+ egg's. The guarded CJS export tail lives inside the
+  IIFE. It is in `base.html`'s global `{% compress js %}` block right after
+  `konami.js` — same-block concatenation, so `BASE_JS_BUNDLES` stays `1`.
+- **The key buffer is a bounded string with an idle-clear timer.** Only printable
+  single-character `e.key` values extend it (`Shift`/`ArrowLeft`/… are inert and
+  don't break a phrase); it is sliced to the longest phrase's length each
+  keystroke, and a `setTimeout(…, 2000)` re-armed on every key wipes it after a
+  typing pause so "sucha" now + "r" later can't combine. `handleKeydown` also
+  drops form-field targets (`INPUT`/`TEXTAREA`/`SELECT`/`isContentEditable`) and
+  `ctrl/alt/meta` chords, exactly like konami.
+- **`prefers-reduced-motion` (or jsdom, no `matchMedia`) → the toast only** — no
+  overlay is appended and no `<style>` is injected. This is *different* from
+  `konami.js`, which still renders a motion-free static scatter; #284's issue
+  says "sam toast".
+- **Dust motes are plain `<div>`s** built in JS with styles set
+  property-by-property (jsdom's CSSOM drops `--ee-dx` set via `cssText`). The
+  drift `@keyframes` is injected once as `<style id="ee-badumtss-style">`; CSP
+  `style-src` has `'unsafe-inline'`. The overlay is `div.ee-dust-overlay`
+  (a class, not an id — replays leave several in the DOM at once) and is removed
+  after ~2.2 s.
+- Its `keydown` handler is on `document` and its buffer/timer are module-level
+  mutable state, so — per "JS tests (Vitest)" above — `tests/js/badumtss.test.js`
+  calls `badumtss._resetForTests()` (its own detach + buffer reset, aliased to
+  `teardownBaDumTss`) each `beforeEach`/`afterEach`, and `easter_eggs.js`'s
+  `teardownAll()` also reaches it (it registers via `registerTeardown('badumtss')`).
+- rjsmin (in `{% compress js %}`) preserves the non-ASCII toast string (the 🥁
+  emoji) — verified against the production-storage `collectstatic` +
+  `compress --force` bundle, not just `just test`.
+
 ### Background scheduling — APScheduler, not Django-RQ
 
 Django-RQ has been removed entirely. `AchievementsConfig.ready()`
