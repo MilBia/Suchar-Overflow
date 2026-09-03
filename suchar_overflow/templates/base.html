@@ -85,6 +85,7 @@
       {% compress js %}
         <script defer src="{% static 'js/project.js' %}"></script>
         <script defer src="{% static 'js/features/easter_eggs.js' %}"></script>
+        <script defer src="{% static 'js/features/konami.js' %}"></script>
       {% endcompress %}
     {% endblock javascript %}
     {% if request.user.is_authenticated %}

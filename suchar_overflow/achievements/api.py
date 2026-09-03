@@ -25,8 +25,8 @@ router = Router()
 # must be listed here explicitly — an existing Achievement row is necessary but
 # not sufficient. Group-A easter eggs (umbrella #278) use the `frontend-ee-`
 # prefix by convention; each child issue adds its own concrete slug(s) to this
-# set alongside the Achievement data migration. #282 only establishes the
-# convention — no easter-egg slug exists yet.
+# set alongside the Achievement data migration (#283 added the first one,
+# `frontend-ee-konami`).
 VALID_FRONTEND_SLUGS = frozenset(
     {
         "frontend-recenzent-totalny",
@@ -34,6 +34,8 @@ VALID_FRONTEND_SLUGS = frozenset(
         "frontend-zbieracz-sucharow",
         "frontend-niecierpliwy",
         "frontend-odkrywca",
+        # Group-A easter eggs (umbrella #278): the `frontend-ee-` prefix.
+        "frontend-ee-konami",  # #283 — Konami code
     },
 )
 

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 import pytest
 from django.core.cache import cache
 
+from suchar_overflow.achievements.api import VALID_FRONTEND_SLUGS
 from suchar_overflow.achievements.cache import pending_cache_key
 from suchar_overflow.achievements.cache import toast_cache_key
 from suchar_overflow.achievements.models import Achievement
@@ -373,3 +374,32 @@ def test_frontend_event_does_not_set_cache_key_when_already_owned(
     assert response.status_code == HTTPStatus.OK
 
     assert cache.get(pending_cache_key(user.pk)) is None
+
+
+# ---------------------------------------------------------------------------
+# Konami easter egg — frontend-ee-konami (#283)
+# ---------------------------------------------------------------------------
+
+
+def test_konami_slug_is_in_the_frontend_allowlist() -> None:
+    assert "frontend-ee-konami" in VALID_FRONTEND_SLUGS
+
+
+@pytest.mark.django_db
+def test_frontend_event_awards_the_konami_achievement(client: Client) -> None:
+    user = make_user("user_fe_konami")
+    client.force_login(user)
+
+    # Seeded by migration 0020; get_or_create keeps the test independent of it.
+    make_frontend_achievement("frontend-ee-konami", name="Kod Konami")
+
+    response = client.post(
+        FRONTEND_EVENT_URL,
+        data={"event_slug": "frontend-ee-konami"},
+        content_type="application/json",
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {"ok": True}
+
+    ach = Achievement.objects.get(slug="frontend-ee-konami")
+    assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1
