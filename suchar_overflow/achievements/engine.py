@@ -222,6 +222,25 @@ class DryMasterRule(AchievementRule):
         return count or None
 
 
+class EditCountRule(AchievementRule):
+    metric = Achievement.Metric.EDIT_COUNT
+
+    @classmethod
+    def compute_value(
+        cls,
+        user: User,
+        instance: Suchar | Vote | None = None,  # noqa: ARG003
+    ) -> int | None:
+        # ``Suchar.edit_count`` is bumped by ``SucharUpdateView`` on every
+        # successful edit-window save. The metric is simply the highest such
+        # count among the user's suchary — threshold-independent, so a future
+        # tiered series only needs extra ``Achievement`` rows. ``Max`` is
+        # ``None`` when the user has authored nothing yet.
+        return Suchar.objects.filter(author=user).aggregate(
+            top=Max("edit_count"),
+        )["top"]
+
+
 class StreakLoginRule(AchievementRule):
     metric = Achievement.Metric.STREAK_LOGIN
 

@@ -279,14 +279,21 @@ def test_update_author_post_success_shows_message(
 
 
 def _suchar_select_count(ctx: CaptureQueriesContext) -> int:
-    """Count SELECTs against the suchar table itself.
+    """Count row-fetching SELECTs against the suchar table itself.
 
     Matching the quoted table name excludes the m2m table
     (`"suchary_suchar_tags"`) and the `UPDATE "suchary_suchar" SET ...`
-    issued by `form.save()`.
+    issued by `form.save()` / the `edit_count` bump. `MAX(` filters out the
+    `EditCountRule` aggregate the `suchar_edited` signal runs for the
+    "Recydywa" achievement (#297) — that is not the authorship row fetch
+    this #201 guard is about.
     """
     return len(
-        [q for q in ctx.captured_queries if 'FROM "suchary_suchar"' in q["sql"]],
+        [
+            q
+            for q in ctx.captured_queries
+            if 'FROM "suchary_suchar"' in q["sql"] and "MAX(" not in q["sql"]
+        ],
     )
 
 
