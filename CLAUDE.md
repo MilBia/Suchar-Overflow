@@ -678,8 +678,10 @@ Issue #289, umbrella #278 — the group-A child triggered by mashing the theme
 toggle itself. 10 clicks on `#theme-toggle` within a 5 s window shows a
 "Zdecyduj się 🙃" toast, a quick 360° spin of the toggle icon (unless
 `prefers-reduced-motion`), and the hidden `frontend-ee-niezdecydowany`
-achievement. It **replays** on every fresh burst of 10 (like konami /
-badumtss / logo_spin — deliberately not one-shot). `window.__themeSpamReady`
+achievement — `frontend-ee-niezdecydowany` in `VALID_FRONTEND_SLUGS`, seeded by
+migration `0021_niezdecydowany_achievement_data`. It **replays** on every fresh
+burst of 10 (like konami / badumtss / logo_spin — deliberately not one-shot).
+`window.__themeSpamReady`
 is its init-complete signal — the E2E test waits on it before clicking. Same
 shape as the sibling eggs: whole file is an IIFE (so its helpers — `STYLE_ID`,
 `SPIN_CLASS`, … — don't collide at bundle top level), guarded CJS export tail

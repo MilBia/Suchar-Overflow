@@ -1,7 +1,7 @@
 """E2E test for the "Niezdecydowany" theme-toggle-spam easter egg
 (features/theme_spam.js, issue #289).
 
-Mashes the theme toggle 10× in quick succession for a logged-in user and
+Mashes the theme toggle 10 times in quick succession for a logged-in user and
 checks the three surfaces: the "Zdecyduj się" toast, the icon spin overlay (a
 CSS class + injected @keyframes block), and the hidden
 ``frontend-ee-niezdecydowany`` achievement landing in the DB via
@@ -94,10 +94,16 @@ def test_theme_spam_shows_toast_spin_and_awards_achievement(
     live_server: LiveServer,
     e2e_user: UserModel,
 ) -> None:
+    # Pin the starting theme so the parity check below is deterministic rather
+    # than depending on the runner's OS-level color-scheme default.
+    page.emulate_media(color_scheme="light")
     page.goto(f"{live_server.url}/")
     page.wait_for_function(_READY_JS, timeout=12_000)
 
-    starting_theme = page.evaluate("document.documentElement.getAttribute('data-theme')")
+    starting_theme = page.evaluate(
+        "document.documentElement.getAttribute('data-theme')",
+    )
+    assert starting_theme == "light"
 
     _mash_theme_toggle(page)
 
@@ -118,9 +124,17 @@ def test_theme_spam_shows_toast_spin_and_awards_achievement(
     # 4. Theme untouched by the egg — 10 clicks (even) ends back where it
     #    started, and localStorage agrees with the DOM attribute.
     ending_theme = page.evaluate("document.documentElement.getAttribute('data-theme')")
-    stored_theme = page.evaluate("localStorage.getItem('theme')")
-    assert ending_theme == starting_theme
-    assert stored_theme == ending_theme
+    assert ending_theme == "light"
+    assert page.evaluate("localStorage.getItem('theme')") == "light"
+
+    # 5. A discriminating check, not just a coincidental parity match: one more
+    #    click still causes exactly one flip. If the egg additionally wrote
+    #    the theme itself (forcing a value, or double-toggling), this click
+    #    would land on something other than the single expected flip.
+    page.locator("#theme-toggle").click()
+    final_theme = page.evaluate("document.documentElement.getAttribute('data-theme')")
+    assert final_theme == "dark"
+    assert page.evaluate("localStorage.getItem('theme')") == "dark"
 
 
 @pytest.mark.e2e
