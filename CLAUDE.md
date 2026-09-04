@@ -672,6 +672,75 @@ stays `1`).
   ellipsis, Polish diacritics) — verified against the production-storage
   `collectstatic` + `compress --force` bundle, not just `just test`.
 
+### "Niezdecydowany" / theme-spam easter egg (`features/theme_spam.js`)
+
+Issue #289, umbrella #278 — the group-A child triggered by mashing the theme
+toggle itself. 10 clicks on `#theme-toggle` within a 5 s window shows a
+"Zdecyduj się 🙃" toast, a quick 360° spin of the toggle icon (unless
+`prefers-reduced-motion`), and the hidden `frontend-ee-niezdecydowany`
+achievement — `frontend-ee-niezdecydowany` in `VALID_FRONTEND_SLUGS`, seeded by
+migration `0021_niezdecydowany_achievement_data`. It **replays** on every fresh
+burst of 10 (like konami / badumtss / logo_spin — deliberately not one-shot).
+`window.__themeSpamReady`
+is its init-complete signal — the E2E test waits on it before clicking. Same
+shape as the sibling eggs: whole file is an IIFE (so its helpers — `STYLE_ID`,
+`SPIN_CLASS`, … — don't collide at bundle top level), guarded CJS export tail
+inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
+`tumbleweed.js` (so `BASE_JS_BUNDLES` stays `1`).
+
+- **The trigger is a `click` listener directly on `#theme-toggle`, not a
+  `MutationObserver` on `data-theme`.** `project.js` calls
+  `setTheme(currentTheme)` unconditionally on every page load, which would be
+  a built-in false positive for an attribute observer — the click listener has
+  no such problem.
+- **The click buffer lives in memory, not `sessionStorage`.** Unlike
+  `logo_spin.js` (whose logo is an `<a>` that navigates and wipes memory,
+  forcing a sessionStorage chain), `#theme-toggle` is a plain `<button>` — no
+  reload — so state survives in memory exactly like konami's key buffer.
+  Don't port logo_spin's chain/grace-period machinery here; it solves a
+  problem this egg doesn't have.
+- **A sliding window of the last 10 click timestamps, not an idle-clearing
+  counter.** `handleToggleClick` pushes `Date.now()` and shifts the oldest
+  entry off once the buffer exceeds 10 — self-cleaning, no idle timer needed
+  (unlike `badumtss.js`'s typed-phrase buffer). It fires when the buffer holds
+  exactly 10 timestamps spanning ≤ 5000 ms, then clears itself so a replay
+  needs a fresh 10.
+- **The egg never calls `setTheme` and never touches `localStorage.theme` or
+  the theme cookie** — it only counts clicks on a button `project.js`'s own
+  listener already owns. This is what makes #289's "motyw kończy w stanie z
+  ostatniego kliknięcia (bez psucia preferencji)" true by construction; both
+  Vitest and the E2E test assert it explicitly rather than trusting the
+  absence of a call.
+- **The spin is a `.ee-toggle-spin` class on `#theme-toggle` itself** (not a
+  separate overlay), driven by a `@keyframes ee-toggle-spin` + rule block
+  injected once as `<style id="ee-theme-spam-style">` — copied from
+  `logo_spin.js`'s `.ee-logo-spin` mechanics (CSP `style-src` has
+  `'unsafe-inline'`; the class is stripped ~80 ms after the 600 ms animation;
+  the `<style>` also carries a nested
+  `@media (prefers-reduced-motion: reduce){…animation:none}` as defence in
+  depth, since the JS gate already skips the whole branch).
+  `prefers-reduced-motion` (or jsdom, no `matchMedia`) → the toast + award
+  only, no spin, no `<style>` injected.
+- The achievement icon is Bootstrap Icons' `bi-yin-yang` (half light, half
+  dark) — fetched from the upstream SVG, not hand-typed path data (konami's
+  `bi-controller` migration is the precedent: reconstructing path data from
+  memory renders wrong and nothing catches it).
+- Its `click` handler is on `#theme-toggle` and the timestamp buffer is
+  module-level mutable state, so — per "JS tests (Vitest)" above —
+  `tests/js/theme_spam.test.js` calls `themeSpam._resetForTests()` (aliased to
+  `teardownThemeSpam` — detaches the listener, clears the spin timers, strips
+  the class, removes the `<style>`, clears the buffer) each
+  `beforeEach`/`afterEach`, and `easter_eggs.js`'s `teardownAll()` also reaches
+  it (registers via `registerTeardown('themeSpam')`). Most of its Vitest
+  suite drives the exported `handleToggleClick()` directly (like konami's
+  `handleKeydown`) rather than dispatching DOM `click` events, since the real
+  listener only exists after the module's own `DOMContentLoaded` init runs;
+  the wiring tests (attach/detach, authed/anonymous gating) dispatch real
+  `click` events on the button instead, to actually exercise that listener.
+- rjsmin (in `{% compress js %}`) preserves the non-ASCII toast string (the
+  🙃 emoji, Polish diacritics) — verified against the production-storage
+  `collectstatic` + `compress --force` bundle, not just `just test`.
+
 ### Background scheduling — APScheduler, not Django-RQ
 
 Django-RQ has been removed entirely. `AchievementsConfig.ready()`

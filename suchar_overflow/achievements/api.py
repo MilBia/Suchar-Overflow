@@ -36,6 +36,7 @@ VALID_FRONTEND_SLUGS = frozenset(
         "frontend-odkrywca",
         # Group-A easter eggs (umbrella #278): the `frontend-ee-` prefix.
         "frontend-ee-konami",  # #283 — Konami code
+        "frontend-ee-niezdecydowany",  # #289 — theme-toggle spam
     },
 )
 

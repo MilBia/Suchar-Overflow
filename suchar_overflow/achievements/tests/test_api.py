@@ -403,3 +403,34 @@ def test_frontend_event_awards_the_konami_achievement(client: Client) -> None:
 
     ach = Achievement.objects.get(slug="frontend-ee-konami")
     assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1
+
+
+# ---------------------------------------------------------------------------
+# Theme-spam easter egg — frontend-ee-niezdecydowany (#289)
+# ---------------------------------------------------------------------------
+
+
+def test_niezdecydowany_slug_is_in_the_frontend_allowlist() -> None:
+    assert "frontend-ee-niezdecydowany" in VALID_FRONTEND_SLUGS
+
+
+@pytest.mark.django_db
+def test_frontend_event_awards_the_niezdecydowany_achievement(
+    client: Client,
+) -> None:
+    user = make_user("user_fe_niezdecydowany")
+    client.force_login(user)
+
+    # Seeded by migration 0021; get_or_create keeps the test independent of it.
+    make_frontend_achievement("frontend-ee-niezdecydowany", name="Niezdecydowany")
+
+    response = client.post(
+        FRONTEND_EVENT_URL,
+        data={"event_slug": "frontend-ee-niezdecydowany"},
+        content_type="application/json",
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {"ok": True}
+
+    ach = Achievement.objects.get(slug="frontend-ee-niezdecydowany")
+    assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1
