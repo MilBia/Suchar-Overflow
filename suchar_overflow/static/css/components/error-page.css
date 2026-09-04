@@ -1,0 +1,45 @@
+/* =========================================
+   Error Pages (404 / 403 / 403 CSRF / 500)
+   ========================================= */
+
+/* Shared layout for the four themed error templates. Deliberately class-only
+   and JS-free (issue #286).
+
+   This lives in base.html's global {% compress css %} block rather than a
+   page-specific block (cf. #250) on purpose: 500.html is rendered by
+   django.views.defaults.server_error with a bare template.render() — no
+   request, no context processors — and a page-level {% compress css %} block
+   there is fragile under COMPRESS_OFFLINE (offline generation renders the
+   block without the real parent context). One small component sheet in the
+   global bundle covers all four templates with none of that risk. It sits in
+   components/, not pages/, and every rule is scoped under .error-page. */
+.error-page {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-md);
+    text-align: center;
+}
+
+.error-page__code {
+    font-family: var(--font-mono);
+    font-size: clamp(3.5rem, 12vw, 6rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    color: var(--text-light);
+    margin: 0 0 var(--space-md);
+}
+
+.error-page__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 var(--space-sm);
+}
+
+.error-page__joke {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin: 0 auto var(--space-lg);
+    max-width: 32rem;
+}

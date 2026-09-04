@@ -3,15 +3,15 @@
 {% load i18n %}
 
 {% block title %}
-  {% trans "Forbidden (403)" %}
+  {% trans "403 — formularz bez pieczątki" %}
 {% endblock title %}
 {% block content %}
-  <h1>{% trans "Forbidden (403)" %}</h1>
-  <p>
-    {% if exception %}
-      {{ exception }}
-    {% else %}
-      {% trans "You're not allowed to access this page." %}
-    {% endif %}
-  </p>
+  <div class="error-page">
+    <p class="error-page__code" aria-hidden="true">403</p>
+    <h1 class="error-page__title">{% trans "403 — formularz bez pieczątki" %}</h1>
+    <p class="error-page__joke">
+      {% trans "Serwer nie znalazł ważnego tokenu CSRF i na wszelki wypadek nie ruszył palcem. Odśwież stronę i spróbuj ponownie." %}
+    </p>
+    <a class="btn btn-primary" href="{% url 'home' %}">{% trans "Wróć na stronę główną" %}</a>
+  </div>
 {% endblock content %}
