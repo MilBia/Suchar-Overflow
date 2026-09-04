@@ -7,7 +7,7 @@
 {% endblock title %}
 {% block content %}
   <div class="error-page">
-    <p class="error-page__code">403</p>
+    <p class="error-page__code" aria-hidden="true">403</p>
     <h1 class="error-page__title">{% trans "403 — wstęp wzbroniony" %}</h1>
     <p class="error-page__joke">{% trans "Ochroniarz przeczytał ten suchar i teraz nikomu nie ufa. Tobie też nie." %}</p>
     <a class="btn btn-primary" href="{% url 'home' %}">{% trans "Wróć na stronę główną" %}</a>

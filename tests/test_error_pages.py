@@ -16,7 +16,9 @@ the template renders — while a stray locally-compiled catalog can't mask a dri
 import pytest
 from django.template.loader import get_template
 from django.template.loader import render_to_string
+from django.test import Client
 from django.test import RequestFactory
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext
 
@@ -74,3 +76,18 @@ def test_500_renders_without_request() -> None:
         in html
     )
     assert reverse("home") in html
+
+
+@pytest.mark.django_db
+@override_settings(DEBUG=False)
+def test_missing_url_serves_themed_404_through_middleware() -> None:
+    # Complements the render_to_string checks above: proves 404.html is actually
+    # wired as handler404 and reached through the full middleware stack, not just
+    # renderable in isolation. DEBUG=False so Django uses the project template
+    # rather than its own technical 404 page.
+    response = Client().get("/no-such-url-exists/")
+
+    assert response.status_code == 404  # noqa: PLR2004
+    body = response.content.decode()
+    assert 'class="error-page"' in body
+    assert gettext("404 — ta strona wyparowała") in body
