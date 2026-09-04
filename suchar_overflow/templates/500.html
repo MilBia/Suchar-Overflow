@@ -2,13 +2,20 @@
 
 {% load i18n %}
 
+{% comment %}
+  Rendered by django.views.defaults.server_error with no request and no context
+  processors (issue #286) — keep this template free of context variables.
+{% endcomment %}
 {% block title %}
-  {% trans "Server Error" %}
+  {% trans "500 — coś chrupnęło" %}
 {% endblock title %}
 {% block content %}
-  <h1>{% trans "Ooops!!! 500" %}</h1>
-  <h3>{% trans "Looks like something went wrong!" %}</h3>
-  <p>
-    {% trans "We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing." %}
-  </p>
+  <div class="error-page">
+    <p class="error-page__code">500</p>
+    <h1 class="error-page__title">{% trans "500 — coś chrupnęło" %}</h1>
+    <p class="error-page__joke">
+      {% trans "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — odśwież za chwilę." %}
+    </p>
+    <a class="btn btn-primary" href="{% url 'home' %}">{% trans "Wróć na stronę główną" %}</a>
+  </div>
 {% endblock content %}
