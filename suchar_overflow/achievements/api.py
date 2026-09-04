@@ -37,6 +37,7 @@ VALID_FRONTEND_SLUGS = frozenset(
         # Group-A easter eggs (umbrella #278): the `frontend-ee-` prefix.
         "frontend-ee-konami",  # #283 — Konami code
         "frontend-ee-niezdecydowany",  # #289 — theme-toggle spam
+        "frontend-ee-archeolog",  # #290 — scroll to the bottom of page 5+
     },
 )
 
