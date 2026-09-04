@@ -553,6 +553,47 @@ inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
   `beforeEach`/`afterEach`, and `easter_eggs.js`'s `teardownAll()` also reaches it
   (registers via `registerTeardown('logoSpin')`).
 
+### Developer console easter egg (`features/console_egg.js`)
+
+Issue #287, umbrella #278 — the **lightest** group-A child. On `DOMContentLoaded`
+for a logged-in user it emits **one** styled `console.log("%c…\n%c…", artStyle,
+textStyle)` in the devtools console: an ASCII wordmark (a nod to the cracker
+stack) plus a short Polish wink and the repo URL. `window.__consoleEggReady` is
+its init-complete signal — the E2E test waits on it before reading the captured
+console output.
+
+- **The absolute minimum of an egg — no achievement, no `frontend-ee-` slug, no
+  network, no DOM, no audio, no animation.** It does **not** consume
+  `window.easterEggs` at all (no reduced-motion gate, no `award`, no
+  `playSound`), so it registers nothing with `registerTeardown()` and bundle
+  order past `project.js` is irrelevant to it. The Vitest suite asserts no
+  `fetch`.
+- **CSP:** `console.log` only — no `eval`, no inline `<script>`, nothing the CSP
+  middleware has to allow.
+- **The whole file is an IIFE** with the guarded CJS export tail inside it, same
+  reason as `konami.js` / `badumtss.js` / `logo_spin.js`: its constants (`ART`,
+  `TEXT`, `SESSION_KEY`, `REPO_URL`, the two style strings) and helpers must not
+  collide at the top level of `base.html`'s shared `{% compress js %}` block,
+  where it sits right after `logo_spin.js` (so `BASE_JS_BUNDLES` stays `1`).
+- **"No spam" = once per browser session.** The latch is
+  `sessionStorage['ee_console_shown']`, with an in-memory `shownThisPage`
+  fallback set *before* the `sessionStorage.setItem` so a storage failure
+  (private mode / blocked cookies) still dedupes within the page. It **replays**
+  in a new session (new tab / browser) — it is not a permanent one-shot.
+- **Auth-gated** on `document.body.dataset.userIsAuthenticated === 'true'`, like
+  the rest of group A — the greeting is aimed at contributors. An anonymous
+  visitor still downloads the script (it is in the global bundle) but it stays
+  silent; the E2E suite covers that.
+- `ART` is a `String[]` joined with `'\n'`, deliberately backslash-free: a
+  trailing `\` inside a single-quoted line would escape the closing quote.
+- rjsmin (in `{% compress js %}`) preserves the non-ASCII payload (the 😉 emoji,
+  the Polish diacritics in the wordmark and the wink) — verified against the
+  production-storage `collectstatic` + `compress --force` bundle, not just
+  `just test`.
+- Its test-only export exposes `_resetForTests()` (clears `shownThisPage` **and**
+  the `sessionStorage` key) for the `beforeEach`/`afterEach` in
+  `tests/js/console_egg.test.js`, per "JS tests (Vitest)" above.
+
 ### Background scheduling — APScheduler, not Django-RQ
 
 Django-RQ has been removed entirely. `AchievementsConfig.ready()`
