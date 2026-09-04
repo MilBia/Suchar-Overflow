@@ -514,12 +514,15 @@ inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
   handler itself. It replays on every fresh burst of 7 (deliberately not
   one-shot, like konami / badumtss).
 - **"Chain" semantics, a deliberate deviation from the issue's literal "wszystkie
-  7 w oknie 3 s".** Each click within 3 s of the *previous* one bumps `count`; a
-  longer gap restarts the chain, and `checkAndFire` also ignores a completed
-  chain whose last click is now older than 3 s (mash, wander off, navigate later
-  → nothing). A strict single 3 s window is unreproducible here: 7 clicks means 7
-  full page loads, which do not fit one 3 s window on a CI runner. The rolling
-  per-gap window does (one home-page load is well under 3 s).
+  7 w oknie 3 s".** Each click within `CHAIN_MS` (3 s) of the *previous* one bumps
+  `count`; a longer gap restarts the chain. A strict single 3 s window is
+  unreproducible here: 7 clicks means 7 full page loads, which do not fit one 3 s
+  window on a CI runner. The rolling per-gap window does (one home-page load is
+  well under 3 s). `checkAndFire` (run on the load after the 7th click) discards a
+  completed chain whose last click is older than `CHAIN_MS + RELOAD_GRACE_MS`
+  (~7 s) — the extra slack is for the reload the 7th click itself triggered, so a
+  genuine mash isn't lost on a slow connection; past that it's "mashed, then
+  wandered off and navigated later → forgotten".
 - **The spin is a `.ee-logo-spin` class on `.navbar-brand`** driven by a
   `@keyframes ee-logo-spin` + rule block injected once as
   `<style id="ee-logo-spin-style">` (CSP `style-src` has `'unsafe-inline'`); the

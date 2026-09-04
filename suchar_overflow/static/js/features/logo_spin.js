@@ -47,6 +47,14 @@
     const STORAGE_KEY = 'ee_logo_clicks';
     // Max gap between two clicks that still counts as the same chain.
     const CHAIN_MS = 3000;
+    // Extra slack `checkAndFire` allows on top of CHAIN_MS for the page load that
+    // follows the 7th click: the click records `last`, then the browser
+    // navigates, and on a slow connection the reload itself can eat >CHAIN_MS
+    // before `DOMContentLoaded` — without this grace a genuine 7-mash would be
+    // discarded as stale on exactly the slow loads it most wants to reward. It
+    // still bounds "mash, wander off, navigate much later" (> CHAIN_MS +
+    // RELOAD_GRACE_MS since the last click → forgotten).
+    const RELOAD_GRACE_MS = 4000;
     // Clicks needed, within one unbroken chain, to fire the effect.
     const CLICK_THRESHOLD = 7;
 
@@ -144,15 +152,17 @@
     }
 
     // Run once per page load. Fires the effect if the chain reached the
-    // threshold and its last click is still within CHAIN_MS (so mashing the
-    // logo, then wandering off and navigating minutes later, does not trigger
-    // it). Clears a fired or stale chain; leaves a still-building one alone.
+    // threshold and its last click is recent enough to still be "this mash" —
+    // CHAIN_MS plus RELOAD_GRACE_MS for the reload the 7th click triggered, so
+    // mashing the logo then wandering off and navigating much later does not
+    // trigger it. Clears a fired or stale chain; leaves a still-building one
+    // alone.
     function checkAndFire() {
         const { count, last } = readState();
         if (last === 0) return false;
 
         const now = Date.now();
-        if (now - last >= CHAIN_MS) {
+        if (now - last >= CHAIN_MS + RELOAD_GRACE_MS) {
             clearState();
             return false;
         }

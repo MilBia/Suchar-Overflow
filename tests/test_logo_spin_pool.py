@@ -19,6 +19,7 @@ import re
 from typing import TYPE_CHECKING
 
 import pytest
+from django.core.cache import cache
 from django.test import Client
 from django.urls import reverse
 
@@ -27,8 +28,10 @@ from suchar_overflow.conftest import make_user
 if TYPE_CHECKING:
     from pytest_django.fixtures import Settings as SettingsWrapper
 
+# Attribute-order-tolerant: djlint (or a future formatter) may reorder `id` and
+# `type` or wrap the tag — all that matters is a <script> carrying this id.
 ISLAND_RE = re.compile(
-    r'<script id="ee-logo-suchary" type="application/json">(.*?)</script>',
+    r"<script\b[^>]*\bid=[\"']ee-logo-suchary[\"'][^>]*>(.*?)</script>",
     re.DOTALL,
 )
 
@@ -62,6 +65,10 @@ def test_pool_island_absent_for_anonymous_users() -> None:
 def test_pool_island_survives_online_compression(settings: SettingsWrapper) -> None:
     settings.COMPRESS_ENABLED = True
     settings.COMPRESS_OFFLINE = False
+    # compressor caches "already written" per content hash; clear so a stale
+    # bundle from an earlier test can't mask a regression (see
+    # tests/test_compressed_page_assets.py::_render).
+    cache.clear()
 
     client = Client()
     client.force_login(make_user("logo_spin_pool_compress"))

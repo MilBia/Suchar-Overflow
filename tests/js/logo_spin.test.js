@@ -38,6 +38,7 @@ const SPIN_CLASS = "ee-logo-spin";
 const POOL_ID = "ee-logo-suchary";
 const THRESHOLD = 7;
 const CHAIN_MS = 3000;
+const RELOAD_GRACE_MS = 4000;
 const POOL = [
   "Suchość powietrza: 12%. Suchość tego suchara: 98%.",
   "Ten serwis zasilany jest wyłącznie sucharami z odzysku.",
@@ -96,7 +97,11 @@ beforeEach(() => {
   delete window.EE_AUDIO;
   delete window.matchMedia; // jsdom: absence => reducedJuice() === true
 
-  require(EASTER_EGGS_PATH);
+  // Re-assign from the cached module export (not just `require` for its side
+  // effect): a few tests `delete window.easterEggs` to exercise the matchMedia
+  // fallback, and `vi.resetModules()` does not re-run the module body that would
+  // otherwise re-set `window.easterEggs`.
+  window.easterEggs = require(EASTER_EGGS_PATH);
   window.easterEggs._resetForTests();
 
   logoSpin = require(LOGO_SPIN_PATH);
@@ -104,7 +109,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  window.easterEggs.teardownAll();
+  // Optional-chained: a few tests `delete window.easterEggs` to exercise the
+  // matchMedia fallback in prefersReducedMotion().
+  window.easterEggs?.teardownAll?.();
   logoSpin._resetForTests();
   vi.restoreAllMocks();
   vi.useRealTimers();
@@ -186,20 +193,30 @@ describe("checkAndFire — on page load", () => {
     expect(logoSpin.checkAndFire()).toBe(false);
   });
 
-  it("replays on a fresh burst of 7 (not one-shot)", () => {
+  it("replays on a fresh burst of 7 — the first checkAndFire clears storage itself", () => {
     rapidClicks(THRESHOLD);
     expect(logoSpin.checkAndFire()).toBe(true);
-    logoSpin._resetForTests();
+    // No _resetForTests() here: only clear the mock and drop the leftover
+    // <style>, so the second burst proves checkAndFire() cleared the chain on
+    // its own rather than a test helper doing it.
     window.showToast.mockClear();
+    document.getElementById(STYLE_ID)?.remove();
 
     rapidClicks(THRESHOLD);
     expect(logoSpin.checkAndFire()).toBe(true);
     expect(window.showToast).toHaveBeenCalledTimes(1);
   });
 
+  it("still fires a completed chain when a slow reload pushed it just past 3 s", () => {
+    rapidClicks(THRESHOLD);
+    vi.advanceTimersByTime(CHAIN_MS + 500); // within CHAIN_MS + RELOAD_GRACE_MS
+    expect(logoSpin.checkAndFire()).toBe(true);
+    expect(window.showToast).toHaveBeenCalledTimes(1);
+  });
+
   it("does not fire when the 7-click chain has gone stale before load", () => {
     rapidClicks(THRESHOLD);
-    vi.advanceTimersByTime(CHAIN_MS + 500);
+    vi.advanceTimersByTime(CHAIN_MS + RELOAD_GRACE_MS + 500);
     expect(logoSpin.checkAndFire()).toBe(false);
     expect(window.showToast).not.toHaveBeenCalled();
     expect(sessionStorage.getItem("ee_logo_clicks")).toBeNull();
@@ -313,6 +330,21 @@ describe("effect — triggerLogoSpin", () => {
     expect(() => logoSpin.triggerLogoSpin()).not.toThrow();
     expect(window.showToast).toHaveBeenCalledTimes(1);
   });
+
+  it("falls back to matchMedia when window.easterEggs is absent (reduced)", () => {
+    delete window.easterEggs;
+    window.matchMedia = vi.fn(() => ({ matches: true }));
+    logoSpin.triggerLogoSpin();
+    expect(window.showToast).toHaveBeenCalledTimes(1);
+    expect(logoEl().classList.contains(SPIN_CLASS)).toBe(false);
+  });
+
+  it("falls back to matchMedia when window.easterEggs is absent (full motion)", () => {
+    delete window.easterEggs;
+    window.matchMedia = vi.fn(() => ({ matches: false }));
+    logoSpin.triggerLogoSpin();
+    expect(logoEl().classList.contains(SPIN_CLASS)).toBe(true);
+  });
 });
 
 describe("teardown / _resetForTests", () => {
@@ -326,5 +358,93 @@ describe("teardown / _resetForTests", () => {
     expect(styleEl()).toBeNull();
     expect(logoEl().classList.contains(SPIN_CLASS)).toBe(false);
     expect(sessionStorage.getItem("ee_logo_clicks")).toBeNull();
+  });
+});
+
+describe("sessionStorage failure resilience", () => {
+  it("handleLogoClick does not throw when setItem throws (QuotaExceeded etc.)", () => {
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new Error("QuotaExceededError");
+      });
+    expect(() => click()).not.toThrow();
+    setItem.mockRestore();
+  });
+
+  it("checkAndFire does not throw when getItem throws", () => {
+    const getItem = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new Error("SecurityError");
+      });
+    expect(logoSpin.checkAndFire()).toBe(false);
+    getItem.mockRestore();
+  });
+});
+
+describe("DOMContentLoaded init", () => {
+  /** Real primary-button click events on the actual <a class="navbar-brand">.
+   * A preventDefault listener stops jsdom logging "Not implemented: navigation"
+   * for the <a href> — the module never calls preventDefault itself (the click
+   * must still navigate in a real browser). */
+  function domClicks(n) {
+    const noNav = (e) => e.preventDefault();
+    logoEl().addEventListener("click", noNav);
+    for (let i = 0; i < n; i += 1) {
+      logoEl().dispatchEvent(
+        new MouseEvent("click", { button: 0, bubbles: true, cancelable: true }),
+      );
+      vi.advanceTimersByTime(100);
+    }
+    logoEl().removeEventListener("click", noNav);
+  }
+
+  it("wires the click listener for an authed body and flips __logoSpinReady", () => {
+    window.matchMedia = vi.fn(() => ({ matches: false }));
+    document.body.dataset.userIsAuthenticated = "true";
+    document.dispatchEvent(new Event("DOMContentLoaded"));
+
+    expect(window.__logoSpinReady).toBe(true);
+
+    // The listener is really attached: 7 real clicks build the chain, and the
+    // next load's checkAndFire fires the effect.
+    domClicks(THRESHOLD);
+    expect(logoSpin.checkAndFire()).toBe(true);
+    expect(window.showToast).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not wire the click listener for an anonymous body", () => {
+    document.body.dataset.userIsAuthenticated = "false";
+    document.dispatchEvent(new Event("DOMContentLoaded"));
+
+    expect(window.__logoSpinReady).toBe(true);
+
+    domClicks(THRESHOLD);
+    expect(logoSpin.checkAndFire()).toBe(false);
+    expect(window.showToast).not.toHaveBeenCalled();
+  });
+
+  it("fires from init's own checkAndFire when a completed chain is already stored", () => {
+    window.matchMedia = vi.fn(() => ({ matches: false }));
+    sessionStorage.setItem(
+      "ee_logo_clicks",
+      JSON.stringify({ count: THRESHOLD, last: Date.now() }),
+    );
+    document.body.dataset.userIsAuthenticated = "true";
+    document.dispatchEvent(new Event("DOMContentLoaded"));
+
+    expect(window.showToast).toHaveBeenCalledTimes(1);
+    expect(sessionStorage.getItem("ee_logo_clicks")).toBeNull();
+  });
+
+  it("teardownLogoSpin detaches the click listener wired by init", () => {
+    document.body.dataset.userIsAuthenticated = "true";
+    document.dispatchEvent(new Event("DOMContentLoaded"));
+
+    logoSpin.teardownLogoSpin();
+
+    domClicks(THRESHOLD);
+    expect(logoSpin.checkAndFire()).toBe(false);
   });
 });

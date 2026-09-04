@@ -37,8 +37,15 @@ CLICK_THRESHOLD = 7
 
 
 def _mash_logo(page: Page, times: int = CLICK_THRESHOLD) -> None:
-    """Click the logo ``times`` times; each click reloads home."""
+    """Click the logo ``times`` times; each click reloads home.
+
+    ``window.__logoSpinReady`` is already ``true`` on the loaded page, so it is
+    reset to ``false`` before each click — otherwise ``wait_for_function`` would
+    resolve instantly against the stale flag and the loop could race ahead of
+    (or into the teardown of) the navigation the click triggers.
+    """
     for _ in range(times):
+        page.evaluate("() => { window.__logoSpinReady = false; }")
         page.locator(".navbar-brand").click()
         page.wait_for_function(_READY_JS, timeout=12_000)
 
