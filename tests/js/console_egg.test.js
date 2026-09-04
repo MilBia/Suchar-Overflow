@@ -89,8 +89,8 @@ describe("logConsoleEgg", () => {
   });
 
   it("stays quiet when the session flag is already set (e.g. a prior page load)", () => {
-    sessionStorage.setItem(SESSION_KEY, "1");
-    consoleEgg._resetForTests(); // reset only the in-memory flag, not storage
+    // beforeEach's _resetForTests() already cleared the in-memory flag, so the
+    // sessionStorage read is the only thing that can suppress the log here.
     sessionStorage.setItem(SESSION_KEY, "1");
 
     expect(consoleEgg.logConsoleEgg()).toBe(false);
@@ -108,6 +108,18 @@ describe("logConsoleEgg", () => {
     logSpy.mockClear();
 
     expect(consoleEgg.logConsoleEgg()).toBe(true);
+    expect(logSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("swallows an error thrown by console.log itself but stays latched", () => {
+    logSpy.mockImplementation(() => {
+      throw new Error("a console proxy that rejects styled logging");
+    });
+
+    expect(consoleEgg.logConsoleEgg()).toBe(true);
+    expect(logSpy).toHaveBeenCalledTimes(1);
+    // markShown() ran before the throw, so the session is still latched.
+    expect(consoleEgg.logConsoleEgg()).toBe(false);
     expect(logSpy).toHaveBeenCalledTimes(1);
   });
 });
@@ -129,6 +141,30 @@ describe("storage failure", () => {
     expect(logSpy).toHaveBeenCalledTimes(1);
 
     // In-memory fallback still dedupes within the page.
+    expect(consoleEgg.logConsoleEgg()).toBe(false);
+    expect(logSpy).toHaveBeenCalledTimes(1);
+
+    getItem.mockRestore();
+    setItem.mockRestore();
+  });
+
+  it("dedupes via the in-memory flag when getItem works but setItem throws (quota)", () => {
+    const getItem = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockReturnValue(null);
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        const err = new Error("QuotaExceededError");
+        err.name = "QuotaExceededError";
+        throw err;
+      });
+
+    expect(consoleEgg.logConsoleEgg()).toBe(true);
+    expect(logSpy).toHaveBeenCalledTimes(1);
+
+    // Nothing was persisted (getItem still returns null), so only the in-memory
+    // shownThisPage flag keeps the second call quiet.
     expect(consoleEgg.logConsoleEgg()).toBe(false);
     expect(logSpy).toHaveBeenCalledTimes(1);
 

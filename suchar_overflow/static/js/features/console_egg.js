@@ -26,9 +26,9 @@
     const SESSION_KEY = 'ee_console_shown';
     const REPO_URL = 'https://github.com/MilBia/Suchar-Overflow';
 
-    // ASCII wordmark — a nod to the cracker-stack logo. Kept backslash-free on
-    // purpose: a trailing "\" is a line-continuation inside this template
-    // literal and would silently eat the newline.
+    // ASCII wordmark — a nod to the cracker-stack logo. Built as an array joined
+    // with "\n" and kept backslash-free on purpose: a trailing "\" inside a
+    // single-quoted line would escape the closing quote.
     const ART = [
         '   .========.',
         '   | o  o  o |   Suchar Overflow',
