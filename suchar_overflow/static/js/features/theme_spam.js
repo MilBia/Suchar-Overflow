@@ -126,10 +126,13 @@
             clickTimestamps.shift();
         }
 
-        if (
-            clickTimestamps.length === THRESHOLD
-            && now - clickTimestamps[0] <= WINDOW_MS
-        ) {
+        // `delta >= 0` guards against a system clock wound backward (NTP/DST)
+        // mid-burst: without it a negative delta still satisfies `<= WINDOW_MS`
+        // and a stale, far-apart click would wrongly look like it's inside the
+        // window (same class of guard as tumbleweed.js rejecting a future
+        // stored timestamp).
+        const delta = now - clickTimestamps[0];
+        if (clickTimestamps.length === THRESHOLD && delta >= 0 && delta <= WINDOW_MS) {
             clickTimestamps = [];
             triggerThemeSpam();
         }

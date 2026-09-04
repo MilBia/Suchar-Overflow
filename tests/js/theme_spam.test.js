@@ -147,6 +147,25 @@ describe("click-window matcher — handleToggleClick", () => {
     expect(localStorage.getItem("theme")).toBe("dark");
     expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
   });
+
+  it("does not fire if the system clock is wound backward mid-burst", () => {
+    // An NTP/DST correction mid-click-storm must not make a stale, far-apart
+    // click look like it's inside the window just because the wall clock now
+    // reads earlier than a timestamp already in the buffer.
+    vi.useFakeTimers();
+    const start = new Date(2026, 0, 1, 12, 0, 0);
+    vi.setSystemTime(start);
+
+    clickToggle(5, 100); // 5 clicks, buffer holds real, ascending timestamps
+
+    // Clock corrected 10 minutes backward — the next 5 clicks all land
+    // "before" the first 5 by wall-clock time, but this is not a genuine
+    // 5s-wide burst.
+    vi.setSystemTime(new Date(start.getTime() - 10 * 60 * 1000));
+    clickToggle(5, 100);
+
+    expect(window.showToast).not.toHaveBeenCalled();
+  });
 });
 
 describe("triggerThemeSpam — spin effect", () => {
@@ -162,6 +181,20 @@ describe("triggerThemeSpam — spin effect", () => {
 
   it("reduced-motion path: no spin class, no keyframes injected", () => {
     // matchMedia absent => easterEggs.reducedJuice() === true
+    const btn = makeToggleButton();
+
+    themeSpam.triggerThemeSpam();
+
+    expect(btn.classList.contains(SPIN_CLASS)).toBe(false);
+    expect(document.getElementById(STYLE_ID)).toBeNull();
+    expect(window.showToast).toHaveBeenCalledTimes(1);
+  });
+
+  it("reduced-motion path: also honored when matchMedia explicitly reports it", () => {
+    // Distinct from the jsdom-default "matchMedia absent" case above: a real
+    // browser with a user who asked for reduced motion has matchMedia defined
+    // and returning matches: true, not an absent matchMedia.
+    window.matchMedia = vi.fn((q) => ({ matches: true, media: q }));
     const btn = makeToggleButton();
 
     themeSpam.triggerThemeSpam();
