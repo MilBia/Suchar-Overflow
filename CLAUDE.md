@@ -489,6 +489,67 @@ E2E test waits on it before typing.
   emoji) — verified against the production-storage `collectstatic` +
   `compress --force` bundle, not just `just test`.
 
+### "spin the logo" easter egg (`features/logo_spin.js`)
+
+Issue #285, umbrella #278 — the **third** group-A child on the #282 foundation.
+Mash the navbar logo 7× in quick succession → a short 360° logo spin (unless
+`prefers-reduced-motion`) and a toast with a random "meta-suchar" about dryness /
+the site. `window.__logoSpinReady` is its init-complete signal — the E2E test
+waits on it. Same shape as `konami.js` / `badumtss.js`: whole file is an IIFE
+(no top-level `const` collisions in the shared bundle), guarded CJS export tail
+inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
+`badumtss.js` (so `BASE_JS_BUNDLES` stays `1`).
+
+- **Pure delight — no achievement, no `frontend-ee-` slug, no network.** It does
+  not touch `VALID_FRONTEND_SLUGS` / `POST /api/achievements/frontend-event` /
+  `window.easterEggs.award`; the Vitest suite asserts `fetch` and `award` are
+  never called. It consumes only `easterEggs.reducedJuice()` and
+  `window.showToast`.
+- **The count lives in `sessionStorage`, not memory — the logo is an
+  `<a href="{% url 'home' %}">` and #285 requires the click to still navigate
+  home**, so `preventDefault` is out and every click reloads the page, wiping any
+  in-memory counter. `handleLogoClick` only records a "chain" (`{count, last}`
+  under `ee_logo_clicks`); the effect fires from **`checkAndFire()`, run once per
+  page load, on the load that follows the 7th click** — never from the click
+  handler itself. It replays on every fresh burst of 7 (deliberately not
+  one-shot, like konami / badumtss).
+- **"Chain" semantics, a deliberate deviation from the issue's literal "wszystkie
+  7 w oknie 3 s".** Each click within 3 s of the *previous* one bumps `count`; a
+  longer gap restarts the chain, and `checkAndFire` also ignores a completed
+  chain whose last click is now older than 3 s (mash, wander off, navigate later
+  → nothing). A strict single 3 s window is unreproducible here: 7 clicks means 7
+  full page loads, which do not fit one 3 s window on a CI runner. The rolling
+  per-gap window does (one home-page load is well under 3 s).
+- **The spin is a `.ee-logo-spin` class on `.navbar-brand`** driven by a
+  `@keyframes ee-logo-spin` + rule block injected once as
+  `<style id="ee-logo-spin-style">` (CSP `style-src` has `'unsafe-inline'`); the
+  class is stripped ~80 ms after the 600 ms animation. The `<style>` also carries
+  a nested `@media (prefers-reduced-motion: reduce){…animation:none}` as defence
+  in depth — the JS gate (`easterEggs.reducedJuice()`, jsdom-default true) already
+  skips the whole branch.
+- **The meta-suchar pool is a hand-authored `<script id="ee-logo-suchary"
+  type="application/json">` data island in `base.html`, for authenticated users
+  only — NOT inside `{% compress js %}`** (its translated text must not be
+  minified into the bundle; a no-`src` `<script>` inside the block would also
+  lose its `id` to `JsCompressor`). It is *not* the `json_script` filter —
+  `base.html` has no view to build a context list — so each line is a `{% trans %}`
+  string piped through `|escapejs` (a non-executable `type="application/json"`
+  block is not subject to CSP `script-src`, so no nonce, matching the existing
+  `json_script` usages). `tests/test_logo_spin_pool.py` guards that it renders
+  valid JSON and survives `COMPRESS_ENABLED = True`. The msgids are **Polish**
+  (unlike the English msgids elsewhere in `base.html`) — they render correctly
+  against a stale catalog, and the sibling eggs' toast text is untranslated
+  Polish in JS anyway; the `en` catalog entries land with the standing
+  `chore(i18n)` regen (per #240). Keep any pool string free of a literal `%` —
+  `makemessages` flags `3%`/`40%` as `#, python-format`, which trips
+  `msgfmt --check-format` when that regen is landed (write "3 procent").
+- Its `click` handler is on `.navbar-brand` and the chain is `sessionStorage`
+  state, so — per "JS tests (Vitest)" above — `tests/js/logo_spin.test.js` calls
+  `logoSpin._resetForTests()` (aliased to `teardownLogoSpin` — detaches, removes
+  the `<style>`, strips the class, clears `ee_logo_clicks`) each
+  `beforeEach`/`afterEach`, and `easter_eggs.js`'s `teardownAll()` also reaches it
+  (registers via `registerTeardown('logoSpin')`).
+
 ### Background scheduling — APScheduler, not Django-RQ
 
 Django-RQ has been removed entirely. `AchievementsConfig.ready()`
