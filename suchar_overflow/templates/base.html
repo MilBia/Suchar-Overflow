@@ -87,6 +87,7 @@
         <script defer src="{% static 'js/features/easter_eggs.js' %}"></script>
         <script defer src="{% static 'js/features/konami.js' %}"></script>
         <script defer src="{% static 'js/features/badumtss.js' %}"></script>
+        <script defer src="{% static 'js/features/logo_spin.js' %}"></script>
       {% endcompress %}
     {% endblock javascript %}
     {% if request.user.is_authenticated %}
@@ -102,6 +103,25 @@
           rimshot: "{% static 'audio/rimshot.wav' %}",
           dust: "{% static 'audio/dust.wav' %}",
         };
+      </script>
+      {% comment %}
+        Meta-suchar pool for the logo-spin easter egg (#285). A plain JSON data
+        island: deliberately kept OUT of the compress-js block (its translated
+        text must not be minified into the bundle) and not built with the
+        json_script filter, which needs a context variable base.html has no view
+        to provide. The escapejs filter keeps each translated string safe in the
+        script context; the strings are static, so that is hygiene rather than a
+        real injection vector. features/logo_spin.js reads and JSON-parses this
+        by id at trigger time.
+      {% endcomment %}
+      {% trans "Wilgotność względna tego suchara: 3 procent. Zalecane nawadnianie." as ee_logo_s1 %}
+      {% trans "Ten serwis działa na sucharach z drugiej ręki — pełny recykling." as ee_logo_s2 %}
+      {% trans "Wykryto suchar klasy premium. Tryb nawilżania niedostępny." as ee_logo_s3 %}
+      {% trans "Suchość powietrza: 40 procent. Suchość tego żartu przekracza skalę." as ee_logo_s4 %}
+      {% trans "Regulamin: minimum jeden suchar dziennie, najlepiej przed kawą." as ee_logo_s5 %}
+      {% trans "Logo się kręci, suchary schną dalej. Tak działa ekosystem." as ee_logo_s6 %}
+      <script id="ee-logo-suchary" type="application/json">
+        ["{{ ee_logo_s1|escapejs }}", "{{ ee_logo_s2|escapejs }}", "{{ ee_logo_s3|escapejs }}", "{{ ee_logo_s4|escapejs }}", "{{ ee_logo_s5|escapejs }}", "{{ ee_logo_s6|escapejs }}"]
       </script>
     {% endif %}
     <script nonce="{{ csp_nonce }}">
