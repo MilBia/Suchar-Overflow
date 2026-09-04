@@ -182,9 +182,10 @@ here, Playwright E2E for the integration path — audio, the real
   listeners a `setupX()` added to `document`** — they accumulate across tests in a
   file. It's harmless where the handler is idempotent (`hidden_achievements.js`'s
   storage writes, `easter_eggs.js`'s own `DOMContentLoaded`) but the key-buffer /
-  combo handlers a #283+ easter egg attaches to `document` are not — such a test
-  must call `window.easterEggs.teardownAll()` (the module's own detach) in
-  `afterEach` so the next test starts clean.
+  combo handlers a #283+ easter egg attaches to `document` (or `tumbleweed.js`'s
+  activity listeners on `window`) are not — such a test must call
+  `window.easterEggs.teardownAll()` (the module's own detach) in `afterEach` so
+  the next test starts clean.
 - **`vi.resetModules()` also does not re-run a CJS module reached via
   `require()`** — so a module's mutable module-level state (e.g. `easter_eggs.js`'s
   in-memory dedupe `Set`, its audio cache) survives between tests too.
@@ -593,6 +594,83 @@ console output.
 - Its test-only export exposes `_resetForTests()` (clears `shownThisPage` **and**
   the `sessionStorage` key) for the `beforeEach`/`afterEach` in
   `tests/js/console_egg.test.js`, per "JS tests (Vitest)" above.
+
+### Tumbleweed easter egg (`features/tumbleweed.js`)
+
+Issue #288, umbrella #278 — the group-A child triggered by *absence* of input.
+On `/suchary` (any sub-page) for a logged-in user, 120 s with no `scroll` /
+`mousemove` / `keydown` rolls a tumbleweed SVG across the lower screen edge with
+the caption "cisza… aż tak sucho?", then it clears itself after ~4.4 s. It
+**replays** on every fresh 120 s of stillness once the cooldown is up.
+`window.__tumbleweedReady` is its init-complete signal — the E2E test waits on it
+before advancing the fake clock. Same shape as the sibling eggs: whole file is an
+IIFE (so its helpers — `rand`, `STYLE_ID`, … — don't collide at bundle top
+level), guarded CJS export tail inside the IIFE, in `base.html`'s global
+`{% compress js %}` block right after `console_egg.js` (so `BASE_JS_BUNDLES`
+stays `1`).
+
+- **Pure delight — no achievement, no `frontend-ee-` slug, no network, no
+  sound.** It consumes only `easterEggs.reducedJuice()` (via `registerTeardown`)
+  and `window.showToast`. The Vitest suite asserts `fetch` and `easterEggs.award`
+  are never called.
+- **The trigger is a 120 s idle `setTimeout`, not a keydown match.** Passive
+  (`{passive: true}`, per #288) `scroll` / `mousemove` / `keydown` / `pointerdown`
+  listeners on `window` (`pointerdown` for a touch/pen tap — a phone reader never
+  fires `mousemove`) all funnel into `handleActivity`, which is throttled to one
+  re-arm per `ACTIVITY_THROTTLE_MS` (1 s — a 1 kHz mouse must not thrash the
+  timer) → `armIdleTimer()`, which clears-and-resets the pending timer.
+  `initTumbleweed` **only attaches and arms when `location.pathname` is `/suchary`
+  or starts with `/suchary/`** (exact-or-slash, so a `/suchary-archiwum/` sibling
+  route would never count) *and* the body is authenticated — the app does full
+  page reloads, so there is no per-navigation re-check to do; `onIdle` re-checks
+  the path anyway before firing.
+- **`onIdle` bails while the tab is backgrounded** (`document.visibilityState`
+  `'hidden'`): CSS animations are frozen there, so a roll would burn the 5 min
+  cooldown on something nobody sees (same reasoning as `project.js`'s
+  first-funny-toast visibility guard). It re-arms and re-checks on the next idle
+  window. `lastFireAt()` also rejects a *future* stored timestamp — a system
+  clock wound back by NTP/DST would otherwise make `Date.now() - last` negative
+  and wedge the cooldown on for hours.
+- **Cooldown is a `sessionStorage` timestamp (`ee_tumbleweed_last`), 5 minutes**,
+  so the list's paginated reloads can't let it re-fire every 2 minutes. When
+  `onIdle` finds itself still inside the cooldown it re-arms for **exactly the
+  remaining cooldown** (`cooldownRemaining()`), not another full `IDLE_MS` — so
+  the tumbleweed reappears promptly for a viewer who stays idle, rather than up
+  to 2 minutes late. Any activity in the meantime re-arms the full idle wait.
+- **`prefers-reduced-motion` (or jsdom, no `matchMedia`) → the caption as a
+  `window.showToast(CAPTION, '🌾', 'info')`, and nothing else** — no overlay, no
+  `<style>` injected. This differs from `konami.js` (which still renders a
+  motion-free static scatter): here the caption *is* the payload, so a toast
+  carries it. A user-approved widening of #288's bare "pominięcie animacji" (the
+  issue says only "skip the animation").
+- **The tumbleweed SVG is authored in JS (`createElementNS`)** — a stroked ring
+  plus jittered chords, one warm tan tone readable on both themes (like
+  `badumtss.js`'s dust). No `id` on any particle; only the injected
+  `<style id="ee-tumbleweed-style">` (two `@keyframes` — the wrapper's cross-screen
+  `translateX` roll and the SVG's `rotate` spin) carries one. Inline styles are
+  set property-by-property, not via `cssText` (jsdom drops custom props /
+  shorthands set that way). The overlay is `div.ee-tumbleweed-overlay` (a class,
+  not an id — replays can leave more than one mid-flight) and is removed by a
+  `setTimeout` after `OVERLAY_LIFETIME_MS`.
+- **E2E uses `page.clock` — the first user of it in `tests/e2e/`.**
+  `page.clock.install()` before `goto`, then `page.clock.fast_forward(121_000)`
+  to skip the 120 s idle without the suite waiting two real minutes (issue #288 →
+  #281). The `_IDLE_JUMP_MS = 121_000` value is load-bearing: `fast_forward`
+  fires *every* timer due in the window, so the jump must land **past** the
+  120 s idle threshold but **before** `fire + OVERLAY_LIFETIME_MS` (~124.4 s) or
+  the same call also runs the removal timer and the overlay is gone before the
+  assertion. The removal itself is covered by a second `fast_forward(10_000)`.
+- Its `scroll`/`mousemove`/`keydown` handlers are on `window` and the idle
+  timer + `activityHandler` ref are module-level mutable state, so — per "JS tests
+  (Vitest)" above — `tests/js/tumbleweed.test.js` calls
+  `tumbleweed._resetForTests()` (aliased to `teardownTumbleweed` — detaches the
+  listeners, clears the idle + removal timers, removes overlays and the `<style>`,
+  clears `ee_tumbleweed_last`) each `beforeEach`/`afterEach`, and
+  `easter_eggs.js`'s `teardownAll()` also reaches it (registers via
+  `registerTeardown('tumbleweed')`).
+- rjsmin (in `{% compress js %}`) preserves the non-ASCII caption (the `…`
+  ellipsis, Polish diacritics) — verified against the production-storage
+  `collectstatic` + `compress --force` bundle, not just `just test`.
 
 ### Background scheduling — APScheduler, not Django-RQ
 
