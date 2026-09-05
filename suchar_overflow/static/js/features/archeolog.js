@@ -17,9 +17,13 @@
  * logo_spin.js / tumbleweed.js / theme_spam.js).
  *
  * Trigger: scoped to `/suchary` and its sub-pages (like tumbleweed.js). A
- * throttled passive `scroll` listener checks `scrollY + innerHeight >=
- * scrollHeight - threshold` AND that the pagination nav shows no "Next" link
- * AND the active page number is >= MIN_TOTAL_PAGES. The active-page number
+ * passive `scroll` listener, throttled with a trailing edge (leading-edge
+ * only would risk missing a discrete jump to the bottom — e.g. an `End`
+ * keypress, or a gesture that stops moving right at the edge — that fires no
+ * further `scroll` event to re-check on inside the throttle window), checks
+ * `scrollY + innerHeight >= scrollHeight - threshold` AND that the pagination
+ * nav shows no "Next" link AND the active page number is >= MIN_TOTAL_PAGES.
+ * The active-page number
  * doubles as the *total* page count here (we only ever check it once we've
  * already confirmed there's no next page) — a brand-new deployment with fewer
  * than 5 pages of suchary can never award this, per issue #290: nobody should
@@ -64,6 +68,8 @@
     // ── Module-level mutable state (reset between Vitest tests via _resetForTests) ─
     let scrollHandler = null;
     let lastCheckAt = 0;
+    // Pending trailing-edge check, scheduled by handleScroll (see there).
+    let scrollThrottleTimer = null;
     // Once true for this page load, skip further checks — either we've
     // already fired this session, or the page/pagination state can't change
     // without a full reload (the app does full page reloads, like the other
@@ -83,9 +89,15 @@
         try {
             const scrollY = window.scrollY || window.pageYOffset || 0;
             const innerHeight = window.innerHeight || 0;
-            const scrollHeight = document.documentElement
-                ? document.documentElement.scrollHeight
-                : 0;
+            // Belt-and-suspenders: `documentElement.scrollHeight` is the right
+            // read in standards mode (Django always renders a doctype), but
+            // this mirrors the codebase's habit of checking both signals
+            // rather than trusting a single one (see tumbleweed.js's
+            // isDocumentHidden(), which checks visibilityState AND hidden).
+            const scrollHeight = Math.max(
+                document.documentElement ? document.documentElement.scrollHeight : 0,
+                document.body ? document.body.scrollHeight : 0,
+            );
             return scrollY + innerHeight >= scrollHeight - BOTTOM_THRESHOLD_PX;
         } catch {
             return false;
@@ -105,8 +117,12 @@
         // Structure is always Previous, page numbers…, Next (see
         // suchar_list.html) — the last item is the "Next" slot. It has no <a>
         // when there is no next page (rendered as a disabled <span> instead).
+        // The `.disabled` class check is a second, redundant signal for the
+        // same fact (suchar_list.html sets both) — cheap insurance against
+        // that template changing shape later without this reading stale.
         const nextItem = items[items.length - 1];
-        const hasNext = nextItem.querySelector('a') !== null;
+        const hasNext =
+            !nextItem.classList.contains('disabled') && nextItem.querySelector('a') !== null;
 
         const activeLink = pagination.querySelector('li.page-item.active .page-link');
         const currentPage = activeLink ? parseInt(activeLink.textContent, 10) : NaN;
@@ -138,13 +154,10 @@
         }
     }
 
-    function handleScroll() {
+    // The actual geometry check, run at most once per throttle window (via
+    // handleScroll below) — never called directly off a scroll event.
+    function checkScrollPosition() {
         if (settledThisPage) return;
-
-        const now = Date.now();
-        if (now - lastCheckAt < SCROLL_THROTTLE_MS) return;
-        lastCheckAt = now;
-
         if (!isNearBottom()) return;
         if (!isEligibleLastPage()) return;
 
@@ -152,10 +165,52 @@
         triggerArcheolog();
     }
 
+    // Leading-edge throttle with a trailing check. A single discrete jump to
+    // the bottom (a keyboard `End`, or a scroll gesture that stops moving
+    // right at the edge) can fire its last `scroll` event inside the throttle
+    // window with no further event to re-check on — a plain leading-edge
+    // throttle would then silently miss that arrival for the rest of the page
+    // load. Scheduling one trailing timeout for the remainder of the window
+    // guarantees a check still happens even when no more `scroll` events do.
+    //
+    // `elapsed < 0` (system clock wound backward mid-session — NTP/DST) is
+    // treated as "due now" rather than getting stuck waiting out a window
+    // that will never elapse — same guard shape as tumbleweed.js's
+    // lastFireAt() / theme_spam.js's click-window check, kept on Date.now()
+    // rather than performance.now() for consistency with those.
+    function handleScroll() {
+        if (settledThisPage) return;
+
+        const now = Date.now();
+        const elapsed = now - lastCheckAt;
+
+        if (elapsed < 0 || elapsed >= SCROLL_THROTTLE_MS) {
+            if (scrollThrottleTimer !== null) {
+                clearTimeout(scrollThrottleTimer);
+                scrollThrottleTimer = null;
+            }
+            lastCheckAt = now;
+            checkScrollPosition();
+            return;
+        }
+
+        if (scrollThrottleTimer === null) {
+            scrollThrottleTimer = setTimeout(() => {
+                scrollThrottleTimer = null;
+                lastCheckAt = Date.now();
+                checkScrollPosition();
+            }, SCROLL_THROTTLE_MS - elapsed);
+        }
+    }
+
     function teardownArcheolog() {
         if (scrollHandler) {
             window.removeEventListener('scroll', scrollHandler);
             scrollHandler = null;
+        }
+        if (scrollThrottleTimer !== null) {
+            clearTimeout(scrollThrottleTimer);
+            scrollThrottleTimer = null;
         }
         lastCheckAt = 0;
         settledThisPage = false;
@@ -193,10 +248,11 @@
      * CLAUDE.md "JS tests (Vitest)" and the same pattern in the sibling eggs).
      *
      * `vi.resetModules()` does not re-run a required CJS module, so this
-     * module's mutable state (the bound listener, the throttle timestamp, the
-     * settled flag) survives between tests. `_resetForTests()` is the per-test
-     * reset the `beforeEach` in tests/js/archeolog.test.js must call; it is
-     * attached here only, so it never reaches a real browser. */
+     * module's mutable state (the bound listener, the throttle timestamp and
+     * pending trailing timer, the settled flag) survives between tests.
+     * `_resetForTests()` is the per-test reset the `beforeEach` in
+     * tests/js/archeolog.test.js must call; it is attached here only, so it
+     * never reaches a real browser. */
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
             SLUG,
@@ -210,6 +266,7 @@
             getPaginationInfo,
             isEligibleLastPage,
             handleScroll,
+            checkScrollPosition,
             triggerArcheolog,
             initArcheolog,
             teardownArcheolog,

@@ -253,6 +253,50 @@ describe("handleScroll — end-to-end trigger", () => {
     expect(window.showToast).toHaveBeenCalledTimes(1);
   });
 
+  it("auto-fires via the trailing edge — no further handleScroll() call needed", () => {
+    // A single discrete jump to the bottom (e.g. an `End` keypress) can be the
+    // only `scroll` event this page load gets; if it lands inside the
+    // throttle window there is nothing else to re-check on. The trailing
+    // timer scheduled by that call must fire the check on its own.
+    vi.useFakeTimers();
+    makePagination({ currentPage: MIN_TOTAL_PAGES, hasNext: false });
+
+    setAtTop();
+    archeolog.handleScroll(); // call #1: leading edge, consumes the window, not at bottom yet
+
+    setAtBottom(); // becomes eligible before the window closes
+    vi.advanceTimersByTime(50);
+    archeolog.handleScroll(); // call #2: inside the window — schedules a trailing timer
+    expect(window.showToast).not.toHaveBeenCalled();
+
+    // No further handleScroll() call — only the scheduled trailing timer can
+    // fire this.
+    vi.advanceTimersByTime(archeolog.SCROLL_THROTTLE_MS - 50);
+    expect(window.showToast).toHaveBeenCalledTimes(1);
+    expect(frontendEventPosts()).toHaveLength(1);
+  });
+
+  it("does not get stuck when the system clock is wound backward mid-throttle", () => {
+    // An NTP/DST correction between two scroll events must not leave the
+    // throttle permanently "not yet due" — same guard shape as
+    // tumbleweed.js's lastFireAt() / theme_spam.js's click-window check.
+    vi.useFakeTimers();
+    const start = new Date(2026, 0, 1, 12, 0, 0);
+    vi.setSystemTime(start);
+
+    makePagination({ currentPage: MIN_TOTAL_PAGES, hasNext: false });
+    setAtTop();
+    archeolog.handleScroll(); // consumes the throttle window at `start`
+
+    // Clock corrected 10 minutes backward — a naive `now - lastCheckAt` would
+    // be deeply negative here, forever less than SCROLL_THROTTLE_MS.
+    vi.setSystemTime(new Date(start.getTime() - 10 * 60 * 1000));
+    setAtBottom();
+    archeolog.handleScroll();
+
+    expect(window.showToast).toHaveBeenCalledTimes(1);
+  });
+
   it("fires once per page load — settles and never re-triggers or re-checks", () => {
     vi.useFakeTimers();
     makePagination({ currentPage: MIN_TOTAL_PAGES, hasNext: false });
@@ -287,6 +331,37 @@ describe("teardown / reset", () => {
     makePagination({ currentPage: MIN_TOTAL_PAGES, hasNext: false });
     setAtBottom();
     dispatchScroll();
+
+    expect(window.showToast).not.toHaveBeenCalled();
+  });
+
+  it("easterEggs.teardownAll() also detaches archeolog's listener", () => {
+    document.body.dataset.userIsAuthenticated = "true";
+    setPath("/suchary/");
+    document.dispatchEvent(new Event("DOMContentLoaded"));
+    expect(window.__archeologReady).toBe(true);
+
+    window.easterEggs.teardownAll();
+
+    makePagination({ currentPage: MIN_TOTAL_PAGES, hasNext: false });
+    setAtBottom();
+    dispatchScroll();
+
+    expect(window.showToast).not.toHaveBeenCalled();
+  });
+
+  it("teardownArcheolog cancels a pending trailing timer", () => {
+    vi.useFakeTimers();
+    makePagination({ currentPage: MIN_TOTAL_PAGES, hasNext: false });
+    setAtTop();
+    archeolog.handleScroll(); // leading edge, consumes the window, not at bottom yet
+
+    setAtBottom();
+    vi.advanceTimersByTime(50);
+    archeolog.handleScroll(); // inside the window — schedules the trailing timer
+
+    archeolog.teardownArcheolog();
+    vi.advanceTimersByTime(archeolog.SCROLL_THROTTLE_MS);
 
     expect(window.showToast).not.toHaveBeenCalled();
   });
