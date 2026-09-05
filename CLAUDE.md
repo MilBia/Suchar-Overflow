@@ -741,6 +741,68 @@ inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
   🙃 emoji, Polish diacritics) — verified against the production-storage
   `collectstatic` + `compress --force` bundle, not just `just test`.
 
+### "Archeolog" / scroll-to-bottom easter egg (`features/archeolog.js`)
+
+Issue #290, umbrella #278 — the sixth and last group-A child on the #282
+foundation, and (with konami.js / theme_spam.js) one of the three that award
+a real hidden achievement rather than pure delight. Scrolling to the bottom
+of the *last* page of `/suchary` (any sub-page) for a logged-in user shows a
+"Dotarłeś do dna. Sucharów. Gratulacje." toast and awards the hidden
+`frontend-ee-archeolog` achievement (`frontend-ee-archeolog` in
+`VALID_FRONTEND_SLUGS`, seeded by migration
+`0022_archeolog_achievement_data`) — but only once the list has grown to at
+least `MIN_TOTAL_PAGES` (5) pages, a deliberate widening of the issue's
+literal trigger: without a floor, a brand-new deployment with barely any
+suchary would hand this out for scrolling past an almost-empty page, which
+defeats the point of "reaching the bottom" meaning anything. It fires at
+most once per session — not a replaying egg like konami/badumtss/logo_spin/
+theme_spam, since there is nothing to replay until a full reload puts you
+back near the top of a list this long. `window.__archeologReady` is its
+init-complete signal — the E2E test waits on it before scrolling. Same
+shape as the sibling eggs: whole file is an IIFE, guarded CJS export tail
+inside the IIFE, in `base.html`'s global `{% compress js %}` block right
+after `theme_spam.js` (so `BASE_JS_BUNDLES` stays `1`).
+
+- **"Last page" and "total pages" are both read structurally from
+  `.pagination`, never from the (translated) "Next" label text.** The
+  trailing `<li>` (the "Next" slot in `suchar_list.html`'s Previous / page
+  numbers / Next layout) has no `<a>` — and carries the `.disabled` class,
+  checked as a second, redundant signal for the same fact — when there is no
+  next page; the active page's number (`.page-item.active .page-link`,
+  never elided by `paginator.get_elided_page_range()`) doubles as the total
+  page count, since it's only read once "no next page" is already
+  confirmed.
+- **The `scroll` listener is a leading-edge throttle with a trailing check,
+  not a plain leading-edge throttle.** A single discrete jump to the bottom
+  (an `End` keypress, or a gesture that stops moving right at the edge) can
+  fire its only `scroll` event inside the throttle window, with no further
+  event to re-check on — a plain leading-edge throttle would then silently
+  miss that arrival for the rest of the page load. `handleScroll` schedules
+  one trailing `setTimeout` for the remainder of the window in that case, so
+  the geometry still gets checked once even when no more `scroll` events do.
+  The elapsed-time comparison treats a negative delta (system clock wound
+  backward mid-session — NTP/DST) as "due now" rather than getting stuck
+  waiting out a window that will never elapse — same guard shape as
+  `tumbleweed.js`'s `lastFireAt()` / `theme_spam.js`'s click-window check,
+  kept on `Date.now()` (not `performance.now()`) for consistency with those.
+- **`isNearBottom()` reads `Math.max` of `document.documentElement
+  .scrollHeight` and `document.body.scrollHeight`**, not just the former —
+  belt-and-suspenders in the same spirit as `tumbleweed.js`'s
+  `isDocumentHidden()` checking both `visibilityState` and `hidden`, even
+  though a standards-mode document (Django always renders a doctype) makes
+  the two heights agree in practice.
+- **No animation, so nothing for `prefers-reduced-motion` to gate** — the
+  effect is `window.showToast` and nothing else, unlike the other
+  award-granting siblings (konami's confetti rain, theme-spam's icon spin).
+- Its `scroll` handler is on `window` and the throttle timestamp / pending
+  trailing timer / settled flag are module-level mutable state, so — per "JS
+  tests (Vitest)" above — `tests/js/archeolog.test.js` calls
+  `archeolog._resetForTests()` (aliased to `teardownArcheolog` — detaches
+  the listener, clears the pending trailing timer, resets the throttle and
+  settled state) each `beforeEach`/`afterEach`, and `easter_eggs.js`'s
+  `teardownAll()` also reaches it (registers via
+  `registerTeardown('archeolog')`).
+
 ### Background scheduling — APScheduler, not Django-RQ
 
 Django-RQ has been removed entirely. `AchievementsConfig.ready()`
