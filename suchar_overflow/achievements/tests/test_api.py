@@ -463,3 +463,34 @@ def test_frontend_event_awards_the_archeolog_achievement(client: Client) -> None
 
     ach = Achievement.objects.get(slug="frontend-ee-archeolog")
     assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1
+
+
+# ---------------------------------------------------------------------------
+# Publika-Rozgrzana easter egg — frontend-ee-publika-rozgrzana (#296)
+# ---------------------------------------------------------------------------
+
+
+def test_publika_rozgrzana_slug_is_in_the_frontend_allowlist() -> None:
+    assert "frontend-ee-publika-rozgrzana" in VALID_FRONTEND_SLUGS
+
+
+@pytest.mark.django_db
+def test_frontend_event_awards_the_publika_rozgrzana_achievement(
+    client: Client,
+) -> None:
+    user = make_user("user_fe_publika_rozgrzana")
+    client.force_login(user)
+
+    # Seeded by migration 0023; get_or_create keeps the test independent of it.
+    make_frontend_achievement("frontend-ee-publika-rozgrzana", name="Publika Rozgrzana")
+
+    response = client.post(
+        FRONTEND_EVENT_URL,
+        data={"event_slug": "frontend-ee-publika-rozgrzana"},
+        content_type="application/json",
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {"ok": True}
+
+    ach = Achievement.objects.get(slug="frontend-ee-publika-rozgrzana")
+    assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1
