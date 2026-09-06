@@ -159,14 +159,14 @@ dev = [
     "django-debug-toolbar==7.1.1",
     "django-extensions==4.1",
     "django-stubs[compatible-mypy]==6.1.0",
-    "djlint==1.44.2",
+    "djlint==1.45.0",
     "factory-boy==3.3.3",
     "mypy==2.3.1",
     "pytest==9.1.1",
     "pytest-django==4.14.0",
     "pytest-playwright==0.9.0",
     "pytest-sugar==1.1.1",
-    "ruff==0.16.5",
+    "ruff==0.16.6",
 ]
 # Local-only tooling: never used inside the Docker image (pre-commit runs from the
 # host .venv per CLAUDE.md; ipdb needs an interactive terminal `docker compose run
@@ -205,10 +205,10 @@ dependencies = [
     # direct-httpx /completions) round-trip, and TLS to a live HTTPS endpoint is
     # clean (issue #178, 2026-08-23).
     "openai>=3.1.0,<4",
-    "psycopg[c]==3.3.4",
+    "psycopg[c]==3.3.5",
     "python-slugify==8.0.4",
     "whitenoise==6.12.0",
-    "django-ninja==1.6.3",
+    "django-ninja==1.7.0",
     "django-compressor==4.6.0",
     "rcssmin==1.2.2",
     "rjsmin==1.2.5",
