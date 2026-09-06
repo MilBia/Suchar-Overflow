@@ -1756,6 +1756,18 @@ msgstr "Link wygasł (minęło 24 godziny)."
 msgid "Email already taken."
 msgstr "Ten adres e-mail jest już zajęty."
 
+#: suchar_overflow/templates/suchary/suchar_list.html
+msgid "Counting your vote…"
+msgstr "Zliczam głos…"
+
+#: suchar_overflow/templates/suchary/suchar_list.html
+msgid "Your vote got stuck in the dust. Try again."
+msgstr "Głos ugrzązł w suszy. Spróbuj ponownie."
+
+#: suchar_overflow/templates/suchary/suchar_form.html
+msgid "Publishing your suchar…"
+msgstr "Publikuję suchar…"
+
 #~ msgid "Publication date cannot be in the past."
 #~ msgstr "Data publikacji nie może być w przeszłości."
 

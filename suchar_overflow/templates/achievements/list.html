@@ -33,16 +33,19 @@
       </p>
     </header>
 
-    <div class="achievements-grid">
-      {% for ach in achievements %}
-        {% if ach.id in user_achievements %}
-          {% include "achievements/_card.html" with achievement=ach locked=False %}
-        {% else %}
-          {% include "achievements/_card.html" with achievement=ach locked=True is_secret=ach.is_secret %}
-        {% endif %}
-      {% empty %}
-        <p class="text-center text-muted">{% trans "Trophy cabinet's still drying. Check back after some jokes." %}</p>
-      {% endfor %}
-    </div>
+    {% if achievements %}
+      <div class="achievements-grid">
+        {% for ach in achievements %}
+          {% if ach.id in user_achievements %}
+            {% include "achievements/_card.html" with achievement=ach locked=False %}
+          {% else %}
+            {% include "achievements/_card.html" with achievement=ach locked=True is_secret=ach.is_secret %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      {% trans "Trophy cabinet's still drying. Check back after some jokes." as empty_copy %}
+      <p class="text-center text-muted py-5">{{ empty_copy }}</p>
+    {% endif %}
   </div>
 {% endblock content %}

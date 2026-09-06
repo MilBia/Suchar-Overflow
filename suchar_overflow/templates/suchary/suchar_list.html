@@ -140,7 +140,9 @@
                   {% endfor %}
                 </div>
               {% endif %}
-              <div class="voting-controls d-flex align-items-center justify-content-end gap-3">
+              <div class="voting-controls d-flex align-items-center justify-content-end gap-3"
+                   data-busy-text="{% trans 'Counting your vote…' %}"
+                   data-error-text="{% trans 'Your vote got stuck in the dust. Try again.' %}">
                 {% csrf_token %}
                 <!-- Funny Button -->
                 <button type="button"

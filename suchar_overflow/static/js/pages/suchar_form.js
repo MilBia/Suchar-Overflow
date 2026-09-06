@@ -13,10 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
             scheduleContainer: document.getElementById('scheduleContainer'),
             publishedAtInput: document.getElementById('id_published_at'),
             suggestionsBox: document.getElementById('tags-suggestions'),
-            form: document.querySelector('form'),
+            // Scope to the suchar form: a bare document.querySelector('form')
+            // resolves to the navbar language-switcher form (base.html), so the
+            // submit handler below — validation + loading spinner — was binding
+            // to the wrong element and never firing on a real submit.
+            form: document.querySelector('.suchar-form-wrapper form'),
             dateError: document.getElementById('dateError'),
             charCounter: document.getElementById('charCounter'),
-            submitBtn: document.querySelector('button[type="submit"]')
+            submitBtn: document.querySelector(
+                '.suchar-form-wrapper button[type="submit"]',
+            )
         },
 
         init() {
@@ -238,14 +244,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (submitBtn) {
                     submitBtn.classList.add('is-loading');
-                    submitBtn.disabled = true;
                     // The `.is-loading` spinner is pure CSS (button text goes
                     // transparent) — give assistive tech a spoken cue too (#298).
+                    // The live region is appended *after* the button, not inside
+                    // it: screen readers skip the subtree of a `disabled`
+                    // control. Insert it empty first, then set the text, so the
+                    // region is in the DOM before its content changes.
                     const status = document.createElement('span');
                     status.className = 'visually-hidden';
                     status.setAttribute('role', 'status');
-                    status.textContent = 'Publikuję suchar…';
-                    submitBtn.appendChild(status);
+                    submitBtn.insertAdjacentElement('afterend', status);
+                    status.textContent =
+                        submitBtn.dataset.loadingText || 'Publikuję suchar…';
+                    submitBtn.disabled = true;
                 }
             });
 

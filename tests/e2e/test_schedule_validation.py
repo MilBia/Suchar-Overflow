@@ -33,7 +33,7 @@ def test_past_date_shows_error_message(page: Page, live_server: LiveServer) -> N
         scheduleCheck.checked = true;
         publishedAtInput.disabled = false;
         publishedAtInput.value = '2020-01-01 12:00';
-        document.querySelector('form').dispatchEvent(
+        document.querySelector('.suchar-form-wrapper form').dispatchEvent(
             new Event('submit', { bubbles: true, cancelable: true })
         );
     """)

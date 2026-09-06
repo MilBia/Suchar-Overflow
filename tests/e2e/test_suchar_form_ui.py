@@ -172,7 +172,7 @@ def test_schedule_error_clears_when_date_input_is_changed(
         const publishedAtInput = document.getElementById('id_published_at');
         publishedAtInput.disabled = false;
         publishedAtInput.value = '2020-01-01 12:00';
-        document.querySelector('form').dispatchEvent(
+        document.querySelector('.suchar-form-wrapper form').dispatchEvent(
             new Event('submit', { bubbles: true, cancelable: true })
         );
     """)
@@ -192,3 +192,41 @@ def test_schedule_error_clears_when_date_input_is_changed(
     expect(page.locator("#id_published_at")).not_to_have_class(
         re.compile(r"\bis-invalid\b"),
     )
+
+
+# ---------------------------------------------------------------------------
+# Submit spinner exposes a screen-reader status string (#298)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
+def test_submit_adds_loading_state_and_status_string(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
+    """Submitting the form spins the button and drops a role=status live region
+    next to it (not inside the now-disabled button) carrying the flavored copy."""
+    page.goto(f"{live_server.url}/suchary/add/")
+
+    # Cancel the actual navigation so the transient loading state stays put;
+    # suchar_form.js's own bubble-phase submit handler still runs.
+    page.evaluate(
+        "document.querySelector('.suchar-form-wrapper form').addEventListener("
+        "'submit', (e) => e.preventDefault(), true)",
+    )
+    page.fill("#id_text", "Poprawny suchar do wysłania.")
+    submit_selector = ".suchar-form-wrapper button[type=submit]"
+    page.click(submit_selector)
+
+    submit_btn = page.locator(submit_selector)
+    expect(submit_btn).to_have_class(re.compile(r"\bis-loading\b"))
+    expect(submit_btn).to_be_disabled()
+
+    status = page.locator(f"{submit_selector} + [role=status]")
+    expect(status).to_have_count(1)
+    expect(status).to_have_class(re.compile(r"\bvisually-hidden\b"))
+    expected = submit_btn.get_attribute("data-loading-text") or ""
+    assert expected
+    expect(status).to_have_text(expected)

@@ -2,18 +2,23 @@
 
 // Toggle the pure-CSS `.loading` spinner on a voting-controls container and,
 // alongside it, a visually-hidden live-region string so screen readers get a
-// spoken "busy" cue the animation alone can't give (issue #298).
+// spoken "busy" cue the animation alone can't give (issue #298). The live
+// region is inserted empty first, then its text is set, so assistive tech sees
+// it in the DOM before the content changes (a region that arrives pre-filled is
+// often not announced). Text comes from the container's `data-busy-text` so it
+// stays translatable; the literal is only a fallback.
 function setVotingBusy(container, busy) {
     container.classList.toggle('loading', busy);
+    container.setAttribute('aria-busy', String(busy));
     let status = container.querySelector('.vote-status');
     if (busy) {
         if (!status) {
             status = document.createElement('span');
             status.className = 'vote-status visually-hidden';
             status.setAttribute('role', 'status');
-            status.textContent = 'Zliczam głos…';
             container.appendChild(status);
         }
+        status.textContent = container.dataset.busyText || 'Zliczam głos…';
     } else if (status) {
         status.remove();
     }
@@ -113,7 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
             dryBtn.querySelector('.vote-count').textContent = snapshot.dryCount;
 
             if (window.showToast) {
-                window.showToast('Głos ugrzązł w suszy. Spróbuj ponownie.', 'Błąd', 'error');
+                const errorText = container.dataset.errorText
+                    || 'Głos ugrzązł w suszy. Spróbuj ponownie.';
+                window.showToast(errorText, 'Błąd', 'error');
             }
         } finally {
             setVotingBusy(container, false);

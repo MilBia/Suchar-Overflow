@@ -1756,6 +1756,18 @@ msgstr "The link has expired (24 hours have passed)."
 msgid "Email already taken."
 msgstr "Email already taken."
 
+#: suchar_overflow/templates/suchary/suchar_list.html
+msgid "Counting your vote…"
+msgstr "Counting your vote…"
+
+#: suchar_overflow/templates/suchary/suchar_list.html
+msgid "Your vote got stuck in the dust. Try again."
+msgstr "Your vote got stuck in the dust. Try again."
+
+#: suchar_overflow/templates/suchary/suchar_form.html
+msgid "Publishing your suchar…"
+msgstr "Publishing your suchar…"
+
 #~ msgid "Publication date cannot be in the past."
 #~ msgstr "Publication date cannot be in the past."
 

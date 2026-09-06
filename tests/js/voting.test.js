@@ -37,6 +37,7 @@ describe("setVotingBusy", () => {
     setVotingBusy(container, true);
 
     expect(container.classList.contains("loading")).toBe(true);
+    expect(container.getAttribute("aria-busy")).toBe("true");
     const status = container.querySelector(".vote-status");
     expect(status).not.toBeNull();
     expect(status.getAttribute("role")).toBe("status");
@@ -44,13 +45,39 @@ describe("setVotingBusy", () => {
     expect(status.textContent.trim().length).toBeGreaterThan(0);
   });
 
-  it("removes the class and the status node when no longer busy", () => {
+  it("appends the status node empty before filling it, so the live region pre-exists", () => {
+    const container = makeContainer();
+    const appended = [];
+    const realAppend = container.appendChild.bind(container);
+    container.appendChild = (node) => {
+      appended.push(node.textContent);
+      return realAppend(node);
+    };
+
+    setVotingBusy(container, true);
+
+    // The node's textContent was empty at the moment it entered the DOM.
+    expect(appended).toEqual([""]);
+    expect(container.querySelector(".vote-status").textContent).not.toBe("");
+  });
+
+  it("uses the container's data-busy-text when present", () => {
+    const container = makeContainer();
+    container.dataset.busyText = "Licząc suchość…";
+
+    setVotingBusy(container, true);
+
+    expect(container.querySelector(".vote-status").textContent).toBe("Licząc suchość…");
+  });
+
+  it("removes the class and the status node and clears aria-busy when idle", () => {
     const container = makeContainer();
     setVotingBusy(container, true);
 
     setVotingBusy(container, false);
 
     expect(container.classList.contains("loading")).toBe(false);
+    expect(container.getAttribute("aria-busy")).toBe("false");
     expect(container.querySelector(".vote-status")).toBeNull();
   });
 

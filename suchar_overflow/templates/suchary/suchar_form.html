@@ -93,7 +93,9 @@
             </div>
 
             <div class="d-grid gap-3 mt-5">
-              <button type="submit" class="btn btn-primary btn-lg shadow-sm">{% trans "Publish" %}</button>
+              <button type="submit"
+                      class="btn btn-primary btn-lg shadow-sm"
+                      data-loading-text="{% trans 'Publishing your suchar…' %}">{% trans "Publish" %}</button>
               <a href="{% url 'suchary:list' %}" class="btn btn-outline text-muted">{% trans "Cancel" %}</a>
             </div>
           </form>
