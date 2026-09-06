@@ -94,7 +94,13 @@
     // clicking sees the meter go away. Re-armed on load to the chain's
     // *remaining* time (cf. tumbleweed.js's cooldownRemaining()).
     let expiryTimer = null;
-    const pulseTimers = new Set();
+    // A single ref, NOT a Set: only one pulse runs at a time (it drives one
+    // shared class on one element), so a rapid second increment must
+    // clear-and-replace this timer — otherwise the first timer's callback
+    // strips `PULSE_CLASS` mid-way through the second pulse. (konami.js's
+    // `Set` is right there because each of its timers owns a distinct
+    // container; here they'd fight over the same class.)
+    let pulseTimer = null;
 
     function isOnSucharyPath() {
         try {
@@ -135,7 +141,7 @@
         }
         if (
             !chain
-            || typeof chain.firstAt !== 'number'
+            || !Number.isFinite(chain.firstAt)
             || !Number.isInteger(chain.count)
             || chain.count <= 0
             || chain.count >= THRESHOLD
@@ -238,12 +244,22 @@
         // jsdom, harmless).
         void meter.offsetWidth;
         meter.classList.add(PULSE_CLASS);
-        const id = setTimeout(() => {
-            pulseTimers.delete(id);
+        // Clear-and-replace: a second increment within PULSE_CLEAR_MS restarts
+        // the pulse above, so the previous strip-the-class timer must be
+        // cancelled or it would end this new pulse early.
+        clearPulseTimer();
+        pulseTimer = setTimeout(() => {
+            pulseTimer = null;
             const current = getMeter();
             if (current) current.classList.remove(PULSE_CLASS);
         }, PULSE_CLEAR_MS);
-        pulseTimers.add(id);
+    }
+
+    function clearPulseTimer() {
+        if (pulseTimer !== null) {
+            clearTimeout(pulseTimer);
+            pulseTimer = null;
+        }
     }
 
     function removeMeter() {
@@ -270,6 +286,7 @@
     function resetCombo() {
         clearChain();
         clearExpiryTimer();
+        clearPulseTimer();
         removeMeter();
     }
 
@@ -343,8 +360,7 @@
             clickHandler = null;
         }
         clearExpiryTimer();
-        pulseTimers.forEach((id) => clearTimeout(id));
-        pulseTimers.clear();
+        clearPulseTimer();
         removeMeter();
         const style = document.getElementById(STYLE_ID);
         if (style) style.remove();

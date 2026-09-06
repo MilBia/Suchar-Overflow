@@ -326,6 +326,28 @@ describe("prefers-reduced-motion", () => {
     expect(window.showToast).toHaveBeenCalledTimes(1);
     expect(frontendEventPosts()).toHaveLength(1);
   });
+
+  it("a rapid second increment does not let the first pulse timer cut the new pulse short", () => {
+    window.matchMedia = vi.fn((q) => ({ matches: false, media: q }));
+    vi.useFakeTimers();
+
+    fireVote(makeVoteButton("funny"));
+    vi.advanceTimersByTime(150); // still inside the first pulse
+    fireVote(makeVoteButton("funny")); // restarts the pulse, replaces the timer
+
+    // The first vote's strip-the-class timer would have fired around here; if
+    // it were still pending it would end the second pulse early.
+    vi.advanceTimersByTime(300);
+    expect(
+      document.getElementById(METER_ID).classList.contains("ee-publika-pulse"),
+    ).toBe(true);
+
+    // The replacement timer still clears it on schedule.
+    vi.advanceTimersByTime(200);
+    expect(
+      document.getElementById(METER_ID).classList.contains("ee-publika-pulse"),
+    ).toBe(false);
+  });
 });
 
 describe("capture-phase ordering vs voting.js", () => {

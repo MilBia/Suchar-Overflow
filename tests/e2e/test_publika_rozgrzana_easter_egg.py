@@ -174,6 +174,39 @@ def test_publika_rozgrzana_dry_vote_breaks_the_chain(
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.usefixtures("login", "publika_rozgrzana_achievement")
+def test_publika_rozgrzana_unvote_breaks_the_chain(
+    page: Page,
+    live_server: LiveServer,
+    e2e_user: UserModel,
+) -> None:
+    _seed_suchary(THRESHOLD, e2e_user)
+
+    page.goto(f"{live_server.url}/suchary/")
+    page.wait_for_function(_READY_JS, timeout=12_000)
+
+    funny = page.locator('.btn-vote[data-vote-type="funny"]')
+
+    _funny(page, 0, 3)
+    expect(page.locator("#ee-publika-meter")).to_contain_text(f"3/{THRESHOLD}")
+
+    # Re-click card 0's funny button — this removes the vote, which is not
+    # "a funny vote in a row" — so the meter disappears.
+    _vote(page, funny.nth(0))
+    expect(page.locator("#ee-publika-meter")).to_have_count(0)
+
+    # Cards 3-4 start a fresh chain at 2, not a continuation to 5.
+    _funny(page, 3, 5)
+    expect(page.locator("#ee-publika-meter")).to_contain_text(f"2/{THRESHOLD}")
+    expect(
+        page.locator('#toast-container .toast:has-text("Publika Rozgrzana")'),
+    ).to_have_count(0)
+    ach = Achievement.objects.get(slug=PUBLIKA_ROZGRZANA_SLUG)
+    assert not UserAchievement.objects.filter(user=e2e_user, achievement=ach).exists()
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login", "publika_rozgrzana_achievement")
 def test_publika_rozgrzana_respects_prefers_reduced_motion(
     page: Page,
     live_server: LiveServer,

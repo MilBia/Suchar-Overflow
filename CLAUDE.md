@@ -809,7 +809,8 @@ Issue #296, umbrella **#279** (jokes woven into mechanics — *not* #278, though
 it reuses the #282 foundation and the `frontend-ee-` slug prefix). Casting 10
 "funny" votes in a row (no "dry" vote between, no un-vote) within 60 s on
 `/suchary` (any sub-page) for a logged-in user grows a small floating
-combo-meter and, on the 10th, shows a "Publika Rozgrzana 🔥" toast and awards
+combo-meter and, on the 10th, shows a toast titled "Publika Rozgrzana" (the 🔥
+is in the toast body, `TOAST_BODY`) and awards
 the hidden `frontend-ee-publika-rozgrzana` achievement (`frontend-ee-publika-rozgrzana`
 in `VALID_FRONTEND_SLUGS`, seeded by migration
 `0023_publika_rozgrzana_achievement_data`). It **replays** on every fresh run
