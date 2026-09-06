@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 15:52+0000\n"
+"POT-Creation-Date: 2026-09-06 17:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -427,7 +427,7 @@ msgid "Scheduler Runs"
 msgstr "Scheduler Runs"
 
 #: suchar_overflow/achievements/tests/test_views.py:231
-#: suchar_overflow/templates/achievements/list.html:44
+#: suchar_overflow/templates/achievements/list.html:47
 msgid "Trophy cabinet's still drying. Check back after some jokes."
 msgstr "Trophy cabinet's still drying. Check back after some jokes."
 
@@ -565,13 +565,13 @@ msgstr "Your suchar is out there now. Let it dry."
 
 #: suchar_overflow/suchary/tests/test_views.py:130
 #: suchar_overflow/suchary/tests/test_views.py:142
-#: suchar_overflow/templates/suchary/suchar_list.html:177
+#: suchar_overflow/templates/suchary/suchar_list.html:179
 msgid "Nothing matched. Bone dry."
 msgstr "Nothing matched. Bone dry."
 
 #: suchar_overflow/suchary/tests/test_views.py:131
 #: suchar_overflow/suchary/tests/test_views.py:141
-#: suchar_overflow/templates/suchary/suchar_list.html:181
+#: suchar_overflow/templates/suchary/suchar_list.html:183
 msgid "Be the hero we need and add the first joke."
 msgstr "Be the hero we need and add the first joke."
 
@@ -787,7 +787,7 @@ msgid "Are you sure you want to log out?"
 msgstr "Are you sure you want to log out?"
 
 #: suchar_overflow/templates/base.html:384
-#: suchar_overflow/templates/suchary/suchar_form.html:97
+#: suchar_overflow/templates/suchary/suchar_form.html:99
 #: suchar_overflow/templates/users/user_form.html:35
 msgid "Cancel"
 msgstr "Cancel"
@@ -1110,16 +1110,16 @@ msgstr "jokes"
 
 #: suchar_overflow/templates/stats/_leaderboard_author_card.html:25
 #: suchar_overflow/templates/stats/leaderboard.html:67
-#: suchar_overflow/templates/suchary/suchar_list.html:152
-#: suchar_overflow/templates/suchary/suchar_list.html:155
+#: suchar_overflow/templates/suchary/suchar_list.html:154
+#: suchar_overflow/templates/suchary/suchar_list.html:157
 #: suchar_overflow/templates/users/user_detail.html:181
 msgid "Funny"
 msgstr "Funny"
 
 #: suchar_overflow/templates/stats/_leaderboard_author_card.html:27
 #: suchar_overflow/templates/stats/leaderboard.html:77
-#: suchar_overflow/templates/suchary/suchar_list.html:165
-#: suchar_overflow/templates/suchary/suchar_list.html:168
+#: suchar_overflow/templates/suchary/suchar_list.html:167
+#: suchar_overflow/templates/suchary/suchar_list.html:170
 #: suchar_overflow/templates/users/user_detail.html:182
 msgid "Dry"
 msgstr "Dry"
@@ -1221,24 +1221,28 @@ msgstr "Schedule for later"
 msgid "Select date and time..."
 msgstr "Select date and time..."
 
-#: suchar_overflow/templates/suchary/suchar_form.html:96
+#: suchar_overflow/templates/suchary/suchar_form.html:98
+msgid "Publishing your suchar…"
+msgstr "Publishing your suchar…"
+
+#: suchar_overflow/templates/suchary/suchar_form.html:98
 msgid "Publish"
 msgstr "Publish"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:107
+#: suchar_overflow/templates/suchary/suchar_form.html:109
 msgid "Live Preview"
 msgstr "Live Preview"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:117
+#: suchar_overflow/templates/suchary/suchar_form.html:119
 msgid "Now"
 msgstr "Now"
 
-#: suchar_overflow/templates/suchary/suchar_form.html:125
-#: suchar_overflow/templates/suchary/suchar_form.html:126
+#: suchar_overflow/templates/suchary/suchar_form.html:127
+#: suchar_overflow/templates/suchary/suchar_form.html:128
 msgid "Your joke content will appear here..."
 msgstr "Your joke content will appear here..."
 
-#: suchar_overflow/templates/suchary/suchar_form.html:159
+#: suchar_overflow/templates/suchary/suchar_form.html:161
 msgid "This is how your joke will look on the main list."
 msgstr "This is how your joke will look on the main list."
 
@@ -1285,26 +1289,34 @@ msgstr "Scheduled"
 msgid "Edit"
 msgstr "Edit"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:151
-#: suchar_overflow/templates/suchary/suchar_list.html:164
+#: suchar_overflow/templates/suchary/suchar_list.html:144
+msgid "Counting your vote…"
+msgstr "Counting your vote…"
+
+#: suchar_overflow/templates/suchary/suchar_list.html:145
+msgid "Your vote got stuck in the dust. Try again."
+msgstr "Your vote got stuck in the dust. Try again."
+
+#: suchar_overflow/templates/suchary/suchar_list.html:153
+#: suchar_overflow/templates/suchary/suchar_list.html:166
 msgid "Log in to vote"
 msgstr "Log in to vote"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:180
 msgid "Loosen the phrase, or add the joke that's missing."
 msgstr "Loosen the phrase, or add the joke that's missing."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:180
+#: suchar_overflow/templates/suchary/suchar_list.html:182
 msgid "So dry here..."
 msgstr "So dry here..."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:196
-#: suchar_overflow/templates/suchary/suchar_list.html:200
+#: suchar_overflow/templates/suchary/suchar_list.html:198
+#: suchar_overflow/templates/suchary/suchar_list.html:202
 msgid "Previous"
 msgstr "Previous"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:221
-#: suchar_overflow/templates/suchary/suchar_list.html:225
+#: suchar_overflow/templates/suchary/suchar_list.html:223
+#: suchar_overflow/templates/suchary/suchar_list.html:227
 msgid "Next"
 msgstr "Next"
 
@@ -1755,18 +1767,6 @@ msgstr "The link has expired (24 hours have passed)."
 #: suchar_overflow/users/views.py:573
 msgid "Email already taken."
 msgstr "Email already taken."
-
-#: suchar_overflow/templates/suchary/suchar_list.html
-msgid "Counting your vote…"
-msgstr "Counting your vote…"
-
-#: suchar_overflow/templates/suchary/suchar_list.html
-msgid "Your vote got stuck in the dust. Try again."
-msgstr "Your vote got stuck in the dust. Try again."
-
-#: suchar_overflow/templates/suchary/suchar_form.html
-msgid "Publishing your suchar…"
-msgstr "Publishing your suchar…"
 
 #~ msgid "Publication date cannot be in the past."
 #~ msgstr "Publication date cannot be in the past."
