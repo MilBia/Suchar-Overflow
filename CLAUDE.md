@@ -803,6 +803,85 @@ after `theme_spam.js` (so `BASE_JS_BUNDLES` stays `1`).
   `teardownAll()` also reaches it (registers via
   `registerTeardown('archeolog')`).
 
+### "Publika Rozgrzana" / combo easter egg (`features/publika_rozgrzana.js`)
+
+Issue #296, umbrella **#279** (jokes woven into mechanics — *not* #278, though
+it reuses the #282 foundation and the `frontend-ee-` slug prefix). Casting 10
+"funny" votes in a row (no "dry" vote between, no un-vote) within 60 s on
+`/suchary` (any sub-page) for a logged-in user grows a small floating
+combo-meter and, on the 10th, shows a "Publika Rozgrzana 🔥" toast and awards
+the hidden `frontend-ee-publika-rozgrzana` achievement (`frontend-ee-publika-rozgrzana`
+in `VALID_FRONTEND_SLUGS`, seeded by migration
+`0023_publika_rozgrzana_achievement_data`). It **replays** on every fresh run
+of 10 (like konami / badumtss / logo_spin / theme_spam); `easterEggs.award`
+still POSTs once per session. `window.__publikaRozgrzanaReady` is its
+init-complete signal — the E2E test waits on it before voting. Same shape as
+the sibling eggs: whole file is an IIFE, guarded CJS export tail inside the
+IIFE, in `base.html`'s global `{% compress js %}` block right after
+`archeolog.js` (so `BASE_JS_BUNDLES` stays `1`).
+
+- **The `click` listener is delegated on `document` in the CAPTURE phase**
+  (`{capture: true}`), not bubble. `voting.js` also delegates a `click`
+  listener on `document` (bubble) and does an optimistic
+  `btn.classList.toggle('active')` synchronously in its handler. A capture
+  listener on `document` always runs before any bubble listener on `document`
+  regardless of which script's `DOMContentLoaded` registered first, so
+  `willActivate(btn)` (`!btn.classList.contains('active')`) reliably reads the
+  **pre-toggle** state — the same `!wasActive` `voting.js` computes for itself.
+  Registering bubble here would make the read depend on load order and, if it
+  ever lost the race, silently invert every funny vote into an un-vote. Never
+  `preventDefault` — the vote must still go through. A Vitest test wires the
+  real `voting.js` *first*, then this module, and dispatches a real `click` to
+  guard the ordering.
+- **The chain lives in `sessionStorage`** (`ee_publika_combo`, JSON
+  `{count, firstAt}`), **not memory** — a deliberate deviation from #296's
+  literal "stan w pamięci strony". The list paginates with full page reloads
+  and shows 10 suchary per page, so an in-memory counter could only ever be
+  built on a single page where all 10 are unvoted-by-you; a returning user
+  whose recent list is already voted, or the last page (<10 items), could
+  never earn it. `logo_spin.js` hit the same "state must survive navigation"
+  wall and CLAUDE.md documents that deviation too.
+- **The 60 s window is measured from the chain's `firstAt`, and the reset is
+  authoritative + LAZY**: `readChain()` returns `null` for a chain that is
+  absent, malformed, `>= 60 s` old, *or* has a `firstAt` in the future (system
+  clock wound back — NTP/DST, same guard shape as `theme_spam.js` /
+  `tumbleweed.js`), so the next funny click after expiry just starts a fresh
+  chain at `count = 1`. A visual-only `setTimeout` additionally hides the
+  meter for a user who simply stopped clicking; on a fresh page load a live
+  chain re-arms that timer to its *remaining* window, not a fresh 60 s (cf.
+  `tumbleweed.js`'s `cooldownRemaining()`).
+- **Reset conditions**: any `.btn-vote[data-vote-type="dry"]` click (either
+  direction), and UN-voting a funny (a funny click on an already-`.active`
+  button). `handleVoteClick` gates on `data-vote-type` being `funny`/`dry`,
+  not just `.btn-vote` — `suchar_form.html` has disabled `.btn-vote` preview
+  buttons with no `data-vote-type`.
+- **The combo-meter is a floating `<div id="ee-publika-meter">`** built in JS
+  (`createElement` / `textContent`, never `innerHTML`), styled inline
+  property-by-property (jsdom's CSSOM drops custom props set via `cssText`)
+  from the project's theme-aware custom properties (`variables.css`) with
+  literal fallbacks — **no Bootstrap classes**, unlike the surrounding
+  `suchar_list.html` markup. The 10th funny vote runs `resetCombo()` (which
+  removes the meter) *before* `firePublikaRozgrzana()`, so the meter is gone
+  by the time the toast shows — the E2E asserts the count mid-run, not after.
+- **`prefers-reduced-motion` (or jsdom, no `matchMedia`) → the meter and its
+  count still render; only the per-increment pulse is skipped** and the
+  `<style id="ee-publika-style">` (`@keyframes` for the pulse) is not
+  injected. Different from `konami.js` (motion-free static scatter) and
+  `tumbleweed.js` (caption-only toast): here the meter *is* the payload and it
+  is not itself an animation.
+- Its `click` handler is on `document` (capture) and the chain / expiry timer
+  are module-level + `sessionStorage` state, so — per "JS tests (Vitest)"
+  above — `tests/js/publika_rozgrzana.test.js` calls
+  `publika._resetForTests()` (aliased to `teardownPublikaRozgrzana` —
+  detaches the capture listener, clears the expiry + pulse timers, removes the
+  meter and the `<style>`, clears `ee_publika_combo`) each
+  `beforeEach`/`afterEach`, and `easter_eggs.js`'s `teardownAll()` also
+  reaches it (registers via `registerTeardown('publikaRozgrzana')`).
+- rjsmin (in `{% compress js %}`) preserves the non-ASCII toast string (the 🔥
+  emoji, `„…”` quotes, Polish diacritics) — verify against the
+  production-storage `collectstatic` + `compress --force` bundle, not just
+  `just test`.
+
 ### Background scheduling — APScheduler, not Django-RQ
 
 Django-RQ has been removed entirely. `AchievementsConfig.ready()`

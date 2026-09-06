@@ -23,10 +23,10 @@ router = Router()
 
 # Exact-match allowlist for POST /frontend-event. Every client-awardable slug
 # must be listed here explicitly — an existing Achievement row is necessary but
-# not sufficient. Group-A easter eggs (umbrella #278) use the `frontend-ee-`
-# prefix by convention; each child issue adds its own concrete slug(s) to this
-# set alongside the Achievement data migration (#283 added the first one,
-# `frontend-ee-konami`).
+# not sufficient. The `frontend-ee-` prefix is shared by the umbrella-#278
+# group-A easter eggs and the umbrella-#279 jokes-in-mechanics eggs; each child
+# issue adds its own concrete slug(s) to this set alongside the Achievement data
+# migration (#283 added the first one, `frontend-ee-konami`).
 VALID_FRONTEND_SLUGS = frozenset(
     {
         "frontend-recenzent-totalny",
@@ -34,10 +34,11 @@ VALID_FRONTEND_SLUGS = frozenset(
         "frontend-zbieracz-sucharow",
         "frontend-niecierpliwy",
         "frontend-odkrywca",
-        # Group-A easter eggs (umbrella #278): the `frontend-ee-` prefix.
+        # Easter eggs (umbrellas #278 / #279): the `frontend-ee-` prefix.
         "frontend-ee-konami",  # #283 — Konami code
         "frontend-ee-niezdecydowany",  # #289 — theme-toggle spam
         "frontend-ee-archeolog",  # #290 — scroll to the bottom of page 5+
+        "frontend-ee-publika-rozgrzana",  # #296 — 10 funny votes in a row
     },
 )
 
