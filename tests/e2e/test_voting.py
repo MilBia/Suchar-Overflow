@@ -68,6 +68,30 @@ def test_unauthenticated_vote_click_redirects_to_login(
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.usefixtures("login")
+def test_author_dry_voting_own_suchar_shows_wink_toast(
+    page: Page,
+    live_server: LiveServer,
+    published_suchar: SucharModel,
+) -> None:
+    """#299: the logged-in user authors ``published_suchar``; a dry vote on it
+    is a self dry-vote, so the endpoint returns the wink text and voting.js
+    surfaces it as a toast."""
+    page.goto(f"{live_server.url}/suchary/")
+
+    pk = published_suchar.pk
+    dry_btn = page.locator(
+        f"button.btn-vote[data-suchar-id='{pk}'][data-vote-type='dry']",
+    )
+    dry_btn.click()
+
+    toast = page.locator("#toast-container .toast-body", has_text="Odwaga. Szacunek.")
+    toast.wait_for(state="visible")
+    assert "Odwaga. Szacunek." in toast.inner_text()
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
 def test_clicking_active_vote_toggles_it_off(
     page: Page,
     live_server: LiveServer,

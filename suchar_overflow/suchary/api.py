@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.db.models import QuerySet
 from django.http import HttpRequest  # noqa: TC002
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 from ninja import Router
 from ninja import Schema
 from ninja.security import django_auth
@@ -38,6 +39,11 @@ class VoteResponse(Schema):
     # Latched by the achievement engine (#294); lets the frontend drop the
     # craquelure overlay on the card in place, without a reload (#295).
     is_overdried: bool
+    # #299: set only when the author casts a "dry" vote on their *own* suchar
+    # — voting.js winks back with a "Odwaga. Szacunek." toast. Translated here
+    # so it lands in the voter's active language; the voter *is* the author,
+    # so this request's language is theirs.
+    self_dry_vote_toast: str | None = None
 
 
 class TagSchema(Schema):
@@ -58,7 +64,7 @@ def vote_suchar(
     request: HttpRequest,
     suchar_id: int,
     payload: VoteSchema,
-) -> dict[str, int | bool]:
+) -> dict[str, int | bool | str | None]:
     # select_related("author"): the freshly created Vote carries this instance in
     # its fields_cache, so check_vote_achievements' `instance.suchar.author`
     # resolves without an extra query on every first-time vote.
@@ -133,6 +139,15 @@ def vote_suchar(
     ):
         set_pending_toast(suchar.author_id)
 
+    # #299: author dry-voting their own suchar earns a wink. `added_dry`
+    # mirrors `added_funny` — true for a fresh dry vote and for a toggle that
+    # just switched `is_dry` on, false on removal. It replays on every fresh
+    # self dry-vote (no latch) — it is pure UI delight, no achievement.
+    added_dry = vote_type == "dry" and (created or vote.is_dry)
+    self_dry_vote_toast = (
+        _("Odwaga. Szacunek.") if added_dry and user.pk == suchar.author_id else None
+    )
+
     return {
         "funny_count": counts["funny"] or 0,
         "dry_count": counts["dry"] or 0,
@@ -144,4 +159,5 @@ def vote_suchar(
         # The vote signals mutate this same `suchar` instance in place when
         # they latch it, so this reflects the post-vote state (#294).
         "is_overdried": suchar.is_overdried,
+        "self_dry_vote_toast": self_dry_vote_toast,
     }

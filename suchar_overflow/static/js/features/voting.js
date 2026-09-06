@@ -96,6 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
             dryBtn.classList.toggle('active', data.user_is_dry);
             dryBtn.setAttribute('aria-pressed', String(data.user_is_dry));
 
+            // #299: the author dry-voting their own suchar earns a wink. The
+            // server sends the translated toast text only in that case (null
+            // otherwise), so there is nothing to gate on here.
+            if (data.self_dry_vote_toast && window.showToast) {
+                window.showToast(data.self_dry_vote_toast, '😉', 'info');
+            }
+
             // #295: this vote may have latched the "overdried" flag (#294) —
             // add the craquelure marker in place so the card cracks without a
             // reload. The latch is one-way, so we only ever add it here.
