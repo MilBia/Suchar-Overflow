@@ -50,6 +50,10 @@ def test_leaderboard_empty_db_renders(client: Client) -> None:
     # All querysets are empty — no exceptions raised
     assert list(ctx["top_authors_overall"]) == []
     assert list(ctx["top_suchars_overall"]) == []
+    # The empty cards carry the flavored copy, not a bare "No data." (issue #298)
+    content = response.content.decode()
+    assert gettext("Jeszcze nie ma czego rankingować.") in content
+    assert gettext("Na tablicy jeszcze pusto.") in content
 
 
 # ---------------------------------------------------------------------------

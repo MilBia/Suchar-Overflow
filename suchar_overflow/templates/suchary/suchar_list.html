@@ -140,7 +140,9 @@
                   {% endfor %}
                 </div>
               {% endif %}
-              <div class="voting-controls d-flex align-items-center justify-content-end gap-3">
+              <div class="voting-controls d-flex align-items-center justify-content-end gap-3"
+                   data-busy-text="{% trans 'Zliczam głos…' %}"
+                   data-error-text="{% trans 'Głos ugrzązł w suszy. Spróbuj ponownie.' %}">
                 {% csrf_token %}
                 <!-- Funny Button -->
                 <button type="button"
@@ -173,8 +175,13 @@
         {% empty %}
           <div class="text-center py-5">
             <div class="mb-3 text-muted">{% include "svgs/icon-cracker-stack.svg" %}</div>
-            <h3>{% trans "So dry here..." %}</h3>
-            <p class="text-muted">{% trans "Be the hero we need and add the first joke." %}</p>
+            {% if request.GET.q or request.GET.tag or request.GET.author %}
+              <h3>{% trans "Zero trafień. Kompletna susza." %}</h3>
+              <p class="text-muted">{% trans "Poluzuj frazę albo dodaj suchar, którego brakuje." %}</p>
+            {% else %}
+              <h3>{% trans "So dry here..." %}</h3>
+              <p class="text-muted">{% trans "Be the hero we need and add the first joke." %}</p>
+            {% endif %}
           </div>
         {% endfor %}
       </div>

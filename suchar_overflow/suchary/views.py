@@ -157,7 +157,7 @@ class SucharCreateView(AsyncLoginRequiredMixin):
             form.save_m2m()
 
         await sync_to_async(_save)()
-        messages.success(request, gettext("Your suchar has been posted."))
+        messages.success(request, gettext("Suchar poszedł w świat. Niech schnie."))
         return redirect(self.success_url)
 
 
@@ -242,5 +242,8 @@ class SucharUpdateView(AsyncLoginRequiredMixin, AsyncUserPassesTestMixin):  # ty
             suchar_edited.send(sender=Suchar, author=suchar.author, suchar=suchar)
 
         await sync_to_async(_save_and_signal)()
-        messages.success(request, gettext("Your suchar has been updated."))
+        messages.success(
+            request,
+            gettext("Suchar odświeżony. Dalej suchy, tylko młodszy."),
+        )
         return redirect(self.success_url)
