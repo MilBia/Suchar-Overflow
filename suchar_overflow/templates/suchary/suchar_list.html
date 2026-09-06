@@ -105,7 +105,10 @@
           </div>
         {% endif %}
         {% for suchar in suchary %}
-          <div class="card suchar-card">
+          {# #295: `data-overdried` drives the craquelure overlay (suchar-card.css); #}
+          {# voting.js adds it in place when a vote latches `is_overdried`. #}
+          <div class="card suchar-card"
+               {% if suchar.is_overdried %}data-overdried title="{% trans 'Overdried' %}"{% endif %}>
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="d-flex align-items-center">

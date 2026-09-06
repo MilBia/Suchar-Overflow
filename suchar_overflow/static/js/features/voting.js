@@ -72,6 +72,16 @@ document.addEventListener('DOMContentLoaded', () => {
             dryBtn.classList.toggle('active', data.user_is_dry);
             dryBtn.setAttribute('aria-pressed', String(data.user_is_dry));
 
+            // #295: this vote may have latched the "overdried" flag (#294) —
+            // add the craquelure marker in place so the card cracks without a
+            // reload. The latch is one-way, so we only ever add it here.
+            if (data.is_overdried) {
+                const card = container.closest('.card.suchar-card');
+                if (card && !card.hasAttribute('data-overdried')) {
+                    card.setAttribute('data-overdried', '');
+                }
+            }
+
         } catch (error) {
             console.error('Vote failed:', error);
 
