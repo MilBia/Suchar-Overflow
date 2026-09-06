@@ -48,7 +48,7 @@ def test_create_suchar(client: Client, django_user_model: type[UserModel]) -> No
     assert first_suchar.text == "A dry joke"
     messages = list(get_messages(response.wsgi_request))
     assert [str(m) for m in messages] == [
-        gettext("Your suchar is out there now. Let it dry."),
+        gettext("Suchar poszedł w świat. Niech schnie."),
     ]
 
 
@@ -127,7 +127,7 @@ def test_suchar_list_search_miss_shows_no_results_copy(client: Client) -> None:
     assert response.status_code == HTTPStatus.OK
     assert list(response.context["suchary"]) == []
     content = response.content.decode()
-    assert gettext("Nothing matched. Bone dry.") in content
+    assert gettext("Zero trafień. Kompletna susza.") in content
     assert gettext("Be the hero we need and add the first joke.") not in content
 
 
@@ -139,7 +139,7 @@ def test_suchar_list_empty_db_shows_first_joke_copy(client: Client) -> None:
     assert response.status_code == HTTPStatus.OK
     content = response.content.decode()
     assert gettext("Be the hero we need and add the first joke.") in content
-    assert gettext("Nothing matched. Bone dry.") not in content
+    assert gettext("Zero trafień. Kompletna susza.") not in content
 
 
 @pytest.mark.django_db

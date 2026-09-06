@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 17:28+0000\n"
+"POT-Creation-Date: 2026-09-06 17:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -428,17 +428,17 @@ msgstr "Scheduler Runs"
 
 #: suchar_overflow/achievements/tests/test_views.py:231
 #: suchar_overflow/templates/achievements/list.html:47
-msgid "Trophy cabinet's still drying. Check back after some jokes."
+msgid "Gablota z trofeami dopiero schnie. Zajrzyj po kilku żartach."
 msgstr "Trophy cabinet's still drying. Check back after some jokes."
 
 #: suchar_overflow/stats/tests/test_views.py:55
 #: suchar_overflow/templates/stats/leaderboard.html:82
-msgid "Nothing to rank yet."
+msgid "Jeszcze nie ma czego rankingować."
 msgstr "Nothing to rank yet."
 
 #: suchar_overflow/stats/tests/test_views.py:56
 #: suchar_overflow/templates/stats/_leaderboard_suchar_card.html:33
-msgid "Nothing on the board yet."
+msgid "Na tablicy jeszcze pusto."
 msgstr "Nothing on the board yet."
 
 #: suchar_overflow/stats/tests/test_views.py:151
@@ -511,9 +511,8 @@ msgstr "Leave empty to publish immediately."
 #: suchar_overflow/suchary/forms.py:68
 #: suchar_overflow/templates/suchary/suchar_form.html:21
 msgid ""
-"Publication date cannot be in the past (time machine still in the shop)."
-msgstr ""
-"Publication date cannot be in the past (time machine still in the shop)."
+"Data publikacji nie może być w przeszłości (wehikuł czasu wciąż w naprawie)."
+msgstr "Publication date cannot be in the past (time machine still in the shop)."
 
 #: suchar_overflow/suchary/forms.py:83
 #, python-format
@@ -560,13 +559,13 @@ msgstr ""
 
 #: suchar_overflow/suchary/tests/test_views.py:51
 #: suchar_overflow/suchary/views.py:160
-msgid "Your suchar is out there now. Let it dry."
+msgid "Suchar poszedł w świat. Niech schnie."
 msgstr "Your suchar is out there now. Let it dry."
 
 #: suchar_overflow/suchary/tests/test_views.py:130
 #: suchar_overflow/suchary/tests/test_views.py:142
 #: suchar_overflow/templates/suchary/suchar_list.html:179
-msgid "Nothing matched. Bone dry."
+msgid "Zero trafień. Kompletna susza."
 msgstr "Nothing matched. Bone dry."
 
 #: suchar_overflow/suchary/tests/test_views.py:131
@@ -583,7 +582,7 @@ msgstr "You don't have permission to do that."
 
 #: suchar_overflow/suchary/tests/test_views_extra.py:279
 #: suchar_overflow/suchary/views.py:245
-msgid "Suchar refreshed. Still dry, just younger."
+msgid "Suchar odświeżony. Dalej suchy, tylko młodszy."
 msgstr "Suchar refreshed. Still dry, just younger."
 
 #: suchar_overflow/templates/403.html:6 suchar_overflow/templates/403.html:11
@@ -1145,11 +1144,11 @@ msgid "Overall"
 msgstr "Overall"
 
 #: suchar_overflow/templates/stats/leaderboard.html:83
-msgid "Nothing funny yet — the stage is open."
+msgid "Jeszcze nic śmiesznego — scena wolna."
 msgstr "Nothing funny yet — the stage is open."
 
 #: suchar_overflow/templates/stats/leaderboard.html:84
-msgid "Not enough drought yet."
+msgid "Wciąż za mało suszy."
 msgstr "Not enough drought yet."
 
 #: suchar_overflow/templates/suchary/edit_too_late.html:6
@@ -1222,7 +1221,9 @@ msgid "Select date and time..."
 msgstr "Select date and time..."
 
 #: suchar_overflow/templates/suchary/suchar_form.html:98
-msgid "Publishing your suchar…"
+#, fuzzy
+#| msgid "Publishing your suchar…"
+msgid "Publikuję suchar…"
 msgstr "Publishing your suchar…"
 
 #: suchar_overflow/templates/suchary/suchar_form.html:98
@@ -1290,11 +1291,11 @@ msgid "Edit"
 msgstr "Edit"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:144
-msgid "Counting your vote…"
+msgid "Zliczam głos…"
 msgstr "Counting your vote…"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:145
-msgid "Your vote got stuck in the dust. Try again."
+msgid "Głos ugrzązł w suszy. Spróbuj ponownie."
 msgstr "Your vote got stuck in the dust. Try again."
 
 #: suchar_overflow/templates/suchary/suchar_list.html:153
@@ -1303,7 +1304,7 @@ msgid "Log in to vote"
 msgstr "Log in to vote"
 
 #: suchar_overflow/templates/suchary/suchar_list.html:180
-msgid "Loosen the phrase, or add the joke that's missing."
+msgid "Poluzuj frazę albo dodaj suchar, którego brakuje."
 msgstr "Loosen the phrase, or add the joke that's missing."
 
 #: suchar_overflow/templates/suchary/suchar_list.html:182

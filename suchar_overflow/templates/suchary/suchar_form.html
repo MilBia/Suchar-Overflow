@@ -18,7 +18,7 @@
 {% endblock css %}
 
 {% block content %}
-  {% trans "Publication date cannot be in the past (time machine still in the shop)." as past_date_error %}
+  {% trans "Data publikacji nie może być w przeszłości (wehikuł czasu wciąż w naprawie)." as past_date_error %}
   <div class="row py-5 gx-5 suchar-form-wrapper">
     <!-- Left Column: Form -->
     <div class="col-lg-6 mb-5 mb-lg-0">
@@ -95,7 +95,7 @@
             <div class="d-grid gap-3 mt-5">
               <button type="submit"
                       class="btn btn-primary btn-lg shadow-sm"
-                      data-loading-text="{% trans 'Publishing your suchar…' %}">{% trans "Publish" %}</button>
+                      data-loading-text="{% trans 'Publikuję suchar…' %}">{% trans "Publish" %}</button>
               <a href="{% url 'suchary:list' %}" class="btn btn-outline text-muted">{% trans "Cancel" %}</a>
             </div>
           </form>

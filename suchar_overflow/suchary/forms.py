@@ -65,8 +65,8 @@ class SucharForm(forms.ModelForm):
         if published_at < timezone.now() - timedelta(minutes=5):
             raise forms.ValidationError(
                 _(
-                    "Publication date cannot be in the past "
-                    "(time machine still in the shop).",
+                    "Data publikacji nie może być w przeszłości "
+                    "(wehikuł czasu wciąż w naprawie).",
                 ),
             )
         return published_at

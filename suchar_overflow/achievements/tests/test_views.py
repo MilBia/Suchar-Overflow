@@ -228,6 +228,6 @@ async def test_achievement_list_empty_shows_placeholder_copy(
     assert response.status_code == HTTPStatus.OK
     assert list(response.context["achievements"]) == []
     assert (
-        gettext("Trophy cabinet's still drying. Check back after some jokes.")
+        gettext("Gablota z trofeami dopiero schnie. Zajrzyj po kilku żartach.")
         in response.content.decode()
     )

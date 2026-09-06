@@ -52,8 +52,8 @@ def test_leaderboard_empty_db_renders(client: Client) -> None:
     assert list(ctx["top_suchars_overall"]) == []
     # The empty cards carry the flavored copy, not a bare "No data." (issue #298)
     content = response.content.decode()
-    assert gettext("Nothing to rank yet.") in content
-    assert gettext("Nothing on the board yet.") in content
+    assert gettext("Jeszcze nie ma czego rankingować.") in content
+    assert gettext("Na tablicy jeszcze pusto.") in content
 
 
 # ---------------------------------------------------------------------------
