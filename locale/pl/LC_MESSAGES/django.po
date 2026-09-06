@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 17:52+0000\n"
+"POT-Creation-Date: 2026-09-06 20:30+0000\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -485,6 +485,10 @@ msgstr "Treść"
 msgid "Votes"
 msgstr "Głosy"
 
+#: suchar_overflow/suchary/api.py:148
+msgid "Odwaga. Szacunek."
+msgstr ""
+
 #: suchar_overflow/suchary/apps.py:8
 msgid "Suchary"
 msgstr "Sucharki"
@@ -578,7 +582,7 @@ msgid "You don't have permission to do that."
 msgstr "Nie masz uprawnień, aby to zrobić."
 
 #: suchar_overflow/suchary/tests/test_views_extra.py:279
-#: suchar_overflow/suchary/views.py:245
+#: suchar_overflow/suchary/views.py:247
 msgid "Suchar odświeżony. Dalej suchy, tylko młodszy."
 msgstr ""
 

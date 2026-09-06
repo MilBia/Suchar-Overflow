@@ -6,6 +6,7 @@ import pytest
 from django.core.cache import cache
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+from django.utils.translation import gettext
 
 from suchar_overflow.achievements.cache import suchar_toast_sent_cache_key
 from suchar_overflow.achievements.cache import toast_cache_key
@@ -869,3 +870,131 @@ def test_vote_endpoint_removing_last_funny_latches_overdried(
         user=author,
         achievement__slug="dry-master",
     ).exists()
+
+
+# ---------------------------------------------------------------------------
+# vote_suchar — self dry-vote 😉 toast flag (issue #299)
+# ---------------------------------------------------------------------------
+
+SELF_DRY_MSGID = "Odwaga. Szacunek."
+
+
+@pytest.mark.django_db
+def test_author_self_dry_vote_sets_toast_flag(client: Client) -> None:
+    author = make_user("selfdry_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+
+    client.force_login(author)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json()["self_dry_vote_toast"] == gettext(SELF_DRY_MSGID)
+
+
+@pytest.mark.django_db
+def test_author_self_dry_vote_toast_replays_on_toggle_back_on(
+    client: Client,
+) -> None:
+    """It is a wink, not a one-shot — every fresh self dry-vote re-fires it."""
+    author = make_user("selfdry_replay_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+
+    client.force_login(author)
+    on = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+    assert on.json()["self_dry_vote_toast"] == gettext(SELF_DRY_MSGID)
+
+    off = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+    assert off.json()["self_dry_vote_toast"] is None
+    assert not Vote.objects.filter(user=author, suchar=suchar).exists()
+
+    again = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+    assert again.json()["self_dry_vote_toast"] == gettext(SELF_DRY_MSGID)
+
+
+@pytest.mark.django_db
+def test_author_self_dry_vote_after_funny_still_sets_toast(client: Client) -> None:
+    """`Vote` allows `is_funny` and `is_dry` at once — an existing self funny
+    vote must not swallow the wink when the author then adds a dry vote."""
+    author = make_user("selfdry_afterfunny_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    Vote.objects.create(suchar=suchar, user=author, is_funny=True)
+
+    client.force_login(author)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    data = response.json()
+    assert data["self_dry_vote_toast"] == gettext(SELF_DRY_MSGID)
+    assert data["user_is_funny"] is True
+    assert data["user_is_dry"] is True
+
+
+@pytest.mark.django_db
+def test_author_self_funny_vote_has_no_self_dry_vote_toast(client: Client) -> None:
+    author = make_user("selffunny_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+
+    client.force_login(author)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "funny"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json()["self_dry_vote_toast"] is None
+
+
+@pytest.mark.django_db
+def test_author_removing_self_dry_vote_has_no_toast(client: Client) -> None:
+    author = make_user("selfdry_remove_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    Vote.objects.create(suchar=suchar, user=author, is_dry=True)
+
+    client.force_login(author)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json()["self_dry_vote_toast"] is None
+    assert not Vote.objects.filter(user=author, suchar=suchar).exists()
+
+
+@pytest.mark.django_db
+def test_non_author_dry_vote_has_no_self_dry_vote_toast(client: Client) -> None:
+    author = make_user("selfdry_notauthor_author")
+    voter = make_user("selfdry_notauthor_voter")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+
+    client.force_login(voter)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json()["self_dry_vote_toast"] is None
