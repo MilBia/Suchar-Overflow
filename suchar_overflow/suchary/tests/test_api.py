@@ -928,6 +928,28 @@ def test_author_self_dry_vote_toast_replays_on_toggle_back_on(
 
 
 @pytest.mark.django_db
+def test_author_self_dry_vote_after_funny_still_sets_toast(client: Client) -> None:
+    """`Vote` allows `is_funny` and `is_dry` at once — an existing self funny
+    vote must not swallow the wink when the author then adds a dry vote."""
+    author = make_user("selfdry_afterfunny_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    Vote.objects.create(suchar=suchar, user=author, is_funny=True)
+
+    client.force_login(author)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    data = response.json()
+    assert data["self_dry_vote_toast"] == gettext(SELF_DRY_MSGID)
+    assert data["user_is_funny"] is True
+    assert data["user_is_dry"] is True
+
+
+@pytest.mark.django_db
 def test_author_self_funny_vote_has_no_self_dry_vote_toast(client: Client) -> None:
     author = make_user("selffunny_author")
     suchar = Suchar.objects.create(text="Joke", author=author)
