@@ -37,3 +37,41 @@
 .hover-primary:hover {
     color: var(--color-primary) !important;
 }
+
+/* =========================================
+   #295: "Overdried" suchar — craquelure glaze
+   ========================================= */
+
+/* A visual gag paired with the "Mistrz Suszu" achievement (#294): a suchar
+   whose `is_overdried` latch is set (suchar_list.html emits `data-overdried`)
+   gets a faint cracked-varnish web over its card. The texture is a static
+   inline-SVG data URI painted on ::after — no filter, no animation, so there
+   is nothing to gate behind prefers-reduced-motion — and sits *under*
+   .card-body via z-index so the joke text stays crisp. .card already sets
+   position: relative + overflow: hidden, so the overlay clips to the rounded
+   corners on its own. */
+.suchar-card[data-overdried]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='300'%20height='300'%20viewBox='0%200%20300%20300'%3E%3Cg%20fill='none'%20stroke='%235a4a34'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M0,44L58,58L122,40L178,62L242,46L300,68'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M0,132L68,122L112,150L172,134L226,166L300,146'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M0,228L54,212L128,242L192,222L250,252L300,234'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M42,0L56,72L38,140L60,212L48,300'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M150,0L140,60L166,132L150,202L172,300'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M256,0L244,82L270,152L250,232L264,300'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M58,58L74,96L54,132'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M122,40L132,10'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M172,134L188,100L166,60'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M128,242L118,282L142,300'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M244,82L210,96L242,132'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M68,122L40,100L20,60'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M226,166L238,202L216,242'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M112,150L96,182L122,212L100,242'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M300,68L272,86'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 300px 300px;
+    opacity: 0.08;
+    mix-blend-mode: multiply;
+}
+
+/* Lift the real content above the crack web so readability is untouched. */
+.suchar-card[data-overdried] .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+/* Dark theme: a warm-tan web lightened onto the surface instead of darkened. */
+[data-theme='dark'] .suchar-card[data-overdried]::after {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='300'%20height='300'%20viewBox='0%200%20300%20300'%3E%3Cg%20fill='none'%20stroke='%23d8c7a8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M0,44L58,58L122,40L178,62L242,46L300,68'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M0,132L68,122L112,150L172,134L226,166L300,146'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M0,228L54,212L128,242L192,222L250,252L300,234'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M42,0L56,72L38,140L60,212L48,300'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M150,0L140,60L166,132L150,202L172,300'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M256,0L244,82L270,152L250,232L264,300'%20stroke-opacity='0.85'%20stroke-width='1'/%3E%3Cpath%20d='M58,58L74,96L54,132'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M122,40L132,10'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M172,134L188,100L166,60'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M128,242L118,282L142,300'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M244,82L210,96L242,132'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M68,122L40,100L20,60'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M226,166L238,202L216,242'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M112,150L96,182L122,212L100,242'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3Cpath%20d='M300,68L272,86'%20stroke-opacity='0.5'%20stroke-width='0.7'/%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.12;
+    mix-blend-mode: screen;
+}

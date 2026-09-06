@@ -467,3 +467,31 @@ def test_search_query_avoids_distinct_count_aggregate(
     ]
     assert count_queries
     assert not any("funny_count" in sql or "dry_count" in sql for sql in count_queries)
+
+
+@pytest.mark.django_db
+def test_suchar_list_marks_overdried_cards(
+    client: Client,
+    django_user_model: type[UserModel],
+) -> None:
+    """The craquelure overlay (#295) keys off ``data-overdried`` on the card.
+
+    The list template emits it (and the ``is-overdried`` class) only for a
+    suchar whose ``is_overdried`` latch (#294) is set; a normal card carries
+    neither.
+    """
+    author = django_user_model.objects.create_user(
+        username="overdried-author",
+        email="overdried-author@example.com",
+        password="password",  # noqa: S106
+    )
+    Suchar.objects.create(text="Fresh joke", author=author)
+    Suchar.objects.create(text="Bone-dry joke", author=author, is_overdried=True)
+
+    response = client.get(reverse("suchary:list"))
+
+    assert response.status_code == HTTPStatus.OK
+    content = response.content.decode()
+    # Exactly one of the two cards is flagged — proves the normal card is clean.
+    assert content.count("data-overdried") == 1
+    assert content.count("suchar-card is-overdried") == 1
