@@ -1221,8 +1221,6 @@ msgid "Select date and time..."
 msgstr "Select date and time..."
 
 #: suchar_overflow/templates/suchary/suchar_form.html:98
-#, fuzzy
-#| msgid "Publishing your suchar…"
 msgid "Publikuję suchar…"
 msgstr "Publishing your suchar…"
 
