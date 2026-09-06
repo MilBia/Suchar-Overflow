@@ -275,7 +275,9 @@ def test_update_author_post_success_shows_message(
     )
     assert response.status_code == HTTPStatus.FOUND
     messages = list(get_messages(response.wsgi_request))
-    assert [str(m) for m in messages] == [gettext("Your suchar has been updated.")]
+    assert [str(m) for m in messages] == [
+        gettext("Suchar refreshed. Still dry, just younger."),
+    ]
 
 
 def _suchar_select_count(ctx: CaptureQueriesContext) -> int:

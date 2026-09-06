@@ -47,7 +47,9 @@ def test_create_suchar(client: Client, django_user_model: type[UserModel]) -> No
     assert first_suchar is not None
     assert first_suchar.text == "A dry joke"
     messages = list(get_messages(response.wsgi_request))
-    assert [str(m) for m in messages] == [gettext("Your suchar has been posted.")]
+    assert [str(m) for m in messages] == [
+        gettext("Your suchar is out there now. Let it dry."),
+    ]
 
 
 @pytest.mark.django_db
@@ -112,6 +114,32 @@ def test_suchar_list_search(client: Client, django_user_model: type[UserModel]) 
     response = client.get(url, {"tag": "it"})
     assert s1 in response.context["suchary"]
     assert s2 not in response.context["suchary"]
+
+
+@pytest.mark.django_db
+def test_suchar_list_search_miss_shows_no_results_copy(client: Client) -> None:
+    """A filtered query with zero hits gets the no-results copy, not the
+    empty-database "add the first joke" prompt (issue #298)."""
+    url = reverse("suchary:list")
+
+    response = client.get(url, {"q": "zzznomatchzzz"})
+
+    assert response.status_code == HTTPStatus.OK
+    assert list(response.context["suchary"]) == []
+    content = response.content.decode()
+    assert gettext("Nothing matched. Bone dry.") in content
+    assert gettext("Be the hero we need and add the first joke.") not in content
+
+
+@pytest.mark.django_db
+def test_suchar_list_empty_db_shows_first_joke_copy(client: Client) -> None:
+    """With no filters active, the empty list keeps the first-joke prompt."""
+    response = client.get(reverse("suchary:list"))
+
+    assert response.status_code == HTTPStatus.OK
+    content = response.content.decode()
+    assert gettext("Be the hero we need and add the first joke.") in content
+    assert gettext("Nothing matched. Bone dry.") not in content
 
 
 @pytest.mark.django_db

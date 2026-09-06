@@ -1705,6 +1705,46 @@ msgstr "Link wygasł (minęło 24 godziny)."
 msgid "Email already taken."
 msgstr "Ten adres e-mail jest już zajęty."
 
+#: suchar_overflow/templates/suchary/suchar_list.html
+msgid "Nothing matched. Bone dry."
+msgstr "Zero trafień. Kompletna susza."
+
+#: suchar_overflow/templates/suchary/suchar_list.html
+msgid "Loosen the phrase, or add the joke that's missing."
+msgstr "Poluzuj frazę albo dodaj suchar, którego brakuje."
+
+#: suchar_overflow/templates/achievements/list.html
+msgid "Trophy cabinet's still drying. Check back after some jokes."
+msgstr "Gablota z trofeami dopiero schnie. Zajrzyj po kilku żartach."
+
+#: suchar_overflow/templates/stats/leaderboard.html
+msgid "Nothing to rank yet."
+msgstr "Jeszcze nie ma czego rankingować."
+
+#: suchar_overflow/templates/stats/leaderboard.html
+msgid "Nothing funny yet — the stage is open."
+msgstr "Jeszcze nic śmiesznego — scena wolna."
+
+#: suchar_overflow/templates/stats/leaderboard.html
+msgid "Not enough drought yet."
+msgstr "Wciąż za mało suszy."
+
+#: suchar_overflow/templates/stats/_leaderboard_suchar_card.html
+msgid "Nothing on the board yet."
+msgstr "Na tablicy jeszcze pusto."
+
+#: suchar_overflow/suchary/forms.py
+msgid "Publication date cannot be in the past (time machine still in the shop)."
+msgstr "Data publikacji nie może być w przeszłości (wehikuł czasu wciąż w naprawie)."
+
+#: suchar_overflow/suchary/views.py
+msgid "Your suchar is out there now. Let it dry."
+msgstr "Suchar poszedł w świat. Niech schnie."
+
+#: suchar_overflow/suchary/views.py
+msgid "Suchar refreshed. Still dry, just younger."
+msgstr "Suchar odświeżony. Dalej suchy, tylko młodszy."
+
 #~ msgid "Rank"
 #~ msgstr "Pozycja"
 

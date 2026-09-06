@@ -211,3 +211,23 @@ async def test_achievement_list_user_has_no_earned_achievements(
     response = await async_client.get(reverse(ACHIEVEMENT_LIST_URL))
     assert response.status_code == HTTPStatus.OK
     assert response.context["user_achievements"] == set()
+
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_achievement_list_empty_shows_placeholder_copy(
+    async_client: AsyncClient,
+) -> None:
+    """With no Achievement rows at all, the grid shows the flavored empty
+    placeholder instead of rendering nothing (issue #298)."""
+    user = await sync_to_async(make_user)("user1")
+    await async_client.aforce_login(user)
+
+    response = await async_client.get(reverse(ACHIEVEMENT_LIST_URL))
+
+    assert response.status_code == HTTPStatus.OK
+    assert list(response.context["achievements"]) == []
+    assert (
+        gettext("Trophy cabinet's still drying. Check back after some jokes.")
+        in response.content.decode()
+    )

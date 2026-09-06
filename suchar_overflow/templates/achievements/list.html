@@ -40,6 +40,8 @@
         {% else %}
           {% include "achievements/_card.html" with achievement=ach locked=True is_secret=ach.is_secret %}
         {% endif %}
+      {% empty %}
+        <p class="text-center text-muted">{% trans "Trophy cabinet's still drying. Check back after some jokes." %}</p>
       {% endfor %}
     </div>
   </div>

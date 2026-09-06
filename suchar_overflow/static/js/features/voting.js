@@ -1,5 +1,24 @@
 /* AJAX Voting Logic */
 
+// Toggle the pure-CSS `.loading` spinner on a voting-controls container and,
+// alongside it, a visually-hidden live-region string so screen readers get a
+// spoken "busy" cue the animation alone can't give (issue #298).
+function setVotingBusy(container, busy) {
+    container.classList.toggle('loading', busy);
+    let status = container.querySelector('.vote-status');
+    if (busy) {
+        if (!status) {
+            status = document.createElement('span');
+            status.className = 'vote-status visually-hidden';
+            status.setAttribute('role', 'status');
+            status.textContent = 'Zliczam głos…';
+            container.appendChild(status);
+        }
+    } else if (status) {
+        status.remove();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // One delegated listener instead of one per `.btn-vote` — resilient to lists
     // that grow or re-render without re-binding. No stable list container exists
@@ -41,13 +60,13 @@ document.addEventListener('DOMContentLoaded', () => {
             ? Math.max(0, snapshot[`${voteType}Count`] - 1)
             : snapshot[`${voteType}Count`] + 1;
 
-        container.classList.add('loading');
+        setVotingBusy(container, true);
 
         try {
             const csrftoken = getCsrfToken();
             if (!csrftoken) {
                 console.error('CSRF token not found');
-                container.classList.remove('loading');
+                setVotingBusy(container, false);
                 return;
             }
 
@@ -94,10 +113,17 @@ document.addEventListener('DOMContentLoaded', () => {
             dryBtn.querySelector('.vote-count').textContent = snapshot.dryCount;
 
             if (window.showToast) {
-                window.showToast('Nie udało się zagłosować. Spróbuj ponownie.', 'Błąd', 'error');
+                window.showToast('Głos ugrzązł w suszy. Spróbuj ponownie.', 'Błąd', 'error');
             }
         } finally {
-            container.classList.remove('loading');
+            setVotingBusy(container, false);
         }
     });
 });
+
+// Test-only handle for the busy-state helper — inert in the browser (`module`
+// is undefined there) and preserved by rjsmin. See CLAUDE.md "JS tests
+// (Vitest)"; not dead code.
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = { setVotingBusy };
+}

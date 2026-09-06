@@ -64,7 +64,10 @@ class SucharForm(forms.ModelForm):
         # Allow a small buffer for clock skew; reject dates more than 5 min in the past.
         if published_at < timezone.now() - timedelta(minutes=5):
             raise forms.ValidationError(
-                _("Publication date cannot be in the past."),
+                _(
+                    "Publication date cannot be in the past "
+                    "(time machine still in the shop).",
+                ),
             )
         return published_at
 

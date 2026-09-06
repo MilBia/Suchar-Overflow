@@ -239,6 +239,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (submitBtn) {
                     submitBtn.classList.add('is-loading');
                     submitBtn.disabled = true;
+                    // The `.is-loading` spinner is pure CSS (button text goes
+                    // transparent) — give assistive tech a spoken cue too (#298).
+                    const status = document.createElement('span');
+                    status.className = 'visually-hidden';
+                    status.setAttribute('role', 'status');
+                    status.textContent = 'Publikuję suchar…';
+                    submitBtn.appendChild(status);
                 }
             });
 

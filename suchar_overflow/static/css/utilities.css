@@ -808,3 +808,18 @@
 .fs-sm {
     font-size: 0.8rem;
 }
+
+/* Screen-reader-only text — visually hidden but announced by assistive tech.
+   Used for the "loading" status strings on the voting / submit spinners
+   (issue #298), which are pure-CSS animations with no visible label. */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

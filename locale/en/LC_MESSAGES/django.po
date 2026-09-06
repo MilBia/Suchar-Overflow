@@ -1705,6 +1705,46 @@ msgstr "The link has expired (24 hours have passed)."
 msgid "Email already taken."
 msgstr "Email already taken."
 
+#: suchar_overflow/templates/suchary/suchar_list.html
+msgid "Nothing matched. Bone dry."
+msgstr "Nothing matched. Bone dry."
+
+#: suchar_overflow/templates/suchary/suchar_list.html
+msgid "Loosen the phrase, or add the joke that's missing."
+msgstr "Loosen the phrase, or add the joke that's missing."
+
+#: suchar_overflow/templates/achievements/list.html
+msgid "Trophy cabinet's still drying. Check back after some jokes."
+msgstr "Trophy cabinet's still drying. Check back after some jokes."
+
+#: suchar_overflow/templates/stats/leaderboard.html
+msgid "Nothing to rank yet."
+msgstr "Nothing to rank yet."
+
+#: suchar_overflow/templates/stats/leaderboard.html
+msgid "Nothing funny yet — the stage is open."
+msgstr "Nothing funny yet — the stage is open."
+
+#: suchar_overflow/templates/stats/leaderboard.html
+msgid "Not enough drought yet."
+msgstr "Not enough drought yet."
+
+#: suchar_overflow/templates/stats/_leaderboard_suchar_card.html
+msgid "Nothing on the board yet."
+msgstr "Nothing on the board yet."
+
+#: suchar_overflow/suchary/forms.py
+msgid "Publication date cannot be in the past (time machine still in the shop)."
+msgstr "Publication date cannot be in the past (time machine still in the shop)."
+
+#: suchar_overflow/suchary/views.py
+msgid "Your suchar is out there now. Let it dry."
+msgstr "Your suchar is out there now. Let it dry."
+
+#: suchar_overflow/suchary/views.py
+msgid "Suchar refreshed. Still dry, just younger."
+msgstr "Suchar refreshed. Still dry, just younger."
+
 #~ msgid "Rank"
 #~ msgstr "Rank"
 
