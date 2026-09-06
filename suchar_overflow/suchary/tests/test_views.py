@@ -476,9 +476,8 @@ def test_suchar_list_marks_overdried_cards(
 ) -> None:
     """The craquelure overlay (#295) keys off ``data-overdried`` on the card.
 
-    The list template emits it (and the ``is-overdried`` class) only for a
-    suchar whose ``is_overdried`` latch (#294) is set; a normal card carries
-    neither.
+    The list template emits it only for a suchar whose ``is_overdried`` latch
+    (#294) is set, and on that suchar's own card; a normal card carries none.
     """
     author = django_user_model.objects.create_user(
         username="overdried-author",
@@ -492,6 +491,11 @@ def test_suchar_list_marks_overdried_cards(
 
     assert response.status_code == HTTPStatus.OK
     content = response.content.decode()
-    # Exactly one of the two cards is flagged — proves the normal card is clean.
+    # Exactly one card is flagged...
     assert content.count("data-overdried") == 1
-    assert content.count("suchar-card is-overdried") == 1
+    # ...and it is the overdried suchar's card, not the plain one.
+    card_chunks = content.split('<div class="card suchar-card"')
+    dry_chunk = next(c for c in card_chunks if "Bone-dry joke" in c)
+    fresh_chunk = next(c for c in card_chunks if "Fresh joke" in c)
+    assert "data-overdried" in dry_chunk
+    assert "data-overdried" not in fresh_chunk
