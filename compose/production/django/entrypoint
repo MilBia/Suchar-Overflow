@@ -14,4 +14,20 @@ wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" -t 30
 
 >&2 echo 'PostgreSQL is available'
 
+# Parse host/port out of REDIS_URL (e.g. redis://[:password@]host:port/db, or
+# rediss:// for TLS) the same way config/settings/base.py derives REDIS_SSL, so we
+# wait on the exact host/port Django's cache backend (django_redis) will connect
+# to instead of hardcoding the compose service name.
+if [[ "${REDIS_URL}" =~ ^rediss?://([^/@]*@)?([^:/]+):([0-9]+) ]]; then
+    REDIS_HOST="${BASH_REMATCH[2]}"
+    REDIS_PORT="${BASH_REMATCH[3]}"
+else
+    >&2 echo "Could not parse host/port out of REDIS_URL=${REDIS_URL}"
+    exit 1
+fi
+
+wait-for-it "${REDIS_HOST}:${REDIS_PORT}" -t 30
+
+>&2 echo 'Redis is available'
+
 exec "$@"
