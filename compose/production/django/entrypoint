@@ -17,12 +17,17 @@ wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" -t 30
 # Parse host/port out of REDIS_URL (e.g. redis://[:password@]host:port/db, or
 # rediss:// for TLS) the same way config/settings/base.py derives REDIS_SSL, so we
 # wait on the exact host/port Django's cache backend (django_redis) will connect
-# to instead of hardcoding the compose service name.
-if [[ "${REDIS_URL}" =~ ^rediss?://([^/@]*@)?([^:/]+):([0-9]+) ]]; then
+# to instead of hardcoding the compose service name. This entrypoint is also used
+# by the local/CI image (compose/local/django/Dockerfile), whose env files don't
+# set REDIS_URL as a shell var — Django's own default (config/settings/base.py)
+# is a Python-level env() default, not a shell one — so fall back to that exact
+# same default string here too, under `set -o nounset`.
+redis_url="${REDIS_URL:-redis://redis:6379/0}"
+if [[ "${redis_url}" =~ ^rediss?://([^/@]*@)?([^:/]+):([0-9]+) ]]; then
     REDIS_HOST="${BASH_REMATCH[2]}"
     REDIS_PORT="${BASH_REMATCH[3]}"
 else
-    >&2 echo "Could not parse host/port out of REDIS_URL=${REDIS_URL}"
+    >&2 echo "Could not parse host/port out of REDIS_URL=${redis_url}"
     exit 1
 fi
 
