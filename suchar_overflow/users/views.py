@@ -580,7 +580,10 @@ class EmailChangeConfirmView(AsyncLoginRequiredMixin):
         user = email_request.user
         user.email = email_request.new_email
         try:
-            await user.asave()
+            # update_fields: the User row was loaded at the top of the request,
+            # so a blanket save would clobber any column changed concurrently
+            # since (last_login, preferences, …). Only `email` is ours to write.
+            await user.asave(update_fields=["email"])
         except IntegrityError:
             # Another pending request confirmed the same address between the
             # aexists() check above and this save — User.email is unique=True,
@@ -590,7 +593,7 @@ class EmailChangeConfirmView(AsyncLoginRequiredMixin):
             return await _email_taken_page()
 
         email_request.status = EmailChangeRequest.Status.VERIFIED
-        await email_request.asave()
+        await email_request.asave(update_fields=["status"])
 
         return await sync_to_async(render)(
             request,

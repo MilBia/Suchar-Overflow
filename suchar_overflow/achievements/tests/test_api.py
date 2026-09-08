@@ -1,8 +1,10 @@
+import threading
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
 from django.core.cache import cache
+from django.db import connection
 
 from suchar_overflow.achievements.api import VALID_FRONTEND_SLUGS
 from suchar_overflow.achievements.cache import pending_cache_key
@@ -12,6 +14,8 @@ from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from django.test import Client
 
 UNSEEN_ACHIEVEMENTS_URL = "/api/achievements/unseen"
@@ -376,34 +380,45 @@ def test_frontend_event_does_not_set_cache_key_when_already_owned(
     assert cache.get(pending_cache_key(user.pk)) is None
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_frontend_event_survives_concurrent_award(
     client: Client,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A parallel request awarding the same achievement first must not break
-    this one (#332).
+    """A parallel request that commits the same UserAchievement between this
+    request's ownership SELECT and its INSERT must not surface as a 500 (#332).
 
-    Before the fix the endpoint did ``.exists()`` then ``.create()`` and an
-    interleaved award turned the second INSERT into an unhandled
-    ``IntegrityError`` → 500. ``get_or_create`` absorbs the unique-constraint
-    race: the loser sees ``created=False`` and returns 200 without
-    re-flagging the notification. The concurrent award is simulated as a side
-    effect of the slug lookup.
+    ``transaction=True`` so the competing award — run on its own connection in
+    a thread — is genuinely committed and visible. It is fired from inside
+    ``UserAchievement.save``, i.e. after ``get_or_create``'s initial SELECT
+    already missed and right before its INSERT, so the INSERT really does hit
+    the ``unique_together`` constraint and ``get_or_create`` has to fall back
+    to a re-fetch. Against the pre-fix ``.exists()`` + ``.create()`` endpoint
+    the same collision raised an unhandled ``IntegrityError`` (HTTP 500).
     """
     user = make_user("user_fe_race")
     client.force_login(user)
     ach = make_frontend_achievement("frontend-odkrywca", name="Odkrywca")
     cache.delete(pending_cache_key(user.pk))
 
-    real_get = Achievement.objects.get
+    def _award_on_another_connection() -> None:
+        try:
+            UserAchievement.objects.create(user=user, achievement=ach)
+        finally:
+            connection.close()
 
-    def racing_get(*args: object, **kwargs: object) -> Achievement:
-        found = real_get(*args, **kwargs)
-        UserAchievement.objects.get_or_create(user=user, achievement=found)
-        return found
+    real_save: Callable[..., None] = UserAchievement.save
+    state = {"raced": False}
 
-    monkeypatch.setattr(Achievement.objects, "get", racing_get)
+    def racing_save(self: UserAchievement, *args: object, **kwargs: object) -> None:
+        if not state["raced"]:
+            state["raced"] = True
+            worker = threading.Thread(target=_award_on_another_connection)
+            worker.start()
+            worker.join()
+        real_save(self, *args, **kwargs)
+
+    monkeypatch.setattr(UserAchievement, "save", racing_save)
 
     response = client.post(
         FRONTEND_EVENT_URL,
@@ -414,7 +429,8 @@ def test_frontend_event_survives_concurrent_award(
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {"ok": True}
     assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1
-    # The request that actually awarded it owns the SSE flag; we didn't re-set it.
+    # The racer that actually awarded it owns the SSE flag; we lost, so we must
+    # not have re-set it.
     assert cache.get(pending_cache_key(user.pk)) is None
 
 
