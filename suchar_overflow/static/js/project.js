@@ -385,7 +385,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!activeTooltip) return;
         const tooltip = activeTooltip;
         tooltip.classList.remove('show');
-        tooltip.addEventListener('transitionend', () => tooltip.remove(), { once: true });
+        const remove = () => tooltip.remove();
+        tooltip.addEventListener('transitionend', remove, { once: true });
+        // Fallback: the fade-out `transitionend` never fires when the transition
+        // is a no-op (prefers-reduced-motion, a background tab, a 0s override),
+        // which would otherwise leak the node and its stale aria-describedby.
+        setTimeout(remove, 300);
         if (activeTooltipTarget) {
             activeTooltipTarget.removeAttribute('aria-describedby');
         }
