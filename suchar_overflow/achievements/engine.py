@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING
 
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
+from django.db import IntegrityError
+from django.db import transaction
 from django.db.models import Case
 from django.db.models import Count
 from django.db.models import F
@@ -348,7 +350,20 @@ class AchievementEngine:
                 computed[achievement.metric] = rule_cls.compute_value(user, instance)
             value = computed[achievement.metric]
             if value is not None and value >= achievement.threshold:
-                UserAchievement.objects.create(user=user, achievement=achievement)
+                # The candidates queryset already excluded owned rows, but two
+                # concurrent requests for the same user can both clear that
+                # check before either INSERTs (#332). The savepoint keeps the
+                # surrounding transaction usable after the losing INSERT hits
+                # the unique_together constraint; the winner already awarded
+                # it, so there is nothing left to do here.
+                try:
+                    with transaction.atomic():
+                        UserAchievement.objects.create(
+                            user=user,
+                            achievement=achievement,
+                        )
+                except IntegrityError:
+                    continue
                 awarded = True
 
         if awarded:

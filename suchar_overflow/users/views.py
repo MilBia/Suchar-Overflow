@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from asgiref.sync import sync_to_async
 from django.contrib import messages
 from django.core.cache import cache
+from django.db import IntegrityError
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models.functions import TruncDay
@@ -566,19 +567,33 @@ class EmailChangeConfirmView(AsyncLoginRequiredMixin):
                 {"error": _("The link has expired (24 hours have passed).")},
             )
 
-        if await User.objects.filter(email=email_request.new_email).aexists():
+        async def _email_taken_page() -> HttpResponse:
             return await sync_to_async(render)(
                 request,
                 "users/email_change_failed.html",
                 {"error": _("Email already taken.")},
             )
 
+        if await User.objects.filter(email=email_request.new_email).aexists():
+            return await _email_taken_page()
+
         user = email_request.user
         user.email = email_request.new_email
-        await user.asave()
+        try:
+            # update_fields: the User row was loaded at the top of the request,
+            # so a blanket save would clobber any column changed concurrently
+            # since (last_login, preferences, …). Only `email` is ours to write.
+            await user.asave(update_fields=["email"])
+        except IntegrityError:
+            # Another pending request confirmed the same address between the
+            # aexists() check above and this save — User.email is unique=True,
+            # so the write raced the constraint (#333). Leave this request
+            # PENDING (as the pre-check branch does) and show the same
+            # "already taken" page instead of a 500.
+            return await _email_taken_page()
 
         email_request.status = EmailChangeRequest.Status.VERIFIED
-        await email_request.asave()
+        await email_request.asave(update_fields=["status"])
 
         return await sync_to_async(render)(
             request,

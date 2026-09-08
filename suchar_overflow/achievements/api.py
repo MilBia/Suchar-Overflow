@@ -167,13 +167,16 @@ def record_frontend_event(
     except Achievement.DoesNotExist as exc:
         raise HttpError(404, "Achievement not found") from exc
 
-    already_owned = UserAchievement.objects.filter(
+    # get_or_create rather than a separate .exists() check + .create(): two
+    # concurrent requests (double-submitted POST, two tabs) could both pass an
+    # "already owned?" check before either INSERTs and race the
+    # unique_together constraint into an unhandled IntegrityError → 500 (#332).
+    _, created = UserAchievement.objects.get_or_create(
         user=user,
         achievement=achievement,
-    ).exists()
+    )
 
-    if not already_owned:
-        UserAchievement.objects.create(user=user, achievement=achievement)
+    if created:
         cache_key = pending_cache_key(user.pk)
         cache.set(cache_key, value=True, timeout=30 * 24 * 60 * 60)
 

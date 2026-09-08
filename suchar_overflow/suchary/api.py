@@ -138,15 +138,20 @@ def vote_suchar(
     # First funny vote from someone *other than the author* → send the author a
     # lightweight 🥁 toast over the existing SSE stream (issue #292).
     # `added_funny` is true for both a brand-new funny vote and a toggle that
-    # just switched `is_funny` on; `community_funny == 1` pins it to the 0 → 1
-    # transition among non-author votes (so the author self-voting first no
-    # longer eats it). `mark_suchar_toast_sent` (last, and only reached once
-    # the rest already qualifies) latches it to once per suchar.
+    # just switched `is_funny` on. `community_funny >= 1` (was `== 1`) plus
+    # `mark_suchar_toast_sent` — a single-winner `cache.add` latch — is what
+    # makes this exactly-once: two non-authors funny-voting near-simultaneously
+    # could both read `community_funny == 2` (their own INSERT + the other's)
+    # and an `== 1` test would then fire for neither (#334). With `>= 1` both
+    # qualify on the count and the atomic latch picks one. Trade-off: after a
+    # Redis flush a suchar that already has funny votes can fire one late
+    # toast; acceptable for a best-effort UI-delight cue, and cheaper than a
+    # `select_for_update` lock on every vote.
     added_funny = vote_type == "funny" and (created or vote.is_funny)
     if (
         added_funny
         and user.pk != suchar.author_id
-        and counts["community_funny"] == 1
+        and counts["community_funny"] >= 1
         and mark_suchar_toast_sent(suchar.pk)
     ):
         set_pending_toast(suchar.author_id)

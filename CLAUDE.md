@@ -300,9 +300,18 @@ back through 0 → 1 does not keep re-toasting its author.
 `suchary/api.py:vote_suchar` sets `toast_pending` when a suchar's **community**
 funny-vote count (`community_funny` — a third `Count(... FILTER ...)` on the *same*
 `suchar.votes.aggregate(...)`, so no extra query; `~Q(user_id=suchar.author_id)`
-excludes the author's own vote) crosses `0 → 1` *and* `mark_suchar_toast_sent`
+excludes the author's own vote) is `>= 1` *and* `mark_suchar_toast_sent`
 returns `True`. Excluding the author means a self-vote first no longer permanently
-eats the toast — the next genuine community vote still fires it.
+eats the toast — the next genuine community vote still fires it. The count test
+is `>= 1`, **not** `== 1` (the literal "0 → 1 transition"): `community_funny` is
+recounted with an unlocked aggregate after every vote, so two non-authors
+funny-voting near-simultaneously can each see the other's INSERT already
+committed (`community_funny == 2`) and an `== 1` test would fire for neither
+(#334). With `>= 1` both qualify on the count and the single-winner `cache.add`
+latch (`mark_suchar_toast_sent`) still makes it exactly-once — no
+`select_for_update` on the vote path. The one cost: after a Redis flush a suchar
+that already carries community funny votes can fire one late toast; acceptable
+for a best-effort UI-delight cue.
 `GET /api/achievements/toast` clears `toast_pending` with a single
 `cache.delete` whose return value doubles as the "was one pending?" check
 (atomic — two racing fetches can't both return a payload).
