@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from typing import Any
 
 from django import forms
 from django.contrib import admin
@@ -14,11 +15,29 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
+def parse_tier_thresholds(raw: str) -> list[int]:
+    """Parse a comma-separated thresholds string into ints.
+
+    Blank entries and anything non-digit are silently dropped, matching the
+    tolerant parsing `save_model` has always done on creation.
+    """
+    return [int(x.strip()) for x in raw.split(",") if x.strip().isdigit()]
+
+
 class AchievementAdminForm(forms.ModelForm):
+    # generate_tiers/tier_thresholds are plain form fields, not model fields,
+    # so nothing pre-populates them from the instance on GET. They must stay
+    # required=False or every edit of an existing Achievement (even one that
+    # has nothing to do with tiers) fails validation — save_model only ever
+    # consults them on creation (`not change`) anyway. clean() below enforces
+    # that tier_thresholds is actually usable whenever generate_tiers is
+    # checked, so that check isn't lost by making the fields optional.
     generate_tiers = forms.BooleanField(
+        required=False,
         help_text="Zaznacz aby automatycznie wygenerować z tego drabinkę Tierów.",
     )
     tier_thresholds = forms.CharField(
+        required=False,
         help_text=(
             "Opcjonalne. Podaj progi np. '5,10,25,50,100'. "
             "Pierwszy próg to baza, a 4 kolejne powstaną same."
@@ -42,6 +61,20 @@ class AchievementAdminForm(forms.ModelForm):
             "tier_thresholds",
             "is_secret",
         )
+
+    def clean(self) -> dict[str, Any] | None:
+        cleaned_data = super().clean()
+        if cleaned_data is None:
+            return cleaned_data
+        if cleaned_data.get("generate_tiers") and not parse_tier_thresholds(
+            cleaned_data.get("tier_thresholds") or "",
+        ):
+            self.add_error(
+                "tier_thresholds",
+                "Podaj przynajmniej jeden poprawny liczbowy próg "
+                "(np. '5,10,25,50,100'), gdy zaznaczone jest generate_tiers.",
+            )
+        return cleaned_data
 
 
 @admin.register(Achievement)
@@ -102,11 +135,7 @@ class AchievementAdmin(TabbedTranslationAdmin):
         if not change and form.cleaned_data.get("generate_tiers"):
             thresholds_str = form.cleaned_data.get("tier_thresholds", "")
             if thresholds_str:
-                thresholds = [
-                    int(x.strip())
-                    for x in thresholds_str.split(",")
-                    if x.strip().isdigit()
-                ]
+                thresholds = parse_tier_thresholds(thresholds_str)
                 if thresholds:
                     # Modify base object to be TIER 1 and have threshold[0]
                     obj.threshold = thresholds[0]
