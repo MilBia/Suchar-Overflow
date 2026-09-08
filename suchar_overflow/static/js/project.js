@@ -266,8 +266,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Tabbing out of the open menu (past the last option, or back past
             // the trigger) should close it — click-outside and Escape already
             // do, but a plain Tab left it hanging open behind the page.
+            // `relatedTarget` is null when focus goes nowhere focusable (a
+            // scrollbar / padding click mid-scroll) — leave those to the
+            // existing document click-outside handler, only act on a real
+            // Tab-to-another-element.
             dropdown.addEventListener('focusout', (e) => {
-                if (!dropdown.contains(e.relatedTarget)) {
+                if (e.relatedTarget && !dropdown.contains(e.relatedTarget)) {
                     setDropdownOpen(dropdown, false);
                 }
             });
@@ -418,6 +422,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeTooltip = null;
     let activeTooltipTarget = null;
     let tooltipIdCounter = 0;
+    // Elements that currently have a `mouseleave` cleanup listener armed, so a
+    // repeated `mouseover` (it bubbles from child nodes) doesn't stack more.
+    const tooltipHoverArmed = new WeakSet();
 
     const hideTooltip = () => {
         if (!activeTooltip) return;
@@ -466,21 +473,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mouseover', (e) => {
         const target = e.target.closest('[data-tooltip]');
         if (!target) return;
-        if (showTooltip(target)) {
-            // `mouseleave` (unlike `mouseout`) doesn't fire on moves between the
-            // target's own children, so no flicker on hovering the inner icon.
-            const onLeave = () => {
-                target.removeEventListener('mouseleave', onLeave);
-                // Keep it up if the pointer left but the element still holds
-                // keyboard focus (WCAG 2.1 SC 1.4.13 — hover and focus are
-                // independent triggers).
-                if (activeTooltipTarget === target
-                    && document.activeElement !== target) {
-                    hideTooltip();
-                }
-            };
-            target.addEventListener('mouseleave', onLeave);
-        }
+        showTooltip(target);
+        // Arm the `mouseleave` cleanup regardless of whether `showTooltip` just
+        // created the tooltip or it was already up from `focusin` — otherwise a
+        // focus-then-hover sequence leaves the tooltip with no way to hide on
+        // un-hover ("stuck tooltip"). Once per hover session (mouseover bubbles
+        // from children); `mouseleave` (not `mouseout`) ignores child moves.
+        if (tooltipHoverArmed.has(target)) return;
+        tooltipHoverArmed.add(target);
+        const onLeave = () => {
+            target.removeEventListener('mouseleave', onLeave);
+            tooltipHoverArmed.delete(target);
+            // Keep it up if the pointer left but the element still holds
+            // keyboard focus (WCAG 2.1 SC 1.4.13 — hover and focus are
+            // independent triggers).
+            if (activeTooltipTarget === target
+                && document.activeElement !== target) {
+                hideTooltip();
+            }
+        };
+        target.addEventListener('mouseleave', onLeave);
     });
 
     document.addEventListener('focusin', (e) => {

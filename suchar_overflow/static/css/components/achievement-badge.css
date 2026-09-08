@@ -23,7 +23,8 @@
     margin: 4px;
 }
 
-.achievement-container:hover {
+.achievement-container:hover,
+.achievement-container:focus-within {
     z-index: 100;
 }
 

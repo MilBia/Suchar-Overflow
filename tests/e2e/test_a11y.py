@@ -174,6 +174,32 @@ def test_tooltip_survives_pointer_leaving_while_focused(
     )
 
 
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+def test_tooltip_is_not_stuck_after_focus_then_hover_then_blur_then_unhover(
+    page: Page,
+    live_server: LiveServer,
+    published_suchar: SucharModel,  # noqa: ARG001
+) -> None:
+    """focusin shows the tooltip; a following hover must still arm the
+    mouseleave cleanup even though showTooltip is a no-op — otherwise blurring
+    (mouse still over) then un-hovering leaves the tooltip stuck forever."""
+    page.goto(f"{live_server.url}/suchary/")
+    btn = page.locator(".btn-vote[data-anonymous='true']").first
+
+    btn.focus()
+    btn.hover()
+    expect(page.locator(".custom-tooltip-box")).to_be_visible()
+
+    page.evaluate("document.activeElement && document.activeElement.blur()")
+    # Mouse is still over the button — the tooltip legitimately stays.
+    expect(page.locator(".custom-tooltip-box")).to_be_visible()
+
+    page.mouse.move(1, 1)
+    expect(page.locator(".custom-tooltip-box")).to_have_count(0)
+    assert btn.get_attribute("aria-describedby") is None
+
+
 # ---------------------------------------------------------------------------
 # #340 — aria-expanded stays in sync
 # ---------------------------------------------------------------------------
