@@ -15,13 +15,46 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
-def parse_tier_thresholds(raw: str) -> list[int]:
-    """Parse a comma-separated thresholds string into ints.
+# The sub-tiers save_model() can generate, in ascending difficulty order.
+# NONE is deliberately excluded — it is the "no ladder" default, not a rung.
+TIER_LADDER = [
+    Achievement.Tier.BRONZE,
+    Achievement.Tier.SILVER,
+    Achievement.Tier.GOLD,
+    Achievement.Tier.PLATINUM,
+    Achievement.Tier.DIAMOND,
+]
 
-    Blank entries and anything non-digit are silently dropped, matching the
-    tolerant parsing `save_model` has always done on creation.
+# A ladder needs a base rung plus at least one sub-tier to mean anything —
+# tier_thresholds="5" alone would set the base to Bronze/5 and silently
+# generate zero sub-tiers.
+MIN_TIER_THRESHOLDS = 2
+
+
+def parse_tier_thresholds(raw: str) -> list[int]:
+    """Parse a comma-separated thresholds string into a list of ints.
+
+    Strict on purpose: raises ValueError (with a user-facing Polish message)
+    on an empty string or any token that isn't a whole non-negative integer,
+    instead of silently dropping the bad token — a typo like '2O' (letter O)
+    for '20' must surface as a validation error, not a quietly shorter ladder.
     """
-    return [int(x.strip()) for x in raw.split(",") if x.strip().isdigit()]
+    if not raw.strip():
+        empty_msg = "Podaj przynajmniej jeden próg, np. '5,10,25,50,100'."
+        raise ValueError(empty_msg)
+    thresholds = []
+    for token in raw.split(","):
+        stripped = token.strip()
+        if not stripped:
+            blank_entry_msg = "Lista progów zawiera pusty fragment — sprawdź przecinki."
+            raise ValueError(blank_entry_msg)
+        if not stripped.isdigit():
+            invalid_entry_msg = (
+                f"'{stripped}' nie jest poprawną liczbą całkowitą — sprawdź progi."
+            )
+            raise ValueError(invalid_entry_msg)
+        thresholds.append(int(stripped))
+    return thresholds
 
 
 class AchievementAdminForm(forms.ModelForm):
@@ -64,15 +97,44 @@ class AchievementAdminForm(forms.ModelForm):
 
     def clean(self) -> dict[str, Any] | None:
         cleaned_data = super().clean()
-        if cleaned_data is None:
+        if cleaned_data is None or not cleaned_data.get("generate_tiers"):
             return cleaned_data
-        if cleaned_data.get("generate_tiers") and not parse_tier_thresholds(
-            cleaned_data.get("tier_thresholds") or "",
+
+        # save_model() only ever generates a ladder `if not change` (creation
+        # only) — but generate_tiers/tier_thresholds stay visible in the edit
+        # fieldsets too, so without this check an admin editing an existing
+        # Achievement could tick generate_tiers, fill in thresholds, pass
+        # validation, and get a silent no-op (a "saved successfully" message
+        # with no tiers actually created). Reject it explicitly instead.
+        if self.instance.pk:
+            self.add_error(
+                "generate_tiers",
+                "Automatyczne generowanie tierów jest dostępne wyłącznie "
+                "podczas tworzenia nowego osiągnięcia.",
+            )
+            return cleaned_data
+
+        raw_thresholds = cleaned_data.get("tier_thresholds") or ""
+        try:
+            thresholds = parse_tier_thresholds(raw_thresholds)
+        except ValueError as exc:
+            self.add_error("tier_thresholds", str(exc))
+            return cleaned_data
+
+        if not MIN_TIER_THRESHOLDS <= len(thresholds) <= len(TIER_LADDER):
+            self.add_error(
+                "tier_thresholds",
+                f"Podaj od {MIN_TIER_THRESHOLDS} do {len(TIER_LADDER)} progów "
+                "rozdzielonych przecinkami — pierwszy to baza (Bronze), "
+                "kolejne tworzą pod-tiery.",
+            )
+        elif thresholds != sorted(thresholds) or len(thresholds) != len(
+            set(thresholds),
         ):
             self.add_error(
                 "tier_thresholds",
-                "Podaj przynajmniej jeden poprawny liczbowy próg "
-                "(np. '5,10,25,50,100'), gdy zaznaczone jest generate_tiers.",
+                "Progi muszą rosnąć ściśle od najmniejszego do największego, "
+                "bez powtórzeń.",
             )
         return cleaned_data
 
@@ -142,18 +204,12 @@ class AchievementAdmin(TabbedTranslationAdmin):
                     obj.tier = Achievement.Tier.BRONZE
                     super().save_model(request, obj, form, change)
 
-                    # Create sub-tiers
-                    tiers = [
-                        Achievement.Tier.BRONZE,
-                        Achievement.Tier.SILVER,
-                        Achievement.Tier.GOLD,
-                        Achievement.Tier.PLATINUM,
-                        Achievement.Tier.DIAMOND,
-                    ]
+                    # Create sub-tiers, using the same TIER_LADDER order
+                    # clean() validated tier_thresholds' length against.
                     for idx, t_val in enumerate(thresholds[1:]):
                         tier_idx = idx + 1
-                        if tier_idx < len(tiers):
-                            tier = tiers[tier_idx]
+                        if tier_idx < len(TIER_LADDER):
+                            tier = TIER_LADDER[tier_idx]
                             tier_label = str(tier.name).lower()
                             Achievement.objects.create(
                                 name=f"{obj.name} ({tier.label})",
