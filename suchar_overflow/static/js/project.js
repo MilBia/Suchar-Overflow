@@ -75,32 +75,95 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Modal Handling
+    // Modal Handling — focus management, Tab trap and Escape (issue #341).
+    // Written against the generic `.modal-overlay` loop so overlays injected by
+    // child templates via {% block modal %} get the same treatment.
+    const MODAL_FOCUSABLE_SELECTOR = [
+        'a[href]',
+        'button:not([disabled])',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+    ].join(',');
+
+    const modalControllers = new Map();
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        const dialog = overlay.querySelector('.modal') || overlay;
+        let lastFocused = null;
+
+        const getFocusable = () =>
+            [...overlay.querySelectorAll(MODAL_FOCUSABLE_SELECTOR)]
+                .filter(el => el.offsetParent !== null);
+
+        const openModal = () => {
+            lastFocused = document.activeElement;
+            overlay.hidden = false;
+            (getFocusable()[0] || dialog).focus();
+        };
+
+        const closeModal = () => {
+            if (overlay.hidden) return;
+            overlay.hidden = true;
+            if (lastFocused && typeof lastFocused.focus === 'function') {
+                lastFocused.focus();
+            }
+            lastFocused = null;
+        };
+
+        modalControllers.set(overlay, { openModal, closeModal });
+
+        // Close on backdrop click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal();
+        });
+
+        // Close buttons
+        overlay.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', closeModal);
+        });
+
+        // Escape closes; Tab is trapped inside the dialog
+        overlay.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                return;
+            }
+            if (e.key !== 'Tab') return;
+
+            const focusable = getFocusable();
+            if (!focusable.length) {
+                e.preventDefault();
+                dialog.focus();
+                return;
+            }
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        });
+    });
+
+    // Logout modal trigger
     const logoutBtn = document.getElementById('logout-button');
     const logoutModal = document.getElementById('logoutModal');
 
     if (logoutBtn && logoutModal) {
         logoutBtn.addEventListener('click', () => {
-            logoutModal.hidden = false;
-        });
-    }
-
-    // Close modals
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        // Close on overlay click
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.hidden = true;
+            const controller = modalControllers.get(logoutModal);
+            if (controller) {
+                controller.openModal();
+            } else {
+                logoutModal.hidden = false;
             }
         });
-
-        // Close buttons
-        overlay.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', () => {
-                overlay.hidden = true;
-            });
-        });
-    });
+    }
 
     // Custom Dropdown Handling
     // `.dropdown-item` sets are server-rendered and never added or removed at
@@ -117,6 +180,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const getVisibleDropdownItems = (dropdown) =>
         getDropdownItems(dropdown).filter(item => !item.classList.contains('hidden'));
+
+    // Single source of truth for a dropdown's open state so the trigger's
+    // aria-expanded never desyncs from the `.show` class — it is toggled from
+    // five places (trigger click, Escape on trigger, option click, Escape on
+    // option, outside click). See issue #340.
+    // `aria-selected` on the options is rendered server-side only: picking an
+    // option submits the form and reloads the page, so the server always
+    // re-renders it fresh. A future non-reloading dropdown would need to sync
+    // it here too.
+    const setDropdownOpen = (dropdown, open) => {
+        dropdown.classList.toggle('show', open);
+        const trigger = dropdown.querySelector('.dropdown-trigger');
+        if (trigger) {
+            trigger.setAttribute('aria-expanded', String(open));
+        }
+    };
 
     const dropdowns = document.querySelectorAll('.custom-dropdown');
 
@@ -146,10 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
                 // Close others
                 document.querySelectorAll('.custom-dropdown').forEach(d => {
-                    if (d !== dropdown) d.classList.remove('show');
+                    if (d !== dropdown) setDropdownOpen(d, false);
                 });
-                dropdown.classList.toggle('show');
-                if (dropdown.classList.contains('show') && searchInput) {
+                const willOpen = !dropdown.classList.contains('show');
+                setDropdownOpen(dropdown, willOpen);
+                if (willOpen && searchInput) {
                     setTimeout(() => searchInput.focus(), 50);
                 }
             });
@@ -160,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.preventDefault();
                     trigger.click();
                 } else if (e.key === 'Escape') {
-                    dropdown.classList.remove('show');
+                    setDropdownOpen(dropdown, false);
                     trigger.focus();
                 } else if (e.key === 'ArrowDown' && dropdown.classList.contains('show')) {
                     e.preventDefault();
@@ -187,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
-                    dropdown.classList.remove('show');
+                    setDropdownOpen(dropdown, false);
                 });
 
                 // Keyboard navigation within dropdown items
@@ -206,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         e.preventDefault();
                         option.click();
                     } else if (e.key === 'Escape') {
-                        dropdown.classList.remove('show');
+                        setDropdownOpen(dropdown, false);
                         trigger.focus();
                     }
                 });
@@ -218,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
         dropdowns.forEach(dropdown => {
             if (!dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
+                setDropdownOpen(dropdown, false);
                 const searchInput = dropdown.querySelector('.language-search');
                 if (searchInput) {
                     searchInput.value = '';
@@ -293,55 +373,88 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Custom Tooltips Handler
+    // Custom Tooltips Handler — mouse hover AND keyboard focus (issue #342).
+    // `focus`/`blur` don't bubble, so the keyboard path listens for
+    // `focusin`/`focusout` on the document. A `role="tooltip"` element wired up
+    // via `aria-describedby` exposes the text to screen readers too.
     let activeTooltip = null;
+    let activeTooltipTarget = null;
+    let tooltipIdCounter = 0;
+
+    const hideTooltip = () => {
+        if (!activeTooltip) return;
+        const tooltip = activeTooltip;
+        tooltip.classList.remove('show');
+        tooltip.addEventListener('transitionend', () => tooltip.remove(), { once: true });
+        if (activeTooltipTarget) {
+            activeTooltipTarget.removeAttribute('aria-describedby');
+        }
+        activeTooltip = null;
+        activeTooltipTarget = null;
+    };
+
+    const showTooltip = (target) => {
+        const text = target.getAttribute('data-tooltip');
+        // Bail if there's nothing to show or this target already owns the
+        // tooltip (hover + focus on the same element must not stack two).
+        if (!text || activeTooltipTarget === target) return false;
+        hideTooltip();
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'custom-tooltip-box';
+        tooltip.setAttribute('role', 'tooltip');
+        tooltip.id = `custom-tooltip-${++tooltipIdCounter}`;
+        tooltip.textContent = text;
+        document.body.appendChild(tooltip);
+
+        const targetRect = target.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
+        tooltip.style.top = `${targetRect.top + window.scrollY - tooltipRect.height - 8}px`;
+        tooltip.style.left =
+            `${targetRect.left + window.scrollX + (targetRect.width - tooltipRect.width) / 2}px`;
+        tooltip.classList.add('show');
+
+        target.setAttribute('aria-describedby', tooltip.id);
+        activeTooltip = tooltip;
+        activeTooltipTarget = target;
+        return true;
+    };
 
     document.addEventListener('mouseover', (e) => {
         const target = e.target.closest('[data-tooltip]');
         if (!target) return;
+        if (showTooltip(target)) {
+            // `mouseleave` (unlike `mouseout`) doesn't fire on moves between the
+            // target's own children, so no flicker on hovering the inner icon.
+            const onLeave = () => {
+                target.removeEventListener('mouseleave', onLeave);
+                if (activeTooltipTarget === target) hideTooltip();
+            };
+            target.addEventListener('mouseleave', onLeave);
+        }
+    });
 
-        const text = target.getAttribute('data-tooltip');
-        if (!text) return;
+    document.addEventListener('focusin', (e) => {
+        const target = e.target.closest('[data-tooltip]');
+        if (target) showTooltip(target);
+    });
 
-        // Create tooltip element
-        const tooltip = document.createElement('div');
-        tooltip.className = 'custom-tooltip-box';
-        tooltip.textContent = text;
-        document.body.appendChild(tooltip);
-
-        // Position tooltip
-        const targetRect = target.getBoundingClientRect();
-        const tooltipRect = tooltip.getBoundingClientRect();
-
-        const top = targetRect.top + window.scrollY - tooltipRect.height - 8;
-        const left = targetRect.left + window.scrollX + (targetRect.width - tooltipRect.width) / 2;
-
-        tooltip.style.top = `${top}px`;
-        tooltip.style.left = `${left}px`;
-        tooltip.classList.add('show');
-
-        activeTooltip = tooltip;
-
-        const removeTooltip = () => {
-            if (tooltip) {
-                tooltip.classList.remove('show');
-                tooltip.addEventListener('transitionend', () => tooltip.remove(), { once: true });
-                if (activeTooltip === tooltip) activeTooltip = null;
-            }
-            target.removeEventListener('mouseleave', removeTooltip);
-        };
-
-        target.addEventListener('mouseleave', removeTooltip);
+    document.addEventListener('focusout', (e) => {
+        const target = e.target.closest('[data-tooltip]');
+        if (target && target === activeTooltipTarget) hideTooltip();
     });
 
     // Custom Toast Helper
-    function showToast(messageHtml, titleText = 'Success', type = 'success', isPersistent = false) {
+    function showToast(messageHtml, titleText, type = 'success', isPersistent = false) {
         const container = document.getElementById('toast-container');
         if (!container) return;
 
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
-        toast.role = 'alert';
+        // Errors interrupt the screen reader (assertive, via role="alert");
+        // everything else — achievements, easter-egg delight — is announced
+        // politely so it doesn't talk over the user (issue #345).
+        toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
         if (isPersistent) {
             toast.setAttribute('data-persistent', 'true');
         }
@@ -351,12 +464,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const strong = document.createElement('strong');
         strong.className = 'me-auto';
-        strong.textContent = titleText;
+        // Translated fallbacks travel on #toast-container's data- attributes
+        // (rendered by base.html) — a classic script can't call {% trans %}.
+        strong.textContent =
+            titleText || container.dataset.defaultTitle || 'Powiadomienie';
 
         const closeBtn = document.createElement('button');
         closeBtn.type = 'button';
         closeBtn.className = 'btn-close';
-        closeBtn.setAttribute('aria-label', 'Close');
+        closeBtn.setAttribute('aria-label', container.dataset.closeText || 'Zamknij');
 
         header.appendChild(strong);
         header.appendChild(closeBtn);
@@ -589,6 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const iconDiv = document.createElement('div');
                 iconDiv.className = 'bell-item-icon';
+                iconDiv.setAttribute('aria-hidden', 'true');
                 // icon_content is server-generated SVG, safe to render as HTML
                 if (ach.icon_content) {
                     iconDiv.innerHTML = ach.icon_content;

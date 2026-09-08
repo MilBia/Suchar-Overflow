@@ -169,11 +169,12 @@
     <nav class="navbar">
       <div class="container-fluid navbar-container">
         <a class="navbar-brand d-flex align-items-center gap-2"
-           href="{% url 'home' %}">{% include "svgs/logo.svg" %}</a>
+           href="{% url 'home' %}"
+           aria-label="Suchar Overflow">{% include "svgs/logo.svg" %}</a>
 
         <button class="navbar-toggler"
                 id="navbar-toggler"
-                aria-label="Toggle navigation">
+                aria-label="{% trans 'Przełącz nawigację' %}">
           <span class="toggler-icon"></span>
           <span class="toggler-icon"></span>
           <span class="toggler-icon"></span>
@@ -214,7 +215,11 @@
               <div class="custom-dropdown language-dropdown" id="languageDropdown">
                 <input type="hidden" name="language" value="{{ LANGUAGE_CODE }}" />
 
-                <button type="button" class="dropdown-trigger">
+                <button type="button"
+                        class="dropdown-trigger"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="{% trans 'Wybierz język' %}">
                   <span class="selected-label">{{ LANGUAGE_CODE|upper }}</span>
                   <span class="chevron-icon">{% include "svgs/icon-chevron-down.svg" %}</span>
                 </button>
@@ -226,12 +231,16 @@
                            placeholder="{% trans 'Search…' %}"
                            autocomplete="off" />
                   </div>
-                  <div class="language-list">
+                  <div class="language-list"
+                       role="listbox"
+                       aria-label="{% trans 'Wybierz język' %}">
                     {% get_current_language as LANGUAGE_CODE %}
                     {% get_available_languages as LANGUAGES %}
                     {% get_language_info_list for LANGUAGES as languages %}
                     {% for language in languages %}
                       <div class="dropdown-item {% if language.code == LANGUAGE_CODE %}selected{% endif %}"
+                           role="option"
+                           aria-selected="{% if language.code == LANGUAGE_CODE %}true{% else %}false{% endif %}"
                            data-value="{{ language.code }}">
                         <span class="lang-name">{{ language.name_local }}</span>
                         <span class="lang-code">{{ language.code|upper }}</span>
@@ -243,7 +252,9 @@
               </div>
             </form>
 
-            <button id="theme-toggle" class="btn btn-icon" aria-label="Toggle theme">
+            <button id="theme-toggle"
+                    class="btn btn-icon"
+                    aria-label="{% trans 'Przełącz motyw' %}">
               {% include "svgs/icon-moon.svg" %}
               {% include "svgs/icon-sun.svg" %}
             </button>
@@ -266,7 +277,7 @@
                     <div class="bell-header">{% trans "New achievements" %}</div>
                     {% for ua in unseen_achievements_preview %}
                       <a class="bell-item" href="{% url 'achievements:mine' %}">
-                        <div class="bell-item-icon">
+                        <div class="bell-item-icon" aria-hidden="true">
                           {% if ua.achievement.icon_content %}
                             {{ ua.achievement.icon_content|safe }}
                           {% else %}
@@ -345,11 +356,14 @@
     {% endcomment %}
     <div class="toast-container"
          id="toast-container"
-         aria-live="assertive"
-         aria-atomic="false">
+         aria-live="polite"
+         aria-atomic="false"
+         data-close-text="{% trans 'Zamknij' %}"
+         data-default-title="{% trans 'Powiadomienie' %}">
       {% if messages %}
         {% for message in messages %}
-          <div class="toast toast-{{ message.tags }}" role="alert">
+          <div class="toast toast-{{ message.tags }}"
+               role="{% if 'error' in message.tags %}alert{% else %}status{% endif %}">
             <div class="toast-header">
               <strong class="me-auto">
                 {% if 'error' in message.tags %}
@@ -360,7 +374,7 @@
                   {% trans "Notification" %}
                 {% endif %}
               </strong>
-              <button type="button" class="btn-close" aria-label="Close"></button>
+              <button type="button" class="btn-close" aria-label="{% trans 'Zamknij' %}"></button>
             </div>
             <div class="toast-body">{{ message }}</div>
           </div>
@@ -370,10 +384,16 @@
 
     <!-- Logout Modal -->
     <div class="modal-overlay" id="logoutModal" hidden>
-      <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="logoutModalTitle"
+           tabindex="-1">
         <div class="modal-header">
-          <h5 class="modal-title">{% trans "Confirm Logout" %}</h5>
-          <button type="button" class="btn-close modal-close" aria-label="Close"></button>
+          <h5 class="modal-title" id="logoutModalTitle">{% trans "Confirm Logout" %}</h5>
+          <button type="button"
+                  class="btn-close modal-close"
+                  aria-label="{% trans 'Zamknij' %}"></button>
         </div>
         <div class="modal-body">{% trans "Are you sure you want to log out?" %}</div>
         <div class="modal-footer">

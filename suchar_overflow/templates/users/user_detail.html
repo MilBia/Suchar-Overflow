@@ -91,7 +91,9 @@
                   <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-xl-start">
                     {% for user_ach in user_achievements %}
                       <div class="achievement-container">
-                        <div class="achievement-badge-icon-wrapper text-warning">
+                        <div class="achievement-badge-icon-wrapper text-warning"
+                             role="img"
+                             aria-label="{{ user_ach.achievement.name }}">
                           {% if user_ach.achievement.icon_content %}
                             {{ user_ach.achievement.icon_content|safe }}
                           {% else %}
@@ -100,7 +102,7 @@
                         </div>
 
                         <div class="achievement-details-popover">
-                          <div class="achievement-details-icon text-warning">
+                          <div class="achievement-details-icon text-warning" aria-hidden="true">
                             {% if user_ach.achievement.icon_content %}
                               {{ user_ach.achievement.icon_content|safe }}
                             {% else %}
@@ -193,7 +195,7 @@
           <div class="col-md-8 col-xl-9">
 
             <h4 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
-              <span class="text-primary">{% include "svgs/icon-edit.svg" %}</span>
+              <span class="text-primary" aria-hidden="true">{% include "svgs/icon-edit.svg" %}</span>
               {% trans "Latest Jokes" %}
             </h4>
 
