@@ -17,6 +17,12 @@ concurrency:
   group: ${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+# No job here writes to the repo — the only side effect is
+# actions/upload-artifact, which needs no repo scope. Drop GITHUB_TOKEN to
+# read-only.
+permissions:
+  contents: read
+
 jobs:
   linter:
     runs-on: ubuntu-latest
@@ -29,8 +35,10 @@ jobs:
         with:
           python-version-file: '.python-version'
       # Consider using pre-commit.ci for open source project
+      # Third-party actions are pinned to a commit SHA (version in the trailing
+      # comment) so a re-tagged or hijacked release can't silently change CI.
       - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1
+        uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
 
   # Vitest + jsdom unit tests for static/js/ logic. Runs on the host with Node,
   # not in the Django image — the runner has no Django/DB dependency. Separate
@@ -62,11 +70,11 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
 
       - name: Build and cache local backend
         id: bake_build
-        uses: docker/bake-action@v7
+        uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b # v7.3.0
         continue-on-error: true
         timeout-minutes: 12
         with:
