@@ -10,29 +10,47 @@ if [ -z "${POSTGRES_USER}" ]; then
 fi
 export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 
-wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" -t 30
+# .devcontainer/bashrc.override.sh `source`s this file (not executes it) purely to
+# export DATABASE_URL/POSTGRES_USER into every fresh devcontainer terminal, then
+# restores `set +o errexit/pipefail/nounset` itself. Everything below this point is
+# blocking (wait-for-it, twice) or can hard-`exit 1` (an unparseable REDIS_URL) — run
+# under `source` with `set -o errexit`/`nounset` still active, a timeout or transient
+# Redis/Postgres blip would kill the whole interactive shell/terminal tab before that
+# restore line ever runs. Gate it to only run when this script is the process being
+# executed (the real Docker ENTRYPOINT invocation), not sourced.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" -t 30
 
->&2 echo 'PostgreSQL is available'
+    >&2 echo 'PostgreSQL is available'
 
-# Parse host/port out of REDIS_URL (e.g. redis://[:password@]host:port/db, or
-# rediss:// for TLS) the same way config/settings/base.py derives REDIS_SSL, so we
-# wait on the exact host/port Django's cache backend (django_redis) will connect
-# to instead of hardcoding the compose service name. This entrypoint is also used
-# by the local/CI image (compose/local/django/Dockerfile), whose env files don't
-# set REDIS_URL as a shell var — Django's own default (config/settings/base.py)
-# is a Python-level env() default, not a shell one — so fall back to that exact
-# same default string here too, under `set -o nounset`.
-redis_url="${REDIS_URL:-redis://redis:6379/0}"
-if [[ "${redis_url}" =~ ^rediss?://([^/@]*@)?([^:/]+):([0-9]+) ]]; then
-    REDIS_HOST="${BASH_REMATCH[2]}"
-    REDIS_PORT="${BASH_REMATCH[3]}"
-else
-    >&2 echo "Could not parse host/port out of REDIS_URL=${redis_url}"
-    exit 1
+    # Parse host/port out of REDIS_URL (e.g. redis://[:password@]host[:port]/db, or
+    # rediss:// for TLS) the same way config/settings/base.py derives REDIS_SSL, so we
+    # wait on the exact host/port Django's cache backend (django_redis) will connect
+    # to instead of hardcoding the compose service name. The port is optional in the
+    # Redis URI spec (redis-py/django-redis default it to 6379), and a bracketed IPv6
+    # host (redis://[::1]:6379/0) must not be split on the colons inside the brackets.
+    # This entrypoint is also used by the local/CI image
+    # (compose/local/django/Dockerfile), whose env files don't set REDIS_URL as a
+    # shell var — Django's own default (config/settings/base.py) is a Python-level
+    # env() default, not a shell one — so fall back to that exact same default string
+    # here too, under `set -o nounset`.
+    redis_url="${REDIS_URL:-redis://redis:6379/0}"
+    if [[ "${redis_url}" =~ ^rediss?://([^/@]*@)?(\[[^]]+\]|[^:/]+)(:([0-9]+))? ]]; then
+        REDIS_HOST="${BASH_REMATCH[2]}"
+        REDIS_PORT="${BASH_REMATCH[4]:-6379}"
+        # Strip the brackets an IPv6 host was matched with.
+        REDIS_HOST="${REDIS_HOST#[}"
+        REDIS_HOST="${REDIS_HOST%]}"
+    else
+        >&2 echo "Could not parse host/port out of REDIS_URL=${redis_url}"
+        exit 1
+    fi
+
+    wait-for-it "${REDIS_HOST}:${REDIS_PORT}" -t 30
+
+    >&2 echo 'Redis is available'
+
+    unset redis_url REDIS_HOST REDIS_PORT
+
+    exec "$@"
 fi
-
-wait-for-it "${REDIS_HOST}:${REDIS_PORT}" -t 30
-
->&2 echo 'Redis is available'
-
-exec "$@"
