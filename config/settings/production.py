@@ -1,6 +1,8 @@
 import copy
 from typing import Any
 
+from django.core.exceptions import ImproperlyConfigured
+
 from .base import *  # noqa: F403
 from .base import DATABASES
 from .base import LOGGING
@@ -49,14 +51,33 @@ CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_NAME = "__Secure-csrftoken"
 # https://docs.djangoproject.com/en/dev/topics/security/#ssl-https
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-seconds
-SECURE_HSTS_SECONDS = 518400
+# Cautious 6-day ramp value by default. Raise via env (to >= 31536000, one
+# year) once HTTPS is proven stable on every subdomain — see SECURE_HSTS_PRELOAD.
+SECURE_HSTS_SECONDS = env.int("DJANGO_SECURE_HSTS_SECONDS", default=518400)
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-include-subdomains
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
     "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS",
     default=True,
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-preload
-SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=True)
+# Off by default: the browser preload list rejects a `preload` directive whose
+# max-age is under 31536000 (one year), and the ramp value above is far lower —
+# shipping both together is an inconsistent header (issue #353). Opt in via env
+# *together with* a >= 1-year DJANGO_SECURE_HSTS_SECONDS once the domain is ready
+# to commit to the (hard-to-undo) preload list.
+SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=False)
+# Fail fast rather than emit the exact inconsistent header #353 is about: an
+# operator who flips on DJANGO_SECURE_HSTS_PRELOAD but forgets to raise
+# DJANGO_SECURE_HSTS_SECONDS would otherwise ship `preload` with a sub-year
+# max-age, silently rejected by hstspreload.org. Django's own security.W021
+# check only catches SECURE_HSTS_SECONDS == 0, not the 1-year list minimum.
+if SECURE_HSTS_PRELOAD and SECURE_HSTS_SECONDS < 31536000:  # noqa: PLR2004
+    msg = (
+        "SECURE_HSTS_PRELOAD requires SECURE_HSTS_SECONDS >= 31536000 "
+        f"(one year); got {SECURE_HSTS_SECONDS}. Raise "
+        "DJANGO_SECURE_HSTS_SECONDS or unset DJANGO_SECURE_HSTS_PRELOAD."
+    )
+    raise ImproperlyConfigured(msg)
 # https://docs.djangoproject.com/en/dev/ref/middleware/#x-content-type-options-nosniff
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
     "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF",
