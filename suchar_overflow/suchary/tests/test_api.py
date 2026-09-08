@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
@@ -6,6 +7,7 @@ import pytest
 from django.core.cache import cache
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+from django.utils import timezone
 from django.utils.translation import gettext
 
 from suchar_overflow.achievements.cache import suchar_toast_sent_cache_key
@@ -320,6 +322,42 @@ def test_vote_nonexistent_suchar_returns_404(client: Client) -> None:
         content_type="application/json",
     )
     assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+@pytest.mark.django_db
+def test_vote_unpublished_suchar_returns_404(client: Client) -> None:
+    """A scheduled suchar must be indistinguishable from a missing one (#331).
+
+    Otherwise a guessed/sequential PK lets a voter inflate counts and trigger
+    achievements/toasts on a suchar nobody else can see yet, and skew the
+    best-suchar award window (which counts on ``created_at``, not
+    ``published_at``).
+    """
+    author = make_user("scheduled_author")
+    voter = make_user("scheduled_voter")
+    suchar = Suchar.objects.create(
+        text="Joke from the future",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+    ach = _make_vote_achievement(
+        "unpublished-funny",
+        event_type=Achievement.EventType.VOTE_CAST,
+        metric=Achievement.Metric.COUNT_VOTE_FUNNY,
+    )
+    _reset_toast_cache(author.pk, suchar.pk)
+
+    client.force_login(voter)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "funny"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert not Vote.objects.filter(user=voter, suchar=suchar).exists()
+    assert not UserAchievement.objects.filter(user=voter, achievement=ach).exists()
+    assert cache.get(toast_cache_key(author.pk)) is None
 
 
 @pytest.mark.django_db
