@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import pytest
 from django.core.cache import cache
 from django.db import connection
+from django.test import override_settings
 from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 from django.utils.translation import gettext
@@ -358,6 +359,140 @@ def test_vote_unpublished_suchar_returns_404(client: Client) -> None:
     assert not Vote.objects.filter(user=voter, suchar=suchar).exists()
     assert not UserAchievement.objects.filter(user=voter, achievement=ach).exists()
     assert cache.get(toast_cache_key(author.pk)) is None
+
+
+@pytest.mark.django_db
+@override_settings(DEBUG=True)
+def test_vote_unpublished_suchar_body_matches_nonexistent_suchar_body(
+    client: Client,
+) -> None:
+    """The 404 body must be byte-identical to a genuinely missing PK's (#331).
+
+    Under ``DEBUG=False`` (the default in both ``test``/``production``
+    settings — see CLAUDE.md's settings-architecture notes) django-ninja's
+    default 404 handler already hardcodes a bare ``{"detail": "Not Found"}``
+    for *any* ``Http404``, so this parity would hold even without folding the
+    filter into the queryset. ``DEBUG=True`` is what makes the two code paths
+    actually observably different: ninja appends ``f": {exc}"`` to the
+    message, and ``get_object_or_404`` vs. a second, bare ``raise Http404``
+    carry different (or absent) exception text — this is the regression this
+    test is meant to catch, and it only fires under this override.
+    """
+    author = make_user("scheduled_author_parity")
+    voter = make_user("scheduled_voter_parity")
+    suchar = Suchar.objects.create(
+        text="Joke from the future",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+
+    client.force_login(voter)
+    scheduled_response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "funny"}),
+        content_type="application/json",
+    )
+    nonexistent_response = client.post(
+        vote_url(99999),
+        data=json.dumps({"vote_type": "funny"}),
+        content_type="application/json",
+    )
+
+    assert scheduled_response.status_code == HTTPStatus.NOT_FOUND
+    assert nonexistent_response.status_code == HTTPStatus.NOT_FOUND
+    assert scheduled_response.json() == nonexistent_response.json()
+
+
+@pytest.mark.django_db
+def test_vote_unpublished_suchar_dry_vote_returns_404(client: Client) -> None:
+    """The dry-vote path is blocked the same way — including the
+    ``is_overdried`` latch, which must never run for a rejected vote."""
+    author = make_user("scheduled_author_dry")
+    voter = make_user("scheduled_voter_dry")
+    suchar = Suchar.objects.create(
+        text="Joke from the future",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+
+    client.force_login(voter)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert not Vote.objects.filter(user=voter, suchar=suchar).exists()
+    suchar.refresh_from_db()
+    assert suchar.is_overdried is False
+
+
+@pytest.mark.django_db
+def test_author_voting_own_scheduled_suchar_returns_404(client: Client) -> None:
+    """An author probing their own scheduled suchar's PK gets the same 404 —
+    and, since the vote never happens, no #299 self-dry-vote wink toast."""
+    author = make_user("scheduled_self_author")
+    suchar = Suchar.objects.create(
+        text="Joke from the future",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+
+    client.force_login(author)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "dry"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert not Vote.objects.filter(user=author, suchar=suchar).exists()
+
+
+@pytest.mark.django_db
+def test_vote_suchar_published_a_moment_ago_returns_200(client: Client) -> None:
+    """Boundary check on the safe side: a suchar published a moment ago is
+    votable. Uses a small offset rather than an exact ``== timezone.now()``
+    comparison, which would be flaky (the filter runs at whatever instant the
+    request hits the DB, not at fixture-creation time)."""
+    author = make_user("just_published_author")
+    voter = make_user("just_published_voter")
+    suchar = Suchar.objects.create(
+        text="Joke from moments ago",
+        author=author,
+        published_at=timezone.now() - timedelta(seconds=2),
+    )
+
+    client.force_login(voter)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "funny"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.django_db
+def test_vote_suchar_published_a_moment_from_now_returns_404(client: Client) -> None:
+    """Boundary check on the blocked side, mirroring the test above."""
+    author = make_user("almost_published_author")
+    voter = make_user("almost_published_voter")
+    suchar = Suchar.objects.create(
+        text="Joke from moments in the future",
+        author=author,
+        published_at=timezone.now() + timedelta(seconds=2),
+    )
+
+    client.force_login(voter)
+    response = client.post(
+        vote_url(suchar.pk),
+        data=json.dumps({"vote_type": "funny"}),
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
 
 
 @pytest.mark.django_db

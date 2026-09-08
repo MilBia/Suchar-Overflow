@@ -8,9 +8,9 @@ from django.db.models import Count
 # imports must stay real, not TYPE_CHECKING-only.
 from django.db.models import Q
 from django.db.models import QuerySet
-from django.http import Http404
-from django.http import HttpRequest
+from django.http import HttpRequest  # noqa: TC002
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from ninja import Router
 from ninja import Schema
@@ -69,14 +69,18 @@ def vote_suchar(
     # select_related("author"): the freshly created Vote carries this instance in
     # its fields_cache, so check_vote_achievements' `instance.suchar.author`
     # resolves without an extra query on every first-time vote.
-    suchar = get_object_or_404(Suchar.objects.select_related("author"), pk=suchar_id)
-    # A not-yet-published (scheduled) suchar must be indistinguishable from a
-    # missing one — otherwise a guessed/sequential PK lets a voter inflate
-    # counts and trigger achievements/toasts before anyone can see it, and
-    # skew the best-suchar award window (#331). Reuse the model's own
-    # visibility check rather than duplicating a published_at__lte filter.
-    if not suchar.is_published:
-        raise Http404
+    # published_at__lte filter (#331, same convention as SucharListView):
+    # folded into the queryset passed to get_object_or_404 rather than
+    # fetched-then-checked with a separate `raise Http404`, so a scheduled
+    # suchar is genuinely indistinguishable from a missing one — both raise
+    # the exact same Http404 from the exact same call, instead of a second,
+    # differently-worded raise a guesser could tell apart under DEBUG=True.
+    suchar = get_object_or_404(
+        Suchar.objects.filter(published_at__lte=timezone.now()).select_related(
+            "author",
+        ),
+        pk=suchar_id,
+    )
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
     vote_type = payload.vote_type
