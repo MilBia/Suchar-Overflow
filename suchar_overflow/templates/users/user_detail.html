@@ -92,8 +92,10 @@
                     {% for user_ach in user_achievements %}
                       <div class="achievement-container">
                         <div class="achievement-badge-icon-wrapper text-warning"
-                             role="img"
-                             aria-label="{{ user_ach.achievement.name }}">
+                             role="group"
+                             tabindex="0"
+                             aria-label="{{ user_ach.achievement.name }}"
+                             aria-describedby="ach-desc-{{ user_ach.achievement.pk }}">
                           {% if user_ach.achievement.icon_content %}
                             {{ user_ach.achievement.icon_content|safe }}
                           {% else %}
@@ -111,7 +113,8 @@
                           </div>
                           <div class="achievement-details-content">
                             <span class="achievement-title text-start">{{ user_ach.achievement.name }}</span>
-                            <span class="achievement-description text-start">{{ user_ach.achievement.description }}</span>
+                            <span class="achievement-description text-start"
+                                  id="ach-desc-{{ user_ach.achievement.pk }}">{{ user_ach.achievement.description }}</span>
                           </div>
                         </div>
                       </div>

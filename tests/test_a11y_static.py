@@ -94,8 +94,13 @@ def test_search_submit_button_has_aria_label(
     published_suchar: Suchar,  # noqa: ARG001
 ) -> None:
     html = _get(Client(), reverse("suchary:list"))
-    # The submit button sits right after the search input and holds only an SVG.
-    assert f'aria-label="{gettext("Szukaj")}"' in html
+    # The submit button holds only an SVG — assert the label is on the <button>
+    # itself, not merely somewhere on the page (the search <input> has one too).
+    assert re.search(
+        r'<button[^>]*type="submit"[^>]*aria-label="' + re.escape(gettext("Szukaj")),
+        html,
+        re.DOTALL,
+    )
 
 
 @pytest.mark.django_db
@@ -117,13 +122,14 @@ def test_achievement_card_icon_wrapper_is_hidden_from_a11y_tree() -> None:
 
 
 @pytest.mark.django_db
-def test_profile_badge_grid_exposes_name_but_hides_the_icon() -> None:
-    """#343's singled-out spot: the profile badge must gain a name, not lose text."""
+def test_profile_badge_grid_is_keyboard_reachable_and_described() -> None:
+    """#343's singled-out spot: the profile badge must be focusable, named and
+    describe-linked to its (CSS-hidden) description — name alone isn't enough."""
     profile_user = make_user("a11y_profile")
     achievement = Achievement.objects.create(
         name="Cichy Zabójca Suszu",
         slug="a11y-badge-grid",
-        description="Its description must remain in the accessibility tree.",
+        description="Its description must reach the screen reader too.",
         icon_content="<svg></svg>",
     )
     UserAchievement.objects.create(user=profile_user, achievement=achievement)
@@ -134,22 +140,28 @@ def test_profile_badge_grid_exposes_name_but_hides_the_icon() -> None:
         client,
         reverse("users:detail", kwargs={"username": profile_user.username}),
     )
-    # The visible badge itself is now a named image for screen readers…
+    badge = re.search(
+        r'<div class="achievement-badge-icon-wrapper[^"]*"[^>]*>',
+        html,
+        re.DOTALL,
+    )
+    assert badge is not None
+    tag = badge.group(0)
+    assert 'tabindex="0"' in tag
+    assert 'aria-label="Cichy Zabójca Suszu"' in tag
+    descr_id = re.search(r'aria-describedby="([^"]+)"', tag)
+    assert descr_id is not None
+    # The description it points at is really in the DOM (visually hidden by CSS,
+    # but aria-describedby still resolves it).
     assert re.search(
-        r'class="achievement-badge-icon-wrapper[^"]*"\s+'
-        r'role="img"\s+aria-label="Cichy Zabójca Suszu"',
+        rf'id="{re.escape(descr_id.group(1))}"[^>]*>{re.escape(achievement.description)}',
         html,
     )
-    # …only the duplicate decorative icon in the popover is hidden — the popover
-    # (which carries the name + description text) stays exposed.
+    # The duplicate decorative icon inside the popover stays hidden.
     assert re.search(
         r'class="achievement-details-icon[^"]*"\s+aria-hidden="true"',
         html,
     )
-    popover = re.search(r'<div class="achievement-details-popover"[^>]*>', html)
-    assert popover is not None
-    assert "aria-hidden" not in popover.group(0)
-    assert achievement.description in html
 
 
 # ---------------------------------------------------------------------------
@@ -174,6 +186,30 @@ def test_close_buttons_use_translated_label() -> None:
     html = _get(client, reverse("home"))
     assert f'aria-label="{gettext("Zamknij")}"' in html
     assert 'aria-label="Close"' not in html
+
+
+@pytest.mark.django_db
+def test_bell_button_label_matches_the_polish_msgid_convention() -> None:
+    client = Client()
+    client.force_login(make_user("a11y_bell"))
+    html = _get(client, reverse("home"))
+    assert re.search(
+        r'id="bell-btn"[^>]*aria-label="' + re.escape(gettext("Powiadomienia")),
+        html,
+        re.DOTALL,
+    )
+    assert 'aria-label="Notifications"' not in html
+
+
+@pytest.mark.django_db
+def test_language_search_field_has_an_accessible_name() -> None:
+    html = _get(Client(), reverse("home"))
+    assert re.search(
+        r'class="language-search"[^>]*aria-label="'
+        + re.escape(gettext("Szukaj języka")),
+        html,
+        re.DOTALL,
+    )
 
 
 @pytest.mark.django_db

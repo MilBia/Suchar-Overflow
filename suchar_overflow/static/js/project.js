@@ -60,7 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
     toasts.forEach(toast => {
         const dismiss = () => {
             toast.classList.add('hiding');
-            toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+            const remove = () => toast.remove();
+            toast.addEventListener('transitionend', remove, { once: true });
+            // Same reason as hideTooltip's fallback: no fade transition (reduced
+            // motion, background tab) means no transitionend, so clean up anyway.
+            setTimeout(remove, 400);
         };
 
         // Achievement toasts stay until manually closed; others auto-dismiss after 5s
@@ -140,7 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const first = focusable[0];
             const last = focusable[focusable.length - 1];
-            if (e.shiftKey && document.activeElement === first) {
+            // `dialog` (tabindex="-1") is a valid resting spot — focus lands
+            // there when the card has no focusables or the user clicked its
+            // padding. Shift+Tab from it must wrap, not fall through to the page.
+            if (e.shiftKey && (document.activeElement === first
+                || document.activeElement === dialog)) {
                 e.preventDefault();
                 last.focus();
             } else if (!e.shiftKey && document.activeElement === last) {
@@ -217,7 +225,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
                 searchInput.addEventListener('click', e => e.stopPropagation());
-                searchInput.addEventListener('keydown', e => e.stopPropagation());
+                // The search field swallows keydown so the outside handlers
+                // don't see typing — but it must still route the widget keys
+                // itself, or a keyboard user gets stuck in the field (no Escape
+                // to close, no ArrowDown to reach the list) and Enter submits
+                // the surrounding <form>.
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        setDropdownOpen(dropdown, false);
+                        trigger.focus();
+                    } else if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        const visible = getVisibleDropdownItems(dropdown);
+                        if (visible.length) visible[0].focus();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const visible = getVisibleDropdownItems(dropdown);
+                        if (visible.length) visible[0].click();
+                    } else {
+                        e.stopPropagation();
+                    }
+                });
             }
 
             // Toggle
@@ -231,6 +260,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 setDropdownOpen(dropdown, willOpen);
                 if (willOpen && searchInput) {
                     setTimeout(() => searchInput.focus(), 50);
+                }
+            });
+
+            // Tabbing out of the open menu (past the last option, or back past
+            // the trigger) should close it — click-outside and Escape already
+            // do, but a plain Tab left it hanging open behind the page.
+            dropdown.addEventListener('focusout', (e) => {
+                if (!dropdown.contains(e.relatedTarget)) {
+                    setDropdownOpen(dropdown, false);
                 }
             });
 
@@ -433,7 +471,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // target's own children, so no flicker on hovering the inner icon.
             const onLeave = () => {
                 target.removeEventListener('mouseleave', onLeave);
-                if (activeTooltipTarget === target) hideTooltip();
+                // Keep it up if the pointer left but the element still holds
+                // keyboard focus (WCAG 2.1 SC 1.4.13 — hover and focus are
+                // independent triggers).
+                if (activeTooltipTarget === target
+                    && document.activeElement !== target) {
+                    hideTooltip();
+                }
             };
             target.addEventListener('mouseleave', onLeave);
         }
@@ -446,7 +490,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('focusout', (e) => {
         const target = e.target.closest('[data-tooltip]');
-        if (target && target === activeTooltipTarget) hideTooltip();
+        // Mirror the hover guard: don't tear down while the pointer is still
+        // over the element (it can keep the tooltip alive on its own).
+        if (target && target === activeTooltipTarget && !target.matches(':hover')) {
+            hideTooltip();
+        }
+    });
+
+    // SC 1.4.13 (Dismissible): Escape hides the tooltip without moving focus.
+    // The modal / dropdown Escape handlers own their own state; when one of
+    // those is open the focused element isn't a `[data-tooltip]`, so
+    // `activeTooltip` is null here and this is a no-op.
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && activeTooltip) hideTooltip();
     });
 
     // Custom Toast Helper
@@ -498,7 +554,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Setup dismiss behavior
         const dismiss = () => {
             toast.classList.add('hiding');
-            toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+            const remove = () => toast.remove();
+            toast.addEventListener('transitionend', remove, { once: true });
+            // Same reason as hideTooltip's fallback: no fade transition (reduced
+            // motion, background tab) means no transitionend, so clean up anyway.
+            setTimeout(remove, 400);
         };
 
         if (!isPersistent) {

@@ -145,6 +145,35 @@ def test_tooltip_appears_on_keyboard_focus_for_anonymous_vote_button(
     assert btn.get_attribute("aria-describedby") is None
 
 
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+def test_tooltip_survives_pointer_leaving_while_focused(
+    page: Page,
+    live_server: LiveServer,
+    published_suchar: SucharModel,  # noqa: ARG001
+) -> None:
+    """WCAG 1.4.13: hover and focus are independent — losing the pointer must
+    not tear the tooltip down while the control still has keyboard focus."""
+    page.goto(f"{live_server.url}/suchary/")
+    btn = page.locator(".btn-vote[data-anonymous='true']").first
+
+    btn.hover()
+    btn.focus()
+    expect(page.locator(".custom-tooltip-box")).to_be_visible()
+
+    # Pointer wanders off; focus stays on the button.
+    page.mouse.move(1, 1)
+    expect(page.locator(".custom-tooltip-box")).to_be_visible()
+
+    # Escape dismisses it without moving focus (SC 1.4.13, Dismissible).
+    page.keyboard.press("Escape")
+    expect(page.locator(".custom-tooltip-box")).to_have_count(0)
+    assert page.evaluate(
+        "document.activeElement === document.querySelector"
+        "(\".btn-vote[data-anonymous='true']\")",
+    )
+
+
 # ---------------------------------------------------------------------------
 # #340 — aria-expanded stays in sync
 # ---------------------------------------------------------------------------
@@ -181,6 +210,73 @@ def test_language_dropdown_syncs_aria_expanded_on_outside_click(
 
     page.locator("body").click(position={"x": 2, "y": 2})
     expect(trigger).to_have_attribute("aria-expanded", "false")
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+def test_language_search_field_routes_the_widget_keys(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
+    """Focus auto-jumps to `.language-search`; Escape must still close the menu
+    (and not stay trapped in the field), restoring focus to the trigger."""
+    page.goto(f"{live_server.url}/")
+    trigger = page.locator("#languageDropdown .dropdown-trigger")
+    trigger.click()
+
+    search = page.locator("#languageDropdown .language-search")
+    expect(search).to_be_focused()
+
+    page.keyboard.press("Escape")
+    expect(trigger).to_have_attribute("aria-expanded", "false")
+    expect(trigger).to_be_focused()
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+def test_sort_dropdown_closes_when_focus_tabs_out(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
+    page.goto(f"{live_server.url}/suchary/")
+    trigger = page.locator("#sortDropdown .dropdown-trigger")
+    trigger.click()
+    expect(trigger).to_have_attribute("aria-expanded", "true")
+
+    # Move focus onto the last option, then Tab past it — out of the widget.
+    page.locator("#sortDropdown .dropdown-item").last.focus()
+    page.keyboard.press("Tab")
+
+    expect(trigger).to_have_attribute("aria-expanded", "false")
+
+
+# ---------------------------------------------------------------------------
+# #341 — Shift+Tab from the dialog card itself is trapped
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
+def test_shift_tab_from_the_modal_card_does_not_escape(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
+    page.goto(f"{live_server.url}/")
+    page.click("#logout-button")
+    expect(page.locator("#logoutModal")).to_be_visible()
+
+    # Land focus on the .modal card itself (tabindex="-1"), then Shift+Tab.
+    page.evaluate("document.querySelector('#logoutModal .modal').focus()")
+    page.keyboard.press("Shift+Tab")
+
+    assert page.evaluate(
+        "document.getElementById('logoutModal').contains(document.activeElement)",
+    ), "Shift+Tab from the modal card leaked focus to the page behind it"
+    assert page.evaluate(
+        "document.activeElement === "
+        "document.querySelector(\"#logoutModal button[type='submit']\")",
+    )
 
 
 # ---------------------------------------------------------------------------

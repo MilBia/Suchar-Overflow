@@ -42,10 +42,18 @@
 }
 
 /* Hover Effect: Scale Icon */
-.achievement-container:hover .achievement-badge-icon-wrapper {
+.achievement-container:hover .achievement-badge-icon-wrapper,
+.achievement-container:focus-within .achievement-badge-icon-wrapper {
     transform: scale(1.25);
     background: rgba(255, 193, 7, 0.2);
     box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
+}
+
+/* The badge is focusable (tabindex="0") so keyboard users can reach the
+   description popover; give that focus a visible ring (#343). */
+.achievement-badge-icon-wrapper:focus-visible {
+    outline: 2px solid #ffc107;
+    outline-offset: 3px;
 }
 
 /* Popover Box */
@@ -80,8 +88,9 @@
     text-align: left;
 }
 
-/* Hover Effect: Show Popover */
-.achievement-container:hover .achievement-details-popover {
+/* Show Popover on hover or keyboard focus */
+.achievement-container:hover .achievement-details-popover,
+.achievement-container:focus-within .achievement-details-popover {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0) scale(1);

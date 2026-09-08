@@ -229,6 +229,7 @@
                     <input type="text"
                            class="language-search"
                            placeholder="{% trans 'Search…' %}"
+                           aria-label="{% trans 'Szukaj języka' %}"
                            autocomplete="off" />
                   </div>
                   <div class="language-list"
@@ -262,7 +263,7 @@
               <div class="bell-wrapper" id="bell-wrapper">
                 <button class="btn btn-icon bell-btn"
                         id="bell-btn"
-                        aria-label="{% trans 'Notifications' %}"
+                        aria-label="{% trans 'Powiadomienia' %}"
                         aria-haspopup="true"
                         aria-expanded="false">{% include "svgs/icon-bell.svg" %}</button>
                 {% if unseen_achievements_count > 0 %}
