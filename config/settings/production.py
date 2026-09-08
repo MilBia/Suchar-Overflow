@@ -1,6 +1,8 @@
 import copy
 from typing import Any
 
+from django.core.exceptions import ImproperlyConfigured
+
 from .base import *  # noqa: F403
 from .base import DATABASES
 from .base import LOGGING
@@ -64,6 +66,18 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
 # *together with* a >= 1-year DJANGO_SECURE_HSTS_SECONDS once the domain is ready
 # to commit to the (hard-to-undo) preload list.
 SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=False)
+# Fail fast rather than emit the exact inconsistent header #353 is about: an
+# operator who flips on DJANGO_SECURE_HSTS_PRELOAD but forgets to raise
+# DJANGO_SECURE_HSTS_SECONDS would otherwise ship `preload` with a sub-year
+# max-age, silently rejected by hstspreload.org. Django's own security.W021
+# check only catches SECURE_HSTS_SECONDS == 0, not the 1-year list minimum.
+if SECURE_HSTS_PRELOAD and SECURE_HSTS_SECONDS < 31536000:  # noqa: PLR2004
+    msg = (
+        "SECURE_HSTS_PRELOAD requires SECURE_HSTS_SECONDS >= 31536000 "
+        f"(one year); got {SECURE_HSTS_SECONDS}. Raise "
+        "DJANGO_SECURE_HSTS_SECONDS or unset DJANGO_SECURE_HSTS_PRELOAD."
+    )
+    raise ImproperlyConfigured(msg)
 # https://docs.djangoproject.com/en/dev/ref/middleware/#x-content-type-options-nosniff
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
     "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF",

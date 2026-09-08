@@ -9,6 +9,15 @@ DJANGO_ALLOWED_HOSTS=<your-domain.com>
 # Security
 # ------------------------------------------------------------------------------
 DJANGO_SECURE_SSL_REDIRECT=True
+# HSTS. Defaults: 518400s (6-day ramp), includeSubDomains=True, preload=False.
+# hstspreload.org rejects a `preload` directive with max-age < 31536000 (1 year),
+# so only set DJANGO_SECURE_HSTS_PRELOAD=True together with a >= 1-year
+# DJANGO_SECURE_HSTS_SECONDS — production settings refuse to start otherwise.
+# Joining the browser preload list is hard to undo; do it once HTTPS is stable
+# on every subdomain.
+# DJANGO_SECURE_HSTS_SECONDS=518400
+# DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+# DJANGO_SECURE_HSTS_PRELOAD=False
 
 # Email (SMTP)
 # ------------------------------------------------------------------------------

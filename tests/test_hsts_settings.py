@@ -4,8 +4,9 @@ sub-year ``max-age``.
 ``production.py`` keeps a cautious 6-day ramp value for
 ``SECURE_HSTS_SECONDS`` by default. The browser preload list rejects a
 ``preload`` directive whose ``max-age`` is under ``31536000`` (one year), so
-``SECURE_HSTS_PRELOAD`` must default to ``False`` and only turn on via env
-(alongside a raised ``DJANGO_SECURE_HSTS_SECONDS``).
+``SECURE_HSTS_PRELOAD`` defaults to ``False`` and only turns on via env
+(alongside a raised ``DJANGO_SECURE_HSTS_SECONDS``); a mismatched pair raises
+``ImproperlyConfigured`` at settings load.
 
 The test settings don't define the ``SECURE_HSTS_*`` names at all — they live
 only in ``config.settings.production`` — so each test imports that module
@@ -14,12 +15,15 @@ directly with the handful of env vars its import needs stubbed (the same set
 """
 
 import importlib
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from types import ModuleType
+# Real import (not TYPE_CHECKING-guarded): kept plain to match every other test
+# module; only referenced in _load_production_settings' return annotation.
+from types import ModuleType  # noqa: TC003
 
-    import pytest
+import pytest
+from django.core.exceptions import ImproperlyConfigured
+
+from config.settings import base
 
 _ONE_YEAR = 31536000
 _RAMP_DEFAULT = 518400
@@ -39,6 +43,11 @@ def _load_production_settings(
 ) -> ModuleType:
     for key, value in {**_REQUIRED_ENV, **overrides}.items():
         monkeypatch.setenv(key, value)
+    # production.py mutates the shared base.DATABASES["default"] dict in place
+    # (CONN_MAX_AGE); reloading it below would otherwise leak that into the
+    # live test settings for the rest of the session. monkeypatch.setitem
+    # records the pre-reload state and restores it on teardown.
+    monkeypatch.setitem(base.DATABASES["default"], "CONN_MAX_AGE", 0)
     module = importlib.import_module("config.settings.production")
     return importlib.reload(module)
 
@@ -67,10 +76,18 @@ def test_hsts_preload_and_max_age_are_opt_in_via_env(
     assert settings.SECURE_HSTS_SECONDS == _ONE_YEAR
 
 
-def test_default_header_is_preload_list_consistent(
+def test_preload_without_a_one_year_max_age_is_rejected(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A ``preload`` directive is only ever sent with a >= 1-year max-age."""
-    settings = _load_production_settings(monkeypatch)
-    if settings.SECURE_HSTS_PRELOAD:
-        assert settings.SECURE_HSTS_SECONDS >= _ONE_YEAR
+    """Enabling preload without also raising max-age — the exact inconsistent
+    header issue #353 is about — fails fast at settings load instead of being
+    served."""
+    with pytest.raises(ImproperlyConfigured, match="SECURE_HSTS_PRELOAD"):
+        _load_production_settings(
+            monkeypatch,
+            DJANGO_SECURE_HSTS_PRELOAD="True",
+            # DJANGO_SECURE_HSTS_SECONDS left at the 6-day ramp default.
+        )
+    # The failed reload leaves config.settings.production half-initialised in
+    # sys.modules, which is harmless: nothing else in the suite imports it, and
+    # the next _load_production_settings() call re-executes the whole module.
