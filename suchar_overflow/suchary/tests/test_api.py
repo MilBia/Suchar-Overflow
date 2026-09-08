@@ -727,14 +727,55 @@ def test_first_funny_vote_sets_author_toast_flag(client: Client) -> None:
 
 @pytest.mark.django_db
 def test_second_funny_vote_does_not_set_toast_flag(client: Client) -> None:
+    """Once a suchar has toasted its author, a later community funny vote must
+    not re-fire it — the per-suchar ``mark_suchar_toast_sent`` latch holds."""
     author = make_user("rimshot_author_2")
     suchar = Suchar.objects.create(text="Joke", author=author)
-    Vote.objects.create(suchar=suchar, user=make_user("rimshot_first"), is_funny=True)
     _reset_toast_cache(author.pk, suchar.pk)
+
+    client.force_login(make_user("rimshot_first"))
+    _post_vote(client, suchar.pk, "funny")  # 0 -> 1: toasts and latches
+    assert cache.get(toast_cache_key(author.pk)) is True
+    cache.delete(toast_cache_key(author.pk))
 
     client.force_login(make_user("rimshot_second"))
     _post_vote(client, suchar.pk, "funny")
 
+    assert cache.get(toast_cache_key(author.pk)) is None
+
+
+@pytest.mark.django_db
+def test_concurrent_first_funny_votes_do_not_both_miss_the_toast(
+    client: Client,
+) -> None:
+    """Two near-simultaneous first community funny votes must still toast once
+    (#334).
+
+    ``community_funny`` is recounted with a fresh aggregate after every vote
+    and is not locked. Two non-authors voting funny close together can each see
+    the other's INSERT already committed, i.e. ``community_funny == 2``, so the
+    old ``== 1`` predicate fired for neither. ``>= 1`` plus the atomic
+    ``mark_suchar_toast_sent`` latch fires exactly once instead. A pre-existing
+    funny vote created straight in the DB (never through the endpoint, so it
+    never consumed the latch) stands in for the other racer.
+    """
+    author = make_user("rimshot_race_author")
+    suchar = Suchar.objects.create(text="Joke", author=author)
+    Vote.objects.create(
+        suchar=suchar,
+        user=make_user("rimshot_race_a"),
+        is_funny=True,
+    )
+    _reset_toast_cache(author.pk, suchar.pk)
+
+    client.force_login(make_user("rimshot_race_b"))
+    _post_vote(client, suchar.pk, "funny")  # community_funny == 2 at the check
+    assert cache.get(toast_cache_key(author.pk)) is True
+
+    # …and it stays a once-per-suchar event.
+    cache.delete(toast_cache_key(author.pk))
+    client.force_login(make_user("rimshot_race_c"))
+    _post_vote(client, suchar.pk, "funny")
     assert cache.get(toast_cache_key(author.pk)) is None
 
 

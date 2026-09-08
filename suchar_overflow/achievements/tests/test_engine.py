@@ -555,3 +555,47 @@ def test_check_achievements_does_not_re_award() -> None:
     UserAchievement.objects.create(user=user, achievement=ach)
     Suchar.objects.create(text="joke", author=user)
     assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1
+
+
+# ---------------------------------------------------------------------------
+# check_achievements — TOCTOU race on the award INSERT (#332)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_check_achievements_survives_concurrent_award(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A parallel request inserting the same UserAchievement mid-call must not
+    turn a legitimate award into an unhandled IntegrityError (#332).
+
+    The candidates queryset normally excludes owned rows, so the race only
+    opens if the row lands *after* that query. It is simulated here with a
+    ``compute_value`` side effect — that runs just before the award INSERT and
+    outside its savepoint, i.e. exactly where the losing request would find
+    itself. Against the unfixed engine this raises ``IntegrityError``.
+    """
+    user = make_user("toctou")
+    ach = make_achievement("count-0", Achievement.Metric.COUNT_SUCHAR, threshold=0)
+
+    real_compute = eng.SucharCountRule.compute_value
+
+    def racing_compute(
+        cls: type[eng.SucharCountRule],  # noqa: ARG001
+        current_user: User,
+        instance: Suchar | Vote | None = None,
+    ) -> int | None:
+        value = real_compute(current_user, instance)
+        UserAchievement.objects.get_or_create(user=user, achievement=ach)
+        return value
+
+    monkeypatch.setattr(
+        eng.SucharCountRule,
+        "compute_value",
+        classmethod(racing_compute),
+    )
+
+    # Must not raise.
+    AchievementEngine.check_achievements(user, Achievement.EventType.SUCHAR_POSTED)
+
+    assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1

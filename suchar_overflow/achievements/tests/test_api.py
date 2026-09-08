@@ -376,6 +376,48 @@ def test_frontend_event_does_not_set_cache_key_when_already_owned(
     assert cache.get(pending_cache_key(user.pk)) is None
 
 
+@pytest.mark.django_db
+def test_frontend_event_survives_concurrent_award(
+    client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A parallel request awarding the same achievement first must not break
+    this one (#332).
+
+    Before the fix the endpoint did ``.exists()`` then ``.create()`` and an
+    interleaved award turned the second INSERT into an unhandled
+    ``IntegrityError`` → 500. ``get_or_create`` absorbs the unique-constraint
+    race: the loser sees ``created=False`` and returns 200 without
+    re-flagging the notification. The concurrent award is simulated as a side
+    effect of the slug lookup.
+    """
+    user = make_user("user_fe_race")
+    client.force_login(user)
+    ach = make_frontend_achievement("frontend-odkrywca", name="Odkrywca")
+    cache.delete(pending_cache_key(user.pk))
+
+    real_get = Achievement.objects.get
+
+    def racing_get(*args: object, **kwargs: object) -> Achievement:
+        found = real_get(*args, **kwargs)
+        UserAchievement.objects.get_or_create(user=user, achievement=found)
+        return found
+
+    monkeypatch.setattr(Achievement.objects, "get", racing_get)
+
+    response = client.post(
+        FRONTEND_EVENT_URL,
+        data={"event_slug": "frontend-odkrywca"},
+        content_type="application/json",
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {"ok": True}
+    assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1
+    # The request that actually awarded it owns the SSE flag; we didn't re-set it.
+    assert cache.get(pending_cache_key(user.pk)) is None
+
+
 # ---------------------------------------------------------------------------
 # Konami easter egg — frontend-ee-konami (#283)
 # ---------------------------------------------------------------------------

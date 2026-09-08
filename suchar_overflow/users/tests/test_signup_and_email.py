@@ -10,8 +10,10 @@ from typing import TYPE_CHECKING
 import pytest
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.db import IntegrityError
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext
 
 from suchar_overflow.conftest import make_user
 from suchar_overflow.users.models import ActivationToken
@@ -360,6 +362,49 @@ def test_email_change_confirm_rejects_duplicate_email(client: Client) -> None:
     assert response.status_code == HTTPStatus.OK
     user.refresh_from_db()
     assert user.email == "old@example.com"
+
+
+@pytest.mark.django_db
+def test_email_change_confirm_handles_unique_email_race(
+    client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Two pending requests confirming the same address race ``User.email``'s
+    unique constraint (#333).
+
+    The ``aexists()`` pre-check can pass for both; the loser's ``asave()`` then
+    raises ``IntegrityError``. The view must catch it and render the existing
+    "email already taken" page instead of a 500, leaving this request PENDING
+    so the pre-check branch and the race branch behave identically.
+    """
+    user = make_user("racer", email="old@example.com")
+    email_req = EmailChangeRequest.objects.create(
+        user=user,
+        new_email="new@example.com",
+        old_email="old@example.com",
+    )
+    client.force_login(user)
+
+    async def _raise_integrity_error(*_args: object, **_kwargs: object) -> None:
+        # Stand-in for Postgres rejecting the duplicate User.email on the
+        # losing request's UPDATE.
+        raise IntegrityError
+
+    monkeypatch.setattr(User, "asave", _raise_integrity_error)
+
+    response = client.get(
+        reverse(
+            "users:email_change_verify",
+            kwargs={"token": str(email_req.verification_token)},
+        ),
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.context["error"] == gettext("Email already taken.")
+    user.refresh_from_db()
+    assert user.email == "old@example.com"
+    email_req.refresh_from_db()
+    assert email_req.status == EmailChangeRequest.Status.PENDING
 
 
 # ---------------------------------------------------------------------------
