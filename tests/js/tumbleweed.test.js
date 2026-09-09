@@ -352,8 +352,10 @@ describe("rollTumbleweed — full motion", () => {
   it("gives the caption an opaque pill background for contrast (#349)", () => {
     tumbleweed.triggerTumbleweed();
     const caption = overlays()[0].querySelector(".ee-tumbleweed-caption");
-    // An opaque background keeps the text readable over arbitrary page
-    // content in either theme — rgba() would not.
+    // Guard the whole colour pair — text on background is ~7.6:1 (WCAG AAA).
+    // An opaque background keeps that ratio over arbitrary page content in
+    // either theme; rgba() would not.
+    expect(caption.style.color).toBe("rgb(216, 173, 122)");
     expect(caption.style.backgroundColor).toBe("rgb(43, 33, 24)");
   });
 
