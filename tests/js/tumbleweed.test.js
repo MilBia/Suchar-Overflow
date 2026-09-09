@@ -349,6 +349,16 @@ describe("rollTumbleweed — full motion", () => {
     expect(caption.textContent).toBe(tumbleweed.CAPTION);
   });
 
+  it("gives the caption an opaque pill background for contrast (#349)", () => {
+    tumbleweed.triggerTumbleweed();
+    const caption = overlays()[0].querySelector(".ee-tumbleweed-caption");
+    // Guard the whole colour pair — text on background is ~7.6:1 (WCAG AAA).
+    // An opaque background keeps that ratio over arbitrary page content in
+    // either theme; rgba() would not.
+    expect(caption.style.color).toBe("rgb(216, 173, 122)");
+    expect(caption.style.backgroundColor).toBe("rgb(43, 33, 24)");
+  });
+
   it("carries no id on the visual particles (only the <style> has one)", () => {
     tumbleweed.triggerTumbleweed();
     expect(overlays()[0].querySelectorAll("[id]")).toHaveLength(0);

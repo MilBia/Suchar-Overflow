@@ -1,28 +1,32 @@
-/* Easter egg: type "suchar" / "badumtss" / "ba dum tss" → 🥁 toast + a puff of
- * settling dust. Issue #284, umbrella #278.
+/* Easter egg: wpisz "suchar" / "badumtss" / "ba dum tss" → toast 🥁 + obłoczek
+ * opadającego kurzu. Issue #284, parasol #278.
  *
- * A group-A "delight" egg built on the #282 foundation. It wires nothing global
- * of its own (only the `window.__baDumTssReady` init flag): it consumes
- * `window.easterEggs` for the reduced-motion gate and the muted-by-default sound
- * helper, and `window.showToast` (project.js) for the toast.
+ * Egg „delight" z grupy A zbudowany na fundamencie #282. Nie podpina żadnego
+ * własnego globala (poza flagą inicjalizacji `window.__baDumTssReady`):
+ * korzysta z `window.easterEggs` dla bramki reduced-motion i wyciszonego
+ * domyślnie helpera dźwięku, oraz z `window.showToast` (project.js) na toast.
  *
- * Loaded in base.html's global `{% compress js %}` block, AFTER konami.js, so
- * the trigger listens on every page for a logged-in user. `window.showToast`
- * and `window.easterEggs` are read at trigger time, never at module load —
- * project.js only defines `showToast` inside its own DOMContentLoaded handler,
- * so bundle listener-registration order must not matter.
+ * Ładowany w globalnym bloku `{% compress js %}` w base.html, PO konami.js, więc
+ * trigger nasłuchuje na każdej stronie dla zalogowanego użytkownika.
+ * `window.showToast` i `window.easterEggs` czytane są w chwili triggera, nigdy
+ * w czasie ładowania modułu — project.js definiuje `showToast` dopiero we
+ * własnym handlerze DOMContentLoaded, więc kolejność rejestracji listenerów w
+ * bundlu nie może mieć znaczenia.
  *
- * The whole file is an IIFE so its many small helpers (`rand`, `STYLE_ID`, …)
- * don't leak into the shared bundle scope where project.js / easter_eggs.js /
- * konami.js also live — a top-level `const` collision there is a bundle-wide
- * SyntaxError (see CLAUDE.md, and the same rule on konami.js).
+ * Cały plik to IIFE, żeby jego liczne drobne helpery (`rand`, `STYLE_ID`, …)
+ * nie wyciekały do współdzielonego scope'u bundla, gdzie żyją też project.js /
+ * easter_eggs.js / konami.js — kolizja `const` na najwyższym poziomie to
+ * SyntaxError obejmujący cały bundle (patrz CLAUDE.md i ta sama reguła w
+ * konami.js).
  *
- * Pure delight: NO achievement, NO frontend-ee- slug, NO network. The effect
- * replays on every entry (like konami, deliberately not one-shot):
- *   - full motion: ~24 dust motes drifting down across the viewport, ~2 s;
- *   - prefers-reduced-motion: the toast only, no overlay at all;
- *   - a "🥁 / ba dum tss" toast;
- *   - the rimshot cue via `window.easterEggs.playSound` (muted unless opted in).
+ * Czysty „delight": ŻADNEGO achievementu, ŻADNEGO slugu frontend-ee-, ŻADNEJ
+ * sieci. Efekt powtarza się przy każdym wpisaniu (jak konami, celowo nie
+ * jednorazowy):
+ *   - pełny ruch: ~24 drobinki kurzu opadające przez viewport, ~2 s;
+ *   - prefers-reduced-motion: sam toast, żadnego overlaya;
+ *   - toast „🥁 / ba dum tss";
+ *   - sygnał rimshot przez `window.easterEggs.playSound` (wyciszony, jeśli nie
+ *     włączono go świadomie).
  */
 
 (function () {

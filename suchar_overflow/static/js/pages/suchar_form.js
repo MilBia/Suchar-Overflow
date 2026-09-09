@@ -119,11 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const { tagsInput, tagsDropdown, previewTags, suggestionsBox } = this.elements;
             if (!tagsInput || !previewTags || !suggestionsBox) return;
 
+            // Duplicated on purpose (a shared `const debounce` across the page's
+            // classic scripts would be a bundle-wide SyntaxError — see
+            // leaderboard.js). `func` is always the arrow fn passed below, so
+            // there is no `this` to forward — call it plainly, like leaderboard.js.
             const debounce = (func, wait) => {
                 let timeout;
                 return (...args) => {
                     clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(this, args), wait);
+                    timeout = setTimeout(() => func(...args), wait);
                 };
             };
 
@@ -145,15 +149,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lastCommaIndex = textBeforeCursor.lastIndexOf(',');
 
                 const prefix = textBeforeCursor.slice(0, lastCommaIndex + 1);
-                const suffix = val.slice(cursorPosition);
+                // Drop a leading comma + surrounding whitespace from the
+                // remainder so completing a middle slot ("foo, |, bar") yields
+                // "foo, tag, bar", not "foo, tag, , bar". One optional comma
+                // only — a greedy [,\s]* would swallow the user's empty slots.
+                const suffix = val.slice(cursorPosition).replace(/^\s*,?\s*/, '');
 
-                const newText = (prefix ? prefix + ' ' : '') + tagName + ', ' + suffix;
-                tagsInput.value = newText;
+                const head = (prefix ? prefix + ' ' : '') + tagName + ', ';
+                tagsInput.value = head + suffix;
 
                 // Close dropdown
                 if (tagsDropdown) tagsDropdown.classList.remove('show');
 
                 tagsInput.focus();
+                // Park the caret right after the inserted tag, not at the end
+                // of the field — filling a middle slot must not jump past the
+                // trailing tags.
+                tagsInput.setSelectionRange(head.length, head.length);
                 tagsInput.dispatchEvent(new Event('input'));
             };
 

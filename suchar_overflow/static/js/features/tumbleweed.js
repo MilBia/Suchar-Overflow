@@ -1,32 +1,35 @@
-/* Easter egg: sit still on the suchar list for two minutes → a tumbleweed rolls
- * across the bottom of the screen with the line "cisza… aż tak sucho?", then
- * clears. Issue #288, umbrella #278.
+/* Easter egg: usiądź bez ruchu na liście sucharów na dwie minuty → przez dół
+ * ekranu przetacza się chwast (tumbleweed) z linijką „cisza… aż tak sucho?",
+ * po czym znika. Issue #288, parasol #278.
  *
- * A group-A "delight" egg built on the #282 foundation. It wires nothing global
- * of its own (only the `window.__tumbleweedReady` init flag): it consumes
- * `window.easterEggs` for the reduced-motion gate and `window.showToast`
- * (project.js) for the reduced-motion fallback.
+ * Egg „delight" z grupy A zbudowany na fundamencie #282. Nie podpina żadnego
+ * własnego globala (poza flagą inicjalizacji `window.__tumbleweedReady`):
+ * korzysta z `window.easterEggs` dla bramki reduced-motion i z
+ * `window.showToast` (project.js) dla fallbacku reduced-motion.
  *
- * Unlike the keydown eggs (konami / badumtss), the trigger here is *absence* of
- * input: passive `scroll` / `mousemove` / `keydown` / `pointerdown` listeners
- * each reset a 120 s idle timer, and the timer firing is the event (skipped
- * while the tab is backgrounded). It is scoped to the
- * suchar list — `initTumbleweed` only attaches and arms when
- * `location.pathname` starts with `/suchary` (the app does full page reloads,
- * so re-checking on navigation is unnecessary). A `sessionStorage` timestamp
- * keeps it to at most once per 5 minutes across the list's paginated reloads.
+ * W przeciwieństwie do eggów keydown (konami / badumtss), triggerem jest tu
+ * *brak* inputu: pasywne listenery `scroll` / `mousemove` / `keydown` /
+ * `pointerdown` resetują 120-sekundowy timer bezczynności, a odpalenie timera
+ * jest zdarzeniem (pomijane, gdy karta jest w tle). Ograniczony do listy
+ * sucharów — `initTumbleweed` podpina się i uzbraja tylko, gdy
+ * `location.pathname` zaczyna się od `/suchary` (aplikacja robi pełne
+ * przeładowania stron, więc ponowne sprawdzanie przy nawigacji jest zbędne).
+ * Znacznik czasu w `sessionStorage` ogranicza to do najwyżej raz na 5 minut
+ * mimo paginowanych przeładowań listy.
  *
- * Loaded in base.html's global `{% compress js %}` block, AFTER console_egg.js.
- * The whole file is an IIFE so its small helpers (`rand`, `STYLE_ID`, …) don't
- * collide at bundle top level with project.js / easter_eggs.js / konami.js /
- * badumtss.js / logo_spin.js — a top-level `const` clash there is a bundle-wide
- * SyntaxError (see CLAUDE.md, and the same rule on the sibling eggs).
+ * Ładowany w globalnym bloku `{% compress js %}` w base.html, PO console_egg.js.
+ * Cały plik to IIFE, żeby jego drobne helpery (`rand`, `STYLE_ID`, …) nie
+ * kolidowały na najwyższym poziomie bundla z project.js / easter_eggs.js /
+ * konami.js / badumtss.js / logo_spin.js — kolizja `const` to SyntaxError
+ * obejmujący cały bundle (patrz CLAUDE.md i ta sama reguła w siostrzanych
+ * eggach).
  *
- * Pure delight: NO achievement, NO frontend-ee- slug, NO network, NO sound. The
- * effect replays on every fresh 120 s of stillness once the cooldown is up:
- *   - full motion: a tumbleweed SVG rolls right-to-left along the lower screen
- *     edge, the caption riding beneath it, ~4 s;
- *   - prefers-reduced-motion: the caption only, as a toast — no overlay.
+ * Czysty „delight": ŻADNEGO achievementu, ŻADNEGO slugu frontend-ee-, ŻADNEJ
+ * sieci, ŻADNEGO dźwięku. Efekt powtarza się przy każdych nowych 120 s
+ * bezruchu, gdy minie cooldown:
+ *   - pełny ruch: SVG chwastu toczy się z prawej do lewej wzdłuż dolnej
+ *     krawędzi ekranu, podpis jedzie pod nim, ~4 s;
+ *   - prefers-reduced-motion: sam podpis, jako toast — bez overlaya.
  */
 
 (function () {
@@ -297,9 +300,18 @@
         caption.style.marginTop = '6px';
         caption.style.fontStyle = 'italic';
         caption.style.fontSize = '0.95rem';
-        caption.style.color = '#b58b5a';
-        caption.style.textShadow = '0 1px 2px rgba(0, 0, 0, 0.35)';
         caption.style.whiteSpace = 'nowrap';
+        // A bare tan on the page underneath gave ~2.5:1 in light mode (below the
+        // WCAG AA 4.5:1 floor). An OPAQUE dark pill fixes contrast regardless of
+        // theme or whatever content the overlay floats over: #d8ad7a on #2b2118
+        // is ~7.6:1. Kept theme-independent on purpose, like the SVG's one tan
+        // tone. rgba() here would composite over page content and lose the
+        // guarantee — the pill must stay fully opaque.
+        caption.style.color = '#d8ad7a';
+        caption.style.backgroundColor = '#2b2118';
+        caption.style.padding = '2px 10px';
+        caption.style.borderRadius = '4px';
+        caption.style.textShadow = '0 1px 2px rgba(0, 0, 0, 0.35)';
         return caption;
     }
 

@@ -4,7 +4,18 @@
  * Relies on window.easterEggs (features/easter_eggs.js, #282) for the shared
  * CSRF POST and the sessionStorage dedupe — base.html loads it globally,
  * before this per-page script.
+ *
+ * The whole file is an IIFE (#339) so its `award` / `getOwnedSlugs` / `setupX`
+ * helpers don't sit at the top level of the shared bundle scope where
+ * features/easter_eggs.js also declares a top-level `award(...)` — the later
+ * `<script defer>` would otherwise silently clobber the earlier global. Every
+ * sibling easter-egg module already uses this pattern; this file was the last
+ * one without it. The guarded CJS export tail lives inside the IIFE (closures
+ * still see `module`), same as konami.js.
  */
+
+(function () {
+'use strict';
 
 async function getOwnedSlugs() {
     try {
@@ -224,7 +235,8 @@ document.addEventListener('DOMContentLoaded', async () => {
  * `module` is undefined in the browser, so this block is inert there and is
  * preserved verbatim by rjsmin inside {% compress js %}. It is NOT dead code —
  * do not remove it in a JS sweep (cf. window.__hiddenAchievementsReady above).
- * See CLAUDE.md "JS tests (Vitest)". */
+ * Lives inside the #339 IIFE — the closure still sees `module`, same as the
+ * sibling easter-egg modules. See CLAUDE.md "JS tests (Vitest)". */
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         award,
@@ -236,3 +248,4 @@ if (typeof module !== 'undefined' && module.exports) {
         setupOdkrywca,
     };
 }
+})();

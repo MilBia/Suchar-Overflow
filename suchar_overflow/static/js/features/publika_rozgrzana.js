@@ -1,54 +1,56 @@
 /* Easter egg: 10 głosów „śmieszne" pod rząd (żaden „suchar"/dry pomiędzy) w
  * oknie 60 s → mały combo-meter na liście sucharów, a po dziesiątym toast
  * „Publika Rozgrzana 🔥" + ukryty achievement `frontend-ee-publika-rozgrzana`.
- * Issue #296, umbrella #279 (żarty w mechanice).
+ * Issue #296, parasol #279 (żarty w mechanice).
  *
- * Built on the #282 easter-egg foundation. It wires nothing global of its own
- * (only the `window.__publikaRozgrzanaReady` init flag): it consumes
- * `window.easterEggs` for the session-deduped award + the reduced-motion gate,
- * and `window.showToast` (project.js) for the toast. Both are read at trigger
- * time, never at module load — project.js only defines `showToast` inside its
- * own DOMContentLoaded handler, so bundle listener-registration order must not
- * matter.
+ * Zbudowany na fundamencie easter-eggów #282. Nie podpina żadnego własnego
+ * globala (poza flagą inicjalizacji `window.__publikaRozgrzanaReady`):
+ * korzysta z `window.easterEggs` dla zdeduplikowanego w sesji przyznania +
+ * bramki reduced-motion, oraz z `window.showToast` (project.js) na toast. Oba
+ * czytane są w chwili triggera, nigdy w czasie ładowania modułu — project.js
+ * definiuje `showToast` dopiero we własnym handlerze DOMContentLoaded, więc
+ * kolejność rejestracji listenerów w bundlu nie może mieć znaczenia.
  *
- * The whole file is an IIFE so its helpers (`readChain`, `buildMeter`, …) don't
- * collide at bundle top level with project.js / easter_eggs.js / the other
- * eggs — a top-level `const` collision there is a bundle-wide SyntaxError (see
- * CLAUDE.md, and the same rule on konami.js / badumtss.js / logo_spin.js /
- * tumbleweed.js / theme_spam.js / archeolog.js). It sits in base.html's global
- * `{% compress js %}` block right after archeolog.js (same-block concatenation,
- * so `BASE_JS_BUNDLES` stays 1).
+ * Cały plik to IIFE, żeby jego helpery (`readChain`, `buildMeter`, …) nie
+ * kolidowały na najwyższym poziomie bundla z project.js / easter_eggs.js /
+ * pozostałymi eggami — kolizja `const` to SyntaxError obejmujący cały bundle
+ * (patrz CLAUDE.md i ta sama reguła w konami.js / badumtss.js / logo_spin.js /
+ * tumbleweed.js / theme_spam.js / archeolog.js). Siedzi w globalnym bloku
+ * `{% compress js %}` w base.html tuż po archeolog.js (konkatenacja w tym samym
+ * bloku, więc `BASE_JS_BUNDLES` zostaje 1).
  *
- * Trigger: a delegated `click` listener on `document` in the CAPTURE phase,
- * scoped to `/suchary` and its sub-pages (like tumbleweed.js / archeolog.js).
- * Capture (not bubble) guarantees it runs before voting.js's bubble-phase
- * delegated listener regardless of which script's DOMContentLoaded handler
- * registered first — so `willActivate()` reads the button's state BEFORE
- * voting.js's optimistic `classList.toggle('active')`, i.e. the same
- * `!wasActive` voting.js itself computes. It never calls `preventDefault` — the
- * vote must still go through.
+ * Trigger: delegowany listener `click` na `document` w fazie CAPTURE,
+ * ograniczony do `/suchary` i jego podstron (jak tumbleweed.js / archeolog.js).
+ * Capture (nie bubble) gwarantuje, że wykona się przed delegowanym listenerem
+ * bubble-phase w voting.js niezależnie od tego, którego skryptu handler
+ * DOMContentLoaded zarejestrował się pierwszy — więc `willActivate()` czyta
+ * stan przycisku PRZED optymistycznym `classList.toggle('active')` z voting.js,
+ * czyli to samo `!wasActive`, które voting.js liczy dla siebie. Nigdy nie woła
+ * `preventDefault` — głos musi nadal przejść.
  *
- * The chain state lives in `sessionStorage` (`{count, firstAt}`), NOT memory:
- * the list paginates with full page reloads and shows 10 suchary per page, so
- * an in-memory counter could only ever be built on a single page where all 10
- * are still unvoted-by-you. logo_spin.js hit the same "state must survive
- * navigation" wall; CLAUDE.md documents that as an accepted deviation from the
- * issue's literal "stan w pamięci strony" wording.
+ * Stan łańcucha żyje w `sessionStorage` (`{count, firstAt}`), NIE w pamięci:
+ * lista paginuje się pełnymi przeładowaniami i pokazuje 10 sucharów na stronę,
+ * więc licznik w pamięci dałoby się zbudować tylko na jednej stronie, gdzie
+ * całe 10 jest wciąż nieocenionych-przez-ciebie. logo_spin.js trafił na tę
+ * samą ścianę „stan musi przetrwać nawigację"; CLAUDE.md dokumentuje to jako
+ * przyjęte odstępstwo od dosłownego „stan w pamięci strony" z issue.
  *
- * Reset (chain cleared, meter hidden):
- *   - any `.btn-vote[data-vote-type="dry"]` click;
- *   - UN-voting a funny (removing a funny vote is not "a funny vote in a row");
- *   - 60 s after the chain's first funny vote. This is authoritative and LAZY:
- *     `readChain()` discards an expired chain on the next click. A visual-only
- *     `setTimeout` additionally hides the meter for a user who simply stopped
- *     clicking; on a fresh page load a live chain re-arms that timer to its
- *     *remaining* window, not a fresh 60 s (cf. tumbleweed.js).
+ * Reset (łańcuch wyczyszczony, meter ukryty):
+ *   - dowolne kliknięcie `.btn-vote[data-vote-type="dry"]`;
+ *   - COFNIĘCIE głosu „śmieszne" (usunięcie głosu śmiesznego to nie „głos
+ *     śmieszny pod rząd");
+ *   - 60 s po pierwszym śmiesznym głosie łańcucha. To autorytatywne i LENIWE:
+ *     `readChain()` odrzuca przeterminowany łańcuch przy następnym kliknięciu.
+ *     Wyłącznie wizualny `setTimeout` dodatkowo ukrywa meter użytkownikowi,
+ *     który po prostu przestał klikać; na świeżym załadowaniu strony żywy
+ *     łańcuch uzbraja ten timer na *pozostałe* okno, nie na świeże 60 s
+ *     (por. tumbleweed.js).
  *
- * Effect on every fresh run of 10 (per #296 — it replays, like the other eggs,
- * not one-shot): a „Publika Rozgrzana" toast + `window.easterEggs.award(SLUG)`
- * (POSTs once per session via the sessionStorage dedupe). The per-increment
- * meter pulse is gated by `prefers-reduced-motion`; the meter itself (with its
- * count) still shows under reduced motion.
+ * Efekt przy każdej nowej serii 10 (per #296 — powtarza się, jak pozostałe
+ * eggi, nie jednorazowy): toast „Publika Rozgrzana" + `window.easterEggs.award(SLUG)`
+ * (POST raz na sesję przez deduplikację w sessionStorage). Puls metera przy
+ * każdym inkremencie jest bramkowany przez `prefers-reduced-motion`; sam meter
+ * (z licznikiem) i tak pokazuje się przy reduced motion.
  */
 
 (function () {

@@ -1,46 +1,47 @@
 /* Easter egg: scroll do samego dołu ostatniej strony paginacji listy sucharów
  * (wymagane co najmniej 5 stron ogółem) → toast "Dotarłeś do dna. Sucharów.
  * Gratulacje." + ukryty achievement `frontend-ee-archeolog`. Issue #290,
- * umbrella #278.
+ * parasol #278.
  *
- * A group-A "delight" egg built on the #282 foundation. It wires nothing
- * global of its own (only the `window.__archeologReady` init flag): it
- * consumes `window.easterEggs` for the deduped award, and `window.showToast`
- * (project.js) for the toast. Both are read at trigger time, never at module
- * load — project.js only defines `showToast` inside its own DOMContentLoaded
- * handler, so bundle listener-registration order must not matter.
+ * Egg „delight" z grupy A zbudowany na fundamencie #282. Nie podpina żadnego
+ * własnego globala (poza flagą inicjalizacji `window.__archeologReady`):
+ * korzysta z `window.easterEggs` dla zdeduplikowanego przyznania i z
+ * `window.showToast` (project.js) na toast. Oba czytane są w chwili triggera,
+ * nigdy w czasie ładowania modułu — project.js definiuje `showToast` dopiero
+ * we własnym handlerze DOMContentLoaded, więc kolejność rejestracji listenerów
+ * w bundlu nie może mieć znaczenia.
  *
- * The whole file is an IIFE so its small helpers (`STYLE_ID`-style constants,
- * …) don't collide at bundle top level with project.js / easter_eggs.js / the
- * other group-A eggs — a top-level `const` collision there is a bundle-wide
- * SyntaxError (see CLAUDE.md, and the same rule on konami.js / badumtss.js /
+ * Cały plik to IIFE, żeby jego drobne helpery (stałe w stylu `STYLE_ID`, …)
+ * nie kolidowały na najwyższym poziomie bundla z project.js / easter_eggs.js /
+ * pozostałymi eggami grupy A — kolizja `const` to SyntaxError obejmujący cały
+ * bundle (patrz CLAUDE.md i ta sama reguła w konami.js / badumtss.js /
  * logo_spin.js / tumbleweed.js / theme_spam.js).
  *
- * Trigger: scoped to `/suchary` and its sub-pages (like tumbleweed.js). A
- * passive `scroll` listener, throttled with a trailing edge (leading-edge
- * only would risk missing a discrete jump to the bottom — e.g. an `End`
- * keypress, or a gesture that stops moving right at the edge — that fires no
- * further `scroll` event to re-check on inside the throttle window), checks
- * `scrollY + innerHeight >= scrollHeight - threshold` AND that the pagination
- * nav shows no "Next" link AND the active page number is >= MIN_TOTAL_PAGES.
- * The active-page number
- * doubles as the *total* page count here (we only ever check it once we've
- * already confirmed there's no next page) — a brand-new deployment with fewer
- * than 5 pages of suchary can never award this, per issue #290: nobody should
- * get "Archeolog" for reaching the bottom of an almost-empty site.
+ * Trigger: ograniczony do `/suchary` i jego podstron (jak tumbleweed.js).
+ * Pasywny listener `scroll`, throttlowany z krawędzią trailing (samo
+ * leading-edge groziłoby przeoczeniem dyskretnego skoku na dół — np.
+ * naciśnięcie `End` albo gest, który zatrzymuje się tuż przy krawędzi — który
+ * nie odpala kolejnego zdarzenia `scroll` do ponownego sprawdzenia w oknie
+ * throttla), sprawdza `scrollY + innerHeight >= scrollHeight - threshold` ORAZ
+ * że nawigacja paginacji nie pokazuje linku „Next" ORAZ że numer aktywnej
+ * strony jest >= MIN_TOTAL_PAGES. Numer aktywnej strony pełni tu jednocześnie
+ * rolę *całkowitej* liczby stron (sprawdzamy go dopiero, gdy potwierdziliśmy
+ * już brak następnej strony) — świeżo postawiony deployment z mniej niż 5
+ * stronami sucharów nigdy tego nie przyzna, per issue #290: nikt nie powinien
+ * dostać „Archeologa" za dotarcie do dna niemal pustego serwisu.
  *
- * The "Next" / active-page state is read structurally (last `<li>` in
- * `.pagination` has no `<a>`; `.page-item.active .page-link` holds the page
- * number), never by matching the localized "Next" label text — templates
- * render in Polish (LANGUAGE_CODE = "pl"), and the active page number is
- * never elided by Django's `get_elided_page_range()` since it always includes
- * the current page.
+ * Stan „Next" / aktywnej strony czytany jest strukturalnie (ostatni `<li>` w
+ * `.pagination` nie ma `<a>`; `.page-item.active .page-link` trzyma numer
+ * strony), nigdy przez dopasowanie zlokalizowanego tekstu etykiety „Next" —
+ * szablony renderują się po polsku (LANGUAGE_CODE = "pl"), a numer aktywnej
+ * strony nigdy nie jest pomijany przez `get_elided_page_range()` Django, bo
+ * zawsze zawiera bieżącą stronę.
  *
- * Fires at most once per session (award() dedupes via sessionStorage): the
- * toast is only shown when `award()` reports the first award this session,
- * so a scroll listener re-firing near the threshold can't spam it. Pure
- * text/toast effect — no animation, so there is nothing for
- * `prefers-reduced-motion` to gate.
+ * Odpala najwyżej raz na sesję (award() deduplikuje przez sessionStorage):
+ * toast pokazuje się tylko, gdy `award()` zgłasza pierwsze przyznanie w tej
+ * sesji, więc listener scrolla odpalający się ponownie przy progu nie może go
+ * spamować. Czysty efekt tekst/toast — brak animacji, więc nie ma czego
+ * bramkować przez `prefers-reduced-motion`.
  */
 
 (function () {

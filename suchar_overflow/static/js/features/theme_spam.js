@@ -1,42 +1,44 @@
-/* Easter egg: mash the theme toggle (10× within 5s) → "zdecyduj się 🙃" toast +
- * a hidden achievement. Issue #289, umbrella #278.
+/* Easter egg: klepanie przełącznika motywu (10× w ciągu 5 s) → toast
+ * „zdecyduj się 🙃" + ukryty achievement. Issue #289, parasol #278.
  *
- * A group-A "delight" egg built on the #282 foundation. It wires nothing global
- * of its own (only the `window.__themeSpamReady` init flag): it consumes
- * `window.easterEggs` for the deduped award + reduced-motion gate, and
- * `window.showToast` (project.js) for the toast.
+ * Egg „delight" z grupy A zbudowany na fundamencie #282. Nie podpina żadnego
+ * własnego globala (poza flagą inicjalizacji `window.__themeSpamReady`):
+ * korzysta z `window.easterEggs` dla zdeduplikowanego przyznania + bramki
+ * reduced-motion, oraz z `window.showToast` (project.js) na toast.
  *
- * Loaded in base.html's global `{% compress js %}` block, AFTER tumbleweed.js,
- * so the trigger listens on every page for a logged-in user. `window.showToast`
- * and `window.easterEggs` are read at trigger time, never at module load —
- * project.js only defines `showToast` inside its own DOMContentLoaded handler,
- * so bundle listener-registration order must not matter.
+ * Ładowany w globalnym bloku `{% compress js %}` w base.html, PO tumbleweed.js,
+ * więc trigger nasłuchuje na każdej stronie dla zalogowanego użytkownika.
+ * `window.showToast` i `window.easterEggs` czytane są w chwili triggera, nigdy
+ * w czasie ładowania modułu — project.js definiuje `showToast` dopiero we
+ * własnym handlerze DOMContentLoaded, więc kolejność rejestracji listenerów w
+ * bundlu nie może mieć znaczenia.
  *
- * The whole file is an IIFE so its small helpers (`STYLE_ID`, …) don't collide
- * at bundle top level with project.js / easter_eggs.js / the other group-A
- * eggs — a top-level `const` collision there is a bundle-wide SyntaxError (see
- * CLAUDE.md, and the same rule on konami.js / badumtss.js / logo_spin.js /
+ * Cały plik to IIFE, żeby jego drobne helpery (`STYLE_ID`, …) nie kolidowały
+ * na najwyższym poziomie bundla z project.js / easter_eggs.js / pozostałymi
+ * eggami grupy A — kolizja `const` to SyntaxError obejmujący cały bundle
+ * (patrz CLAUDE.md i ta sama reguła w konami.js / badumtss.js / logo_spin.js /
  * tumbleweed.js).
  *
- * Trigger: a `click` listener directly on `#theme-toggle`, NOT a
- * MutationObserver on `data-theme` — project.js sets `data-theme` on every
- * page load (`setTheme(currentTheme)` unconditionally), which would be a
- * built-in false positive for an attribute observer. `#theme-toggle` is a
- * plain `<button>` (no navigation, unlike logo_spin.js's `<a>`), so the click
- * buffer lives in memory like konami's key buffer, not sessionStorage.
+ * Trigger: listener `click` bezpośrednio na `#theme-toggle`, NIE
+ * MutationObserver na `data-theme` — project.js ustawia `data-theme` przy
+ * każdym załadowaniu strony (`setTheme(currentTheme)` bezwarunkowo), co byłoby
+ * wbudowanym fałszywym trafieniem dla obserwatora atrybutu. `#theme-toggle` to
+ * zwykły `<button>` (bez nawigacji, w odróżnieniu od `<a>` w logo_spin.js),
+ * więc bufor kliknięć żyje w pamięci jak bufor klawiszy konami, nie w
+ * sessionStorage.
  *
- * Effect on every fresh burst of 10 clicks within 5s (per #289 — it replays,
- * like the other group-A eggs, not one-shot):
- *   - a "Zdecyduj się 🙃" toast;
- *   - the hidden `frontend-ee-niezdecydowany` achievement (POSTed once per
- *     session by `window.easterEggs.award`, which dedupes via sessionStorage);
- *   - full motion: a quick 360° spin of the toggle button itself;
- *   - prefers-reduced-motion: the toast + achievement only, no spin.
+ * Efekt przy każdej nowej serii 10 kliknięć w ciągu 5 s (per #289 — powtarza
+ * się, jak pozostałe eggi grupy A, nie jednorazowy):
+ *   - toast „Zdecyduj się 🙃";
+ *   - ukryty achievement `frontend-ee-niezdecydowany` (POST raz na sesję przez
+ *     `window.easterEggs.award`, który deduplikuje przez sessionStorage);
+ *   - pełny ruch: szybki obrót o 360° samego przycisku przełącznika;
+ *   - prefers-reduced-motion: tylko toast + achievement, bez obrotu.
  *
- * This egg NEVER calls `setTheme` / writes `localStorage.theme` / the theme
- * cookie — it only counts clicks on a button project.js's own listener
- * already handles, so the theme always ends in whatever state the user's last
- * click left it in (#289's "bez psucia preferencji").
+ * Ten egg NIGDY nie woła `setTheme` / nie zapisuje `localStorage.theme` / ciasteczka
+ * motywu — jedynie liczy kliknięcia w przycisk, który obsługuje już własny
+ * listener project.js, więc motyw zawsze kończy w stanie z ostatniego
+ * kliknięcia użytkownika („bez psucia preferencji" z #289).
  */
 
 (function () {

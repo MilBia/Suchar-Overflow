@@ -175,7 +175,8 @@
                   <!-- Dryness Chart -->
                   <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Dryness Level" %}</h6>
                   <div class="chart-container-sm mb-4">
-                    <canvas id="userActivityChart"></canvas>
+                    {% trans "Jokes" as suchar_label %}
+                    <canvas id="userActivityChart" data-suchar-label="{{ suchar_label }}"></canvas>
                   </div>
 
                   <hr class="text-muted opacity-25 my-4" />
