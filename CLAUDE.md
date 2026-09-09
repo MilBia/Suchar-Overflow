@@ -1268,8 +1268,8 @@ After completing **any** task (feature, fix, refactor):
    CI blocks the build on this — a model change without a matching migration will pass
    `just test` locally but fail CI.
 4. If you changed any `.py` file, run mypy. It is **not** in `pre-commit` or
-   `just test` — only a separate blocking CI step (`.github/workflows/ci.yml`,
-   "Run mypy") — so a type error passes every local gate above and only fails the
+   `just test` — only a separate blocking CI job (`.github/workflows/ci.yml`, the
+   `mypy` job) — so a type error passes every local gate above and only fails the
    build:
    `docker compose -f docker-compose.local.yml run --rm django python -m mypy .`
    (or scope it to the changed files).
@@ -1311,7 +1311,7 @@ that's expected, not a regression.
   "waiting on PR #N" and stop.
 - After opening a PR, own its CI result. A green local `pre-commit` / `just test`
   does not guarantee green CI (different Docker cache state, and mypy runs as its
-  own CI step — see the mypy note above). Check `gh pr checks`; if a job fails,
+  own CI job — see the mypy note above). Check `gh pr checks`; if a job fails,
   read the logs, fix on the same branch, push, and re-check until green — unless
   the failure has a documented out-of-scope cause (e.g. an unrelated flaky test),
   which you call out in the PR rather than chasing.
