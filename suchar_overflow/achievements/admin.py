@@ -3,10 +3,14 @@ from typing import Any
 from typing import cast
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
+from django.db import transaction
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import override
 from modeltranslation.admin import TabbedTranslationAdmin
+from modeltranslation.utils import build_localized_fieldname
 
 from .models import Achievement
 from .models import SchedulerRun
@@ -31,6 +35,11 @@ TIER_LADDER = [
 # tier_thresholds="5" alone would set the base to Bronze/5 and silently
 # generate zero sub-tiers.
 MIN_TIER_THRESHOLDS = 2
+
+# The fields modeltranslation manages for Achievement — mirrors
+# AchievementTranslationOptions.fields in translation.py.
+# test_translated_fields_match_translation_options guards against drift.
+TRANSLATED_FIELDS = ("name", "description", "theme")
 
 
 def parse_tier_thresholds(raw: str) -> list[int]:
@@ -57,6 +66,33 @@ def parse_tier_thresholds(raw: str) -> list[int]:
             raise ValueError(invalid_entry_msg)
         thresholds.append(int(stripped))
     return thresholds
+
+
+def sub_tier_translation_kwargs(
+    base: Achievement,
+    tier: Achievement.Tier,
+) -> dict[str, str | None]:
+    """Localized field kwargs for a generated sub-tier.
+
+    ``save_model`` builds each sub-tier with ``Achievement.objects.create()``.
+    With ``MODELTRANSLATION_AUTO_POPULATE`` off, modeltranslation only rewrites
+    the bare ``name=``/``description=``/``theme=`` kwargs into the *default*
+    language column — so the non-default variants an admin typed into the
+    modeltranslation tabs (``name_en`` & co.) were silently dropped from every
+    generated sub-tier and stayed ``None`` (#369). Copy every configured
+    language variant here instead, suffixing each ``name`` with the tier label
+    resolved in that same language. An unfilled base variant stays unfilled.
+    """
+    kwargs: dict[str, str | None] = {}
+    for lang in settings.MODELTRANSLATION_LANGUAGES:
+        for field_name in TRANSLATED_FIELDS:
+            localized_name = build_localized_fieldname(field_name, lang)
+            value = getattr(base, localized_name, None)
+            if field_name == "name" and value:
+                with override(lang):
+                    value = f"{value} ({tier.label})"
+            kwargs[localized_name] = value
+    return kwargs
 
 
 class AchievementAdminForm(forms.ModelForm):
@@ -219,32 +255,48 @@ class AchievementAdmin(TabbedTranslationAdmin):
             if thresholds_str:
                 thresholds = parse_tier_thresholds(thresholds_str)
                 if thresholds:
-                    # Modify base object to be TIER 1 and have threshold[0]
-                    obj.threshold = thresholds[0]
-                    obj.tier = Achievement.Tier.BRONZE
-                    super().save_model(request, obj, form, change)
+                    # One ladder = base row + N sub-tiers, all or nothing.
+                    # The real admin POST already runs inside
+                    # ModelAdmin.changeform_view's transaction.atomic(), but a
+                    # direct save_model() call (tests, scripts) is not — and a
+                    # mid-loop failure would otherwise leave a half-built
+                    # ladder behind.
+                    with transaction.atomic():
+                        # Modify base object to be TIER 1 and have threshold[0]
+                        obj.threshold = thresholds[0]
+                        obj.tier = Achievement.Tier.BRONZE
+                        super().save_model(request, obj, form, change)
 
-                    # Create sub-tiers, using the same TIER_LADDER order
-                    # clean() validated tier_thresholds' length against.
-                    for idx, t_val in enumerate(thresholds[1:]):
-                        tier_idx = idx + 1
-                        if tier_idx < len(TIER_LADDER):
-                            tier = TIER_LADDER[tier_idx]
-                            tier_label = str(tier.name).lower()
-                            Achievement.objects.create(
-                                name=f"{obj.name} ({tier.label})",
-                                slug=f"{obj.slug}-{tier_label}",
-                                description=obj.description,
-                                icon_content=obj.icon_content,
-                                category=obj.category,
-                                event_type=obj.event_type,
-                                metric=obj.metric,
-                                threshold=t_val,
-                                theme=obj.theme,
-                                tier=tier,
-                                is_secret=obj.is_secret,
-                            )
-                    return
+                        # Create sub-tiers, using the same TIER_LADDER order
+                        # clean() validated tier_thresholds' length against.
+                        for idx, t_val in enumerate(thresholds[1:]):
+                            tier_idx = idx + 1
+                            if tier_idx < len(TIER_LADDER):
+                                tier = TIER_LADDER[tier_idx]
+                                tier_label = str(tier.name).lower()
+                                Achievement.objects.create(
+                                    name=f"{obj.name} ({tier.label})",
+                                    slug=f"{obj.slug}-{tier_label}",
+                                    description=obj.description,
+                                    icon_content=obj.icon_content,
+                                    category=obj.category,
+                                    event_type=obj.event_type,
+                                    metric=obj.metric,
+                                    threshold=t_val,
+                                    theme=obj.theme,
+                                    tier=tier,
+                                    is_secret=obj.is_secret,
+                                    # Copy *every* language variant, not just
+                                    # the admin's active one (#369). The bare
+                                    # name/description/theme above are kept so a
+                                    # sub-tier's raw (unlocalized) columns match
+                                    # the base row the admin form writes —
+                                    # modeltranslation's descriptor and its
+                                    # queryset both read the localized columns,
+                                    # so search_fields does NOT hit these.
+                                    **sub_tier_translation_kwargs(obj, tier),
+                                )
+                        return
 
         super().save_model(request, obj, form, change)
 
