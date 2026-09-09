@@ -416,10 +416,10 @@ class TestAchievementAdminIconContentPermission:
     rendered unescaped with ``|safe`` in ``achievements/_card.html``,
     ``base.html`` and ``users/user_detail.html`` (twice), and injected with
     ``innerHTML`` by ``project.js`` — all of which are deliberate, and all of
-    which rest on exactly the assumption asserted below: the field is
-    editable by superusers only. Sanitizing instead was rejected because it
-    breaks ``currentColor`` and style inheritance in the icons. If these
-    assertions ever have to change, revisit those four render sites first.
+    which rest on exactly the assumption asserted below: the field is never
+    offered in a non-superuser's admin form. Sanitizing instead was rejected
+    because it breaks ``currentColor`` and style inheritance in the icons. If
+    these assertions ever have to change, revisit those four render sites first.
     """
 
     @staticmethod
