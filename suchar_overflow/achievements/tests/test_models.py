@@ -5,6 +5,21 @@ from django.apps import apps as global_apps
 from django.utils import timezone
 
 from suchar_overflow.achievements.models import SchedulerRun
+from suchar_overflow.achievements.models import UserAchievement
+
+
+def test_user_achievement_has_user_is_seen_composite_index() -> None:
+    """The achievements-bell context processor runs
+    ``UserAchievement.objects.filter(user=..., is_seen=False)`` on every page
+    render for every logged-in user whenever the 5-minute Redis cache is cold
+    (#338). Guard the composite index that backs that filter — the lone FK
+    index on ``user`` does not cover the ``is_seen`` predicate.
+    """
+    index_field_sets = {
+        tuple(index.fields)
+        for index in UserAchievement._meta.indexes  # noqa: SLF001
+    }
+    assert ("user", "is_seen") in index_field_sets
 
 
 @pytest.mark.django_db

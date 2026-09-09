@@ -224,6 +224,19 @@ def test_polarizer_rule_met_when_funny_equals_dry_at_threshold() -> None:
 
 
 @pytest.mark.django_db
+def test_polarizer_rule_ignores_voteless_suchar() -> None:
+    """A suchar with zero votes is not 'perfectly split' — funny==dry==0
+    trivially satisfies the ``funny_count == dry_count`` filter, so without an
+    explicit ``funny_count > 0`` guard ``compute_value`` returns ``0`` (which a
+    future ``threshold=0`` series would award for no votes at all) instead of
+    ``None``.
+    """
+    user = make_user("u1")
+    Suchar.objects.create(text="joke", author=user)  # no votes at all
+    assert PolarizerRule.compute_value(user) is None
+
+
+@pytest.mark.django_db
 def test_polarizer_rule_engine_awards_achievement() -> None:
     user = make_user("u1")
     ach = make_achievement(

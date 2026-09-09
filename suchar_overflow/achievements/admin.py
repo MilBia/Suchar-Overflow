@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import cast
 
 from django import forms
 from django.contrib import admin
@@ -12,6 +13,7 @@ from .models import SchedulerRun
 from .models import UserAchievement
 
 if TYPE_CHECKING:
+    from django.contrib.admin.options import _FieldsetSpec
     from django.http import HttpRequest
 
 
@@ -176,6 +178,24 @@ class AchievementAdmin(TabbedTranslationAdmin):
             },
         ),
     )
+
+    def get_fieldsets(
+        self,
+        request: HttpRequest,
+        obj: Achievement | None = None,
+    ) -> _FieldsetSpec:
+        fieldsets = super().get_fieldsets(request, obj)
+        if request.user.is_superuser:
+            return fieldsets
+        # icon_content is raw SVG that icon_preview mark_safe's into admin
+        # list/detail pages — keep it superuser-only so non-superuser staff
+        # can't inject markup that runs in another admin's session (#335).
+        filtered = []
+        for name, opts in fieldsets:
+            new_opts = dict(opts)
+            new_opts["fields"] = tuple(f for f in opts["fields"] if f != "icon_content")
+            filtered.append((name, new_opts))
+        return cast("_FieldsetSpec", filtered)
 
     @admin.display(description="Icon")
     def icon_preview(self, obj: Achievement) -> str:
