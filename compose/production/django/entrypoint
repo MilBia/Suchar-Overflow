@@ -8,7 +8,19 @@ if [ -z "${POSTGRES_USER}" ]; then
     base_postgres_image_default_user='postgres'
     export POSTGRES_USER="${base_postgres_image_default_user}"
 fi
-export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+
+# URL-encode the credential components before splicing them into the DSN. Today's
+# generated user/password are alphanumeric, but a value containing @ : / % # ? would
+# otherwise produce a silently malformed DATABASE_URL. Host/port are structural and
+# left verbatim. `python3` is always on PATH in this image and cannot fail on a
+# plain quote() call, so it is safe under `set -o errexit`; this file is also
+# `source`d by the devcontainer bashrc, hence keep it dependency-free and tidy up
+# the helper afterwards.
+_urlencode() {
+    python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"
+}
+export DATABASE_URL="postgres://$(_urlencode "${POSTGRES_USER}"):$(_urlencode "${POSTGRES_PASSWORD}")@${POSTGRES_HOST}:${POSTGRES_PORT}/$(_urlencode "${POSTGRES_DB}")"
+unset -f _urlencode
 
 # .devcontainer/bashrc.override.sh `source`s this file (not executes it) purely to
 # export DATABASE_URL/POSTGRES_USER into every fresh devcontainer terminal, then
