@@ -63,10 +63,10 @@ jobs:
 
   # mypy needs only the built image, not a migrated or tested database, so it
   # runs as its own job in parallel with `pytest` rather than tailing both test
-  # suites inside it. It reuses the same gha build cache scope as `pytest`, so on
-  # a warm cache this costs one extra container run, not a second image build.
-  # (It was serialized at the end of `pytest` only for log ordering — see #216,
-  # #360. Still blocking since #146.)
+  # suites inside it (it was serialized at the end of `pytest` only for log
+  # ordering — see #216, #360; still blocking since #146). It only *consumes* the
+  # gha build cache `pytest` writes — a parallel `cache-to` to the same scope on
+  # the same SHA just races and double-uploads layers.
   mypy:
     runs-on: ubuntu-latest
 
@@ -89,17 +89,20 @@ jobs:
           targets: django
           set: |
             django.cache-from=type=gha,scope=django-cached-tests
-            django.cache-to=type=gha,scope=django-cached-tests,mode=max
 
       - name: Build backend (fallback — no cache)
         if: steps.bake_build.outcome == 'failure'
         run: docker compose -f docker-compose.local.yml build django
 
+      # --no-deps + empty entrypoint + a dummy DATABASE_URL: mypy / django-stubs
+      # only loads settings, it never opens a DB or Redis connection, so there is
+      # no reason to build & start postgres/redis/mailpit or wait on them (~50s).
+      # Nothing runs in the background, so there is nothing to tear down.
       - name: Run mypy
-        run: docker compose -f docker-compose.local.yml run --rm django python -m mypy .
-
-      - name: Tear down the Stack
-        run: docker compose -f docker-compose.local.yml down
+        run: >-
+          docker compose -f docker-compose.local.yml run --rm --no-deps
+          --entrypoint "" -e DATABASE_URL=sqlite:///:memory:
+          django python -m mypy .
 
   # With no caching at all the entire ci process takes 3m to complete!
   pytest:

@@ -52,10 +52,11 @@ via `SELECT oid, datname FROM pg_database WHERE datname='test_suchar_overflow'` 
 DB object (same OID) is genuinely reused, not silently dropped/recreated; running the
 unit suite to flush seed data, then the E2E suite five consecutive times against that
 same reused, already-flushed DB, still passed 31/31 every time. If you change a
-migration and need a fresh E2E schema, pass `--create-db` through the recipe's `*args`
-alongside the path (the `*args` now defaults to `tests/e2e/` and fully replaces it when
-given, so a bare `just test-e2e --create-db` would drop the path — see #361):
-`just test-e2e tests/e2e/ --create-db`.
+migration and need a fresh E2E schema, pass `--create-db` through the recipe's `*args`:
+`just test-e2e --create-db`. The recipe pins the E2E dir via pytest's `-o testpaths`
+(honoured only when the command line names no path), so bare flags like that keep the
+default without scanning the whole repo; to target one file, name it explicitly and it
+overrides the default: `just test-e2e tests/e2e/test_konami_easter_egg.py` (see #361).
 
 ### Unit tests vs E2E tests — critical distinction
 
