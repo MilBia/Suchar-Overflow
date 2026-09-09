@@ -1,23 +1,26 @@
-/* Easter egg: a styled greeting in the browser devtools console for whoever
- * opens the hood. Issue #287, umbrella #278.
+/* Easter egg: ostylowane powitanie w konsoli devtools przeglądarki dla każdego,
+ * kto zajrzy pod maskę. Issue #287, parasol #278.
  *
- * A group-A "delight" egg, but the lightest of the family: it wires no
- * listeners, touches no DOM, plays no sound and hits no network — it just
- * emits a single `console.log("%c…", style)` with an ASCII wordmark and a
- * short Polish wink that points at the repo.
+ * Egg „delight" z grupy A, ale najlżejszy z rodziny: nie podpina listenerów,
+ * nie rusza DOM-u, nie gra dźwięku ani nie odpytuje sieci — po prostu emituje
+ * jeden `console.log("%c…", style)` z wordmarkiem ASCII i krótkim polskim
+ * mrugnięciem wskazującym repo.
  *
- * Loaded in base.html's global `{% compress js %}` block, AFTER logo_spin.js.
- * It does NOT depend on `window.easterEggs` (no reduced-motion gate, no award,
- * no sound), so bundle order past project.js is irrelevant.
+ * Ładowany w globalnym bloku `{% compress js %}` w base.html, PO logo_spin.js.
+ * NIE zależy od `window.easterEggs` (brak bramki reduced-motion, brak
+ * przyznawania, brak dźwięku), więc kolejność w bundlu poza project.js jest
+ * bez znaczenia.
  *
- * The whole file is an IIFE so its helpers don't leak into the shared bundle
- * scope where project.js / easter_eggs.js / konami.js / badumtss.js /
- * logo_spin.js also live — a top-level `const` collision there is a bundle-wide
- * SyntaxError (see CLAUDE.md, and the same rule on the sibling eggs).
+ * Cały plik to IIFE, żeby jego helpery nie wyciekały do współdzielonego
+ * scope'u bundla, gdzie żyją też project.js / easter_eggs.js / konami.js /
+ * badumtss.js / logo_spin.js — kolizja `const` na najwyższym poziomie to
+ * SyntaxError obejmujący cały bundle (patrz CLAUDE.md i ta sama reguła w
+ * siostrzanych eggach).
  *
- * "No spam": shown once per browser session. The flag lives in `sessionStorage`
- * (survives in-tab navigation, gone on a new session) with an in-memory
- * fallback for when storage throws (private mode / storage blocked).
+ * „Bez spamu": pokazywane raz na sesję przeglądarki. Flaga żyje w
+ * `sessionStorage` (przeżywa nawigację w karcie, znika przy nowej sesji), z
+ * fallbackiem w pamięci na wypadek, gdy storage rzuci wyjątkiem (tryb prywatny
+ * / zablokowany storage).
  */
 
 (function () {

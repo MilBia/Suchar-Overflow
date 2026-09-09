@@ -1,43 +1,47 @@
-/* Easter egg: mash the navbar logo 7× in quick succession → a short logo spin
- * and a toast with a random "meta-suchar" about dryness / the site. Issue #285,
- * umbrella #278.
+/* Easter egg: siedmiokrotne szybkie klepnięcie logo w navbarze → krótki obrót
+ * logo i toast z losowym „meta-sucharem" o suchości / o serwisie. Issue #285,
+ * parasol #278.
  *
- * A group-A "delight" egg built on the #282 foundation. It wires nothing global
- * of its own (only the `window.__logoSpinReady` init flag): it consumes
- * `window.easterEggs` for the reduced-motion gate and `window.showToast`
- * (project.js) for the toast.
+ * Egg „delight" z grupy A zbudowany na fundamencie #282. Nie podpina żadnego
+ * własnego globala (poza flagą inicjalizacji `window.__logoSpinReady`):
+ * korzysta z `window.easterEggs` dla bramki reduced-motion i z
+ * `window.showToast` (project.js) na toast.
  *
- * Unlike konami.js / badumtss.js, whose trigger is a keydown long after load,
- * this egg's effect can fire from `checkAndFire()` INSIDE its own
- * `DOMContentLoaded` handler (see below), i.e. before any later keystroke. That
- * call reaches `window.showToast`, which project.js only defines inside its own
- * `DOMContentLoaded` handler — so this DOES depend on project.js being listed
- * first in base.html's `{% compress js %}` block, so that its handler (and thus
- * `showToast`) is registered, and runs, before this file's. `showToast` /
- * `easterEggs` are still looked up at call time, never captured at module load,
- * so a missing helper degrades gracefully rather than throwing.
+ * W przeciwieństwie do konami.js / badumtss.js, których triggerem jest keydown
+ * długo po załadowaniu, efekt tego egga może odpalić z `checkAndFire()`
+ * WEWNĄTRZ własnego handlera `DOMContentLoaded` (patrz niżej), czyli przed
+ * jakimkolwiek późniejszym naciśnięciem klawisza. To wywołanie sięga po
+ * `window.showToast`, które project.js definiuje dopiero we własnym handlerze
+ * `DOMContentLoaded` — więc ten plik ZALEŻY od tego, że project.js jest w
+ * bloku `{% compress js %}` w base.html wcześniej, tak by jego handler (a więc
+ * i `showToast`) zarejestrował się i wykonał przed handlerem tego pliku.
+ * `showToast` / `easterEggs` i tak są wyszukiwane w chwili wywołania, nigdy
+ * przechwytywane przy ładowaniu modułu, więc brakujący helper degeneruje się
+ * łagodnie zamiast rzucać wyjątkiem.
  *
- * Loaded in base.html's global `{% compress js %}` block, AFTER badumtss.js
- * (and, as above, after project.js).
- * The whole file is an IIFE so its small helpers (`rand`, `STYLE_ID`, …) don't
- * collide at bundle top level with project.js / easter_eggs.js / konami.js /
- * badumtss.js — a top-level `const` clash there is a bundle-wide SyntaxError
- * (see CLAUDE.md, and the same rule on konami.js / badumtss.js).
+ * Ładowany w globalnym bloku `{% compress js %}` w base.html, PO badumtss.js
+ * (i, jak wyżej, po project.js).
+ * Cały plik to IIFE, żeby jego drobne helpery (`rand`, `STYLE_ID`, …) nie
+ * kolidowały na najwyższym poziomie bundla z project.js / easter_eggs.js /
+ * konami.js / badumtss.js — kolizja `const` to SyntaxError obejmujący cały
+ * bundle (patrz CLAUDE.md i ta sama reguła w konami.js / badumtss.js).
  *
- * Trigger model — WHY sessionStorage and not an in-memory counter: the logo is
- * `<a href="{% url 'home' %}">` and #285 requires the click to still navigate
- * home, so every click reloads the page and no in-memory state survives.
- * `handleLogoClick` therefore records a "chain" in sessionStorage — each click
- * within 3 s of the previous one bumps `count` — and `checkAndFire`, run once
- * per page load, fires the effect when `count` has reached the threshold while
- * the chain is still fresh, then clears it. It replays on every fresh burst of
- * 7 (deliberately not one-shot, like konami / badumtss).
+ * Model triggera — DLACZEGO sessionStorage, a nie licznik w pamięci: logo to
+ * `<a href="{% url 'home' %}">` i #285 wymaga, by kliknięcie nadal nawigowało
+ * na stronę główną, więc każde kliknięcie przeładowuje stronę i żaden stan w
+ * pamięci nie przetrwa. `handleLogoClick` zapisuje więc „łańcuch" w
+ * sessionStorage — każde kliknięcie w ciągu 3 s od poprzedniego zwiększa
+ * `count` — a `checkAndFire`, uruchamiane raz na załadowanie strony, odpala
+ * efekt, gdy `count` osiągnął próg, a łańcuch jest wciąż świeży, po czym go
+ * czyści. Powtarza się przy każdej nowej serii 7 (celowo nie jednorazowy, jak
+ * konami / badumtss).
  *
- * Pure delight: NO achievement, NO frontend-ee- slug, NO network. It consumes
- * only `easterEggs.reducedJuice()` and `window.showToast`. The meta-suchar pool
- * is a JSON data island (`#ee-logo-suchary`) emitted by base.html for
- * authenticated users — deliberately NOT inside `{% compress js %}` (#285), so
- * its translated text is not minified into the bundle.
+ * Czysty „delight": ŻADNEGO achievementu, ŻADNEGO slugu frontend-ee-, ŻADNEJ
+ * sieci. Korzysta tylko z `easterEggs.reducedJuice()` i `window.showToast`.
+ * Pula meta-sucharów to wyspa danych JSON (`#ee-logo-suchary`) emitowana przez
+ * base.html dla zalogowanych użytkowników — celowo NIE wewnątrz
+ * `{% compress js %}` (#285), żeby jej przetłumaczony tekst nie był
+ * minifikowany do bundla.
  */
 
 (function () {

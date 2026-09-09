@@ -1,21 +1,23 @@
-/* Easter-egg foundation (issue #282, umbrella #278).
+/* Fundament easter-eggów (issue #282, parasol #278).
  *
- * Shared groundwork every "delight" easter egg in group A builds on, so the
- * children (#283+) don't each re-implement CSRF fetch, session dedupe, the
- * reduced-motion gate or sound playback. This file wires up NO easter egg of
- * its own — it only exposes `window.easterEggs`.
+ * Wspólna podstawa, na której buduje każdy „delight" easter egg z grupy A, żeby
+ * dzieci (#283+) nie implementowały od nowa fetcha z CSRF, deduplikacji w
+ * sesji, bramki reduced-motion ani odtwarzania dźwięku. Ten plik NIE podpina
+ * żadnego easter egga — wystawia jedynie `window.easterEggs`.
  *
- * Loaded in base.html's global `{% compress js %}` block, AFTER project.js
- * (needs `window.getCsrfToken`; children also use `window.showToast`, which
- * project.js only defines inside its own DOMContentLoaded handler — so read it
- * from an event handler, never at module load time). Because that block is
- * global, this runs before every per-page bundle, which is why
- * features/hidden_achievements.js can rely on `window.easterEggs` being set.
+ * Ładowany w globalnym bloku `{% compress js %}` w base.html, PO project.js
+ * (potrzebuje `window.getCsrfToken`; dzieci używają też `window.showToast`,
+ * które project.js definiuje dopiero we własnym handlerze DOMContentLoaded —
+ * więc czytaj je z handlera zdarzenia, nigdy w czasie ładowania modułu).
+ * Ponieważ ten blok jest globalny, wykonuje się przed każdym bundle'em
+ * per-strona, dlatego features/hidden_achievements.js może polegać na tym, że
+ * `window.easterEggs` jest już ustawione.
  *
- * Relies on `window.getCsrfToken` (project.js) and, for sound, on
- * `window.EE_AUDIO` (a tiny nonce'd inline map of `{% static %}` URLs emitted by
- * base.html for authenticated users — a classic script can't resolve `{% static %}`
- * itself, and production hashes the filenames).
+ * Zależy od `window.getCsrfToken` (project.js), a dla dźwięku od
+ * `window.EE_AUDIO` (drobna, opatrzona nonce'em inline'owa mapa URL-i
+ * `{% static %}` emitowana przez base.html dla zalogowanych użytkowników —
+ * klasyczny skrypt nie rozwiąże `{% static %}` sam, a produkcja hashuje nazwy
+ * plików).
  */
 
 // ── Frontend-achievement helpers (shared with hidden_achievements.js) ─────────

@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Suchary',
+                    label: ctxActivity.dataset.sucharLabel,
                     data: data,
                     backgroundColor: '#3b82f6',
                     borderRadius: 2

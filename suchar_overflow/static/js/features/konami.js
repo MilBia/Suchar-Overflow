@@ -1,27 +1,29 @@
-/* Easter egg: the Konami code (↑ ↑ ↓ ↓ ← → ← → B A) — issue #283, umbrella #278.
+/* Easter egg: kod Konami (↑ ↑ ↓ ↓ ← → ← → B A) — issue #283, parasol #278.
  *
- * A group-A "delight" egg built on the #282 foundation. It wires nothing global
- * of its own (only the `window.__konamiReady` init flag): it consumes
- * `window.easterEggs` for the session-deduped award and the reduced-motion gate,
- * and `window.showToast` (project.js) for the wink.
+ * Egg „delight" z grupy A zbudowany na fundamencie #282. Nie podpina żadnego
+ * własnego globala (poza flagą inicjalizacji `window.__konamiReady`):
+ * korzysta z `window.easterEggs` dla zdeduplikowanego w sesji przyznania i
+ * bramki reduced-motion, oraz z `window.showToast` (project.js) na mrugnięcie.
  *
- * Loaded in base.html's global `{% compress js %}` block, AFTER easter_eggs.js,
- * so the trigger listens on every page for a logged-in user. `window.showToast`
- * and `window.easterEggs` are read at trigger time, never at module load —
- * project.js only defines `showToast` inside its own DOMContentLoaded handler,
- * so bundle listener-registration order must not matter.
+ * Ładowany w globalnym bloku `{% compress js %}` w base.html, PO easter_eggs.js,
+ * więc trigger nasłuchuje na każdej stronie dla zalogowanego użytkownika.
+ * `window.showToast` i `window.easterEggs` czytane są w chwili triggera, nigdy
+ * w czasie ładowania modułu — project.js definiuje `showToast` dopiero we
+ * własnym handlerze DOMContentLoaded, więc kolejność rejestracji listenerów w
+ * bundlu nie może mieć znaczenia.
  *
- * The whole file is an IIFE so its many small helpers (`rand`, `STYLE_ID`, …)
- * don't leak into the shared bundle scope where project.js / easter_eggs.js and
- * a future group-A egg (#284+) also live — a top-level `const` collision there
- * is a bundle-wide SyntaxError.
+ * Cały plik to IIFE, żeby jego liczne drobne helpery (`rand`, `STYLE_ID`, …)
+ * nie wyciekały do współdzielonego scope'u bundla, gdzie żyją też project.js /
+ * easter_eggs.js oraz przyszły egg grupy A (#284+) — kolizja `const` na
+ * najwyższym poziomie to SyntaxError obejmujący cały bundle.
  *
- * Effect on every correct entry (per #283 — it replays, it is not one-shot):
- *   - full motion: a downpour of ~40 mini-crackers falling across the viewport;
- *   - prefers-reduced-motion: a single static scatter, no movement;
- *   - a "Kod Konami 😉" toast;
- *   - the hidden `frontend-ee-konami` achievement (POSTed once per session by
- *     `window.easterEggs.award`, which dedupes via sessionStorage).
+ * Efekt przy każdym poprawnym wpisaniu (per #283 — powtarza się, nie jest
+ * jednorazowy):
+ *   - pełny ruch: deszcz ~40 mini-krakersów spadających przez viewport;
+ *   - prefers-reduced-motion: pojedyncza statyczna rozsypka, bez ruchu;
+ *   - toast „Kod Konami 😉";
+ *   - ukryty achievement `frontend-ee-konami` (POST raz na sesję przez
+ *     `window.easterEggs.award`, który deduplikuje przez sessionStorage).
  */
 
 (function () {
