@@ -411,6 +411,15 @@ class TestAchievementAdminIconContentPermission:
     ``mark_safe`` into the admin changelist, so only superusers may edit the
     field — a non-superuser staffer must not be able to inject markup that
     runs in another admin's session.
+
+    #379: this class is also the guard for the frontend. ``icon_content`` is
+    rendered unescaped with ``|safe`` in ``achievements/_card.html``,
+    ``base.html`` and ``users/user_detail.html`` (twice), and injected with
+    ``innerHTML`` by ``project.js`` — all of which are deliberate, and all of
+    which rest on exactly the assumption asserted below: the field is
+    editable by superusers only. Sanitizing instead was rejected because it
+    breaks ``currentColor`` and style inheritance in the icons. If these
+    assertions ever have to change, revisit those four render sites first.
     """
 
     @staticmethod

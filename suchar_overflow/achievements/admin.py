@@ -236,7 +236,11 @@ class AchievementAdmin(TabbedTranslationAdmin):
     @admin.display(description="Icon")
     def icon_preview(self, obj: Achievement) -> str:
         if obj.icon_content:
-            # We wrap the SVG in a div with fixed size for the admin list
+            # We wrap the SVG in a div with fixed size for the admin list.
+            # mark_safe is deliberate here and on the frontend (#335, #379):
+            # icon_content is trusted (data migrations and superusers only —
+            # see get_fieldsets above) and the SVG must stay raw to keep
+            # currentColor and the inherited styling working.
             return format_html(
                 '<div style="width: 32px; height: 32px;">{}</div>',
                 mark_safe(obj.icon_content),  # noqa: S308

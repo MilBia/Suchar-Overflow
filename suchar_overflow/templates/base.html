@@ -280,6 +280,14 @@
                       <a class="bell-item" href="{% url 'achievements:mine' %}">
                         <div class="bell-item-icon" aria-hidden="true">
                           {% if ua.achievement.icon_content %}
+                            {% comment %}
+                              Unescaped on purpose (#335, #379): icon_content is
+                              trusted — data migrations and superusers only, the
+                              admin hides the field from other staff — and the SVG
+                              must stay raw to keep currentColor working. Guarded by
+                              TestAchievementAdminIconContentPermission in
+                              suchar_overflow/achievements/tests/test_admin.py.
+                            {% endcomment %}
                             {{ ua.achievement.icon_content|safe }}
                           {% else %}
                             🏆

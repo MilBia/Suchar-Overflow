@@ -90,6 +90,15 @@
                 {% if user_achievements %}
                   <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-xl-start">
                     {% for user_ach in user_achievements %}
+                      {% comment %}
+                        Both icon_content renders below are unescaped on purpose
+                        (#335, #379): the field is trusted — it only comes from data
+                        migrations or a superuser, because the admin hides it from
+                        non-superuser staff — and the SVG must reach the browser raw
+                        or currentColor and the inherited styling break. Guarded by
+                        TestAchievementAdminIconContentPermission in
+                        suchar_overflow/achievements/tests/test_admin.py.
+                      {% endcomment %}
                       <div class="achievement-container">
                         <div class="achievement-badge-icon-wrapper text-warning"
                              role="group"
