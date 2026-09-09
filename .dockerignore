@@ -14,3 +14,12 @@ __pycache__/
 staticfiles/
 .coverage
 celerybeat-schedule*
+
+# Host-only Vitest + jsdom runner (see CLAUDE.md "JS tests (Vitest)"). Never
+# runs in the Django image, and node_modules/ alone is ~64 MB — keep it all out
+# of the build context and the final image. Both Dockerfiles do `COPY . ${APP_HOME}`.
+node_modules/
+tests/js/
+vitest.config.mjs
+package.json
+package-lock.json

@@ -63,11 +63,15 @@ RUN chmod +x /start
 
 # Copy the application from the builder
 COPY --from=python-build-stage --chown=django:django ${APP_HOME} ${APP_HOME}
-# explicitly create the media folder before changing ownership below
-RUN mkdir -p ${APP_HOME}/suchar_overflow/media
 
-# make django owner of the WORKDIR directory as well.
-RUN chown django:django ${APP_HOME}
+# WORKDIR (/app) is created root-owned by the WORKDIR instruction above; the build
+# stage's COPY --chown only owns the *copied* tree, not /app itself. django must
+# own /app so `start` can create STATIC_ROOT (/app/staticfiles, absent from the
+# image) and the compress cache at runtime. Pre-create both runtime-writable dirs
+# in the same layer so they land django-owned too — media/ especially, since its
+# named volume (docker-compose.production.yml) seeds ownership from this dir.
+RUN mkdir -p ${APP_HOME}/suchar_overflow/media ${APP_HOME}/staticfiles \
+  && chown django:django ${APP_HOME} ${APP_HOME}/suchar_overflow/media ${APP_HOME}/staticfiles
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
