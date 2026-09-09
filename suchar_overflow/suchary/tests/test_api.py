@@ -331,8 +331,8 @@ def test_vote_unpublished_suchar_returns_404(client: Client) -> None:
 
     Otherwise a guessed/sequential PK lets a voter inflate counts and trigger
     achievements/toasts on a suchar nobody else can see yet, and skew the
-    best-suchar award window (which counts on ``created_at``, not
-    ``published_at``).
+    best-suchar award window (which counts the period a suchar was
+    *published* in — see ``find_best_suchary``, #371).
     """
     author = make_user("scheduled_author")
     voter = make_user("scheduled_voter")

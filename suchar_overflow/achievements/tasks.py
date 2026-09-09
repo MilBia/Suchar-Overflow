@@ -95,19 +95,34 @@ def due_yearly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime |
 
 
 def find_best_suchary(start_dt: datetime, end_dt: datetime) -> list[Suchar]:
-    """Return all Suchary tied for the most votes created within [start_dt, end_dt).
+    """Return all Suchary tied for the most votes published within [start_dt, end_dt).
+
+    The window is measured on ``published_at``, not ``created_at`` (#371): a
+    suchar written on Jan 30 but scheduled for Feb 5 collects no votes at all
+    in January (nobody can see it — #331 makes voting on an unpublished
+    suchar a 404), yet a ``created_at`` window would enter it in January's
+    contest and never in February's, so it could never win any period despite
+    real votes after publication. ``published_at`` is NOT NULL
+    (``default=timezone.now``) and indexed, so this drops no rows and keeps
+    using an index; for a suchar published the moment it was written — the
+    common case — the two columns agree and nothing changes.
+
+    No ``published_at__lte=now()`` guard is needed on top: an unpublished
+    suchar cannot be voted on (#331), so it can only ever reach a 0-vote max,
+    which is already excluded below. Adding one would also change what
+    ``award_periodic --date`` reports for an in-progress period.
 
     Postgres doesn't guarantee row order among ties on a plain
     ``.order_by("-vote_count")``, so rather than picking an arbitrary single
     "winner" (see #171) this returns every Suchar at the top vote count —
     ``award_winners`` decides what to do with a tie. Empty list if no Suchar
-    was posted in the range, or if every Suchar posted has zero votes (a
+    was published in the range, or if every Suchar published has zero votes (a
     0-vote max doesn't count as a "best" — nobody actually won anything).
     """
     candidates = (
         Suchar.objects.filter(
-            created_at__gte=start_dt,
-            created_at__lt=end_dt,
+            published_at__gte=start_dt,
+            published_at__lt=end_dt,
         )
         .annotate(vote_count=Count("votes"))
         .select_related("author")
