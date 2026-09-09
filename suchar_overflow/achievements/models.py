@@ -115,6 +115,12 @@ class UserAchievement(models.Model):
         verbose_name = _("User Achievement")
         verbose_name_plural = _("User Achievements")
         unique_together = ("user", "achievement")
+        indexes = [
+            # Backs the achievements-bell context processor's per-render
+            # filter(user=..., is_seen=False) — the FK index on user alone
+            # doesn't cover the is_seen predicate (#338).
+            models.Index(fields=["user", "is_seen"]),
+        ]
 
     def __str__(self) -> str:
         user_name = (

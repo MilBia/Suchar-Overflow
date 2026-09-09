@@ -1,6 +1,8 @@
 from typing import Any
+from typing import cast
 
 import pytest
+from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from django.utils.safestring import SafeString
 
@@ -395,3 +397,27 @@ class TestAchievementAdminSaveModelTierGeneration:
             (100, TIER_LADDER[4]),
         ]
         assert created.count() == len(TIER_LADDER)
+
+
+class TestAchievementAdminIconContentPermission:
+    """#335: ``icon_preview`` renders raw ``icon_content`` SVG through
+    ``mark_safe`` into the admin changelist, so only superusers may edit the
+    field — a non-superuser staffer must not be able to inject markup that
+    runs in another admin's session.
+    """
+
+    @staticmethod
+    def _fieldset_fields(*, is_superuser: bool) -> set[str]:
+        admin_instance = AchievementAdmin(Achievement, None)
+        request = RequestFactory().get("/")
+        request.user = get_user_model()(is_staff=True, is_superuser=is_superuser)
+        fields: set[str] = set()
+        for _label, opts in admin_instance.get_fieldsets(request):
+            fields.update(cast("tuple[str, ...]", opts["fields"]))
+        return fields
+
+    def test_superuser_fieldsets_include_icon_content(self) -> None:
+        assert "icon_content" in self._fieldset_fields(is_superuser=True)
+
+    def test_non_superuser_fieldsets_exclude_icon_content(self) -> None:
+        assert "icon_content" not in self._fieldset_fields(is_superuser=False)

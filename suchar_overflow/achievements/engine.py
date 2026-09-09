@@ -201,6 +201,10 @@ class PolarizerRule(AchievementRule):
                 dry_count=Count("votes", filter=Q(votes__is_dry=True)),
             )
             .filter(funny_count=F("dry_count"))
+            # funny==dry==0 also satisfies the filter above, so exclude
+            # voteless suchary — otherwise Max() returns 0 (not None) for a
+            # user whose only "split" suchar has no votes (#336).
+            .filter(funny_count__gt=0)
             .aggregate(best=Max("funny_count"))["best"]
         )
 

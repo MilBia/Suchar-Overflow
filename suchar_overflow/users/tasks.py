@@ -3,6 +3,8 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
+from suchar_overflow.users.models import User
+
 
 def send_activation_email(
     user_pk: int,
@@ -10,8 +12,6 @@ def send_activation_email(
     token: str,
     protocol: str,
 ) -> None:
-    from suchar_overflow.users.models import User  # noqa: PLC0415
-
     user = User.objects.get(pk=user_pk)
     mail_subject = _("Confirm you have a sense of humor (Account Activation)")
     message = render_to_string(
@@ -33,8 +33,6 @@ def send_email_change_emails(
     verify_link: str,
     revoke_link: str,
 ) -> None:
-    from suchar_overflow.users.models import User  # noqa: PLC0415
-
     user = User.objects.get(pk=user_pk)
 
     mail_subject_new = _("Confirm it's you (Email Change)")
