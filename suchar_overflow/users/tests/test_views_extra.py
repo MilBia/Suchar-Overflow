@@ -479,6 +479,94 @@ def test_best_joke_total_votes_counts_funny_and_dry(client: Client) -> None:
     assert best_joke.total_votes == 3  # noqa: PLR2004
 
 
+@pytest.mark.django_db
+def test_best_joke_skips_scheduled_suchar_on_created_at_tie_break(
+    client: Client,
+) -> None:
+    """Regression test for issue #372 — the production-reachable leak path.
+
+    #331 makes voting on an unpublished suchar impossible, so a scheduled one
+    always sits at `funny_count = 0`, tied with every other voteless suchar —
+    and, being the newest, it used to win the `-created_at` tie-break and have
+    its text rendered publicly as "The Best Of" before its publication date.
+    """
+    user = make_user("bestjoke_sched_tie")
+    published = Suchar.objects.create(
+        text="Published joke",
+        author=user,
+        published_at=timezone.now() - datetime.timedelta(days=1),
+    )
+    Suchar.objects.create(
+        text="Scheduled secret joke",
+        author=user,
+        published_at=timezone.now() + datetime.timedelta(days=1),
+    )
+
+    client.force_login(user)
+    response = client.get(detail_url("bestjoke_sched_tie"))
+    best_joke = response.context["best_joke"]
+    assert best_joke is not None
+    assert best_joke.pk == published.pk
+    # The owner sees their own scheduled suchar in the dedicated
+    # `scheduled_suchary` block, so scope the leak assertion to the trophy
+    # card's own markup instead of the whole page (same idiom as
+    # `test_best_joke_card_renders_funny_and_dry_counts` above).
+    content = response.content.decode()
+    card_start = content.index("card border border-warning bg-warning bg-opacity-10")
+    card_end = content.index('<div class="card ', card_start + 1)
+    assert "Scheduled secret joke" not in content[card_start:card_end]
+
+
+@pytest.mark.django_db
+def test_best_joke_skips_scheduled_suchar_with_more_funny_votes(
+    client: Client,
+) -> None:
+    """Issue #372 — a scheduled suchar never wins, whatever its score.
+
+    Votes are created at model level here (the endpoint refuses them since
+    #331) so the scheduled suchar outranks the published one on `funny_count`
+    itself, not just on the `-created_at` tie-break.
+    """
+    user = make_user("bestjoke_sched_votes")
+    published = Suchar.objects.create(
+        text="Published joke",
+        author=user,
+        published_at=timezone.now() - datetime.timedelta(days=1),
+    )
+    scheduled = Suchar.objects.create(
+        text="Scheduled secret joke",
+        author=user,
+        published_at=timezone.now() + datetime.timedelta(days=1),
+    )
+    v1 = make_user("bjs_v1")
+    v2 = make_user("bjs_v2")
+    Vote.objects.create(suchar=scheduled, user=v1, is_funny=True)
+    Vote.objects.create(suchar=scheduled, user=v2, is_funny=True)
+    Vote.objects.create(suchar=published, user=v1, is_funny=True)
+
+    client.force_login(user)
+    response = client.get(detail_url("bestjoke_sched_votes"))
+    best_joke = response.context["best_joke"]
+    assert best_joke is not None
+    assert best_joke.pk == published.pk
+    assert best_joke.funny_count == 1
+
+
+@pytest.mark.django_db
+def test_best_joke_is_none_when_only_scheduled_suchary(client: Client) -> None:
+    """Issue #372 — nothing published means no "The Best Of" card at all."""
+    user = make_user("bestjoke_only_sched")
+    Suchar.objects.create(
+        text="Scheduled secret joke",
+        author=user,
+        published_at=timezone.now() + datetime.timedelta(days=1),
+    )
+
+    client.force_login(user)
+    response = client.get(detail_url("bestjoke_only_sched"))
+    assert response.context["best_joke"] is None
+
+
 # ===========================================================================
 # Activity chart context
 # ===========================================================================

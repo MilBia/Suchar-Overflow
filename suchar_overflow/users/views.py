@@ -132,8 +132,14 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # `total_votes` is deliberately a distinct annotation from
         # `funny_count` — the template's "N Votes" label must count dry votes
         # too, or it contradicts the F/D badges rendered next to it (#242).
+        # published_at__lte filter (#372, same convention as `latest_suchary`
+        # above and `SucharListView`): without it a scheduled, not-yet-published
+        # suchar ties every other one at `funny_count = 0` (#331 makes voting on
+        # it impossible) and wins the `-created_at` tie-break, leaking its text
+        # publicly as "The Best Of" before its publication date.
         context["best_joke"] = (
-            user.suchary.annotate(
+            user.suchary.filter(published_at__lte=timezone.now())
+            .annotate(
                 funny_count=Count("votes", filter=Q(votes__is_funny=True)),
                 dry_count=Count("votes", filter=Q(votes__is_dry=True)),
                 total_votes=Count("votes"),
