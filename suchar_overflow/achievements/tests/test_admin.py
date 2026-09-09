@@ -401,9 +401,9 @@ class TestAchievementAdminSaveModelTierGeneration:
 
 class TestAchievementAdminIconContentPermission:
     """#335: ``icon_preview`` renders raw ``icon_content`` SVG through
-    ``mark_safe`` into admin list/detail pages, so only superusers may edit
-    the field — a non-superuser staffer must not be able to inject markup
-    that runs in another admin's session.
+    ``mark_safe`` into the admin changelist, so only superusers may edit the
+    field — a non-superuser staffer must not be able to inject markup that
+    runs in another admin's session.
     """
 
     @staticmethod

@@ -187,9 +187,9 @@ class AchievementAdmin(TabbedTranslationAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if request.user.is_superuser:
             return fieldsets
-        # icon_content is raw SVG that icon_preview mark_safe's into admin
-        # list/detail pages — keep it superuser-only so non-superuser staff
-        # can't inject markup that runs in another admin's session (#335).
+        # icon_content is raw SVG that icon_preview mark_safe's into the admin
+        # changelist — keep it superuser-only so non-superuser staff can't
+        # inject markup that runs in another admin's session (#335).
         filtered = []
         for name, opts in fieldsets:
             new_opts = dict(opts)
