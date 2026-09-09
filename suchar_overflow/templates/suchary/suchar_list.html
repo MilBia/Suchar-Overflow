@@ -121,26 +121,22 @@
           <div class="card suchar-card"
                {% if suchar.is_overdried %}data-overdried title="{% trans 'Overdried' %}"{% endif %}>
             <div class="card-body">
+              {% comment %}
+                #373: no "Scheduled" badge / Edit button here — SucharListView filters on
+                `published_at__lte=timezone.now()`, so `is_published` is always true on this
+                page. The owner's scheduled suchary live on their profile instead, in
+                user_detail.html's `scheduled_suchary` card (owner-gated in UserDetailView).
+              {% endcomment %}
               <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="d-flex align-items-center">
                   <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
                   <div>
                     <h6 class="mb-0 fw-bold">
                       <a href="{% querystring author=suchar.author.username page=None %}">{{ suchar.author.display_name }}</a>
-                      {% if not suchar.is_published %}
-                        <span class="badge bg-warning text-dark ms-2">{% trans "Scheduled" %}</span>
-                      {% endif %}
                     </h6>
                     <small class="suchar-meta">{{ suchar.published_at|date:"d M Y, H:i" }}</small>
                   </div>
                 </div>
-                {% if request.user == suchar.author and not suchar.is_published %}
-                  <a href="{% url 'suchary:update' suchar.pk %}"
-                     class="btn btn-sm btn-outline-primary">
-                    {% include "svgs/icon-edit.svg" %}
-                    {% trans "Edit" %}
-                  </a>
-                {% endif %}
               </div>
               <p class="mb-4">{{ suchar.text|linebreaksbr }}</p>
               {% if suchar.tags.all %}

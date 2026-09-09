@@ -43,6 +43,38 @@ def test_list_hides_scheduled_suchar(client: Client) -> None:
 
 
 @pytest.mark.django_db
+def test_list_hides_scheduled_suchar_from_its_own_author(client: Client) -> None:
+    """Guard for issue #373 — the list stays clean for the author too.
+
+    Deliberately *not* a regression test: `SucharListView` filters on
+    `published_at__lte=timezone.now()` for every viewer, the author included,
+    so this passed before the template's `{% if not suchar.is_published %}`
+    branch (a "Scheduled" badge plus an author-only Edit button) was removed —
+    which is exactly why that branch was dead code. It locks in that the list
+    surfaces neither a scheduled suchar nor an edit affordance for one, so the
+    branch does not come back. The author's own scheduled suchary are shown on
+    their profile instead (`scheduled_suchary` in `UserDetailView`, owner-gated).
+    """
+    author = make_user("scheduled_author")
+    future = timezone.now() + timedelta(days=1)
+    scheduled = Suchar.objects.create(
+        text="Future joke",
+        author=author,
+        published_at=future,
+    )
+
+    client.force_login(author)
+    response = client.get(reverse(LIST_URL))
+
+    assert response.status_code == HTTPStatus.OK
+    content = response.content.decode()
+    assert "Future joke" not in content
+    # Language-independent stand-in for the removed Edit button (CI never
+    # compiles the .mo files, so asserting on the label text proves nothing).
+    assert reverse("suchary:update", kwargs={"pk": scheduled.pk}) not in content
+
+
+@pytest.mark.django_db
 def test_list_shows_published_suchar(client: Client) -> None:
     user = make_user("author")
     Suchar.objects.create(text="Past joke", author=user)
