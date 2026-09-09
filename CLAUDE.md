@@ -53,7 +53,10 @@ DB object (same OID) is genuinely reused, not silently dropped/recreated; runnin
 unit suite to flush seed data, then the E2E suite five consecutive times against that
 same reused, already-flushed DB, still passed 31/31 every time. If you change a
 migration and need a fresh E2E schema, pass `--create-db` through the recipe's `*args`:
-`just test-e2e --create-db`.
+`just test-e2e --create-db`. The recipe pins the E2E dir via pytest's `-o testpaths`
+(honoured only when the command line names no path), so bare flags like that keep the
+default without scanning the whole repo; to target one file, name it explicitly and it
+overrides the default: `just test-e2e tests/e2e/test_konami_easter_egg.py` (see #361).
 
 ### Unit tests vs E2E tests — critical distinction
 
@@ -1265,8 +1268,8 @@ After completing **any** task (feature, fix, refactor):
    CI blocks the build on this — a model change without a matching migration will pass
    `just test` locally but fail CI.
 4. If you changed any `.py` file, run mypy. It is **not** in `pre-commit` or
-   `just test` — only a separate blocking CI step (`.github/workflows/ci.yml`,
-   "Run mypy") — so a type error passes every local gate above and only fails the
+   `just test` — only a separate blocking CI job (`.github/workflows/ci.yml`, the
+   `mypy` job) — so a type error passes every local gate above and only fails the
    build:
    `docker compose -f docker-compose.local.yml run --rm django python -m mypy .`
    (or scope it to the changed files).
@@ -1308,7 +1311,7 @@ that's expected, not a regression.
   "waiting on PR #N" and stop.
 - After opening a PR, own its CI result. A green local `pre-commit` / `just test`
   does not guarantee green CI (different Docker cache state, and mypy runs as its
-  own CI step — see the mypy note above). Check `gh pr checks`; if a job fails,
+  own CI job — see the mypy note above). Check `gh pr checks`; if a job fails,
   read the logs, fix on the same branch, push, and re-check until green — unless
   the failure has a documented out-of-scope cause (e.g. an unrelated flaky test),
   which you call out in the PR rather than chasing.
