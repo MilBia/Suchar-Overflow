@@ -43,11 +43,14 @@ test *args:
 
 # test-e2e: Run Playwright E2E tests inside the Django container.
 # Requires the DB to be up (`just up` first).
-test-e2e *args:
+# `args` defaults to the whole `tests/e2e/` dir but is fully overridable, so
+# `just test-e2e tests/e2e/test_konami.py` narrows collection to that file (#361).
+# When adding flags, keep the path: `just test-e2e tests/e2e/ --create-db`.
+test-e2e *args="tests/e2e/":
     @docker compose run --rm django pytest \
         --override-ini="addopts=--ds=config.settings.e2e --reuse-db --import-mode=importlib" \
         -m e2e \
-        tests/e2e/ {{args}}
+        {{args}}
 
 # test-all: Run unit tests then E2E tests sequentially.
 # Deliberately does NOT include `test-js` — that one runs on the host (Node), not

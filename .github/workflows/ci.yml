@@ -61,6 +61,46 @@ jobs:
       - name: Run Vitest
         run: npm test
 
+  # mypy needs only the built image, not a migrated or tested database, so it
+  # runs as its own job in parallel with `pytest` rather than tailing both test
+  # suites inside it. It reuses the same gha build cache scope as `pytest`, so on
+  # a warm cache this costs one extra container run, not a second image build.
+  # (It was serialized at the end of `pytest` only for log ordering — see #216,
+  # #360. Still blocking since #146.)
+  mypy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+
+      - name: Build and cache local backend
+        id: bake_build
+        uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b # v7.3.0
+        continue-on-error: true
+        timeout-minutes: 12
+        with:
+          push: false
+          load: true
+          files: docker-compose.local.yml
+          targets: django
+          set: |
+            django.cache-from=type=gha,scope=django-cached-tests
+            django.cache-to=type=gha,scope=django-cached-tests,mode=max
+
+      - name: Build backend (fallback — no cache)
+        if: steps.bake_build.outcome == 'failure'
+        run: docker compose -f docker-compose.local.yml build django
+
+      - name: Run mypy
+        run: docker compose -f docker-compose.local.yml run --rm django python -m mypy .
+
+      - name: Tear down the Stack
+        run: docker compose -f docker-compose.local.yml down
+
   # With no caching at all the entire ci process takes 3m to complete!
   pytest:
     runs-on: ubuntu-latest
@@ -94,6 +134,11 @@ jobs:
       - name: Check DB Migrations
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py makemigrations --check
 
+      # Diagnostic, not a prerequisite: pytest-django and the E2E run each build
+      # their own `test_suchar_overflow`, so nothing downstream reads the
+      # `suchar_overflow` DB this migrates. Kept deliberately as an early, clean
+      # failure signal — a broken migration surfaces here instead of buried in
+      # pytest-django's test-DB setup output (#359).
       - name: Run DB Migrations
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
 
@@ -120,13 +165,6 @@ jobs:
             -m e2e \
             tests/e2e/ \
             --junitxml=e2e_junit.xml
-
-      # Blocking since #146: the pre-existing baseline of mypy errors tracked
-      # in #144/#146 is now clear. Runs after the test suites (not just the
-      # image build) so a typing error doesn't delay the more valuable
-      # test-result signal — see #216.
-      - name: Run mypy
-        run: docker compose -f docker-compose.local.yml run --rm django python -m mypy .
 
       - name: Upload Test Report
         uses: actions/upload-artifact@v7
