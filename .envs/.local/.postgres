@@ -1,7 +1,11 @@
 # PostgreSQL
 # ------------------------------------------------------------------------------
+# Throwaway local-only credentials. Postgres is never published outside the
+# compose network in docker-compose.local.yml, so these are not a secret — they
+# are deliberately neutral placeholders, not a generated value, so nobody
+# mistakes them for one worth reusing elsewhere.
 POSTGRES_HOST=postgres
 POSTGRES_PORT=5432
 POSTGRES_DB=suchar_overflow
-POSTGRES_USER=GidDPwMpLaURYkLGswLzzpJtWmcMzgdk
-POSTGRES_PASSWORD=MMJMQ3OeNQCkVhd3450QoTCuq9HQ8lW4FqfsoCMn00VYFOyNpMB1meaLjKTeLgdx
+POSTGRES_USER=suchar_overflow
+POSTGRES_PASSWORD=suchar_overflow

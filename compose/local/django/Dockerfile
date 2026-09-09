@@ -80,4 +80,10 @@ COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
+# No `USER` directive here on purpose — unlike compose/production/django/Dockerfile.
+# docker-compose.local.yml bind-mounts the source tree (`.:/app:z`), so the
+# container process must own files created back on the host (migrations, __pycache__,
+# collected static). Running as root avoids the UID-mismatch friction a fixed
+# non-root UID would cause across different host users. `dev-user` (UID 1000) above
+# exists only for the VS Code devcontainer, which maps the host UID itself.
 ENTRYPOINT ["/entrypoint"]
