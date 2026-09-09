@@ -4,7 +4,9 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-if [ -z "${POSTGRES_USER}" ]; then
+# `:-` so a completely unset POSTGRES_USER reaches this fallback instead of
+# tripping `set -o nounset` first (the whole point of the block).
+if [ -z "${POSTGRES_USER:-}" ]; then
     base_postgres_image_default_user='postgres'
     export POSTGRES_USER="${base_postgres_image_default_user}"
 fi
