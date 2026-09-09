@@ -2,7 +2,8 @@
 
 <div class="achievement-card {% if locked %}locked{% else %}unlocked{% endif %} tier-{{ achievement.tier }}">
   {% if not locked %}<div class="achievement-glow"></div>{% endif %}
-  <div class="achievement-icon-wrapper tier-icon-{{ achievement.tier }}">
+  <div class="achievement-icon-wrapper tier-icon-{{ achievement.tier }}"
+       aria-hidden="true">
     {% if is_secret %}
       <div class="lock-icon text-muted">🔒</div>
     {% elif achievement.icon_content %}

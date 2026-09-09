@@ -75,30 +75,11 @@
 }
 
 /* ---- Anonymous tooltip ---- */
-
-.btn-vote[data-tooltip]:after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%) translateY(4px);
-    background: rgba(30, 30, 30, 0.92);
-    color: #fff;
-    padding: 4px 10px;
-    border-radius: 5px;
-    white-space: nowrap;
-    font-size: 0.72rem;
-    font-weight: 400;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.15s, transform 0.15s;
-    z-index: 100;
-}
-
-.btn-vote[data-tooltip]:hover:after {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
+/* The tooltip on `.btn-vote[data-tooltip]` is rendered entirely by project.js
+   (`.custom-tooltip-box`), which also handles keyboard focus and wires
+   role="tooltip" + aria-describedby (issue #342). The old CSS `:after`
+   pseudo-element was hover-only and rendered a *second*, overlapping tooltip —
+   removed. */
 
 /* ---- Loading state ---- */
 
