@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 import pytest
 from django.contrib.messages import get_messages
 from django.db import connection
+from django.template.loader import render_to_string
+from django.test import RequestFactory
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
@@ -72,6 +74,40 @@ def test_list_hides_scheduled_suchar_from_its_own_author(client: Client) -> None
     # Language-independent stand-in for the removed Edit button (CI never
     # compiles the .mo files, so asserting on the label text proves nothing).
     assert reverse("suchary:update", kwargs={"pk": scheduled.pk}) not in content
+
+
+@pytest.mark.django_db
+def test_list_template_never_renders_edit_link_for_unpublished_suchar() -> None:
+    """Guard directly on the template, not the view's filter.
+
+    The two tests above only prove `SucharListView` never *hands* the
+    template an unpublished suchar — they can't tell the difference between
+    "the template has no branch for it" and "the branch is there but never
+    reached", because `published_at__lte=timezone.now()` keeps an unpublished
+    suchar out of the queryset either way (PR #386 review, NC-A). This
+    renders `suchar_list.html` directly with an unpublished suchar forced
+    into its context — the one situation in which a reintroduced
+    `{% if not suchar.is_published %}` branch could draw anything — so a
+    future revert of #373 fails here even if the view-level filter is
+    untouched. Pattern follows `tests/test_a11y_static.py`'s direct
+    `render_to_string` usage.
+    """
+    author = make_user("template_guard_author")
+    unpublished = Suchar.objects.create(
+        text="Should never render an edit link",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+    request = RequestFactory().get(reverse(LIST_URL))
+    request.user = author
+
+    html = render_to_string(
+        "suchary/suchar_list.html",
+        {"suchary": [unpublished], "is_paginated": False},
+        request=request,
+    )
+
+    assert reverse("suchary:update", kwargs={"pk": unpublished.pk}) not in html
 
 
 @pytest.mark.django_db

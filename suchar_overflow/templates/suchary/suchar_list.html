@@ -115,18 +115,19 @@
                class="btn btn-link btn-sm text-decoration-none ms-auto py-0 text-muted hover-primary">{% trans "Clear all" %}</a>
           </div>
         {% endif %}
+        {% comment %}
+          #373: no "Scheduled" badge / Edit button on any card in this list —
+          SucharListView filters on `published_at__lte=timezone.now()`, so
+          `is_published` is always true on this page. The owner's scheduled
+          suchary live on their profile instead, in user_detail.html's
+          `scheduled_suchary` card (owner-gated in UserDetailView).
+        {% endcomment %}
         {% for suchar in suchary %}
           {# #295: `data-overdried` drives the craquelure overlay (suchar-card.css); #}
           {# voting.js adds it in place when a vote latches `is_overdried`. #}
           <div class="card suchar-card"
                {% if suchar.is_overdried %}data-overdried title="{% trans 'Overdried' %}"{% endif %}>
             <div class="card-body">
-              {% comment %}
-                #373: no "Scheduled" badge / Edit button here — SucharListView filters on
-                `published_at__lte=timezone.now()`, so `is_published` is always true on this
-                page. The owner's scheduled suchary live on their profile instead, in
-                user_detail.html's `scheduled_suchary` card (owner-gated in UserDetailView).
-              {% endcomment %}
               <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="d-flex align-items-center">
                   <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
