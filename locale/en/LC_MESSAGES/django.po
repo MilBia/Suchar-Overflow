@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 20:03+0000\n"
+"POT-Creation-Date: 2026-09-10 06:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -534,7 +534,7 @@ msgid "Suchar text"
 msgstr "Suchar text"
 
 #: suchar_overflow/suchary/models.py:30
-#: suchar_overflow/templates/suchary/suchar_list.html:122
+#: suchar_overflow/templates/suchary/suchar_list.html:130
 msgid "Overdried"
 msgstr "Overdried"
 
@@ -569,23 +569,23 @@ msgstr "Your suchar is out there now. Let it dry."
 
 #: suchar_overflow/suchary/tests/test_views.py:130
 #: suchar_overflow/suchary/tests/test_views.py:142
-#: suchar_overflow/templates/suchary/suchar_list.html:187
+#: suchar_overflow/templates/suchary/suchar_list.html:188
 msgid "Zero trafień. Kompletna susza."
 msgstr "Nothing matched. Bone dry."
 
 #: suchar_overflow/suchary/tests/test_views.py:131
 #: suchar_overflow/suchary/tests/test_views.py:141
-#: suchar_overflow/templates/suchary/suchar_list.html:191
+#: suchar_overflow/templates/suchary/suchar_list.html:192
 msgid "Be the hero we need and add the first joke."
 msgstr "Be the hero we need and add the first joke."
 
-#: suchar_overflow/suchary/tests/test_views_extra.py:278
+#: suchar_overflow/suchary/tests/test_views_extra.py:316
 #: suchar_overflow/users/mixins.py:67
 #: suchar_overflow/users/tests/test_mixins.py:92
 msgid "You don't have permission to do that."
 msgstr "You don't have permission to do that."
 
-#: suchar_overflow/suchary/tests/test_views_extra.py:309
+#: suchar_overflow/suchary/tests/test_views_extra.py:347
 #: suchar_overflow/suchary/views.py:247
 msgid "Suchar odświeżony. Dalej suchy, tylko młodszy."
 msgstr "Suchar refreshed. Still dry, just younger."
@@ -1142,16 +1142,16 @@ msgstr "jokes"
 
 #: suchar_overflow/templates/stats/_leaderboard_author_card.html:25
 #: suchar_overflow/templates/stats/leaderboard.html:67
-#: suchar_overflow/templates/suchary/suchar_list.html:162
-#: suchar_overflow/templates/suchary/suchar_list.html:165
+#: suchar_overflow/templates/suchary/suchar_list.html:163
+#: suchar_overflow/templates/suchary/suchar_list.html:166
 #: suchar_overflow/templates/users/user_detail.html:187
 msgid "Funny"
 msgstr "Funny"
 
 #: suchar_overflow/templates/stats/_leaderboard_author_card.html:27
 #: suchar_overflow/templates/stats/leaderboard.html:77
-#: suchar_overflow/templates/suchary/suchar_list.html:175
-#: suchar_overflow/templates/suchary/suchar_list.html:178
+#: suchar_overflow/templates/suchary/suchar_list.html:176
+#: suchar_overflow/templates/suchary/suchar_list.html:179
 #: suchar_overflow/templates/users/user_detail.html:188
 msgid "Dry"
 msgstr "Dry"
@@ -1323,34 +1323,34 @@ msgstr "Author:"
 msgid "Clear all"
 msgstr "Clear all"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:152
+#: suchar_overflow/templates/suchary/suchar_list.html:153
 msgid "Zliczam głos…"
 msgstr "Counting your vote…"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:153
+#: suchar_overflow/templates/suchary/suchar_list.html:154
 msgid "Głos ugrzązł w suszy. Spróbuj ponownie."
 msgstr "Your vote got stuck in the dust. Try again."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:161
-#: suchar_overflow/templates/suchary/suchar_list.html:174
+#: suchar_overflow/templates/suchary/suchar_list.html:162
+#: suchar_overflow/templates/suchary/suchar_list.html:175
 msgid "Zaloguj się, aby głosować"
 msgstr "Log in to vote"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:188
+#: suchar_overflow/templates/suchary/suchar_list.html:189
 msgid "Poluzuj frazę albo dodaj suchar, którego brakuje."
 msgstr "Loosen the phrase, or add the joke that's missing."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:190
+#: suchar_overflow/templates/suchary/suchar_list.html:191
 msgid "So dry here..."
 msgstr "So dry here..."
 
-#: suchar_overflow/templates/suchary/suchar_list.html:206
-#: suchar_overflow/templates/suchary/suchar_list.html:210
+#: suchar_overflow/templates/suchary/suchar_list.html:207
+#: suchar_overflow/templates/suchary/suchar_list.html:211
 msgid "Previous"
 msgstr "Previous"
 
-#: suchar_overflow/templates/suchary/suchar_list.html:231
-#: suchar_overflow/templates/suchary/suchar_list.html:235
+#: suchar_overflow/templates/suchary/suchar_list.html:232
+#: suchar_overflow/templates/suchary/suchar_list.html:236
 msgid "Next"
 msgstr "Next"
 
