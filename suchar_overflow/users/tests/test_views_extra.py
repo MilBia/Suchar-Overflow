@@ -415,6 +415,11 @@ def test_activity_chart_buckets_by_publication_day(client: Client) -> None:
     client.force_login(user)
     response = client.get(detail_url("activity388b"))
     assert sum(response.context["activity_values"]) == 1
+    # The single bucket is the publication day (today), not the creation day
+    # 45 days ago — which would fall outside the 30-day window entirely.
+    assert response.context["activity_labels"] == [
+        timezone.now().date().strftime("%Y-%m-%d"),
+    ]
 
 
 @pytest.mark.django_db

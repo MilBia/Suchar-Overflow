@@ -284,22 +284,25 @@ class UserDetailView(AsyncLoginRequiredMixin):
 
         # Raw datetime bounds (not published_at__date__gte): the __date lookup
         # renders as (published_at AT TIME ZONE tz)::date, and a cast column
-        # can't use the plain B-tree index on published_at. A half-open
-        # [start, end) range on the bare column can — same pattern as
-        # stats.views._fetch_daily_counts_map and the "Dryness Chart" above.
+        # can't use the plain B-tree index on published_at. A bare-column range
+        # can — same pattern as stats.views._fetch_daily_counts_map and the
+        # "Dryness Chart" above.
         # Bucketed and bounded by published_at, not created_at (#388): a public
-        # profile's contribution grid must not reveal that a draft exists today,
-        # and `range_end = now` keeps future-scheduled suchary off the grid.
+        # profile's contribution grid must not reveal that a draft exists today.
+        # The upper bound is `published_at__lte=now` — a closed [start, now]
+        # range, matching every other published_at gate in this codebase
+        # (`Suchar.is_published`, `latest_suchary`, `best_joke`, the leaderboard)
+        # — so a suchar published in the same instant the view runs is not lost
+        # from today's cell while it counts everywhere else.
         range_start = timezone.make_aware(
             datetime.datetime.combine(start_date, datetime.time.min),
         )
-        range_end = now
 
         # Get counts per day
         daily_counts = (
             user.suchary.filter(
                 published_at__gte=range_start,
-                published_at__lt=range_end,
+                published_at__lte=now,
             )
             .annotate(date=TruncDay("published_at"))
             .values("date")

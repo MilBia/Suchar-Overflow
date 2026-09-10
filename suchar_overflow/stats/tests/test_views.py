@@ -387,14 +387,32 @@ def test_chart_ignores_old_suchars(client: Client) -> None:
     """Suchars older than 30 days must not appear in the 30-day activity chart."""
     author = make_user("author")
     old = Suchar.objects.create(text="Old joke", author=author)
-    Suchar.objects.filter(pk=old.pk).update(
-        created_at=timezone.now() - timedelta(days=60),
-    )
+    stale = timezone.now() - timedelta(days=60)
+    # The chart windows and buckets by published_at (#388), so move both.
+    Suchar.objects.filter(pk=old.pk).update(created_at=stale, published_at=stale)
 
     response = client.get(reverse(LEADERBOARD_URL))
     datasets = response.context["chart_datasets"]
     assert sum(datasets["30"]["values"]) == 0
     assert sum(datasets["all"]["values"]) >= 1
+
+
+@pytest.mark.django_db
+def test_chart_excludes_scheduled_suchar(client: Client) -> None:
+    """#388: a not-yet-published draft must not light a bar on the public
+    "Activity: New Jokes" chart on its creation day."""
+    author = make_user("chart_sched_author")
+    Suchar.objects.create(
+        text="Draft joke",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+
+    response = client.get(reverse(LEADERBOARD_URL))
+    datasets = response.context["chart_datasets"]
+    assert sum(datasets["7"]["values"]) == 0
+    assert sum(datasets["30"]["values"]) == 0
+    assert sum(datasets["all"]["values"]) == 0
 
 
 # ---------------------------------------------------------------------------

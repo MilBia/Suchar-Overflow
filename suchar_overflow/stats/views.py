@@ -34,20 +34,19 @@ LEADERBOARD_CACHE_KEY = "leaderboard:context"
 LEADERBOARD_CACHE_TTL = 60 * 5
 
 
-def _fetch_daily_counts_map(start_date: date, end_date: date) -> dict[date, int]:
-    # Raw datetime bounds (not created_at__date__gte/lte): the __date lookup
-    # wraps the column in DATE(...), which can't use a plain B-tree index on
-    # created_at. A half-open [start, end) range on the bare column can.
+def _fetch_daily_counts_map(start_date: date, now: datetime) -> dict[date, int]:
+    # Bucketed and bounded by published_at, not created_at (#388): the public
+    # "Activity: New Jokes" chart on the leaderboard must not count a scheduled
+    # draft on its creation day. `published_at__lte=now` keeps future
+    # publications out; the bare column (no ::date cast) still uses the plain
+    # B-tree index on published_at.
     range_start = timezone.make_aware(datetime.combine(start_date, time.min))
-    range_end = timezone.make_aware(
-        datetime.combine(end_date + timedelta(days=1), time.min),
-    )
     db_data = (
         Suchar.objects.filter(
-            created_at__gte=range_start,
-            created_at__lt=range_end,
+            published_at__gte=range_start,
+            published_at__lte=now,
         )
-        .annotate(date=TruncDay("created_at"))
+        .annotate(date=TruncDay("published_at"))
         .values("date")
         .annotate(count=Count("id"))
     )
@@ -67,7 +66,7 @@ def get_daily_activity_data(
     start_date = (start_of_today - timedelta(days=days)).date()
     end_date = now.date()
     if counts_map is None:
-        counts_map = _fetch_daily_counts_map(start_date, end_date)
+        counts_map = _fetch_daily_counts_map(start_date, now)
 
     labels: list[str] = []
     values: list[int] = []
@@ -102,8 +101,11 @@ def get_all_time_activity_data(
     start_of_today: datetime,
     now: datetime,
 ) -> dict[str, list]:
+    # Grouped by published_at, not created_at, and future publications excluded
+    # (#388) — same reasoning as _fetch_daily_counts_map above.
     db_data = (
-        Suchar.objects.annotate(month=TruncMonth("created_at"))
+        Suchar.objects.filter(published_at__lte=now)
+        .annotate(month=TruncMonth("published_at"))
         .values("month")
         .annotate(count=Count("id"))
     )
@@ -276,7 +278,7 @@ class LeaderboardView(View):
 
         widest_days = 90
         widest_start_date = (start_of_today - timedelta(days=widest_days)).date()
-        counts_map = _fetch_daily_counts_map(widest_start_date, now.date())
+        counts_map = _fetch_daily_counts_map(widest_start_date, now)
         chart_datasets = {
             "7": get_daily_activity_data(start_of_today, now, 7, counts_map=counts_map),
             "30": get_daily_activity_data(
