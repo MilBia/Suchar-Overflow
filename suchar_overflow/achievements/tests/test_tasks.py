@@ -80,10 +80,10 @@ def test_find_best_suchary_returns_single_winner_when_no_tie() -> None:
         password="pw",  # noqa: S106
     )
     s_win = Suchar.objects.create(text="Winner", author=author)
-    s_win.created_at = mid
+    s_win.created_at = s_win.published_at = mid
     s_win.save()
     s_lose = Suchar.objects.create(text="Loser", author=other)
-    s_lose.created_at = mid
+    s_lose.created_at = s_lose.published_at = mid
     s_lose.save()
     Vote.objects.create(suchar=s_win, user=other, is_funny=True)
 
@@ -112,13 +112,13 @@ def test_find_best_suchary_returns_all_suchary_tied_for_top_vote_count() -> None
         password="pw",  # noqa: S106
     )
     s_a = Suchar.objects.create(text="A", author=author_a)
-    s_a.created_at = mid
+    s_a.created_at = s_a.published_at = mid
     s_a.save()
     s_b = Suchar.objects.create(text="B", author=author_b)
-    s_b.created_at = mid
+    s_b.created_at = s_b.published_at = mid
     s_b.save()
     s_c = Suchar.objects.create(text="C, fewer votes", author=author_c)
-    s_c.created_at = mid
+    s_c.created_at = s_c.published_at = mid
     s_c.save()
 
     # s_a and s_b each get 2 votes, s_c gets 1 — s_a and s_b tie for the top spot.
@@ -161,12 +161,96 @@ def test_find_best_suchary_returns_empty_list_when_all_suchary_have_zero_votes()
     )
     for author in (author_a, author_b):
         s = Suchar.objects.create(text=f"No votes for {author.username}", author=author)
-        s.created_at = mid
+        s.created_at = s.published_at = mid
         s.save()
 
     start_dt, end_dt, _suffix = compute_period_range("month", mid.date())
 
     assert find_best_suchary(start_dt, end_dt) == []
+
+
+@pytest.mark.django_db
+def test_find_best_suchary_window_follows_published_at_not_created_at() -> None:
+    """A suchar written in one period but scheduled for the next competes in
+    the period it was *published* in, never in the one it was written in (#371).
+
+    Before this fix the window was measured on ``created_at``: such a suchar
+    entered January's contest (where it had no votes, because nobody could see
+    it yet — #331 404s votes on an unpublished suchar) and was absent from
+    February's, so it could never win any period despite real votes.
+
+    Fixed dates, not the ``last_month_mid()`` helpers, so the assertion holds
+    on every calendar day the suite runs.
+    """
+    author = User.objects.create_user(
+        username="scheduled-author",
+        email="scheduled-author@example.com",
+        password="pw",  # noqa: S106
+    )
+    voter = User.objects.create_user(
+        username="scheduled-voter",
+        email="scheduled-voter@example.com",
+        password="pw",  # noqa: S106
+    )
+    scheduled = Suchar.objects.create(text="Written in January", author=author)
+    scheduled.created_at = datetime.datetime(2024, 1, 30, 12, 0, tzinfo=datetime.UTC)
+    scheduled.published_at = datetime.datetime(2024, 2, 5, 12, 0, tzinfo=datetime.UTC)
+    scheduled.save()
+    Vote.objects.create(suchar=scheduled, user=voter, is_funny=True)
+
+    jan_start, jan_end, _suffix = compute_period_range(
+        "month",
+        datetime.date(2024, 1, 31),
+    )
+    feb_start, feb_end, _suffix = compute_period_range(
+        "month",
+        datetime.date(2024, 2, 29),
+    )
+
+    assert find_best_suchary(jan_start, jan_end) == []
+    assert [s.pk for s in find_best_suchary(feb_start, feb_end)] == [scheduled.pk]
+
+
+@pytest.mark.django_db
+def test_find_best_suchary_window_follows_published_at_not_created_at_year() -> None:
+    """Yearly counterpart of the monthly window test above (#371): a suchar
+    written Dec 28 but scheduled for Jan 3 must compete in *next* year's
+    contest, never in the year it was written — the most damaging variant of
+    the bug, since losing the wrong window here means losing a whole year,
+    not just a month.
+
+    Fixed dates, not the ``last_month_mid()`` helpers, so the assertion holds
+    on every calendar day the suite runs.
+    """
+    author = User.objects.create_user(
+        username="scheduled-author-year",
+        email="scheduled-author-year@example.com",
+        password="pw",  # noqa: S106
+    )
+    voter = User.objects.create_user(
+        username="scheduled-voter-year",
+        email="scheduled-voter-year@example.com",
+        password="pw",  # noqa: S106
+    )
+    scheduled = Suchar.objects.create(text="Written in December", author=author)
+    scheduled.created_at = datetime.datetime(2023, 12, 28, 12, 0, tzinfo=datetime.UTC)
+    scheduled.published_at = datetime.datetime(2024, 1, 3, 12, 0, tzinfo=datetime.UTC)
+    scheduled.save()
+    Vote.objects.create(suchar=scheduled, user=voter, is_funny=True)
+
+    year_2023_start, year_2023_end, _suffix = compute_period_range(
+        "year",
+        datetime.date(2023, 6, 1),
+    )
+    year_2024_start, year_2024_end, _suffix = compute_period_range(
+        "year",
+        datetime.date(2024, 6, 1),
+    )
+
+    assert find_best_suchary(year_2023_start, year_2023_end) == []
+    assert [s.pk for s in find_best_suchary(year_2024_start, year_2024_end)] == [
+        scheduled.pk,
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -319,10 +403,10 @@ def test_award_best_suchar_month_awards_winner() -> None:
 
     mid = last_month_mid()
     s_win = Suchar.objects.create(text="Funny", author=winner)
-    s_win.created_at = mid
+    s_win.created_at = s_win.published_at = mid
     s_win.save()
     s_lose = Suchar.objects.create(text="Bad", author=loser)
-    s_lose.created_at = mid
+    s_lose.created_at = s_lose.published_at = mid
     s_lose.save()
 
     for i in range(3):
@@ -370,10 +454,10 @@ def test_award_best_suchar_month_tie_awards_all_tied_authors() -> None:
 
     mid = last_month_mid()
     s_a = Suchar.objects.create(text="Tie A", author=author_a)
-    s_a.created_at = mid
+    s_a.created_at = s_a.published_at = mid
     s_a.save()
     s_b = Suchar.objects.create(text="Tie B", author=author_b)
-    s_b.created_at = mid
+    s_b.created_at = s_b.published_at = mid
     s_b.save()
 
     Vote.objects.create(suchar=s_a, user=author_b, is_funny=True)
@@ -408,8 +492,9 @@ def test_award_best_suchar_uses_explicit_reference_date_when_given() -> None:
         email="explicit-ref@example.com",
         password="pw",  # noqa: S106
     )
+    may_at = datetime.datetime(2024, 5, 15, 12, 0, tzinfo=datetime.UTC)
     s = Suchar.objects.create(text="May joke", author=winner)
-    s.created_at = datetime.datetime(2024, 5, 15, 12, 0, tzinfo=datetime.UTC)
+    s.created_at = s.published_at = may_at
     s.save()
     voter = User.objects.create_user(
         username="voter-explicit-ref",
@@ -426,6 +511,51 @@ def test_award_best_suchar_uses_explicit_reference_date_when_given() -> None:
 
     assert UserAchievement.objects.filter(
         user=winner,
+        achievement__slug="best-suchar-month",
+    ).exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.usefixtures("periodic_achievements")
+def test_award_best_suchar_awards_a_scheduled_suchar_in_its_publication_month() -> None:
+    """End-to-end counterpart of the ``find_best_suchary`` window test (#371):
+    a suchar written on Jan 30 and published on Feb 5 wins February, and
+    nobody wins January."""
+    author = User.objects.create_user(
+        username="sched-award",
+        email="sched-award@example.com",
+        password="pw",  # noqa: S106
+    )
+    voter = User.objects.create_user(
+        username="sched-award-voter",
+        email="sched-award-voter@example.com",
+        password="pw",  # noqa: S106
+    )
+    scheduled = Suchar.objects.create(text="Scheduled joke", author=author)
+    scheduled.created_at = datetime.datetime(2024, 1, 30, 12, 0, tzinfo=datetime.UTC)
+    scheduled.published_at = datetime.datetime(2024, 2, 5, 12, 0, tzinfo=datetime.UTC)
+    scheduled.save()
+    Vote.objects.create(suchar=scheduled, user=voter, is_funny=True)
+
+    with patch(
+        "suchar_overflow.achievements.tasks.timezone.now",
+        return_value=datetime.datetime(2024, 2, 1, 0, 5, tzinfo=datetime.UTC),
+    ):
+        award_best_suchar("month", reference_date=datetime.date(2024, 1, 31))
+
+    assert not UserAchievement.objects.filter(
+        user=author,
+        achievement__slug="best-suchar-month",
+    ).exists()
+
+    with patch(
+        "suchar_overflow.achievements.tasks.timezone.now",
+        return_value=datetime.datetime(2024, 3, 1, 0, 5, tzinfo=datetime.UTC),
+    ):
+        award_best_suchar("month", reference_date=datetime.date(2024, 2, 29))
+
+    assert UserAchievement.objects.filter(
+        user=author,
         achievement__slug="best-suchar-month",
     ).exists()
 
@@ -454,7 +584,7 @@ def test_award_best_suchar_month_missing_achievement_does_not_crash() -> None:
     )
     mid = last_month_mid()
     s = Suchar.objects.create(text="Joke", author=winner)
-    s.created_at = mid
+    s.created_at = s.published_at = mid
     s.save()
     voter = User.objects.create_user(
         username="vw2",
@@ -492,7 +622,7 @@ def test_award_best_suchar_is_idempotent() -> None:
     )
     mid = last_month_mid()
     s = Suchar.objects.create(text="Idempotent joke", author=winner)
-    s.created_at = mid
+    s.created_at = s.published_at = mid
     s.save()
     voter = User.objects.create_user(
         username="votidem",
@@ -754,7 +884,7 @@ def test_award_best_suchar_logs_warning_when_achievement_missing(
     )
     mid = last_month_mid()
     s = Suchar.objects.create(text="Joke", author=winner)
-    s.created_at = mid
+    s.created_at = s.published_at = mid
     s.save()
     voter = User.objects.create_user(
         username="vw3",

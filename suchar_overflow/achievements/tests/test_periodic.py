@@ -34,12 +34,12 @@ def test_award_periodic_month() -> None:
 
     # Winner's joke — place it in last month
     s1 = Suchar.objects.create(text="Funny joke", author=winner)
-    s1.created_at = mid_last_month
+    s1.created_at = s1.published_at = mid_last_month
     s1.save()
 
     # Loser's joke — same period
     s2 = Suchar.objects.create(text="Bad joke", author=loser)
-    s2.created_at = mid_last_month
+    s2.created_at = s2.published_at = mid_last_month
     s2.save()
 
     # Winner gets 3 votes, loser gets 1
@@ -75,7 +75,7 @@ def test_award_periodic_year() -> None:
     )
 
     s1 = Suchar.objects.create(text="Yearly best", author=winner)
-    s1.created_at = last_year_mid()
+    s1.created_at = s1.published_at = last_year_mid()
     s1.save()
 
     voter = User.objects.create_user(
@@ -119,10 +119,10 @@ def test_award_periodic_month_tie_awards_all_tied_authors() -> None:
 
     mid_last_month = last_month_mid()
     s_a = Suchar.objects.create(text="Tie joke A", author=author_a)
-    s_a.created_at = mid_last_month
+    s_a.created_at = s_a.published_at = mid_last_month
     s_a.save()
     s_b = Suchar.objects.create(text="Tie joke B", author=author_b)
-    s_b.created_at = mid_last_month
+    s_b.created_at = s_b.published_at = mid_last_month
     s_b.save()
 
     Vote.objects.create(suchar=s_a, user=author_b, is_funny=True)
@@ -165,10 +165,10 @@ def test_award_periodic_month_missing_main_achievement_reports_error_even_with_t
 
     mid_last_month = last_month_mid()
     s_a = Suchar.objects.create(text="A", author=author_a)
-    s_a.created_at = mid_last_month
+    s_a.created_at = s_a.published_at = mid_last_month
     s_a.save()
     s_b = Suchar.objects.create(text="B", author=author_b)
-    s_b.created_at = mid_last_month
+    s_b.created_at = s_b.published_at = mid_last_month
     s_b.save()
     Vote.objects.create(suchar=s_a, user=author_b, is_funny=True)
     Vote.objects.create(suchar=s_b, user=author_a, is_funny=True)
@@ -200,7 +200,7 @@ def test_award_periodic_month_winner_is_highest_vote_getter() -> None:
     suchars = []
     for author in authors:
         s = Suchar.objects.create(text=f"Joke by {author.username}", author=author)
-        s.created_at = mid
+        s.created_at = s.published_at = mid
         s.save()
         suchars.append(s)
 

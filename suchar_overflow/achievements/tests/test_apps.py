@@ -117,13 +117,15 @@ def test_catch_up_missed_monthly_run_awards_the_missed_period_not_current() -> N
         password="pw",  # noqa: S106
     )
 
+    may_at = datetime.datetime(2024, 5, 15, 12, 0, tzinfo=datetime.UTC)
     may_suchar = Suchar.objects.create(text="May joke", author=may_winner)
-    may_suchar.created_at = datetime.datetime(2024, 5, 15, 12, 0, tzinfo=datetime.UTC)
+    may_suchar.created_at = may_suchar.published_at = may_at
     may_suchar.save()
     Vote.objects.create(suchar=may_suchar, user=voter, is_funny=True)
 
+    june_at = datetime.datetime(2024, 6, 10, 12, 0, tzinfo=datetime.UTC)
     june_suchar = Suchar.objects.create(text="June joke", author=june_poster)
-    june_suchar.created_at = datetime.datetime(2024, 6, 10, 12, 0, tzinfo=datetime.UTC)
+    june_suchar.created_at = june_suchar.published_at = june_at
     june_suchar.save()
 
     with patch("django.utils.timezone.now", return_value=frozen_now):
@@ -221,30 +223,18 @@ def test_catch_up_missed_yearly_run_awards_the_missed_period_not_current() -> No
         password="pw",  # noqa: S106
     )
 
+    year_at = datetime.datetime(2023, 5, 15, 12, 0, tzinfo=datetime.UTC)
     year_suchar = Suchar.objects.create(text="2023 joke", author=year_winner)
-    year_suchar.created_at = datetime.datetime(
-        2023,
-        5,
-        15,
-        12,
-        0,
-        tzinfo=datetime.UTC,
-    )
+    year_suchar.created_at = year_suchar.published_at = year_at
     year_suchar.save()
     Vote.objects.create(suchar=year_suchar, user=voter, is_funny=True)
 
+    current_year_at = datetime.datetime(2024, 6, 10, 12, 0, tzinfo=datetime.UTC)
     current_year_suchar = Suchar.objects.create(
         text="2024 joke",
         author=current_year_poster,
     )
-    current_year_suchar.created_at = datetime.datetime(
-        2024,
-        6,
-        10,
-        12,
-        0,
-        tzinfo=datetime.UTC,
-    )
+    current_year_suchar.created_at = current_year_suchar.published_at = current_year_at
     current_year_suchar.save()
 
     with patch("django.utils.timezone.now", return_value=frozen_now):
