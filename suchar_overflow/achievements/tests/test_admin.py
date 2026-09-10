@@ -419,7 +419,7 @@ class TestAchievementAdminIconContentPermission:
     which rest on exactly the assumption asserted below: the field is never
     offered in a non-superuser's admin form. Sanitizing instead was rejected
     because it breaks ``currentColor`` and style inheritance in the icons. If
-    these assertions ever have to change, revisit those four render sites first.
+    these assertions ever have to change, revisit those four files first.
     """
 
     @staticmethod
@@ -437,6 +437,19 @@ class TestAchievementAdminIconContentPermission:
 
     def test_non_superuser_fieldsets_exclude_icon_content(self) -> None:
         assert "icon_content" not in self._fieldset_fields(is_superuser=False)
+
+    def test_non_superuser_form_excludes_icon_content(self) -> None:
+        """``ModelAdmin._changeform_view`` builds the form from
+        ``flatten_fieldsets(get_fieldsets(...))``, so the fieldset assertions
+        above already guarantee this — this test asserts it directly on
+        ``form.base_fields`` too, matching this class's docstring claim that
+        the field is never offered in a non-superuser's admin form.
+        """
+        admin_instance = AchievementAdmin(Achievement, None)
+        request = RequestFactory().get("/")
+        request.user = get_user_model()(is_staff=True, is_superuser=False)
+        form = admin_instance.get_form(request)
+        assert "icon_content" not in form.base_fields
 
 
 def _make_translated_base(base: Achievement, values: dict[str, str]) -> None:
