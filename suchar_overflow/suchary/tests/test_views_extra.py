@@ -77,7 +77,7 @@ def test_list_hides_scheduled_suchar_from_its_own_author(client: Client) -> None
 
 
 @pytest.mark.django_db
-def test_list_template_never_renders_edit_link_for_unpublished_suchar() -> None:
+def test_list_template_never_renders_badge_or_edit_link_for_unpublished() -> None:
     """Guard directly on the template, not the view's filter.
 
     The two tests above only prove `SucharListView` never *hands* the
@@ -91,6 +91,15 @@ def test_list_template_never_renders_edit_link_for_unpublished_suchar() -> None:
     future revert of #373 fails here even if the view-level filter is
     untouched. Pattern follows `tests/test_a11y_static.py`'s direct
     `render_to_string` usage.
+
+    #373 removed *two* elements from that branch: the author-only Edit
+    button and the "Scheduled" badge. Assert both are gone — the
+    `reverse(...)` check alone still passed a negative-control experiment
+    that reinstated the badge without the link (PR #386 review, round 2).
+    `bg-warning` is a language-independent structural sentinel that appears
+    nowhere else in `suchar_list.html`; `"Scheduled"` additionally catches
+    the regression on CI, where no compiled `.mo` exists so `{% trans %}`
+    falls through to the literal msgid.
     """
     author = make_user("template_guard_author")
     unpublished = Suchar.objects.create(
@@ -108,6 +117,8 @@ def test_list_template_never_renders_edit_link_for_unpublished_suchar() -> None:
     )
 
     assert reverse("suchary:update", kwargs={"pk": unpublished.pk}) not in html
+    assert "bg-warning" not in html
+    assert "Scheduled" not in html
 
 
 @pytest.mark.django_db
