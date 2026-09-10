@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 import pytest
+from django.utils import timezone
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
@@ -61,6 +64,27 @@ def test_first_suchar_achievement() -> None:
     Suchar.objects.create(text="Why did the chicken cross the road?", author=user)
 
     assert UserAchievement.objects.filter(
+        user=user,
+        achievement__slug="first-suchar",
+    ).exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.usefixtures("ensure_achievements")
+def test_first_suchar_achievement_not_awarded_for_scheduled_suchar() -> None:
+    """Creating a not-yet-published suchar must not award a COUNT_SUCHAR tier —
+    it would show on the author's public profile before the suchar is visible
+    (#389). The award lands once the suchar goes live, via the
+    ``award-publication-achievements`` scheduler job.
+    """
+    user = make_user("joker")
+    Suchar.objects.create(
+        text="A joke from the future",
+        author=user,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+
+    assert not UserAchievement.objects.filter(
         user=user,
         achievement__slug="first-suchar",
     ).exists()

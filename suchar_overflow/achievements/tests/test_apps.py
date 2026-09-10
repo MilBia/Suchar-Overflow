@@ -6,6 +6,7 @@ import pytest
 from django.contrib.auth import get_user_model
 
 from suchar_overflow.achievements.apps import AchievementsConfig
+from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.suchary.models import Suchar
@@ -251,10 +252,79 @@ def test_catch_up_missed_yearly_run_awards_the_missed_period_not_current() -> No
 
 
 # ---------------------------------------------------------------------------
+# _catch_up_missed_publication_run — re-run the engine for suchary that became
+# published while the process was down (#389). Unlike the monthly/yearly
+# catch-ups there is no sparse cron fire to reconstruct: the task itself
+# processes everything since its own SchedulerRun marker, so the catch-up is a
+# plain delegating call.
+# ---------------------------------------------------------------------------
+
+
+def test_catch_up_missed_publication_run_delegates_to_task() -> None:
+    with patch(
+        "suchar_overflow.achievements.tasks.award_publication_achievements",
+    ) as mock_award:
+        AchievementsConfig._catch_up_missed_publication_run()  # noqa: SLF001
+
+    mock_award.assert_called_once_with()
+
+
+@pytest.mark.django_db
+def test_catch_up_missed_publication_run_awards_a_suchar_published_while_down() -> None:
+    """A suchar whose published_at passed while the process was down is picked
+    up on the next start — its author gets the COUNT_SUCHAR tier without having
+    to post again.
+    """
+    now = datetime.datetime.now(tz=datetime.UTC)
+    author = User.objects.create_user(
+        username="downtime-author",
+        email="downtime-author@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = Achievement.objects.create(
+        slug="catchup-count-1",
+        name="catchup-count-1",
+        description="desc",
+        icon_content="<svg/>",
+        category=Achievement.Category.LIFETIME,
+        event_type=Achievement.EventType.SUCHAR_POSTED,
+        metric=Achievement.Metric.COUNT_SUCHAR,
+        threshold=1,
+    )
+    # Last run was 3h ago; the process was down since.
+    SchedulerRun.objects.create(
+        job_id="award-publication-achievements",
+        ran_at=now - datetime.timedelta(hours=3),
+    )
+    suchar = Suchar.objects.create(
+        text="scheduled",
+        author=author,
+        published_at=now + datetime.timedelta(days=1),
+    )
+    # It actually went live 1h ago, mid-downtime.
+    Suchar.objects.filter(pk=suchar.pk).update(
+        published_at=now - datetime.timedelta(hours=1),
+    )
+
+    AchievementsConfig._catch_up_missed_publication_run()  # noqa: SLF001
+
+    assert UserAchievement.objects.filter(user=author, achievement=ach).exists()
+
+
+# ---------------------------------------------------------------------------
 # _start_scheduler must still start the recurring jobs even if catch-up fails
 # (e.g. a transient DB error) — a broken catch-up shouldn't take down the
 # whole scheduler thread before scheduler.start() runs (PR #170 review).
 # ---------------------------------------------------------------------------
+
+
+_CFG = "suchar_overflow.achievements.apps.AchievementsConfig"
+_ALL_CATCH_UPS = (
+    f"{_CFG}._catch_up_missed_monthly_run",
+    f"{_CFG}._catch_up_missed_yearly_run",
+    f"{_CFG}._catch_up_missed_publication_run",
+)
+_SCHEDULED_JOB_COUNT = 3
 
 
 @pytest.mark.django_db
@@ -262,11 +332,9 @@ def test_start_scheduler_starts_even_if_monthly_catch_up_raises(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     with (
-        patch(
-            "suchar_overflow.achievements.apps.AchievementsConfig"
-            "._catch_up_missed_monthly_run",
-            side_effect=RuntimeError("boom"),
-        ),
+        patch(_ALL_CATCH_UPS[0], side_effect=RuntimeError("boom")),
+        patch(_ALL_CATCH_UPS[1]),
+        patch(_ALL_CATCH_UPS[2]),
         patch(
             "apscheduler.schedulers.background.BackgroundScheduler",
         ) as mock_scheduler_cls,
@@ -274,7 +342,7 @@ def test_start_scheduler_starts_even_if_monthly_catch_up_raises(
     ):
         AchievementsConfig._start_scheduler()  # noqa: SLF001
 
-    assert mock_scheduler_cls.return_value.add_job.call_count == 2  # noqa: PLR2004
+    assert mock_scheduler_cls.return_value.add_job.call_count == _SCHEDULED_JOB_COUNT
     mock_scheduler_cls.return_value.start.assert_called_once()
     assert "boom" in caplog.text
 
@@ -284,11 +352,9 @@ def test_start_scheduler_starts_even_if_yearly_catch_up_raises(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     with (
-        patch(
-            "suchar_overflow.achievements.apps.AchievementsConfig"
-            "._catch_up_missed_yearly_run",
-            side_effect=RuntimeError("boom"),
-        ),
+        patch(_ALL_CATCH_UPS[0]),
+        patch(_ALL_CATCH_UPS[1], side_effect=RuntimeError("boom")),
+        patch(_ALL_CATCH_UPS[2]),
         patch(
             "apscheduler.schedulers.background.BackgroundScheduler",
         ) as mock_scheduler_cls,
@@ -296,22 +362,37 @@ def test_start_scheduler_starts_even_if_yearly_catch_up_raises(
     ):
         AchievementsConfig._start_scheduler()  # noqa: SLF001
 
-    assert mock_scheduler_cls.return_value.add_job.call_count == 2  # noqa: PLR2004
+    assert mock_scheduler_cls.return_value.add_job.call_count == _SCHEDULED_JOB_COUNT
     mock_scheduler_cls.return_value.start.assert_called_once()
     assert "boom" in caplog.text
 
 
 @pytest.mark.django_db
-def test_start_scheduler_registers_month_and_year_jobs() -> None:
+def test_start_scheduler_starts_even_if_publication_catch_up_raises(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     with (
+        patch(_ALL_CATCH_UPS[0]),
+        patch(_ALL_CATCH_UPS[1]),
+        patch(_ALL_CATCH_UPS[2], side_effect=RuntimeError("boom")),
         patch(
-            "suchar_overflow.achievements.apps.AchievementsConfig"
-            "._catch_up_missed_monthly_run",
-        ),
-        patch(
-            "suchar_overflow.achievements.apps.AchievementsConfig"
-            "._catch_up_missed_yearly_run",
-        ),
+            "apscheduler.schedulers.background.BackgroundScheduler",
+        ) as mock_scheduler_cls,
+        caplog.at_level(logging.ERROR, logger="suchar_overflow.achievements.apps"),
+    ):
+        AchievementsConfig._start_scheduler()  # noqa: SLF001
+
+    assert mock_scheduler_cls.return_value.add_job.call_count == _SCHEDULED_JOB_COUNT
+    mock_scheduler_cls.return_value.start.assert_called_once()
+    assert "boom" in caplog.text
+
+
+@pytest.mark.django_db
+def test_start_scheduler_registers_all_recurring_jobs() -> None:
+    with (
+        patch(_ALL_CATCH_UPS[0]),
+        patch(_ALL_CATCH_UPS[1]),
+        patch(_ALL_CATCH_UPS[2]),
         patch(
             "apscheduler.schedulers.background.BackgroundScheduler",
         ) as mock_scheduler_cls,
@@ -322,7 +403,12 @@ def test_start_scheduler_registers_month_and_year_jobs() -> None:
         call.kwargs["id"]: call.kwargs
         for call in mock_scheduler_cls.return_value.add_job.call_args_list
     }
-    assert jobs_by_id.keys() == {"award-best-suchar-month", "award-best-suchar-year"}
+    assert jobs_by_id.keys() == {
+        "award-best-suchar-month",
+        "award-best-suchar-year",
+        "award-publication-achievements",
+    }
     assert jobs_by_id["award-best-suchar-month"]["day"] == 1
     assert jobs_by_id["award-best-suchar-year"]["month"] == 1
     assert jobs_by_id["award-best-suchar-year"]["day"] == 1
+    assert jobs_by_id["award-publication-achievements"]["minute"] == 5  # noqa: PLR2004

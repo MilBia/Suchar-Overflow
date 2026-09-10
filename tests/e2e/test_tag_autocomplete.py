@@ -6,11 +6,26 @@ from typing import TYPE_CHECKING
 import pytest
 from playwright.sync_api import expect
 
+from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 
 if TYPE_CHECKING:
     from playwright.sync_api import Page
     from pytest_django.live_server_helper import LiveServer
+
+    from suchar_overflow.users.models import User as UserModel
+
+
+def _tag_on_published_suchar(name: str, slug: str, author: UserModel) -> Tag:
+    """Create a Tag and attach it to a published suchar.
+
+    The suggestion endpoint only returns tags used on at least one published
+    suchar (#389), so a bare ``Tag.objects.create`` is invisible to it.
+    """
+    tag = Tag.objects.create(name=name, slug=slug)
+    suchar = Suchar.objects.create(text=f"joke {slug}", author=author)
+    suchar.tags.add(tag)
+    return tag
 
 
 @pytest.mark.e2e
@@ -19,10 +34,11 @@ if TYPE_CHECKING:
 def test_typing_shows_matching_tag_suggestions(
     page: Page,
     live_server: LiveServer,
+    e2e_user: UserModel,
 ) -> None:
     """Typing ≥2 chars in the tags input triggers the API and shows a dropdown."""
-    Tag.objects.create(name="programowanie", slug="programowanie")
-    Tag.objects.create(name="python", slug="python")
+    _tag_on_published_suchar("programowanie", "programowanie", e2e_user)
+    _tag_on_published_suchar("python", "python", e2e_user)
 
     page.goto(f"{live_server.url}/suchary/add/")
 
@@ -51,9 +67,10 @@ def test_typing_shows_matching_tag_suggestions(
 def test_clicking_suggestion_inserts_tag_and_closes_dropdown(
     page: Page,
     live_server: LiveServer,
+    e2e_user: UserModel,
 ) -> None:
     """Clicking a suggestion inserts the tag name and hides the dropdown."""
-    Tag.objects.create(name="it", slug="it")
+    _tag_on_published_suchar("it", "it", e2e_user)
 
     page.goto(f"{live_server.url}/suchary/add/")
 

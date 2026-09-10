@@ -1,6 +1,8 @@
 from typing import Literal
 
 from django.db.models import Count
+from django.db.models import Exists
+from django.db.models import OuterRef
 
 # django-ninja resolves endpoint parameter *and return* types via
 # get_type_hints()/inspect.signature() at request-handling time, forcing
@@ -54,10 +56,28 @@ class TagSchema(Schema):
 
 @router.get("/tags", response=list[TagSchema])
 def list_tags(request: HttpRequest, q: str | None = None) -> QuerySet[Tag]:  # noqa: ARG001
-    tags = Tag.objects.all()
+    # Only suggest tags that already appear on at least one *published* suchar.
+    # A tag added to a scheduled (not-yet-published) suchar would otherwise
+    # surface in the create-form autocomplete immediately, letting a stranger
+    # infer someone is drafting on a topic before it goes live (#389). This
+    # endpoint is anonymous-reachable, so the filter is the fix rather than an
+    # auth gate. `Exists` avoids the join fan-out / `DISTINCT` a `.filter(
+    # suchary__...)` would need (cf. #241, #196). `order_by("name")` keeps the
+    # 10-row slice stable between calls now that a join is involved.
+    published_suchary = Suchar.objects.filter(
+        tags=OuterRef("pk"),
+        published_at__lte=timezone.now(),
+    )
+    tags = Tag.objects.filter(Exists(published_suchary))
+    if q:
+        # suchar_form.js sends the raw term the user is typing, which can carry
+        # a leading `#` (badges render as `#tag`), optionally with a space after
+        # it; tag names are stored without either (see SucharForm._save_tags),
+        # so normalise before matching.
+        q = q.strip().lstrip("#").strip()
     if q:
         tags = tags.filter(name__icontains=q)
-    return tags[:10]
+    return tags.order_by("name")[:10]
 
 
 @router.post("/{suchar_id}/vote", auth=django_auth, response=VoteResponse)

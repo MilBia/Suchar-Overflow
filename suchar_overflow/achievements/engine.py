@@ -94,7 +94,13 @@ class SucharCountRule(AchievementRule):
         user: User,
         instance: Suchar | Vote | None = None,  # noqa: ARG003
     ) -> int | None:
-        return user.suchary.count()
+        # Only count *published* suchary. Creating a scheduled suchar fires
+        # this via post_save(created=True); without the filter the author
+        # would earn a COUNT_SUCHAR tier that shows on their public profile
+        # before the suchar itself is visible (#389). The
+        # ``award-publication-achievements`` scheduler job re-runs the engine
+        # once a scheduled suchar goes live (see achievements/tasks.py).
+        return user.suchary.filter(published_at__lte=timezone.now()).count()
 
 
 class VoteFunnyCountRule(AchievementRule):
@@ -166,19 +172,28 @@ class NightOwlRule(AchievementRule):
         user: User,
         instance: Suchar | Vote | None = None,
     ) -> int | None:
-        if not (isinstance(instance, Suchar) and instance.author == user):
+        now = timezone.now()
+        # A scheduled suchar's created_at may already be in the night window,
+        # but it must not award until it is published (#389); the
+        # ``award-publication-achievements`` job re-runs the engine then.
+        if not (
+            isinstance(instance, Suchar)
+            and instance.author == user
+            and instance.published_at <= now
+        ):
             return None
         hour = instance.created_at.astimezone(timezone.get_current_timezone()).hour
         max_night_hour = 4
         if not (0 <= hour <= max_night_hour):
             return None
         tz = timezone.get_current_timezone()
-        return (
-            Suchar.objects.filter(author=user)
+        count = (
+            Suchar.objects.filter(author=user, published_at__lte=now)
             .annotate(local_hour=ExtractHour("created_at", tzinfo=tz))
             .filter(local_hour__lte=max_night_hour)
             .count()
         )
+        return count or None
 
 
 class PolarizerRule(AchievementRule):
@@ -258,8 +273,13 @@ class StreakLoginRule(AchievementRule):
     ) -> int | None:
         # .dates() truncates to day in the DB and returns distinct date objects,
         # avoiding loading every suchar datetime into Python memory.
+        # published_at__lte gate: a scheduled suchar must not extend the streak
+        # until it goes live (#389).
         dates = set(
-            Suchar.objects.filter(author=user).dates("created_at", "day"),
+            Suchar.objects.filter(
+                author=user,
+                published_at__lte=timezone.now(),
+            ).dates("created_at", "day"),
         )
 
         if not dates:
