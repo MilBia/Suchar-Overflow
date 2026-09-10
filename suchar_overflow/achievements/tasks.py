@@ -110,7 +110,13 @@ def find_best_suchary(start_dt: datetime, end_dt: datetime) -> list[Suchar]:
     No ``published_at__lte=now()`` guard is needed on top: an unpublished
     suchar cannot be voted on (#331), so it can only ever reach a 0-vote max,
     which is already excluded below. Adding one would also change what
-    ``award_periodic --date`` reports for an in-progress period.
+    ``award_periodic --date`` reports for an in-progress period. On the cron
+    and catch-up paths that #331 assumption isn't even needed: both only ever
+    call this with a *completed* period, so ``end_dt <= now()`` there by
+    construction, and ``published_at__lt=end_dt`` already implies
+    ``published_at <= now()`` — the guard would be provably a no-op on those
+    paths. #331 only matters for the one path that scores an in-progress
+    period: a manual ``award_periodic --date <today>``.
 
     Postgres doesn't guarantee row order among ties on a plain
     ``.order_by("-vote_count")``, so rather than picking an arbitrary single

@@ -211,6 +211,48 @@ def test_find_best_suchary_window_follows_published_at_not_created_at() -> None:
     assert [s.pk for s in find_best_suchary(feb_start, feb_end)] == [scheduled.pk]
 
 
+@pytest.mark.django_db
+def test_find_best_suchary_window_follows_published_at_not_created_at_year() -> None:
+    """Yearly counterpart of the monthly window test above (#371): a suchar
+    written Dec 28 but scheduled for Jan 3 must compete in *next* year's
+    contest, never in the year it was written — the most damaging variant of
+    the bug, since losing the wrong window here means losing a whole year,
+    not just a month.
+
+    Fixed dates, not the ``last_month_mid()`` helpers, so the assertion holds
+    on every calendar day the suite runs.
+    """
+    author = User.objects.create_user(
+        username="scheduled-author-year",
+        email="scheduled-author-year@example.com",
+        password="pw",  # noqa: S106
+    )
+    voter = User.objects.create_user(
+        username="scheduled-voter-year",
+        email="scheduled-voter-year@example.com",
+        password="pw",  # noqa: S106
+    )
+    scheduled = Suchar.objects.create(text="Written in December", author=author)
+    scheduled.created_at = datetime.datetime(2023, 12, 28, 12, 0, tzinfo=datetime.UTC)
+    scheduled.published_at = datetime.datetime(2024, 1, 3, 12, 0, tzinfo=datetime.UTC)
+    scheduled.save()
+    Vote.objects.create(suchar=scheduled, user=voter, is_funny=True)
+
+    year_2023_start, year_2023_end, _suffix = compute_period_range(
+        "year",
+        datetime.date(2023, 6, 1),
+    )
+    year_2024_start, year_2024_end, _suffix = compute_period_range(
+        "year",
+        datetime.date(2024, 6, 1),
+    )
+
+    assert find_best_suchary(year_2023_start, year_2023_end) == []
+    assert [s.pk for s in find_best_suchary(year_2024_start, year_2024_end)] == [
+        scheduled.pk,
+    ]
+
+
 # ---------------------------------------------------------------------------
 # award_winners — awards every distinct tied author, plus the hidden
 # "-tie" achievement when more than one distinct author tied (#171)
