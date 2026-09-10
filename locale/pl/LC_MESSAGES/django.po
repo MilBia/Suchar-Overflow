@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 06:12+0000\n"
+"POT-Creation-Date: 2026-09-10 08:18+0000\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -575,13 +575,13 @@ msgstr ""
 msgid "Be the hero we need and add the first joke."
 msgstr "Bądź bohaterem, którego potrzebujemy i dodaj pierwszy żart."
 
-#: suchar_overflow/suchary/tests/test_views_extra.py:316
+#: suchar_overflow/suchary/tests/test_views_extra.py:327
 #: suchar_overflow/users/mixins.py:67
 #: suchar_overflow/users/tests/test_mixins.py:92
 msgid "You don't have permission to do that."
 msgstr "Nie masz uprawnień, aby to zrobić."
 
-#: suchar_overflow/suchary/tests/test_views_extra.py:347
+#: suchar_overflow/suchary/tests/test_views_extra.py:358
 #: suchar_overflow/suchary/views.py:247
 msgid "Suchar odświeżony. Dalej suchy, tylko młodszy."
 msgstr ""
