@@ -553,6 +553,46 @@ def test_best_joke_skips_scheduled_suchar_with_more_funny_votes(
 
 
 @pytest.mark.django_db
+def test_best_joke_skips_scheduled_suchar_for_other_logged_in_user(
+    client: Client,
+) -> None:
+    """Issue #372 — the actual threat model: another logged-in user, not the owner.
+
+    The two tests above both `force_login` as the profile owner, who also sees
+    their own scheduled suchar rendered in the dedicated `scheduled_suchary`
+    block elsewhere on the page — which is why
+    `test_best_joke_skips_scheduled_suchar_on_created_at_tie_break` must scope
+    its markup assertion to the trophy card itself. A third-party viewer never
+    gets a `scheduled_suchary` context key at all (see
+    `test_scheduled_suchary_hidden_from_other_user` above), so a page-wide
+    content assertion is sufficient here and doesn't need that scoping.
+    """
+    owner = make_user("bestjoke_sched_other_viewer_owner")
+    viewer = make_user("bestjoke_sched_other_viewer")
+    published = Suchar.objects.create(
+        text="Published joke",
+        author=owner,
+        published_at=timezone.now() - datetime.timedelta(days=1),
+    )
+    Suchar.objects.create(
+        text="Scheduled secret joke",
+        author=owner,
+        published_at=timezone.now() + datetime.timedelta(days=1),
+    )
+
+    client.force_login(viewer)
+    response = client.get(detail_url("bestjoke_sched_other_viewer_owner"))
+    assert response.status_code == HTTPStatus.OK
+    # Guard against a vacuous pass: confirm the owner-only block really is
+    # absent for this viewer, same as `test_scheduled_suchary_hidden_from_other_user`.
+    assert "scheduled_suchary" not in response.context
+    best_joke = response.context["best_joke"]
+    assert best_joke is not None
+    assert best_joke.pk == published.pk
+    assert "Scheduled secret joke" not in response.content.decode()
+
+
+@pytest.mark.django_db
 def test_best_joke_is_none_when_only_scheduled_suchary(client: Client) -> None:
     """Issue #372 — nothing published means no "The Best Of" card at all."""
     user = make_user("bestjoke_only_sched")

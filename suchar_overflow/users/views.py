@@ -136,7 +136,9 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # above and `SucharListView`): without it a scheduled, not-yet-published
         # suchar ties every other one at `funny_count = 0` (#331 makes voting on
         # it impossible) and wins the `-created_at` tie-break, leaking its text
-        # publicly as "The Best Of" before its publication date.
+        # to any other logged-in visitor as "The Best Of" before its
+        # publication date (the profile itself requires login, so this isn't
+        # exposed to anonymous visitors).
         context["best_joke"] = (
             user.suchary.filter(published_at__lte=timezone.now())
             .annotate(
