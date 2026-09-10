@@ -7,6 +7,15 @@
     {% if is_secret %}
       <div class="lock-icon text-muted">🔒</div>
     {% elif achievement.icon_content %}
+      {% comment %}
+        Rendering the icon unescaped is deliberate (#335, #379). icon_content is
+        trusted content: it only ever comes from data migrations or from a
+        superuser, since the admin hides the field from non-superuser staff —
+        guarded by TestAchievementAdminIconContentPermission in
+        suchar_overflow/achievements/tests/test_admin.py. The SVG has to reach
+        the browser raw, otherwise currentColor and the inherited tier styling
+        stop working. Sanitizing it was considered and rejected for that reason.
+      {% endcomment %}
       {{ achievement.icon_content|safe }}
     {% elif locked %}
       <div class="lock-icon text-muted">🔒</div>

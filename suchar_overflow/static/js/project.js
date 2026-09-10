@@ -783,7 +783,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const iconDiv = document.createElement('div');
                 iconDiv.className = 'bell-item-icon';
                 iconDiv.setAttribute('aria-hidden', 'true');
-                // icon_content is server-generated SVG, safe to render as HTML
+                // icon_content is trusted SVG — it only ever comes from a data
+                // migration or a superuser (the admin hides the field from
+                // non-superuser staff since #335), and it must be injected raw
+                // so currentColor and the inherited styling keep working, so
+                // innerHTML here is deliberate (#379). Guarded by
+                // TestAchievementAdminIconContentPermission in
+                // suchar_overflow/achievements/tests/test_admin.py.
                 if (ach.icon_content) {
                     iconDiv.innerHTML = ach.icon_content;
                 } else {
