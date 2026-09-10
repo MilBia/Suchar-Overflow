@@ -7,6 +7,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from suchar_overflow.achievements.engine import AchievementEngine
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
@@ -939,10 +940,14 @@ def _count_suchar_achievement(
     )
 
 
-def _scheduled_suchar(author: UserModel, **kwargs: object) -> Suchar:
+def _scheduled_suchar(
+    author: UserModel,
+    text: str = "scheduled",
+    **kwargs: object,
+) -> Suchar:
     """A suchar created while still scheduled (no award at post_save time)."""
     return Suchar.objects.create(
-        text="scheduled",
+        text=text,
         author=author,
         published_at=timezone.now() + datetime.timedelta(days=1),
         **kwargs,
@@ -1141,3 +1146,108 @@ def test_award_publication_achievements_skips_close_inside_atomic_block() -> Non
     ) as mock_close:
         award_publication_achievements(reference_time=timezone.now())
     mock_close.assert_not_called()
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_overlap_recovers_backdated_publish() -> None:
+    """A suchar re-published with a published_at slightly *before* the last run
+    (``clean_published_at`` allows a 5-min past skew; a transaction can also
+    commit after ``now`` was sampled) is still picked up — the window overlaps
+    its previous run by ``PUBLICATION_CATCHUP_OVERLAP``. Without the overlap
+    ``published_at__gt=last_ran_at`` would drop it forever.
+    """
+    now = timezone.now()
+    SchedulerRun.objects.create(
+        job_id="award-publication-achievements",
+        ran_at=now - datetime.timedelta(minutes=30),
+    )
+    author = User.objects.create_user(
+        username="pub-overlap",
+        email="pub-overlap@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = _count_suchar_achievement()
+    suchar = _scheduled_suchar(author)
+    # 3 min before the last run — inside the 5-min overlap.
+    _retroactively_publish(suchar, now - datetime.timedelta(minutes=33))
+
+    award_publication_achievements(reference_time=now)
+
+    assert UserAchievement.objects.filter(user=author, achievement=ach).exists()
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_overlap_still_has_a_lower_bound() -> None:
+    """The overlap widens the window by a fixed amount; it does not remove the
+    lower bound. A suchar published well before ``last_run - overlap`` is not
+    reprocessed.
+    """
+    now = timezone.now()
+    SchedulerRun.objects.create(
+        job_id="award-publication-achievements",
+        ran_at=now - datetime.timedelta(minutes=30),
+    )
+    author = User.objects.create_user(
+        username="pub-lb",
+        email="pub-lb@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = _count_suchar_achievement()
+    suchar = _scheduled_suchar(author)
+    _retroactively_publish(suchar, now - datetime.timedelta(minutes=40))
+
+    award_publication_achievements(reference_time=now)
+
+    assert not UserAchievement.objects.filter(user=author, achievement=ach).exists()
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_one_bad_suchar_does_not_stall_the_job(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """An exception while checking one suchar is logged and skipped: the marker
+    still advances and the other suchary are still processed, so a single
+    poison record cannot wedge the hourly job forever.
+    """
+    now = timezone.now()
+    author_bad = User.objects.create_user(
+        username="pub-bad",
+        email="pub-bad@example.com",
+        password="pw",  # noqa: S106
+    )
+    author_ok = User.objects.create_user(
+        username="pub-ok",
+        email="pub-ok@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = _count_suchar_achievement()
+    bad = _scheduled_suchar(author_bad, text="boom")
+    ok = _scheduled_suchar(author_ok, text="ok")
+    _retroactively_publish(bad, now - datetime.timedelta(minutes=5))
+    _retroactively_publish(ok, now - datetime.timedelta(minutes=5))
+
+    real_check = AchievementEngine.check_achievements
+
+    def flaky(
+        user: UserModel,
+        event_type: Achievement.EventType,
+        instance: Suchar | Vote | None = None,
+    ) -> None:
+        if getattr(instance, "text", None) == "boom":
+            msg = "boom"
+            raise RuntimeError(msg)
+        real_check(user, event_type, instance)
+
+    with (
+        patch.object(AchievementEngine, "check_achievements", side_effect=flaky),
+        caplog.at_level(
+            logging.ERROR,
+            logger="suchar_overflow.achievements.tasks",
+        ),
+    ):
+        award_publication_achievements(reference_time=now)
+
+    marker = SchedulerRun.objects.get(job_id="award-publication-achievements")
+    assert marker.ran_at == now
+    assert UserAchievement.objects.filter(user=author_ok, achievement=ach).exists()
+    assert "Failed to check publication achievements" in caplog.text

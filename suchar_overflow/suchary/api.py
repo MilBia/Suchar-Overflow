@@ -70,6 +70,11 @@ def list_tags(request: HttpRequest, q: str | None = None) -> QuerySet[Tag]:  # n
     )
     tags = Tag.objects.filter(Exists(published_suchary))
     if q:
+        # suchar_form.js sends the raw term the user is typing, which can carry
+        # a leading `#` (badges render as `#tag`); tag names are stored without
+        # it (see SucharForm._save_tags), so strip it before matching.
+        q = q.strip().lstrip("#")
+    if q:
         tags = tags.filter(name__icontains=q)
     return tags.order_by("name")[:10]
 

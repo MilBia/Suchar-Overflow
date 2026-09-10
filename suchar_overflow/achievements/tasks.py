@@ -190,6 +190,16 @@ PUBLICATION_ACHIEVEMENTS_JOB_ID = "award-publication-achievements"
 #: deploy must not sweep the whole table. Matches the job's hourly cadence.
 PUBLICATION_CATCHUP_FLOOR = timedelta(hours=1)
 
+#: How far the catch-up window reaches back *before* the previous run.
+#: ``SucharForm.clean_published_at`` accepts a ``published_at`` up to 5 min in
+#: the past relative to the save, and a transaction may commit slightly after
+#: ``now`` was sampled — either can place a just-published suchar's
+#: ``published_at`` before the last run's ``ran_at``, where a bare
+#: ``published_at__gt=last_ran_at`` would drop it forever (nothing else
+#: re-checks a suchar once its ``published_at`` has passed). The engine is
+#: idempotent, so overlapping the window by this much is free.
+PUBLICATION_CATCHUP_OVERLAP = timedelta(minutes=5)
+
 
 def award_publication_achievements(
     reference_time: datetime | None = None,
@@ -203,13 +213,20 @@ def award_publication_achievements(
     ``post_save`` time. Nothing fires the engine when a scheduled suchar's
     ``published_at`` simply passes, so this hourly job — and its boot-time
     catch-up in ``AchievementsConfig._catch_up_missed_publication_run`` — walks
-    every suchar whose ``published_at`` crossed ``(SchedulerRun.ran_at, now]``
-    and re-checks its author, bounding the award lag to ~1h.
+    every suchar whose ``published_at`` crossed
+    ``(SchedulerRun.ran_at - PUBLICATION_CATCHUP_OVERLAP, now]`` and re-checks
+    its author, bounding the award lag to ~1h.
 
     Iterates suchary and passes ``instance=suchar`` rather than looping distinct
     authors: ``NightOwlRule`` returns ``None`` without a ``Suchar`` instance.
-    Idempotent — the engine skips already-owned achievements, so an overlapping
-    window or a restart gap re-processing a suchar is a no-op.
+    Idempotent — the engine skips already-owned achievements, so the
+    ``PUBLICATION_CATCHUP_OVERLAP`` window overlap, or a restart gap
+    re-processing a suchar, is a no-op.
+
+    A failure while checking one suchar is logged and skipped, not propagated:
+    otherwise a single poison record would abort the loop before the
+    ``SchedulerRun`` marker is rewritten, and every subsequent hourly run would
+    re-hit it and stall the same way.
 
     Runs in the scheduler's daemon thread; closes stale ORM connections on the
     way out for the same reason as ``award_best_suchar`` (skipped inside an
@@ -223,7 +240,9 @@ def award_publication_achievements(
             .first()
         )
         since = (
-            last_ran_at if last_ran_at is not None else now - PUBLICATION_CATCHUP_FLOOR
+            last_ran_at - PUBLICATION_CATCHUP_OVERLAP
+            if last_ran_at is not None
+            else now - PUBLICATION_CATCHUP_FLOOR
         )
         newly_published = (
             Suchar.objects.filter(published_at__gt=since, published_at__lte=now)
@@ -231,11 +250,18 @@ def award_publication_achievements(
             .iterator()
         )
         for suchar in newly_published:
-            AchievementEngine.check_achievements(
-                suchar.author,
-                Achievement.EventType.SUCHAR_POSTED,
-                suchar,
-            )
+            try:
+                AchievementEngine.check_achievements(
+                    suchar.author,
+                    Achievement.EventType.SUCHAR_POSTED,
+                    suchar,
+                )
+            except Exception:
+                logger.exception(
+                    "Failed to check publication achievements for suchar #%s; "
+                    "skipping it and continuing",
+                    suchar.pk,
+                )
         SchedulerRun.objects.update_or_create(
             job_id=PUBLICATION_ACHIEVEMENTS_JOB_ID,
             defaults={"ran_at": now},

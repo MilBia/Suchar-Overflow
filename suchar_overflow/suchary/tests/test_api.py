@@ -1294,3 +1294,27 @@ def test_non_author_dry_vote_has_no_self_dry_vote_toast(client: Client) -> None:
 
     assert response.status_code == HTTPStatus.OK
     assert response.json()["self_dry_vote_toast"] is None
+
+
+@pytest.mark.django_db
+def test_list_tags_strips_leading_hash_from_q(client: Client) -> None:
+    """suchar_form.js sends the raw typed term, including a leading '#'; tags
+    are stored without it, so strip it before matching.
+    """
+    author = make_user("tagger")
+    _tag_on_published_suchar("IT", "it", author)
+    _tag_on_published_suchar("Python", "python", author)
+
+    response = client.get(TAGS_URL, {"q": "#it"})
+    assert response.status_code == HTTPStatus.OK
+    assert [item["name"] for item in response.json()] == ["IT"]
+
+
+@pytest.mark.django_db
+def test_list_tags_q_only_hash_is_treated_as_no_filter(client: Client) -> None:
+    author = make_user("tagger")
+    _tag_on_published_suchar("IT", "it", author)
+    _tag_on_published_suchar("Python", "python", author)
+
+    response = client.get(TAGS_URL, {"q": "#"})
+    assert len(response.json()) == 2  # noqa: PLR2004

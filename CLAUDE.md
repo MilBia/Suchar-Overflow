@@ -951,16 +951,26 @@ not a sparse cron fire whose "was the last one recorded?" needs a `due_*_run_at`
 helper, so `_catch_up_missed_publication_run()` is just a direct call to
 `award_publication_achievements()` (kept as its own method only for symmetry with the
 other catch-ups' isolated `try/except` in `_start_scheduler`). The task walks every
-suchar whose `published_at` crossed `(SchedulerRun.ran_at, now]`, re-runs the engine
-for its author (iterating suchary and passing `instance=suchar` — `NightOwlRule`
-returns `None` without a `Suchar` instance), and rewrites its own `SchedulerRun`
-marker. A process-down gap is covered automatically (the window opens at the last
-recorded `ran_at`); on the **first** run, with no marker, only
-`PUBLICATION_CATCHUP_FLOOR` (1h) is swept — older suchary were already handled by the
-`post_save` path or an earlier process, and a fresh deploy must not re-sweep the whole
-table, so **no seed migration** is needed here (unlike `0015_seed_yearly_scheduler_run`).
-Idempotent — the engine skips owned achievements — and closes stale ORM connections on
-exit like `award_best_suchar` (skipped inside an atomic block).
+suchar whose `published_at` crossed
+`(SchedulerRun.ran_at - PUBLICATION_CATCHUP_OVERLAP, now]`, re-runs the engine for its
+author (iterating suchary and passing `instance=suchar` — `NightOwlRule` returns
+`None` without a `Suchar` instance), and rewrites its own `SchedulerRun` marker. A
+process-down gap is covered automatically (the window opens at the last recorded
+`ran_at`); on the **first** run, with no marker, only `PUBLICATION_CATCHUP_FLOOR` (1h)
+is swept — older suchary were already handled by the `post_save` path or an earlier
+process, and a fresh deploy must not re-sweep the whole table, so **no seed migration**
+is needed here (unlike `0015_seed_yearly_scheduler_run`).
+`PUBLICATION_CATCHUP_OVERLAP` (5 min) overlaps each run with the previous one:
+`SucharForm.clean_published_at` accepts a `published_at` up to 5 min in the past, and a
+transaction can commit just after `now` is sampled — either can leave a just-published
+suchar's `published_at` *before* the last `ran_at`, and a bare
+`published_at__gt=last_ran_at` would then drop it forever (nothing re-checks a suchar
+once its `published_at` passes). The per-suchar `check_achievements` call is wrapped in
+`try/except` + `logger.exception`: a single poison record must not abort the loop
+before the marker is rewritten, or every subsequent hourly run re-hits it and stalls.
+Idempotent — the engine skips owned achievements (so the window overlap and any
+re-processing are no-ops) — and closes stale ORM connections on exit like
+`award_best_suchar` (skipped inside an atomic block).
 
 ### Content Security Policy
 
