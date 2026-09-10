@@ -106,6 +106,25 @@ def test_top_authors_overall_capped_at_ten(client: Client) -> None:
     )
 
 
+@pytest.mark.django_db
+def test_leaderboard_suchar_count_excludes_scheduled(client: Client) -> None:
+    """#388: a not-yet-published draft must not inflate an author's public
+    "N sucharów" column on the leaderboard."""
+    author = make_user("sched_count_author")
+    voter = make_user("sched_count_voter")
+    published = Suchar.objects.create(text="Live joke", author=author)
+    Vote.objects.create(suchar=published, user=voter, is_funny=True)
+    Suchar.objects.create(
+        text="Draft joke",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+
+    response = client.get(reverse(LEADERBOARD_URL))
+    authors = {a.username: a for a in response.context["top_authors_overall"]}
+    assert authors["sched_count_author"].suchar_count == 1
+
+
 # ---------------------------------------------------------------------------
 # top_authors_funny / top_authors_dry
 # ---------------------------------------------------------------------------

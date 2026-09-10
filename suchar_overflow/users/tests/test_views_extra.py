@@ -331,11 +331,13 @@ def test_heatmap_weeks_each_has_days_and_month_label(client: Client) -> None:
 def test_heatmap_level_buckets(client: Client) -> None:
     """Levels 0-4 must correspond to the documented thresholds."""
     user = make_user("heatmap_u3")
-    # Create 5 suchary today to hit level 4
+    # Create 5 suchary today to hit level 4. The heatmap buckets by
+    # published_at (#388), a few seconds in the past by the time the view runs
+    # — pin it so the count lands squarely on today's cell.
     today = timezone.now()
     for i in range(5):
         s = Suchar.objects.create(text=f"hm{i}", author=user)
-        Suchar.objects.filter(pk=s.pk).update(created_at=today)
+        Suchar.objects.filter(pk=s.pk).update(created_at=today, published_at=today)
 
     client.force_login(user)
     response = client.get(detail_url("heatmap_u3"))
@@ -362,6 +364,78 @@ def test_heatmap_starts_aligned_to_monday(client: Client) -> None:
     first_day_str = first_week["days"][0]["date"]
     first_day = datetime.date.fromisoformat(first_day_str)
     assert first_day.weekday() == 0  # Monday
+
+
+# ===========================================================================
+# published_at gating of public profile stats (#388)
+# ===========================================================================
+
+
+@pytest.mark.django_db
+def test_suchar_count_excludes_scheduled_suchar(client: Client) -> None:
+    """The profile's public "N sucharów" number must ignore drafts (#388)."""
+    user = make_user("count388")
+    Suchar.objects.create(text="Published", author=user)
+    Suchar.objects.create(
+        text="Scheduled",
+        author=user,
+        published_at=timezone.now() + datetime.timedelta(days=1),
+    )
+
+    client.force_login(user)
+    response = client.get(detail_url("count388"))
+    assert response.context["suchar_count"] == 1
+
+
+@pytest.mark.django_db
+def test_activity_chart_excludes_scheduled_suchar(client: Client) -> None:
+    """The 30-day activity chart must not light a bar for a not-yet-published
+    draft on its creation day (#388)."""
+    user = make_user("activity388")
+    Suchar.objects.create(
+        text="Scheduled",
+        author=user,
+        published_at=timezone.now() + datetime.timedelta(days=1),
+    )
+
+    client.force_login(user)
+    response = client.get(detail_url("activity388"))
+    assert sum(response.context["activity_values"]) == 0
+
+
+@pytest.mark.django_db
+def test_activity_chart_buckets_by_publication_day(client: Client) -> None:
+    """A suchar created outside the 30-day window but published inside it must
+    still appear — the chart is windowed and bucketed by published_at (#388)."""
+    user = make_user("activity388b")
+    old_created = timezone.now() - datetime.timedelta(days=45)
+    s = Suchar.objects.create(text="Backdated", author=user)
+    Suchar.objects.filter(pk=s.pk).update(created_at=old_created)
+
+    client.force_login(user)
+    response = client.get(detail_url("activity388b"))
+    assert sum(response.context["activity_values"]) == 1
+
+
+@pytest.mark.django_db
+def test_heatmap_excludes_scheduled_suchar(client: Client) -> None:
+    """The contribution heatmap must not reveal that a draft exists today on a
+    public profile (#388)."""
+    user = make_user("heatmap388")
+    Suchar.objects.create(
+        text="Scheduled",
+        author=user,
+        published_at=timezone.now() + datetime.timedelta(days=1),
+    )
+
+    client.force_login(user)
+    response = client.get(detail_url("heatmap388"))
+    total = sum(
+        day["count"]
+        for week in response.context["heatmap_weeks"]
+        for day in week["days"]
+    )
+    assert total == 0
 
 
 # ===========================================================================
@@ -899,11 +973,11 @@ def heatmap_count_for(weeks: list[dict], day: datetime.date) -> int | None:
 
 @pytest.mark.django_db
 def test_heatmap_includes_todays_suchary(client: Client) -> None:
-    """The window's upper bound is tomorrow — today must still count."""
+    """The window's upper bound is `now` — a suchar published moments ago counts."""
     user = make_user("heatmap_today")
     now = timezone.now()
     s = Suchar.objects.create(text="today", author=user)
-    Suchar.objects.filter(pk=s.pk).update(created_at=now)
+    Suchar.objects.filter(pk=s.pk).update(created_at=now, published_at=now)
 
     client.force_login(user)
     response = client.get(detail_url("heatmap_today"))
@@ -923,7 +997,7 @@ def test_heatmap_includes_suchar_at_midnight_of_first_day(client: Client) -> Non
     )
 
     s = Suchar.objects.create(text="boundary", author=user)
-    Suchar.objects.filter(pk=s.pk).update(created_at=midnight)
+    Suchar.objects.filter(pk=s.pk).update(created_at=midnight, published_at=midnight)
 
     client.force_login(user)
     response = client.get(detail_url("heatmap_start"))
@@ -941,7 +1015,7 @@ def test_heatmap_excludes_suchar_before_the_window(client: Client) -> None:
     ) - datetime.timedelta(seconds=1)
 
     s = Suchar.objects.create(text="too old", author=user)
-    Suchar.objects.filter(pk=s.pk).update(created_at=before)
+    Suchar.objects.filter(pk=s.pk).update(created_at=before, published_at=before)
 
     client.force_login(user)
     response = client.get(detail_url("heatmap_before"))
@@ -953,16 +1027,18 @@ def test_heatmap_excludes_suchar_before_the_window(client: Client) -> None:
 
 
 @pytest.mark.django_db
-def test_profile_day_queries_compare_the_bare_created_at_column(
+def test_profile_day_queries_compare_the_bare_published_at_column(
     client: Client,
 ) -> None:
-    """The per-day aggregations must not cast created_at in their WHERE clause.
+    """The per-day aggregations must not cast published_at in their WHERE clause.
 
-    ``created_at__date__gte`` renders on PostgreSQL as
-    ``("suchary_suchar"."created_at" AT TIME ZONE 'UTC')::date >= ...`` — a cast
-    expression, so the plain B-tree index on ``created_at`` (issue #197) cannot
-    be used. ``TruncDay`` in the SELECT list still casts, which is fine; only
-    the filtered column has to stay bare.
+    Since #388 both the heatmap and the 30-day chart window and bucket by
+    ``published_at`` (which carries its own ``db_index=True``). A
+    ``published_at__date__gte`` lookup would render on PostgreSQL as
+    ``("suchary_suchar"."published_at" AT TIME ZONE 'UTC')::date >= ...`` — a
+    cast expression the plain B-tree index cannot serve. ``TruncDay`` in the
+    SELECT list still casts, which is fine; only the filtered column has to
+    stay bare.
     """
     user = make_user("heatmap_sql")
     client.force_login(user)
@@ -978,7 +1054,7 @@ def test_profile_day_queries_compare_the_bare_created_at_column(
     assert day_queries, "expected the heatmap/activity aggregation queries"
     for sql in day_queries:
         where = sql.split(" WHERE ", 1)[1]
-        assert "::date" not in where, f"created_at is still cast to date: {sql}"
-        assert '"suchary_suchar"."created_at" >=' in where, (
-            f"expected a bare half-open lower bound on created_at: {sql}"
+        assert "::date" not in where, f"published_at is still cast to date: {sql}"
+        assert '"suchary_suchar"."published_at" >=' in where, (
+            f"expected a bare half-open lower bound on published_at: {sql}"
         )

@@ -211,7 +211,15 @@ class LeaderboardView(View):
         # that actually end up rendered, not the whole materialized queryset.
         suchary = Suchar.objects.select_related("author")
 
-        suchar_count = Count("suchary", distinct=True)
+        # Gated on published_at (#388): the leaderboard's "N sucharów" column is
+        # public, so a scheduled draft must not inflate an author's count. The
+        # vote-based scores below need no such filter — a draft holds no votes
+        # (#331). Same join as an unfiltered Count("suchary"), so no extra query.
+        suchar_count = Count(
+            "suchary",
+            distinct=True,
+            filter=Q(suchary__published_at__lte=now),
+        )
         total_score = Count("suchary__votes")
         funny_score = Count("suchary__votes", filter=Q(suchary__votes__is_funny=True))
         dry_score = Count("suchary__votes", filter=Q(suchary__votes__is_dry=True))
