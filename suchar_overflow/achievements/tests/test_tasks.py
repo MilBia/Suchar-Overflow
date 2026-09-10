@@ -1,14 +1,17 @@
 import datetime
 import logging
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.achievements.tasks import award_best_suchar
+from suchar_overflow.achievements.tasks import award_publication_achievements
 from suchar_overflow.achievements.tasks import award_winners
 from suchar_overflow.achievements.tasks import compute_period_range
 from suchar_overflow.achievements.tasks import due_monthly_run_at
@@ -18,6 +21,9 @@ from suchar_overflow.achievements.tests.conftest import freeze_to_first_of_curre
 from suchar_overflow.achievements.tests.conftest import last_month_mid
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
+
+if TYPE_CHECKING:
+    from suchar_overflow.users.models import User as UserModel
 
 User = get_user_model()
 
@@ -907,3 +913,231 @@ def test_award_best_suchar_logs_warning_when_achievement_missing(
         award_best_suchar("month")  # should not raise
 
     assert "best-suchar-month" in caplog.text
+
+
+# ---------------------------------------------------------------------------
+# award_publication_achievements — re-run the engine for suchary that crossed
+# into visibility since the last run, so a scheduled suchar's COUNT_SUCHAR /
+# STREAK_LOGIN / NIGHT_OWL tiers land within ~1h of publication rather than
+# only on the author's next suchar (#389).
+# ---------------------------------------------------------------------------
+
+
+def _count_suchar_achievement(
+    slug: str = "pub-count-1",
+    threshold: int = 1,
+) -> Achievement:
+    return Achievement.objects.create(
+        slug=slug,
+        name=slug,
+        description="desc",
+        icon_content="<svg/>",
+        category=Achievement.Category.LIFETIME,
+        event_type=Achievement.EventType.SUCHAR_POSTED,
+        metric=Achievement.Metric.COUNT_SUCHAR,
+        threshold=threshold,
+    )
+
+
+def _scheduled_suchar(author: UserModel, **kwargs: object) -> Suchar:
+    """A suchar created while still scheduled (no award at post_save time)."""
+    return Suchar.objects.create(
+        text="scheduled",
+        author=author,
+        published_at=timezone.now() + datetime.timedelta(days=1),
+        **kwargs,
+    )
+
+
+def _retroactively_publish(suchar: Suchar, published_at: datetime.datetime) -> None:
+    """Move published_at into the past without firing post_save."""
+    Suchar.objects.filter(pk=suchar.pk).update(published_at=published_at)
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_awards_after_scheduled_suchar_goes_live() -> (
+    None
+):
+    now = timezone.now()
+    author = User.objects.create_user(
+        username="pub1",
+        email="pub1@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = _count_suchar_achievement()
+    suchar = _scheduled_suchar(author)
+    _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
+
+    award_publication_achievements(reference_time=now)
+
+    assert UserAchievement.objects.filter(user=author, achievement=ach).exists()
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_writes_scheduler_run_marker() -> None:
+    now = timezone.now()
+    award_publication_achievements(reference_time=now)
+    run = SchedulerRun.objects.get(job_id="award-publication-achievements")
+    assert run.ran_at == now
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_updates_existing_marker() -> None:
+    first = timezone.now() - datetime.timedelta(hours=2)
+    second = timezone.now()
+    award_publication_achievements(reference_time=first)
+    award_publication_achievements(reference_time=second)
+    runs = SchedulerRun.objects.filter(job_id="award-publication-achievements")
+    assert runs.count() == 1
+    assert runs.get().ran_at == second
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_ignores_suchar_published_before_last_run() -> (
+    None
+):
+    now = timezone.now()
+    SchedulerRun.objects.create(
+        job_id="award-publication-achievements",
+        ran_at=now - datetime.timedelta(minutes=10),
+    )
+    author = User.objects.create_user(
+        username="pub2",
+        email="pub2@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = _count_suchar_achievement()
+    suchar = _scheduled_suchar(author)
+    # Published 30 min ago — already visible at the last run, not "new".
+    _retroactively_publish(suchar, now - datetime.timedelta(minutes=30))
+
+    award_publication_achievements(reference_time=now)
+
+    assert not UserAchievement.objects.filter(user=author, achievement=ach).exists()
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_processes_suchar_published_after_last_run() -> (
+    None
+):
+    now = timezone.now()
+    SchedulerRun.objects.create(
+        job_id="award-publication-achievements",
+        ran_at=now - datetime.timedelta(minutes=10),
+    )
+    author = User.objects.create_user(
+        username="pub3",
+        email="pub3@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = _count_suchar_achievement()
+    suchar = _scheduled_suchar(author)
+    _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
+
+    award_publication_achievements(reference_time=now)
+
+    assert UserAchievement.objects.filter(user=author, achievement=ach).exists()
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_first_run_floor_ignores_old_suchary() -> None:
+    """With no marker, only the last hour is swept — older suchary were already
+    handled by post_save (or an earlier process) and a fresh deploy must not
+    re-sweep the whole table.
+    """
+    now = timezone.now()
+    author = User.objects.create_user(
+        username="pub4",
+        email="pub4@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = _count_suchar_achievement()
+    suchar = _scheduled_suchar(author)
+    _retroactively_publish(suchar, now - datetime.timedelta(hours=2))
+
+    award_publication_achievements(reference_time=now)
+
+    assert not UserAchievement.objects.filter(user=author, achievement=ach).exists()
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_ignores_still_scheduled_suchary() -> None:
+    now = timezone.now()
+    author = User.objects.create_user(
+        username="pub5",
+        email="pub5@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = _count_suchar_achievement()
+    _scheduled_suchar(author)  # published_at is a day in the future
+
+    award_publication_achievements(reference_time=now)
+
+    assert not UserAchievement.objects.filter(user=author, achievement=ach).exists()
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_is_idempotent() -> None:
+    now = timezone.now()
+    author = User.objects.create_user(
+        username="pub6",
+        email="pub6@example.com",
+        password="pw",  # noqa: S106
+    )
+    ach = _count_suchar_achievement()
+    suchar = _scheduled_suchar(author)
+    _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
+
+    award_publication_achievements(reference_time=now)
+    award_publication_achievements(reference_time=now)
+
+    assert UserAchievement.objects.filter(user=author, achievement=ach).count() == 1
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_passes_instance_for_night_owl() -> None:
+    """NightOwlRule returns None without a Suchar instance, so the job must
+    iterate suchary and pass instance=suchar, not just distinct authors.
+    """
+    now = timezone.now()
+    author = User.objects.create_user(
+        username="pub7",
+        email="pub7@example.com",
+        password="pw",  # noqa: S106
+    )
+    night_owl = Achievement.objects.create(
+        slug="pub-night-owl-1",
+        name="pub-night-owl-1",
+        description="desc",
+        icon_content="<svg/>",
+        category=Achievement.Category.LIFETIME,
+        event_type=Achievement.EventType.SUCHAR_POSTED,
+        metric=Achievement.Metric.NIGHT_OWL,
+        threshold=1,
+    )
+    suchar = _scheduled_suchar(author)
+    night_ts = now.replace(hour=2, minute=0, second=0, microsecond=0)
+    Suchar.objects.filter(pk=suchar.pk).update(created_at=night_ts)
+    _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
+
+    award_publication_achievements(reference_time=now)
+
+    assert UserAchievement.objects.filter(user=author, achievement=night_owl).exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_award_publication_achievements_closes_old_connections() -> None:
+    with patch(
+        "suchar_overflow.achievements.tasks.close_old_connections",
+    ) as mock_close:
+        award_publication_achievements(reference_time=timezone.now())
+    assert mock_close.called
+
+
+@pytest.mark.django_db
+def test_award_publication_achievements_skips_close_inside_atomic_block() -> None:
+    with patch(
+        "suchar_overflow.achievements.tasks.close_old_connections",
+    ) as mock_close:
+        award_publication_achievements(reference_time=timezone.now())
+    mock_close.assert_not_called()

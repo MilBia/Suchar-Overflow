@@ -902,7 +902,9 @@ Django-RQ has been removed entirely. `AchievementsConfig.ready()`
 (raw `apscheduler` 3.x, default in-memory jobstore — `django-apscheduler` was dropped,
 see issue #159: semi-abandoned, no declared Django 6.x support) on a plain thread,
 scheduling `award_best_suchar` as two cron jobs: `award-best-suchar-month` (day=1,
-00:05 UTC) and `award-best-suchar-year` (month=1, day=1, 00:05 UTC — see #168). The
+00:05 UTC) and `award-best-suchar-year` (month=1, day=1, 00:05 UTC — see #168), plus
+a third, `award-publication-achievements` (`award_publication_achievements`, hourly at
+:05 — see below, #389). The
 scheduler is skipped under pytest and for management commands in `_NO_SCHEDULER`
 (`migrate`, `makemigrations`, `collectstatic`, `compress`, `check`, `shell`,
 `createsuperuser`) to avoid starting duplicate/unwanted schedulers. Since the
@@ -943,6 +945,22 @@ in every test (like the migration-seeded `Achievement` rows — see Test pattern
 below), which is why several `achievements/tests/test_apps.py` /
 `achievements/tests/test_models.py` tests delete or `update_or_create` it before
 asserting on `SchedulerRun` state.
+
+The third job, `award-publication-achievements` (#389), is a different shape: it is
+not a sparse cron fire whose "was the last one recorded?" needs a `due_*_run_at`
+helper, so `_catch_up_missed_publication_run()` is just a direct call to
+`award_publication_achievements()` (kept as its own method only for symmetry with the
+other catch-ups' isolated `try/except` in `_start_scheduler`). The task walks every
+suchar whose `published_at` crossed `(SchedulerRun.ran_at, now]`, re-runs the engine
+for its author (iterating suchary and passing `instance=suchar` — `NightOwlRule`
+returns `None` without a `Suchar` instance), and rewrites its own `SchedulerRun`
+marker. A process-down gap is covered automatically (the window opens at the last
+recorded `ran_at`); on the **first** run, with no marker, only
+`PUBLICATION_CATCHUP_FLOOR` (1h) is swept — older suchary were already handled by the
+`post_save` path or an earlier process, and a fresh deploy must not re-sweep the whole
+table, so **no seed migration** is needed here (unlike `0015_seed_yearly_scheduler_run`).
+Idempotent — the engine skips owned achievements — and closes stale ORM connections on
+exit like `award_best_suchar` (skipped inside an atomic block).
 
 ### Content Security Policy
 
@@ -1154,6 +1172,35 @@ the broken state, the `OfflineGenerationError` only fires at render time.
 The engine only ever *awards* — it never revokes an achievement whose metric later
 drops back below the threshold.
 
+**The three suchar-authoring rules gate on `published_at`.** `SucharCountRule`
+(`COUNT_SUCHAR`), `StreakLoginRule` (`STREAK_LOGIN`) and `NightOwlRule` (`NIGHT_OWL`)
+all filter `Suchar.objects.filter(... published_at__lte=timezone.now())` (`__lte`, per
+#388 / the rest of the codebase), and `NightOwlRule`'s instance guard also requires
+`instance.published_at <= now`. Without this, creating a *scheduled* (future
+`published_at`) suchar fires the engine via `post_save(created=True)` and awards a
+`COUNT_SUCHAR`/streak/night-owl tier that shows on the author's public profile before
+the suchar itself is visible (#389). Nothing fires the engine when a scheduled suchar's
+`published_at` merely passes, so `award_publication_achievements`
+(`achievements/tasks.py`, scheduled hourly — see Background scheduling) re-runs the
+engine for every suchar that crossed into visibility since its last `SchedulerRun`,
+bounding the award lag to ~1h. `EditCountRule`, `PolarizerRule`, `SumScoreRule` and
+`DryMasterRule` are deliberately **not** gated: editing is only possible before
+publication ("Recydywa" is earned entirely on scheduled suchary by design), and the
+vote-driven rules already can't latch pre-publication (`_maybe_mark_overdried`'s lower
+bound; votes on an unpublished suchar 404 per #331).
+
+The same #389 leak in the tag-autocomplete endpoint (`suchary/api.py:list_tags`,
+`GET /api/suchary/tags` — anonymous-reachable) is fixed the same way: it now returns
+only tags with `Exists(Suchar.objects.filter(tags=OuterRef("pk"),
+published_at__lte=now))` (`Exists`, not `.filter(...).distinct()` — no join fan-out,
+cf. #241/#196), ordered by `name` for a stable 10-row slice. Trade-off: a user editing
+their own scheduled suchar loses autocomplete for a tag that exists *only* on that
+suchar. Tag reuse-by-name is unaffected — `SucharForm._save_tags` resolves tags by
+slug via its own `Tag.objects.filter(slug__in=...)` + `bulk_create`, independent of
+the suggestion endpoint. `tests/e2e/test_tag_autocomplete.py` fixtures therefore
+attach a published suchar to each tag they create (a bare `Tag.objects.create` is now
+invisible to the endpoint).
+
 Two triggers feed it for votes (see `suchar_overflow/achievements/signals.py`,
 `_award_vote_achievements`):
 
@@ -1194,7 +1241,8 @@ silently overwrite the first in `_rules`; the check runs inside the one-shot
 `if cls._rules:` idempotency guard, so it fires on the first `register_rules()` call.
 
 Metric → what it evaluates:
-- `COUNT_SUCHAR` → suchary authored by user
+- `COUNT_SUCHAR` → *published* suchary authored by user (scheduled ones don't count
+  until they go live — #389)
 - `COUNT_VOTE_FUNNY` → funny votes **cast by** user (voter perspective)
 - `COUNT_VOTE_DRY` → dry votes **cast by** user (voter perspective — same
   `user.suchar_votes` accessor as `COUNT_VOTE_FUNNY`, *not* votes received)
@@ -1205,8 +1253,8 @@ Metric → what it evaluates:
   `funny + dry`) among the user's perfectly-split suchary, compared against the
   threshold — equivalent to the old `funny_count__gte=threshold` + `.exists()`,
   but threshold-free so it runs once
-- `STREAK_LOGIN` → consecutive days with at least one suchar posted
-- `NIGHT_OWL` → suchar created between 00:00–04:00 local time
+- `STREAK_LOGIN` → consecutive days with at least one *published* suchar posted
+- `NIGHT_OWL` → *published* suchar created between 00:00–04:00 local time
 - `FRONTEND_EVENT` → not evaluated by a rule in `engine.py`; awarded directly by
   `POST /api/achievements/frontend-event` for client-only actions (e.g. UI interactions
   with no server-side signal)

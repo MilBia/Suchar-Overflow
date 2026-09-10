@@ -10,6 +10,7 @@ from django.db.models import Count
 from django.db.models import Max
 from django.utils import timezone
 
+from suchar_overflow.achievements.engine import AchievementEngine
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
@@ -178,6 +179,70 @@ def _award_achievement(slug: str, users: set[User]) -> list[tuple[str, User, boo
         )
         results.append((slug, user, created))
     return results
+
+
+#: Job id for the publication catch-up run's ``SchedulerRun`` marker.
+PUBLICATION_ACHIEVEMENTS_JOB_ID = "award-publication-achievements"
+
+#: On the very first run (no ``SchedulerRun`` marker) only suchary published
+#: within this window are re-checked. Anything older was already handled by the
+#: ``post_save`` path when it was created, or by an earlier process — a fresh
+#: deploy must not sweep the whole table. Matches the job's hourly cadence.
+PUBLICATION_CATCHUP_FLOOR = timedelta(hours=1)
+
+
+def award_publication_achievements(
+    reference_time: datetime | None = None,
+) -> None:
+    """Re-run the achievement engine for suchary that became visible since the
+    last run (#389).
+
+    ``SucharCountRule`` / ``StreakLoginRule`` / ``NightOwlRule`` only count
+    *published* suchary, so creating a scheduled suchar no longer awards its
+    author a ``COUNT_SUCHAR`` / ``STREAK_LOGIN`` / ``NIGHT_OWL`` tier at
+    ``post_save`` time. Nothing fires the engine when a scheduled suchar's
+    ``published_at`` simply passes, so this hourly job — and its boot-time
+    catch-up in ``AchievementsConfig._catch_up_missed_publication_run`` — walks
+    every suchar whose ``published_at`` crossed ``(SchedulerRun.ran_at, now]``
+    and re-checks its author, bounding the award lag to ~1h.
+
+    Iterates suchary and passes ``instance=suchar`` rather than looping distinct
+    authors: ``NightOwlRule`` returns ``None`` without a ``Suchar`` instance.
+    Idempotent — the engine skips already-owned achievements, so an overlapping
+    window or a restart gap re-processing a suchar is a no-op.
+
+    Runs in the scheduler's daemon thread; closes stale ORM connections on the
+    way out for the same reason as ``award_best_suchar`` (skipped inside an
+    atomic block, e.g. pytest-django's per-test transaction).
+    """
+    try:
+        now = reference_time or timezone.now()
+        last_ran_at = (
+            SchedulerRun.objects.filter(job_id=PUBLICATION_ACHIEVEMENTS_JOB_ID)
+            .values_list("ran_at", flat=True)
+            .first()
+        )
+        since = (
+            last_ran_at if last_ran_at is not None else now - PUBLICATION_CATCHUP_FLOOR
+        )
+        newly_published = (
+            Suchar.objects.filter(published_at__gt=since, published_at__lte=now)
+            .select_related("author")
+            .iterator()
+        )
+        for suchar in newly_published:
+            AchievementEngine.check_achievements(
+                suchar.author,
+                Achievement.EventType.SUCHAR_POSTED,
+                suchar,
+            )
+        SchedulerRun.objects.update_or_create(
+            job_id=PUBLICATION_ACHIEVEMENTS_JOB_ID,
+            defaults={"ran_at": now},
+        )
+    finally:
+        if not connection.in_atomic_block:
+            close_old_connections()
 
 
 def award_best_suchar(period: str, reference_date: date | None = None) -> None:

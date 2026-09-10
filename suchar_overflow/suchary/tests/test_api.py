@@ -23,6 +23,8 @@ from suchar_overflow.suchary.models import Vote
 if TYPE_CHECKING:
     from django.test import Client
 
+    from suchar_overflow.users.models import User
+
 TAGS_URL = "/api/suchary/tags"
 VOTE_URL = "/api/suchary/{pk}/vote"
 
@@ -84,6 +86,14 @@ def dry_master_achievement() -> Achievement:
 # ---------------------------------------------------------------------------
 
 
+def _tag_on_published_suchar(name: str, slug: str, author: User) -> Tag:
+    """Create a Tag and attach it to one already-published suchar."""
+    tag = Tag.objects.create(name=name, slug=slug)
+    suchar = Suchar.objects.create(text=f"joke {slug}", author=author)
+    suchar.tags.add(tag)
+    return tag
+
+
 @pytest.mark.django_db
 def test_list_tags_empty(client: Client) -> None:
     response = client.get(TAGS_URL)
@@ -92,9 +102,10 @@ def test_list_tags_empty(client: Client) -> None:
 
 
 @pytest.mark.django_db
-def test_list_tags_returns_all(client: Client) -> None:
-    Tag.objects.create(name="IT", slug="it")
-    Tag.objects.create(name="Programowanie", slug="programowanie")
+def test_list_tags_returns_tags_on_published_suchary(client: Client) -> None:
+    author = make_user("tagger")
+    _tag_on_published_suchar("IT", "it", author)
+    _tag_on_published_suchar("Programowanie", "programowanie", author)
 
     response = client.get(TAGS_URL)
     assert response.status_code == HTTPStatus.OK
@@ -105,10 +116,67 @@ def test_list_tags_returns_all(client: Client) -> None:
 
 
 @pytest.mark.django_db
+def test_list_tags_excludes_tag_only_on_scheduled_suchar(client: Client) -> None:
+    """A tag used only on a not-yet-published suchar must not leak into
+    autocomplete — a stranger could otherwise infer someone is drafting on a
+    topic before it goes live (#389).
+    """
+    author = make_user("tagger")
+    _tag_on_published_suchar("Live", "live", author)
+
+    secret = Tag.objects.create(name="Secret", slug="secret")
+    scheduled = Suchar.objects.create(
+        text="scheduled joke",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+    scheduled.tags.add(secret)
+
+    response = client.get(TAGS_URL)
+    slugs = {item["slug"] for item in response.json()}
+    assert slugs == {"live"}
+
+
+@pytest.mark.django_db
+def test_list_tags_includes_tag_shared_by_published_and_scheduled(
+    client: Client,
+) -> None:
+    """A tag on both a published and a scheduled suchar still shows — the
+    published use already makes it public.
+    """
+    author = make_user("tagger")
+    tag = _tag_on_published_suchar("Shared", "shared", author)
+    scheduled = Suchar.objects.create(
+        text="scheduled joke",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+    scheduled.tags.add(tag)
+
+    response = client.get(TAGS_URL)
+    assert [item["slug"] for item in response.json()] == ["shared"]
+
+
+@pytest.mark.django_db
+def test_list_tags_no_duplicate_for_tag_on_multiple_published_suchary(
+    client: Client,
+) -> None:
+    author = make_user("tagger")
+    tag = Tag.objects.create(name="Popular", slug="popular")
+    for i in range(3):
+        suchar = Suchar.objects.create(text=f"joke {i}", author=author)
+        suchar.tags.add(tag)
+
+    response = client.get(TAGS_URL)
+    assert [item["slug"] for item in response.json()] == ["popular"]
+
+
+@pytest.mark.django_db
 def test_list_tags_filtered_by_q(client: Client) -> None:
-    Tag.objects.create(name="IT", slug="it")
-    Tag.objects.create(name="Python", slug="python")
-    Tag.objects.create(name="Programowanie", slug="programowanie")
+    author = make_user("tagger")
+    _tag_on_published_suchar("IT", "it", author)
+    _tag_on_published_suchar("Python", "python", author)
+    _tag_on_published_suchar("Programowanie", "programowanie", author)
 
     response = client.get(TAGS_URL, {"q": "it"})
     assert response.status_code == HTTPStatus.OK
@@ -120,9 +188,10 @@ def test_list_tags_filtered_by_q(client: Client) -> None:
 
 
 @pytest.mark.django_db
-def test_list_tags_q_empty_string_returns_all(client: Client) -> None:
-    Tag.objects.create(name="IT", slug="it")
-    Tag.objects.create(name="Python", slug="python")
+def test_list_tags_q_empty_string_returns_all_published(client: Client) -> None:
+    author = make_user("tagger")
+    _tag_on_published_suchar("IT", "it", author)
+    _tag_on_published_suchar("Python", "python", author)
 
     response = client.get(TAGS_URL, {"q": ""})
     assert response.status_code == HTTPStatus.OK
@@ -131,8 +200,9 @@ def test_list_tags_q_empty_string_returns_all(client: Client) -> None:
 
 @pytest.mark.django_db
 def test_list_tags_capped_at_ten(client: Client) -> None:
+    author = make_user("tagger")
     for i in range(15):
-        Tag.objects.create(name=f"Tag{i}", slug=f"tag{i}")
+        _tag_on_published_suchar(f"Tag{i:02d}", f"tag{i:02d}", author)
 
     response = client.get(TAGS_URL)
     assert response.status_code == HTTPStatus.OK
@@ -140,8 +210,20 @@ def test_list_tags_capped_at_ten(client: Client) -> None:
 
 
 @pytest.mark.django_db
+def test_list_tags_ordered_by_name(client: Client) -> None:
+    author = make_user("tagger")
+    _tag_on_published_suchar("Zeta", "zeta", author)
+    _tag_on_published_suchar("Alpha", "alpha", author)
+    _tag_on_published_suchar("Mu", "mu", author)
+
+    response = client.get(TAGS_URL)
+    assert [item["name"] for item in response.json()] == ["Alpha", "Mu", "Zeta"]
+
+
+@pytest.mark.django_db
 def test_list_tags_schema_fields(client: Client) -> None:
-    Tag.objects.create(name="IT", slug="it")
+    author = make_user("tagger")
+    _tag_on_published_suchar("IT", "it", author)
 
     response = client.get(TAGS_URL)
     item = response.json()[0]

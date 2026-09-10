@@ -118,14 +118,31 @@ class AchievementsConfig(AppConfig):
             award_best_suchar("year", reference_date=due_at.date() - timedelta(days=1))
 
     @staticmethod
+    def _catch_up_missed_publication_run() -> None:
+        """Re-run the achievement engine for suchary that became published
+        while the process was down (#389).
+
+        Unlike ``_catch_up_missed_monthly_run`` / ``_catch_up_missed_yearly_run``
+        there is no sparse cron fire to reconstruct: ``award_publication_
+        achievements`` already processes every suchar published since its own
+        ``SchedulerRun`` marker, so this is a plain delegating call. Kept as its
+        own method for symmetry with the other catch-ups' isolated
+        ``try/except`` in ``_start_scheduler``.
+        """
+        from suchar_overflow.achievements.tasks import award_publication_achievements
+
+        award_publication_achievements()
+
+    @staticmethod
     def _start_scheduler() -> None:
         from apscheduler.schedulers.background import BackgroundScheduler
 
         from suchar_overflow.achievements.tasks import award_best_suchar
+        from suchar_overflow.achievements.tasks import award_publication_achievements
 
-        # A transient failure in either catch-up (e.g. a DB hiccup during
-        # startup) must not prevent the other catch-up or the recurring jobs
-        # below from being registered.
+        # A transient failure in any catch-up (e.g. a DB hiccup during startup)
+        # must not prevent the other catch-ups or the recurring jobs below from
+        # being registered.
         try:
             AchievementsConfig._catch_up_missed_monthly_run()
         except Exception:
@@ -138,6 +155,13 @@ class AchievementsConfig(AppConfig):
         except Exception:
             logger.exception(
                 "Failed to catch up missed yearly scheduler run; "
+                "continuing to start the scheduler",
+            )
+        try:
+            AchievementsConfig._catch_up_missed_publication_run()
+        except Exception:
+            logger.exception(
+                "Failed to catch up missed publication-achievement run; "
                 "continuing to start the scheduler",
             )
 
@@ -165,5 +189,15 @@ class AchievementsConfig(AppConfig):
             hour=0,
             minute=5,
             id="award-best-suchar-year",
+        )
+        # Hourly: award COUNT_SUCHAR/STREAK/NIGHT_OWL tiers for suchary whose
+        # published_at has passed since the last run, so a scheduled suchar's
+        # achievements land within ~1h of publication rather than only on the
+        # author's next suchar (#389).
+        scheduler.add_job(
+            award_publication_achievements,
+            "cron",
+            minute=5,
+            id="award-publication-achievements",
         )
         scheduler.start()

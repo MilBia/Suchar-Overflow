@@ -12,6 +12,7 @@ from suchar_overflow.achievements.engine import AchievementEngine
 from suchar_overflow.achievements.engine import NightOwlRule
 from suchar_overflow.achievements.engine import PolarizerRule
 from suchar_overflow.achievements.engine import StreakLoginRule
+from suchar_overflow.achievements.engine import SucharCountRule
 from suchar_overflow.achievements.engine import VoteDryCountRule
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
@@ -627,3 +628,79 @@ def test_check_achievements_survives_concurrent_award(
     AchievementEngine.check_achievements(user, Achievement.EventType.SUCHAR_POSTED)
 
     assert UserAchievement.objects.filter(user=user, achievement=ach).count() == 1
+
+
+# ---------------------------------------------------------------------------
+# published_at gate on suchar-authoring rules (#389)
+#
+# Creating a scheduled (future published_at) suchar fires the engine via
+# post_save(created=True); without this gate it would award COUNT_SUCHAR /
+# STREAK_LOGIN / NIGHT_OWL tiers on a suchar the public cannot see yet,
+# revealing on the author's public profile that they wrote something before
+# it was published.
+# ---------------------------------------------------------------------------
+
+
+def _make_scheduled_suchar(user: User, **kwargs: object) -> Suchar:
+    return Suchar.objects.create(
+        text="scheduled",
+        author=user,
+        published_at=timezone.now() + datetime.timedelta(days=1),
+        **kwargs,
+    )
+
+
+@pytest.mark.django_db
+def test_suchar_count_rule_excludes_scheduled_suchary() -> None:
+    user = make_user("u1")
+    Suchar.objects.create(text="published", author=user)
+    _make_scheduled_suchar(user)
+    assert SucharCountRule.compute_value(user) == 1
+
+
+@pytest.mark.django_db
+def test_suchar_count_rule_zero_when_only_scheduled() -> None:
+    user = make_user("u1")
+    _make_scheduled_suchar(user)
+    assert SucharCountRule.compute_value(user) == 0
+
+
+@pytest.mark.django_db
+def test_streak_rule_excludes_scheduled_suchary() -> None:
+    """A scheduled suchar posted 'today' must not extend the streak until it
+    is published.
+    """
+    user = make_user("u1")
+    today = timezone.now()
+    published = Suchar.objects.create(text="yesterday", author=user)
+    Suchar.objects.filter(pk=published.pk).update(
+        created_at=today - datetime.timedelta(days=1),
+    )
+    scheduled = _make_scheduled_suchar(user)
+    Suchar.objects.filter(pk=scheduled.pk).update(created_at=today)
+    # Only the published suchar (a single day) counts → no 2-day streak.
+    assert not StreakLoginRule.evaluate(user, threshold=2)
+
+
+@pytest.mark.django_db
+def test_night_owl_rule_scheduled_night_suchar_not_counted() -> None:
+    user = make_user("u1")
+    scheduled = _make_scheduled_suchar(user)
+    night_ts = timezone.now().replace(hour=2, minute=0, second=0, microsecond=0)
+    Suchar.objects.filter(pk=scheduled.pk).update(created_at=night_ts)
+    scheduled.refresh_from_db()
+    # The instance itself is a night suchar authored by the user, but it is
+    # not yet published → the rule must not award.
+    assert NightOwlRule.compute_value(user, instance=scheduled) is None
+
+
+@pytest.mark.django_db
+def test_first_suchar_style_tier_not_awarded_for_scheduled_suchar() -> None:
+    user = make_user("u1")
+    ach = make_achievement("count-1", Achievement.Metric.COUNT_SUCHAR, threshold=1)
+    _make_scheduled_suchar(user)
+    AchievementEngine.check_achievements(
+        user,
+        Achievement.EventType.SUCHAR_POSTED,
+    )
+    assert not UserAchievement.objects.filter(user=user, achievement=ach).exists()
