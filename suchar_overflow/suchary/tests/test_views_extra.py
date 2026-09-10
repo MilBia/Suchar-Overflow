@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 import pytest
 from django.contrib.messages import get_messages
 from django.db import connection
+from django.template.loader import render_to_string
+from django.test import RequestFactory
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
@@ -40,6 +42,83 @@ def test_list_hides_scheduled_suchar(client: Client) -> None:
     response = client.get(reverse(LIST_URL))
     assert response.status_code == HTTPStatus.OK
     assert "Future joke" not in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_list_hides_scheduled_suchar_from_its_own_author(client: Client) -> None:
+    """Guard for issue #373 — the list stays clean for the author too.
+
+    Deliberately *not* a regression test: `SucharListView` filters on
+    `published_at__lte=timezone.now()` for every viewer, the author included,
+    so this passed before the template's `{% if not suchar.is_published %}`
+    branch (a "Scheduled" badge plus an author-only Edit button) was removed —
+    which is exactly why that branch was dead code. It locks in that the list
+    surfaces neither a scheduled suchar nor an edit affordance for one, so the
+    branch does not come back. The author's own scheduled suchary are shown on
+    their profile instead (`scheduled_suchary` in `UserDetailView`, owner-gated).
+    """
+    author = make_user("scheduled_author")
+    future = timezone.now() + timedelta(days=1)
+    scheduled = Suchar.objects.create(
+        text="Future joke",
+        author=author,
+        published_at=future,
+    )
+
+    client.force_login(author)
+    response = client.get(reverse(LIST_URL))
+
+    assert response.status_code == HTTPStatus.OK
+    content = response.content.decode()
+    assert "Future joke" not in content
+    # Language-independent stand-in for the removed Edit button (CI never
+    # compiles the .mo files, so asserting on the label text proves nothing).
+    assert reverse("suchary:update", kwargs={"pk": scheduled.pk}) not in content
+
+
+@pytest.mark.django_db
+def test_list_template_never_renders_badge_or_edit_link_for_unpublished() -> None:
+    """Guard directly on the template, not the view's filter.
+
+    The two tests above only prove `SucharListView` never *hands* the
+    template an unpublished suchar — they can't tell the difference between
+    "the template has no branch for it" and "the branch is there but never
+    reached", because `published_at__lte=timezone.now()` keeps an unpublished
+    suchar out of the queryset either way (PR #386 review, NC-A). This
+    renders `suchar_list.html` directly with an unpublished suchar forced
+    into its context — the one situation in which a reintroduced
+    `{% if not suchar.is_published %}` branch could draw anything — so a
+    future revert of #373 fails here even if the view-level filter is
+    untouched. Pattern follows `tests/test_a11y_static.py`'s direct
+    `render_to_string` usage.
+
+    #373 removed *two* elements from that branch: the author-only Edit
+    button and the "Scheduled" badge. Assert both are gone — the
+    `reverse(...)` check alone still passed a negative-control experiment
+    that reinstated the badge without the link (PR #386 review, round 2).
+    `bg-warning` is a language-independent structural sentinel that appears
+    nowhere else in `suchar_list.html`; `"Scheduled"` additionally catches
+    the regression on CI, where no compiled `.mo` exists so `{% trans %}`
+    falls through to the literal msgid.
+    """
+    author = make_user("template_guard_author")
+    unpublished = Suchar.objects.create(
+        text="Should never render an edit link",
+        author=author,
+        published_at=timezone.now() + timedelta(days=1),
+    )
+    request = RequestFactory().get(reverse(LIST_URL))
+    request.user = author
+
+    html = render_to_string(
+        "suchary/suchar_list.html",
+        {"suchary": [unpublished], "is_paginated": False},
+        request=request,
+    )
+
+    assert reverse("suchary:update", kwargs={"pk": unpublished.pk}) not in html
+    assert "bg-warning" not in html
+    assert "Scheduled" not in html
 
 
 @pytest.mark.django_db
