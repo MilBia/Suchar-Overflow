@@ -1318,3 +1318,13 @@ def test_list_tags_q_only_hash_is_treated_as_no_filter(client: Client) -> None:
 
     response = client.get(TAGS_URL, {"q": "#"})
     assert len(response.json()) == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_list_tags_strips_hash_and_following_space_from_q(client: Client) -> None:
+    author = make_user("tagger")
+    _tag_on_published_suchar("IT", "it", author)
+    _tag_on_published_suchar("Python", "python", author)
+
+    response = client.get(TAGS_URL, {"q": "# it"})
+    assert [item["name"] for item in response.json()] == ["IT"]

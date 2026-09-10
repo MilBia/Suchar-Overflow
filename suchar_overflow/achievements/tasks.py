@@ -193,12 +193,13 @@ PUBLICATION_CATCHUP_FLOOR = timedelta(hours=1)
 #: How far the catch-up window reaches back *before* the previous run.
 #: ``SucharForm.clean_published_at`` accepts a ``published_at`` up to 5 min in
 #: the past relative to the save, and a transaction may commit slightly after
-#: ``now`` was sampled — either can place a just-published suchar's
-#: ``published_at`` before the last run's ``ran_at``, where a bare
-#: ``published_at__gt=last_ran_at`` would drop it forever (nothing else
-#: re-checks a suchar once its ``published_at`` has passed). The engine is
-#: idempotent, so overlapping the window by this much is free.
-PUBLICATION_CATCHUP_OVERLAP = timedelta(minutes=5)
+#: ``now`` was sampled — either (or both, additively) can place a
+#: just-published suchar's ``published_at`` before the last run's ``ran_at``,
+#: where a bare ``published_at__gt=last_ran_at`` would drop it forever (nothing
+#: else re-checks a suchar once its ``published_at`` has passed). Set to 3x the
+#: form's skew allowance for comfortable headroom; the engine is idempotent, so
+#: re-scanning this much already-processed history each run is free.
+PUBLICATION_CATCHUP_OVERLAP = timedelta(minutes=15)
 
 
 def award_publication_achievements(
@@ -247,6 +248,9 @@ def award_publication_achievements(
         newly_published = (
             Suchar.objects.filter(published_at__gt=since, published_at__lte=now)
             .select_related("author")
+            # Deterministic, chronological processing order (the plain queryset
+            # has no ordering); `published_at` is indexed, `id` breaks ties.
+            .order_by("published_at", "id")
             .iterator()
         )
         for suchar in newly_published:

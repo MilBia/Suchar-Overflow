@@ -11,6 +11,7 @@ from suchar_overflow.achievements.engine import AchievementEngine
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.models import UserAchievement
+from suchar_overflow.achievements.tasks import PUBLICATION_CATCHUP_OVERLAP
 from suchar_overflow.achievements.tasks import award_best_suchar
 from suchar_overflow.achievements.tasks import award_publication_achievements
 from suchar_overflow.achievements.tasks import award_winners
@@ -1151,15 +1152,16 @@ def test_award_publication_achievements_skips_close_inside_atomic_block() -> Non
 @pytest.mark.django_db
 def test_award_publication_achievements_overlap_recovers_backdated_publish() -> None:
     """A suchar re-published with a published_at slightly *before* the last run
-    (``clean_published_at`` allows a 5-min past skew; a transaction can also
-    commit after ``now`` was sampled) is still picked up — the window overlaps
-    its previous run by ``PUBLICATION_CATCHUP_OVERLAP``. Without the overlap
+    (``clean_published_at`` allows a past skew; a transaction can also commit
+    after ``now`` was sampled) is still picked up — the window reaches back
+    ``PUBLICATION_CATCHUP_OVERLAP`` past its previous run. Without the overlap
     ``published_at__gt=last_ran_at`` would drop it forever.
     """
     now = timezone.now()
+    marker_ran_at = now - datetime.timedelta(minutes=30)
     SchedulerRun.objects.create(
         job_id="award-publication-achievements",
-        ran_at=now - datetime.timedelta(minutes=30),
+        ran_at=marker_ran_at,
     )
     author = User.objects.create_user(
         username="pub-overlap",
@@ -1168,8 +1170,11 @@ def test_award_publication_achievements_overlap_recovers_backdated_publish() -> 
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
-    # 3 min before the last run — inside the 5-min overlap.
-    _retroactively_publish(suchar, now - datetime.timedelta(minutes=33))
+    # Before the last run, but inside the overlap window.
+    _retroactively_publish(
+        suchar,
+        marker_ran_at - PUBLICATION_CATCHUP_OVERLAP + datetime.timedelta(minutes=1),
+    )
 
     award_publication_achievements(reference_time=now)
 
@@ -1179,13 +1184,14 @@ def test_award_publication_achievements_overlap_recovers_backdated_publish() -> 
 @pytest.mark.django_db
 def test_award_publication_achievements_overlap_still_has_a_lower_bound() -> None:
     """The overlap widens the window by a fixed amount; it does not remove the
-    lower bound. A suchar published well before ``last_run - overlap`` is not
+    lower bound. A suchar published before ``last_run - overlap`` is not
     reprocessed.
     """
     now = timezone.now()
+    marker_ran_at = now - datetime.timedelta(minutes=30)
     SchedulerRun.objects.create(
         job_id="award-publication-achievements",
-        ran_at=now - datetime.timedelta(minutes=30),
+        ran_at=marker_ran_at,
     )
     author = User.objects.create_user(
         username="pub-lb",
@@ -1194,7 +1200,10 @@ def test_award_publication_achievements_overlap_still_has_a_lower_bound() -> Non
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
-    _retroactively_publish(suchar, now - datetime.timedelta(minutes=40))
+    _retroactively_publish(
+        suchar,
+        marker_ran_at - PUBLICATION_CATCHUP_OVERLAP - datetime.timedelta(minutes=1),
+    )
 
     award_publication_achievements(reference_time=now)
 
