@@ -80,10 +80,13 @@ class UserDetailView(AsyncLoginRequiredMixin):
         is_owner: bool,  # noqa: FBT001
     ) -> dict[str, Any]:
         context: dict[str, Any] = {}
+        # Single "now" for every published_at gate below, so the profile is a
+        # consistent snapshot (mirrors stats.views.LeaderboardView._build_context).
+        now = timezone.now()
 
         # 1. Latest Suchary
         context["latest_suchary"] = (
-            user.suchary.filter(published_at__lte=timezone.now())
+            user.suchary.filter(published_at__lte=now)
             .annotate(
                 score=Count("votes"),
                 funny_count=Count("votes", filter=Q(votes__is_funny=True)),
@@ -95,17 +98,23 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # 1.5 Scheduled Suchary (Owner Only)
         if is_owner:
             context["scheduled_suchary"] = (
-                user.suchary.filter(published_at__gt=timezone.now())
+                user.suchary.filter(published_at__gt=now)
                 .prefetch_related("tags")
                 .order_by("published_at")
             )
 
         # 2. Total Score & Count
+        # Only `total_count` is gated on published_at (#388): it is the public
+        # "N sucharów" number shown to any visitor, so a scheduled draft must
+        # not inflate it. The vote aggregates are left unfiltered on purpose —
+        # #331 means a draft holds no votes anyway, and `funny_score` feeds
+        # `_compute_rank`, whose comparison population is deliberately unfiltered
+        # too (see its docstring); filtering only one side would skew the rank.
         stats = user.suchary.aggregate(
             total_score=Count("votes"),
             funny_score=Count("votes", filter=Q(votes__is_funny=True)),
             dry_score=Count("votes", filter=Q(votes__is_dry=True)),
-            total_count=Count("id", distinct=True),
+            total_count=Count("id", distinct=True, filter=Q(published_at__lte=now)),
         )
         # Stashed on the instance (not a model field) so the template can render
         # "Total Votes" straight off `object` without a second aggregate query.
@@ -140,7 +149,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # publication date (the profile itself requires login, so this isn't
         # exposed to anonymous visitors).
         context["best_joke"] = (
-            user.suchary.filter(published_at__lte=timezone.now())
+            user.suchary.filter(published_at__lte=now)
             .annotate(
                 funny_count=Count("votes", filter=Q(votes__is_funny=True)),
                 dry_count=Count("votes", filter=Q(votes__is_dry=True)),
@@ -151,10 +160,14 @@ class UserDetailView(AsyncLoginRequiredMixin):
         )
 
         # 3. Dryness Chart (Activity over last 30 days)
-        last_30_days = timezone.now() - datetime.timedelta(days=30)
+        # Windowed and bucketed by published_at, not created_at (#388): this
+        # chart sits on a public profile, so a not-yet-published draft must not
+        # light up a bar, and a suchar backdated/scheduled shows up on the day it
+        # actually went public. The upper bound keeps future publications out.
+        last_30_days = now - datetime.timedelta(days=30)
         activity_data = (
-            user.suchary.filter(created_at__gte=last_30_days)
-            .annotate(date=TruncDay("created_at"))
+            user.suchary.filter(published_at__gte=last_30_days, published_at__lte=now)
+            .annotate(date=TruncDay("published_at"))
             .values("date")
             .annotate(count=Count("id"))
             .order_by("date")
@@ -260,7 +273,8 @@ class UserDetailView(AsyncLoginRequiredMixin):
         return higher_ranking_scores + 1
 
     def _get_heatmap_weeks(self, user: User) -> list[dict]:
-        today = timezone.now().date()
+        now = timezone.now()
+        today = now.date()
         # Go back approx 1 year
         start_date = today - datetime.timedelta(days=365)
         # Align start_date to the previous Monday to ensure the grid starts correctly
@@ -268,25 +282,29 @@ class UserDetailView(AsyncLoginRequiredMixin):
         days_to_subtract = start_date.weekday()
         start_date -= datetime.timedelta(days=days_to_subtract)
 
-        # Raw datetime bounds (not created_at__date__gte): the __date lookup
-        # renders as (created_at AT TIME ZONE tz)::date, and a cast column can't
-        # use the plain B-tree index on created_at (added in #197). A half-open
-        # [start, end) range on the bare column can — same pattern as
-        # stats.views._fetch_daily_counts_map and the "Dryness Chart" above.
+        # Raw datetime bounds (not published_at__date__gte): the __date lookup
+        # renders as (published_at AT TIME ZONE tz)::date, and a cast column
+        # can't use the plain B-tree index on published_at. A bare-column range
+        # can — same pattern as stats.views._fetch_daily_counts_map and the
+        # "Dryness Chart" above.
+        # Bucketed and bounded by published_at, not created_at (#388): a public
+        # profile's contribution grid must not reveal that a draft exists today.
+        # The upper bound is `published_at__lte=now` — a closed [start, now]
+        # range, matching every other published_at gate in this codebase
+        # (`Suchar.is_published`, `latest_suchary`, `best_joke`, the leaderboard)
+        # — so a suchar published in the same instant the view runs is not lost
+        # from today's cell while it counts everywhere else.
         range_start = timezone.make_aware(
             datetime.datetime.combine(start_date, datetime.time.min),
-        )
-        range_end = timezone.make_aware(
-            datetime.datetime.combine(
-                today + datetime.timedelta(days=1),
-                datetime.time.min,
-            ),
         )
 
         # Get counts per day
         daily_counts = (
-            user.suchary.filter(created_at__gte=range_start, created_at__lt=range_end)
-            .annotate(date=TruncDay("created_at"))
+            user.suchary.filter(
+                published_at__gte=range_start,
+                published_at__lte=now,
+            )
+            .annotate(date=TruncDay("published_at"))
             .values("date")
             .annotate(count=Count("id"))
             .order_by("date")
