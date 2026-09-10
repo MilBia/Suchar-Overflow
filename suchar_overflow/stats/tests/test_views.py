@@ -412,6 +412,7 @@ def test_chart_excludes_scheduled_suchar(client: Client) -> None:
     datasets = response.context["chart_datasets"]
     assert sum(datasets["7"]["values"]) == 0
     assert sum(datasets["30"]["values"]) == 0
+    assert sum(datasets["90"]["values"]) == 0
     assert sum(datasets["all"]["values"]) == 0
 
 
