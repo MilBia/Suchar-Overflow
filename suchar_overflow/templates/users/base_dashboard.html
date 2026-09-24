@@ -11,6 +11,7 @@
   {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
   {# pages/profile.css covers this template's sidebar (.dashboard-card, #}
   {# .sticky-sidebar) plus the profile hero on user_detail.html — see #250. #}
+  {# It also lays out user_detail.html's stats/feed grid (#406). #}
   {% compress css %}
     <link href="{% static 'css/pages/profile.css' %}" rel="stylesheet" />
   {% endcompress %}

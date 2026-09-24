@@ -15,6 +15,8 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from suchar_overflow.achievements.models import Achievement
+from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
@@ -27,6 +29,15 @@ if TYPE_CHECKING:
     from suchar_overflow.users.models import User as UserModel
 
 User = get_user_model()
+
+# Enough badges to wrap onto several rows in the narrowest stats column. The
+# migration-seeded achievements are flushed by transaction=True, so the test
+# brings its own (cf. frontend_achievements in test_hidden_achievements.py).
+_BADGE_COUNT = 8
+_BADGE_SVG = (
+    '<svg viewBox="0 0 16 16" width="16" height="16">'
+    '<circle cx="8" cy="8" r="7" fill="currentColor"/></svg>'
+)
 
 # The narrowest the stats column may get while it sits beside the feed.
 _MIN_STATS_WIDTH = 260
@@ -64,7 +75,21 @@ _WIDTHS_JS = """
 
 
 def _profile_data(owner: UserModel, voter: UserModel) -> None:
-    """Published suchary with votes, so best-joke, badges and charts all render."""
+    """Published suchary, votes and badges, so every stats card renders filled."""
+    for i in range(_BADGE_COUNT):
+        achievement, _ = Achievement.objects.get_or_create(
+            slug=f"e2e-profile-layout-{i}",
+            defaults={
+                "name": f"Odznaka testowa {i}",
+                "description": "Odznaka tylko do testu układu profilu.",
+                "icon_content": _BADGE_SVG,
+                "category": Achievement.Category.LIFETIME,
+                "event_type": Achievement.EventType.FRONTEND,
+                "metric": Achievement.Metric.FRONTEND_EVENT,
+                "threshold": 1,
+            },
+        )
+        UserAchievement.objects.get_or_create(user=owner, achievement=achievement)
     published = timezone.now() - timedelta(hours=1)
     for text in (
         "Dlaczego programista nosi okulary? Bo nie widzi C#.",
@@ -124,3 +149,5 @@ def test_profile_stats_column_is_not_squeezed(
     ), widths
     assert widths["pageOverflow"] <= 0, widths
     assert page.evaluate(_OVERFLOW_JS) == []
+    badges = page.locator(".profile-stats .achievement-container")
+    assert badges.count() == _BADGE_COUNT
