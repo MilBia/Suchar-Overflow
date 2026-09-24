@@ -25,12 +25,20 @@ def _known_zones() -> frozenset[str]:
     return frozenset(zoneinfo.available_timezones())
 
 
-def zone_from_request(request: HttpRequest) -> zoneinfo.ZoneInfo | None:
-    """The visitor's zone from the cookie, or ``None`` (missing / unknown)."""
-    name = request.COOKIES.get(TIMEZONE_COOKIE_NAME)
+def known_zone(name: str | None) -> zoneinfo.ZoneInfo | None:
+    """``ZoneInfo(name)`` for an exact IANA key, else ``None``.
+
+    For any client-supplied zone name (the cookie, the edit form's
+    ``published_at_tz`` field).
+    """
     if not name or name not in _known_zones():
         return None
     return zoneinfo.ZoneInfo(name)
+
+
+def zone_from_request(request: HttpRequest) -> zoneinfo.ZoneInfo | None:
+    """The visitor's zone from the cookie, or ``None`` (missing / unknown)."""
+    return known_zone(request.COOKIES.get(TIMEZONE_COOKIE_NAME))
 
 
 @sync_and_async_middleware

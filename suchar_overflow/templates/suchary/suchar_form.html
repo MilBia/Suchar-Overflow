@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% load static compress %}
+{% load static compress tz %}
 
 {% block title %}
   {% trans "Add Joke" %}
@@ -84,6 +84,8 @@
                            id="id_published_at"
                            placeholder="{% trans 'Select date and time...' %}"
                            value="{{ form.published_at.value|date:'Y-m-d H:i' }}" />
+                    {% get_current_timezone as rendered_tz %}
+                    <input type="hidden" name="published_at_tz" value="{{ rendered_tz }}" />
                   </div>
                   <div class="invalid-feedback d-none"
                        id="dateError"

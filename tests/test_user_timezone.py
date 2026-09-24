@@ -188,3 +188,109 @@ def test_edit_form_round_trips_in_cookie_zone(client: Client) -> None:
     assert response.status_code == HTTPStatus.FOUND
     suchar.refresh_from_db()
     assert suchar.published_at == scheduled_at
+
+
+# ---------------------------------------------------------------------------
+# Edit form rendered in one zone, submitted in another
+# ---------------------------------------------------------------------------
+
+
+def _scheduled(author_name: str) -> tuple[Suchar, datetime.datetime]:
+    scheduled_at = datetime.datetime(2099, 7, 15, 14, 0, tzinfo=WARSAW)
+    suchar = Suchar.objects.create(
+        text="Scheduled",
+        author=make_user(author_name),
+        published_at=scheduled_at,
+    )
+    return suchar, scheduled_at
+
+
+@pytest.mark.django_db
+def test_untouched_value_survives_cookie_set_after_render(client: Client) -> None:
+    """First visit: the edit form renders in the service zone (no cookie yet),
+    then timezone.js sets a New York cookie before submit. Posting the value
+    back untouched must not move the publication by the Warsaw-New York
+    offset."""
+    suchar, scheduled_at = _scheduled("tz410first")
+    client.force_login(suchar.author)
+    url = reverse("suchary:update", kwargs={"pk": suchar.pk})
+
+    html = client.get(url).content.decode()
+    value = _rendered_publish_value(html)
+    assert value == "2099-07-15 14:00"
+    assert 'name="published_at_tz" value="Europe/Warsaw"' in html
+
+    client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+    response = client.post(
+        url,
+        {
+            "text": "Text-only edit",
+            "published_at": value,
+            "published_at_tz": "Europe/Warsaw",
+        },
+    )
+
+    assert response.status_code == HTTPStatus.FOUND
+    suchar.refresh_from_db()
+    assert suchar.published_at == scheduled_at
+
+
+@pytest.mark.django_db
+def test_changed_value_is_read_in_active_zone(client: Client) -> None:
+    """A time the user actually re-typed was typed on the browser's clock —
+    the active (cookie) zone — whatever zone the form was rendered in."""
+    suchar, _ = _scheduled("tz410changed")
+    client.force_login(suchar.author)
+    client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+
+    response = client.post(
+        reverse("suchary:update", kwargs={"pk": suchar.pk}),
+        {
+            "text": "Moved",
+            "published_at": "2099-07-15 16:00",
+            "published_at_tz": "Europe/Warsaw",
+        },
+    )
+
+    assert response.status_code == HTTPStatus.FOUND
+    suchar.refresh_from_db()
+    assert suchar.published_at == datetime.datetime(
+        2099,
+        7,
+        15,
+        20,
+        0,
+        tzinfo=datetime.UTC,
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("rendered_tz", ["", "Mars/Olympus_Mons"])
+def test_unknown_rendered_zone_falls_back_to_active_zone(
+    client: Client,
+    rendered_tz: str,
+) -> None:
+    """A missing or forged ``published_at_tz`` is ignored — the value is parsed
+    in the active zone, as before the field existed."""
+    suchar, _ = _scheduled(f"tz410forged{len(rendered_tz)}")
+    client.force_login(suchar.author)
+    client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+
+    client.post(
+        reverse("suchary:update", kwargs={"pk": suchar.pk}),
+        {
+            "text": "Edit",
+            "published_at": "2099-07-15 14:00",
+            "published_at_tz": rendered_tz,
+        },
+    )
+
+    suchar.refresh_from_db()
+    assert suchar.published_at == datetime.datetime(
+        2099,
+        7,
+        15,
+        18,
+        0,
+        tzinfo=datetime.UTC,
+    )

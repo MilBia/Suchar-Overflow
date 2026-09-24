@@ -941,9 +941,15 @@ No profile field — cookie only.
   on the host zone (`tests/e2e/test_user_timezone.py` opens its own New York
   context). A form value in a DST gap/overlap (02:30 on a switch day) is a field
   `ValidationError`, not a 500.
-- Known edge: if the browser zone changes between rendering the edit form and
-  submitting it (travel), the POST is parsed in the new zone and `published_at`
-  shifts by the offset difference.
+- **Edit form rendered in one zone, submitted in another.** A first visit renders
+  in the service zone and only then does `timezone.js` set the cookie (or the
+  browser zone changes — travel), so the POST is parsed in a different zone than
+  the GET rendered. `suchar_form.html` therefore carries a hidden
+  `published_at_tz` (the zone it rendered in); `SucharForm._unchanged_published_at`
+  keeps the instance's own `published_at` when the posted string equals the
+  rendered one in that (validated) zone. A value the user re-typed is parsed in the
+  active zone — they typed it on the browser's clock. Without this a text-only edit
+  would silently move the publication by the offset difference.
 
 ### Background scheduling — APScheduler, not Django-RQ
 
