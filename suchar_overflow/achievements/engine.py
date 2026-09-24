@@ -182,11 +182,13 @@ class NightOwlRule(AchievementRule):
             and instance.published_at <= now
         ):
             return None
-        hour = instance.created_at.astimezone(timezone.get_current_timezone()).hour
+        # The service zone, never the request's (#410): a visitor's own time
+        # zone only affects input and display, not what counts as "night".
+        tz = timezone.get_default_timezone()
+        hour = instance.created_at.astimezone(tz).hour
         max_night_hour = 4
         if not (0 <= hour <= max_night_hour):
             return None
-        tz = timezone.get_current_timezone()
         count = (
             Suchar.objects.filter(author=user, published_at__lte=now)
             .annotate(local_hour=ExtractHour("created_at", tzinfo=tz))
@@ -274,13 +276,17 @@ class StreakLoginRule(AchievementRule):
         # .dates() truncates to day in the DB and returns distinct date objects,
         # avoiding loading every suchar datetime into Python memory.
         # published_at__lte gate: a scheduled suchar must not extend the streak
-        # until it goes live (#389).
-        dates = set(
-            Suchar.objects.filter(
-                author=user,
-                published_at__lte=timezone.now(),
-            ).dates("created_at", "day"),
-        )
+        # until it goes live (#389). .dates() takes no tzinfo and truncates in
+        # the zone active when the SQL is compiled, so pin the service zone for
+        # the evaluation — days are Polish days whoever's request runs this
+        # (#410).
+        with timezone.override(timezone.get_default_timezone()):
+            dates = set(
+                Suchar.objects.filter(
+                    author=user,
+                    published_at__lte=timezone.now(),
+                ).dates("created_at", "day"),
+            )
 
         if not dates:
             return None

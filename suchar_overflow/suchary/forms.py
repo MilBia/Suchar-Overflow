@@ -8,6 +8,8 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
+from suchar_overflow.middleware import known_zone
+
 from .models import Suchar
 from .models import Tag
 
@@ -56,8 +58,73 @@ class SucharForm(forms.ModelForm):
         # Make published_at optional so that empty value (publish now) is accepted
         self.fields["published_at"].required = False
 
+    #: Hidden field in ``suchar_form.html``: the zone ``published_at`` was
+    #: rendered in (#410).
+    RENDERED_TZ_FIELD = "published_at_tz"
+    #: The format ``suchar_form.html`` renders and flatpickr submits.
+    PUBLISHED_AT_FORMAT = "%Y-%m-%d %H:%M"
+
+    def published_at_input_value(self) -> str:
+        """What ``suchar_form.html`` puts in the scheduling input.
+
+        * Re-render of a submitted form (invalid POST): the raw posted string.
+          ``BoundField.value()`` is a string there, and the old template's
+          ``|date`` silently turned it into ``""`` — the JS then unchecked and
+          disabled the schedule input, so the next save published the suchar
+          immediately.
+        * Edit form: the instance's ``published_at`` on the active zone's wall
+          clock.
+        * Add form: empty. The model default (``timezone.now``) would otherwise
+          pre-fill "now", which the JS then had to tell apart from a real
+          schedule with a 5-minute buffer — hiding the schedule of a suchar
+          due within those 5 minutes on its edit form.
+        """
+        if self.is_bound:
+            return self.data.get("published_at", "")
+        if not self.instance.pk:
+            return ""
+        return timezone.localtime(self.instance.published_at).strftime(
+            self.PUBLISHED_AT_FORMAT,
+        )
+
+    def published_at_input_tz(self) -> str:
+        """The zone ``published_at_input_value`` is expressed in (#410).
+
+        On a re-render of a submitted form that is the zone the value was
+        *originally* rendered in, echoed from the POST — not the active zone —
+        or an untouched value would still shift on the next save.
+        """
+        if self.is_bound:
+            return self.data.get(self.RENDERED_TZ_FIELD, "")
+        return timezone.get_current_timezone_name()
+
+    def _unchanged_published_at(self) -> datetime | None:
+        """The instance's own ``published_at`` if the form sent back exactly
+        the value it was rendered with, else ``None``.
+
+        The naive value is otherwise parsed in the *active* zone (the
+        visitor's ``user_tz`` cookie, #410). That zone can differ from the one
+        the edit form was rendered in — a first visit renders in the service
+        zone and only then does ``timezone.js`` set the cookie, or the browser
+        zone changed (travel) — and an untouched value would then silently
+        shift by the offset difference on a text-only edit. A value the user
+        actually changed was typed in the browser's zone, which is the active
+        one, so only the untouched case is special.
+        """
+        if not self.instance.pk:
+            return None
+        rendered_zone = known_zone(self.data.get(self.RENDERED_TZ_FIELD))
+        if rendered_zone is None:
+            return None
+        rendered = timezone.localtime(self.instance.published_at, rendered_zone)
+        if self.data.get("published_at") != rendered.strftime(self.PUBLISHED_AT_FORMAT):
+            return None
+        return self.instance.published_at
+
     def clean_published_at(self) -> datetime:
-        published_at = self.cleaned_data.get("published_at")
+        published_at = self._unchanged_published_at() or self.cleaned_data.get(
+            "published_at",
+        )
         if not published_at:
             return timezone.now()
 

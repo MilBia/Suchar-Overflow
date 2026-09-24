@@ -83,7 +83,10 @@
                            class="form-control flatpickr-input"
                            id="id_published_at"
                            placeholder="{% trans 'Select date and time...' %}"
-                           value="{{ form.published_at.value|date:'Y-m-d H:i' }}" />
+                           value="{{ form.published_at_input_value }}" />
+                    <input type="hidden"
+                           name="published_at_tz"
+                           value="{{ form.published_at_input_tz }}" />
                   </div>
                   <div class="invalid-feedback d-none"
                        id="dateError"

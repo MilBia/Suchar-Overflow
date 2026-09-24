@@ -99,3 +99,27 @@ def test_edit_form_of_scheduled_suchar_opens_with_schedule_enabled(
 
     assert page.is_checked("#scheduleCheck")
     assert page.locator("#scheduleContainer:not(.d-none)").is_visible()
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
+def test_edit_form_of_suchar_due_within_minutes_keeps_schedule(
+    page: Page,
+    live_server: LiveServer,
+    e2e_user: UserModel,
+) -> None:
+    """A suchar due in 3 minutes is still scheduled: its edit form must not
+    hide (and disable) the schedule input, or a typo fix would publish it
+    immediately. The old 5-minute "is this just the pre-filled now?" buffer
+    did exactly that."""
+    scheduled = Suchar.objects.create(
+        text="Zaraz wychodzi.",
+        author=e2e_user,
+        published_at=timezone.now() + timedelta(minutes=3),
+    )
+
+    page.goto(f"{live_server.url}/suchary/update/{scheduled.pk}/")
+
+    assert page.is_checked("#scheduleCheck")
+    assert page.is_enabled("#id_published_at")

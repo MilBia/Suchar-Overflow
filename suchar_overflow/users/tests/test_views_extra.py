@@ -1,6 +1,7 @@
 """Extra UserDetailView tests: scheduled suchary, rank, heatmap, signup."""
 
 import datetime
+import zoneinfo
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 from unittest.mock import patch
@@ -1093,3 +1094,45 @@ def test_heatmap_today_is_local_day_after_utc_evening() -> None:
     last_day = weeks[-1]["days"][-1]
     assert last_day["date"] == "2024-07-11"
     assert last_day["count"] == 1
+
+
+# ===========================================================================
+# Profile charts ignore the visitor's active zone (#410)
+# ===========================================================================
+
+
+def _suchar_after_warsaw_midnight(username: str) -> tuple[UserType, datetime.datetime]:
+    """A suchar at 22:15Z on July 10 — July 11 in Warsaw, July 10 in New York."""
+    user = make_user(username)
+    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    s = Suchar.objects.create(text="after local midnight", author=user)
+    Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
+    return user, datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
+
+
+@pytest.mark.django_db
+def test_heatmap_ignores_active_request_zone() -> None:
+    user, frozen_now = _suchar_after_warsaw_midnight("heatmap410")
+
+    with (
+        timezone.override(zoneinfo.ZoneInfo("America/New_York")),
+        patch("django.utils.timezone.now", return_value=frozen_now),
+    ):
+        weeks = UserDetailView()._get_heatmap_weeks(user)  # noqa: SLF001
+
+    last_day = weeks[-1]["days"][-1]
+    assert last_day["date"] == "2024-07-11"
+    assert last_day["count"] == 1
+
+
+@pytest.mark.django_db
+def test_activity_chart_ignores_active_request_zone() -> None:
+    user, frozen_now = _suchar_after_warsaw_midnight("activity410")
+
+    with (
+        timezone.override(zoneinfo.ZoneInfo("America/New_York")),
+        patch("django.utils.timezone.now", return_value=frozen_now),
+    ):
+        context = UserDetailView()._build_context(user, is_owner=False)  # noqa: SLF001
+
+    assert context["activity_labels"] == ["2024-07-11"]

@@ -38,6 +38,10 @@ def browser_context_args(browser_context_args: dict[str, Any]) -> dict[str, Any]
         **browser_context_args,
         "viewport": {"width": 1280, "height": 800},
         "locale": "pl-PL",
+        # static/js/timezone.js mirrors the browser zone into the `user_tz`
+        # cookie, which the server then uses for input/display (#410). Pin it
+        # to the service zone so no test depends on the host's zone.
+        "timezone_id": "Europe/Warsaw",
     }
 
 
