@@ -895,33 +895,55 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
   production-storage `collectstatic` + `compress --force` bundle, not just
   `just test`.
 
-### Service time zone — `Europe/Warsaw` (#405)
+### Time zones — service zone `Europe/Warsaw` (#405) + visitor zone for I/O (#410)
 
-`TIME_ZONE = "Europe/Warsaw"` (`base.py`) with `USE_TZ = True`: the DB still stores
-UTC, but form input (`SucharForm`'s naive `datetime-local` value), template display,
-and every day/hour/period boundary use the Polish wall clock. There is **no**
-per-user zone (no `timezone.activate()` / middleware) — a possible stage 2 would
-only touch input/display; achievement rules and contests must stay on the fixed
-service zone because the engine also runs in the scheduler thread, with no request.
+`TIME_ZONE = "Europe/Warsaw"` (`base.py`) with `USE_TZ = True`: the DB stores UTC.
+On top of that, `suchar_overflow/middleware.py:user_timezone_middleware` (after
+`LocaleMiddleware`, sync + async) wraps each request in `timezone.override(zone)`
+for the zone in the `user_tz` cookie, which `static/js/timezone.js` (first script
+in `base.html`'s global `{% compress js %}` block; runs for **anonymous** visitors
+too — no auth gate) writes from `Intl.DateTimeFormat().resolvedOptions().timeZone`.
+Only exact keys from `zoneinfo.available_timezones()` are accepted (cached once per
+process); a missing/unknown/garbage cookie leaves `TIME_ZONE` in effect. The first
+page load renders in the service zone and sets the cookie; later requests use it.
+No profile field — cookie only.
 
-- DB-side truncation already follows it: `TruncDay`/`TruncMonth`, `.dates()`,
-  `ExtractHour(tzinfo=...)`, `compute_period_range` (`make_aware` with the current
-  zone). What does **not** follow it is Python-side `.date()` / `.replace(hour=0)`
-  on `timezone.now()` — that is the **UTC** date and is wrong between 22:00/23:00
-  and 24:00 UTC. Use `timezone.localdate()` / `timezone.localtime()` for "today".
+**The rule: the active (current) zone may only change input parsing and display.**
+- *Follows the visitor's zone:* `SucharForm.published_at` (a naive value is read in
+  the current zone) and template `|date` output. Nothing else.
+- *Always the service zone, explicitly:* every day/hour/period computation —
+  `NightOwlRule`, `StreakLoginRule`, `compute_period_range`, `due_*_run_at`, the
+  `localdate()` defaults in `award_best_suchar` / `award_periodic`, the leaderboard
+  context (cached for **all** visitors — whoever warms it must not set its zone) and
+  the profile's 30-day chart + heatmap. Use `timezone.get_default_timezone()`:
+  pass it as `tzinfo=` to `TruncDay`/`TruncMonth`/`ExtractHour`, as the zone
+  argument to `localdate()`/`localtime()`/`make_aware()`, and wrap `.dates()` (no
+  `tzinfo` argument) in `timezone.override(get_default_timezone())` **around its
+  evaluation**. A Trunc without `tzinfo` resolves the zone when the SQL is
+  compiled, not when the expression is built, so an override around a lazily
+  evaluated queryset is not enough. Never read the ambient `get_current_timezone()`
+  / bare `localdate()` in computation code — inside a request that is the visitor's.
+- Python-side `.date()` / `.replace(hour=0)` on `timezone.now()` is the **UTC** date
+  (wrong between 22:00/23:00 and 24:00 UTC) — use `localdate(..., service_tz)`.
 - The scheduler is `BackgroundScheduler(timezone=settings.TIME_ZONE)`, so the
-  contest crons fire at 00:05 *local*; `due_monthly_run_at` / `due_yearly_run_at`
-  convert `now` with `timezone.localtime()` before reconstructing the fire time.
-  00:05 never falls in a DST gap/overlap (the switch is at 02:00/03:00). A
-  `SchedulerRun` marker written by the pre-#405 UTC cron (1st, 00:05Z = 01:05/02:05
-  local) is *after* the new local fire time, so the first boot after the switch
-  doesn't see a spurious missed run.
-- Tests that build a naive wall-clock string (form input) or a "local hour" must
-  start from `timezone.localtime()`, not `timezone.now()`. Boundary tests live in
-  `achievements/tests/test_timezone.py` and pick timestamps in the 22:00–24:00 UTC
-  window — the only window where a UTC-day bug is observable. A form value that
-  falls in a DST gap/overlap (e.g. 02:30 on the switch day) is a field
-  `ValidationError` from Django, not a 500.
+  contest crons fire at 00:05 *service-local*; `due_*_run_at` convert `now` to the
+  service zone before reconstructing the fire time. 00:05 never falls in a DST
+  gap/overlap (the switch is at 02:00/03:00). A `SchedulerRun` marker written by the
+  pre-#405 UTC cron (1st, 00:05Z) is *after* the new local fire time, so no spurious
+  catch-up.
+- Tests: build naive wall-clock strings / "local hours" from `timezone.localtime()`,
+  not `timezone.now()`. Boundary tests (`achievements/tests/test_timezone.py`) use
+  timestamps in the 22:00–24:00 UTC window — the only one where a UTC-day bug shows —
+  and the invariance tests run each computation under
+  `timezone.override(ZoneInfo("America/New_York"))`, where New York and Warsaw
+  disagree about the hour/day. Cookie/middleware behaviour: `tests/test_user_timezone.py`;
+  E2E pins `timezone_id="Europe/Warsaw"` in `browser_context_args` so no test depends
+  on the host zone (`tests/e2e/test_user_timezone.py` opens its own New York
+  context). A form value in a DST gap/overlap (02:30 on a switch day) is a field
+  `ValidationError`, not a 500.
+- Known edge: if the browser zone changes between rendering the edit form and
+  submitting it (travel), the POST is parsed in the new zone and `published_at`
+  shifts by the offset difference.
 
 ### Background scheduling — APScheduler, not Django-RQ
 

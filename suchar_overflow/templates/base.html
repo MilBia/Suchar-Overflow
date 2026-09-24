@@ -84,6 +84,7 @@
     {% endblock css %}
     {% block javascript %}
       {% compress js %}
+        <script defer src="{% static 'js/timezone.js' %}"></script>
         <script defer src="{% static 'js/project.js' %}"></script>
         <script defer src="{% static 'js/features/easter_eggs.js' %}"></script>
         <script defer src="{% static 'js/features/konami.js' %}"></script>

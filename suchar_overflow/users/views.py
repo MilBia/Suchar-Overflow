@@ -164,10 +164,14 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # chart sits on a public profile, so a not-yet-published draft must not
         # light up a bar, and a suchar backdated/scheduled shows up on the day it
         # actually went public. The upper bound keeps future publications out.
+        # Bucketed in the service zone, not the visitor's (#410): a public
+        # profile's chart must read the same for everyone who opens it.
         last_30_days = now - datetime.timedelta(days=30)
         activity_data = (
             user.suchary.filter(published_at__gte=last_30_days, published_at__lte=now)
-            .annotate(date=TruncDay("published_at"))
+            .annotate(
+                date=TruncDay("published_at", tzinfo=timezone.get_default_timezone()),
+            )
             .values("date")
             .annotate(count=Count("id"))
             .order_by("date")
@@ -275,8 +279,10 @@ class UserDetailView(AsyncLoginRequiredMixin):
     def _get_heatmap_weeks(self, user: User) -> list[dict]:
         now = timezone.now()
         # localdate(), not now.date(): "today" must match TruncDay's local
-        # buckets, or the grid ends a day early before 02:00 CEST (#405).
-        today = timezone.localdate(now)
+        # buckets, or the grid ends a day early before 02:00 CEST (#405). Service
+        # zone, not the visitor's: the grid is the same for everyone (#410).
+        service_tz = timezone.get_default_timezone()
+        today = timezone.localdate(now, service_tz)
         # Go back approx 1 year
         start_date = today - datetime.timedelta(days=365)
         # Align start_date to the previous Monday to ensure the grid starts correctly
@@ -298,6 +304,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # from today's cell while it counts everywhere else.
         range_start = timezone.make_aware(
             datetime.datetime.combine(start_date, datetime.time.min),
+            service_tz,
         )
 
         # Get counts per day
@@ -306,7 +313,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
                 published_at__gte=range_start,
                 published_at__lte=now,
             )
-            .annotate(date=TruncDay("published_at"))
+            .annotate(date=TruncDay("published_at", tzinfo=service_tz))
             .values("date")
             .annotate(count=Count("id"))
             .order_by("date")

@@ -40,13 +40,17 @@ def _fetch_daily_counts_map(start_date: date, now: datetime) -> dict[date, int]:
     # draft on its creation day. `published_at__lte=now` keeps future
     # publications out; the bare column (no ::date cast) still uses the plain
     # B-tree index on published_at.
-    range_start = timezone.make_aware(datetime.combine(start_date, time.min))
+    service_tz = timezone.get_default_timezone()
+    range_start = timezone.make_aware(
+        datetime.combine(start_date, time.min),
+        service_tz,
+    )
     db_data = (
         Suchar.objects.filter(
             published_at__gte=range_start,
             published_at__lte=now,
         )
-        .annotate(date=TruncDay("published_at"))
+        .annotate(date=TruncDay("published_at", tzinfo=service_tz))
         .values("date")
         .annotate(count=Count("id"))
     )
@@ -63,10 +67,12 @@ def get_daily_activity_data(
     days: int,
     counts_map: dict[date, int] | None = None,
 ) -> dict[str, list]:
-    # localdate(): the day buckets are local (TruncDay), so an aware UTC
-    # argument must not shift the window by a day (#405).
-    start_date = timezone.localdate(start_of_today - timedelta(days=days))
-    end_date = timezone.localdate(now)
+    # localdate() in the service zone: the day buckets are service-zone days
+    # (TruncDay), so neither a UTC argument (#405) nor a visitor's active zone
+    # (#410) may shift the window by a day.
+    service_tz = timezone.get_default_timezone()
+    start_date = timezone.localdate(start_of_today - timedelta(days=days), service_tz)
+    end_date = timezone.localdate(now, service_tz)
     if counts_map is None:
         counts_map = _fetch_daily_counts_map(start_date, now)
 
@@ -105,9 +111,10 @@ def get_all_time_activity_data(
 ) -> dict[str, list]:
     # Grouped by published_at, not created_at, and future publications excluded
     # (#388) — same reasoning as _fetch_daily_counts_map above.
+    service_tz = timezone.get_default_timezone()
     db_data = (
         Suchar.objects.filter(published_at__lte=now)
-        .annotate(month=TruncMonth("published_at"))
+        .annotate(month=TruncMonth("published_at", tzinfo=service_tz))
         .values("month")
         .annotate(count=Count("id"))
     )
@@ -119,10 +126,11 @@ def get_all_time_activity_data(
 
     twelve_months_ago = timezone.localdate(
         start_of_today - timedelta(days=365),
+        service_tz,
     ).replace(day=1)
     start_date = min(counts_map, default=twelve_months_ago)
     start_date = min(start_date, twelve_months_ago)
-    end_date = timezone.localdate(now).replace(day=1)
+    end_date = timezone.localdate(now, service_tz).replace(day=1)
 
     labels: list[str] = []
     values: list[int] = []
@@ -209,9 +217,11 @@ class LeaderboardView(View):
         return context
 
     def _build_context(self) -> dict[str, Any]:
-        # Local (TIME_ZONE), not UTC: `now.date()` / `start_of_today` below pick
-        # the chart's "today", which must match TruncDay's local buckets (#405).
-        now = timezone.localtime()
+        # Service zone (TIME_ZONE), not UTC and not the visitor's active zone:
+        # `start_of_today` below picks the chart's "today", which must match
+        # TruncDay's buckets (#405) — and this context is cached for *every*
+        # visitor, so whoever warms the cache must not set its zone (#410).
+        now = timezone.localtime(timezone=timezone.get_default_timezone())
         start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
         # select_related("author") only — no prefetch_related("tags") here.
@@ -285,6 +295,7 @@ class LeaderboardView(View):
         widest_days = 90
         widest_start_date = timezone.localdate(
             start_of_today - timedelta(days=widest_days),
+            timezone.get_default_timezone(),
         )
         counts_map = _fetch_daily_counts_map(widest_start_date, now)
         chart_datasets = {

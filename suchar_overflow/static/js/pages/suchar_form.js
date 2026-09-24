@@ -241,7 +241,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             form.addEventListener('submit', (e) => {
                 if (scheduleCheck && scheduleCheck.checked && publishedAtInput.value) {
-                    const inputDate = new Date(publishedAtInput.value);
+                    // Same ISO "T" normalisation as setupScheduling() above.
+                    const inputDate = new Date(publishedAtInput.value.replace(' ', 'T'));
                     const now = new Date();
 
                     if (inputDate <= now) {

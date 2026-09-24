@@ -14,6 +14,7 @@ from unittest.mock import patch
 import pytest
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
+from django.utils import timezone
 
 from suchar_overflow.achievements.apps import AchievementsConfig
 from suchar_overflow.achievements.engine import NightOwlRule
@@ -286,3 +287,79 @@ def test_scheduler_crons_fire_at_local_midnight(
     job = scheduler.get_job(job_id)
     assert job is not None
     assert job.trigger.get_next_fire_time(None, now) == expected_fire_utc
+
+
+# ---------------------------------------------------------------------------
+# Invariance under a visitor's active zone (#410)
+#
+# The request middleware may activate the browser's zone. Rules and contest
+# periods must still read the service zone, so each check below runs inside
+# ``timezone.override(NEW_YORK)`` with a timestamp where New York and Warsaw
+# disagree about the hour or the day.
+# ---------------------------------------------------------------------------
+
+NEW_YORK = zoneinfo.ZoneInfo("America/New_York")
+
+
+@pytest.mark.django_db
+def test_night_owl_ignores_active_request_zone() -> None:
+    """22:30Z is 00:30 in Warsaw (night) but 18:30 in New York."""
+    user = make_user("owl410")
+    suchar = _backdate(
+        Suchar.objects.create(text="late", author=user),
+        datetime.datetime(2024, 7, 10, 22, 30, tzinfo=UTC),
+    )
+    with timezone.override(NEW_YORK):
+        assert NightOwlRule.compute_value(user, instance=suchar) == 1
+
+
+@pytest.mark.django_db
+def test_streak_ignores_active_request_zone() -> None:
+    """10:00Z and 22:30Z are two Warsaw days but one New York day."""
+    user = make_user("streak410")
+    for hour, minute in ((10, 0), (22, 30)):
+        _backdate(
+            Suchar.objects.create(text=f"at {hour}", author=user),
+            datetime.datetime(2024, 7, 10, hour, minute, tzinfo=UTC),
+        )
+    with timezone.override(NEW_YORK):
+        assert StreakLoginRule.compute_value(user) == 2  # noqa: PLR2004
+
+
+def test_compute_period_range_ignores_active_request_zone() -> None:
+    with timezone.override(NEW_YORK):
+        start, end, _ = compute_period_range("month", datetime.date(2024, 7, 15))
+    assert start == datetime.datetime(2024, 6, 30, 22, 0, tzinfo=UTC)
+    assert end == datetime.datetime(2024, 7, 31, 22, 0, tzinfo=UTC)
+
+
+def test_due_monthly_run_at_ignores_active_request_zone() -> None:
+    """June 30 22:10Z: July 1 00:10 in Warsaw (July fire due), 18:10 June 30 in
+    New York (would still point at June's fire)."""
+    now = datetime.datetime(2024, 6, 30, 22, 10, tzinfo=UTC)
+    with timezone.override(NEW_YORK):
+        due_at = due_monthly_run_at(now, None)
+    assert due_at == datetime.datetime(2024, 7, 1, 0, 5, tzinfo=WARSAW)
+
+
+def test_due_yearly_run_at_ignores_active_request_zone() -> None:
+    now = datetime.datetime(2023, 12, 31, 23, 10, tzinfo=UTC)
+    with timezone.override(NEW_YORK):
+        due_at = due_yearly_run_at(now, None)
+    assert due_at == datetime.datetime(2024, 1, 1, 0, 5, tzinfo=WARSAW)
+
+
+@pytest.mark.django_db
+def test_award_best_suchar_reference_date_ignores_active_request_zone() -> None:
+    frozen_now = datetime.datetime(2024, 6, 30, 22, 5, tzinfo=UTC)
+    with (
+        timezone.override(NEW_YORK),
+        patch("django.utils.timezone.now", return_value=frozen_now),
+        patch(
+            "suchar_overflow.achievements.tasks.compute_period_range",
+            wraps=compute_period_range,
+        ) as mock_range,
+    ):
+        award_best_suchar("month")
+
+    mock_range.assert_called_once_with("month", datetime.date(2024, 6, 30))

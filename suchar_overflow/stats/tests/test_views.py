@@ -1,4 +1,5 @@
 import datetime
+import zoneinfo
 from datetime import timedelta
 from http import HTTPStatus
 from types import SimpleNamespace
@@ -15,6 +16,7 @@ from django.utils import timezone
 from django.utils.translation import gettext
 
 from suchar_overflow.conftest import make_user
+from suchar_overflow.middleware import TIMEZONE_COOKIE_NAME
 from suchar_overflow.stats.views import LEADERBOARD_CACHE_KEY
 from suchar_overflow.stats.views import LeaderboardView
 from suchar_overflow.stats.views import _ranked_top_n
@@ -537,3 +539,46 @@ def test_daily_chart_today_is_local_day_after_utc_evening() -> None:
     assert week["labels"][-1] == "11"
     assert week["values"][-1] == 1
     assert sum(week["values"]) == 1
+
+
+@pytest.mark.django_db
+def test_daily_chart_ignores_active_request_zone() -> None:
+    """Same frozen instant as above, built while a visitor's New York zone is
+    active: the chart must still end on the Warsaw day (July 11), not New
+    York's (July 10)."""
+    author = make_user("chart410")
+    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    s = Suchar.objects.create(text="after local midnight", author=author)
+    Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
+    frozen_now = datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
+
+    with (
+        timezone.override(zoneinfo.ZoneInfo("America/New_York")),
+        patch("django.utils.timezone.now", return_value=frozen_now),
+    ):
+        context = LeaderboardView()._build_context()  # noqa: SLF001
+
+    week = context["chart_datasets"]["7"]
+    assert week["labels"][-1] == "11"
+    assert week["values"][-1] == 1
+    assert context["chart_datasets"]["all"]["values"][-1] == 1
+
+
+@pytest.mark.django_db
+def test_leaderboard_cache_is_not_poisoned_by_visitor_zone(client: Client) -> None:
+    """The context is cached for everyone: a New York visitor warming the cache
+    must leave Warsaw-day buckets in it."""
+    cache.delete(LEADERBOARD_CACHE_KEY)
+    author = make_user("cache410")
+    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    s = Suchar.objects.create(text="after local midnight", author=author)
+    Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
+    frozen_now = datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
+    client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+
+    with patch("django.utils.timezone.now", return_value=frozen_now):
+        client.get(reverse(LEADERBOARD_URL))
+
+    week = cache.get(LEADERBOARD_CACHE_KEY)["chart_datasets"]["7"]
+    assert week["labels"][-1] == "11"
+    assert week["values"][-1] == 1

@@ -1,0 +1,190 @@
+"""Per-visitor time zone for input and display (#410, stage 2 of #405).
+
+``suchar_overflow.middleware.user_timezone_middleware`` activates the zone from
+the ``user_tz`` cookie (written by ``static/js/timezone.js``). It changes only
+how naive form input is parsed and how templates display datetimes; the
+invariance of rules/charts/contests under a foreign active zone is covered next
+to each computation (``achievements/tests/test_timezone.py`` and the stats /
+users view tests).
+"""
+
+import datetime
+import re
+import zoneinfo
+from http import HTTPStatus
+from typing import TYPE_CHECKING
+
+import pytest
+from asgiref.sync import sync_to_async
+from django.test import RequestFactory
+from django.urls import reverse
+
+from suchar_overflow.conftest import make_user
+from suchar_overflow.middleware import TIMEZONE_COOKIE_NAME
+from suchar_overflow.middleware import zone_from_request
+from suchar_overflow.suchary.models import Suchar
+
+if TYPE_CHECKING:
+    from django.test import AsyncClient
+    from django.test import Client
+
+NEW_YORK = zoneinfo.ZoneInfo("America/New_York")
+WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
+
+#: 12:00Z in July = 14:00 CEST = 08:00 EDT.
+STORED = datetime.datetime(2024, 7, 10, 12, 0, tzinfo=datetime.UTC)
+
+
+def _published_suchar() -> Suchar:
+    suchar = Suchar.objects.create(text="Displayed per zone", author=make_user("tz410"))
+    Suchar.objects.filter(pk=suchar.pk).update(created_at=STORED, published_at=STORED)
+    return suchar
+
+
+def _rendered_publish_value(html: str) -> str:
+    match = re.search(r'name="published_at"[^>]*value="([^"]*)"', html)
+    assert match is not None
+    return match.group(1)
+
+
+# ---------------------------------------------------------------------------
+# zone_from_request — only exact IANA keys are accepted
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("cookie", "expected"),
+    [
+        ("America/New_York", NEW_YORK),
+        (
+            "America/Argentina/Buenos_Aires",
+            zoneinfo.ZoneInfo("America/Argentina/Buenos_Aires"),
+        ),
+        (None, None),
+        ("", None),
+        ("Mars/Olympus_Mons", None),
+        ("../../etc/passwd", None),
+        ("america/new_york", None),
+        ("Europe/Warsaw\x00", None),
+    ],
+)
+def test_zone_from_request(
+    cookie: str | None,
+    expected: zoneinfo.ZoneInfo | None,
+) -> None:
+    request = RequestFactory().get("/")
+    if cookie is not None:
+        request.COOKIES[TIMEZONE_COOKIE_NAME] = cookie
+    assert zone_from_request(request) == expected
+
+
+# ---------------------------------------------------------------------------
+# Display
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_list_displays_in_cookie_zone(client: Client) -> None:
+    _published_suchar()
+    client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+
+    html = client.get(reverse("suchary:list")).content.decode()
+
+    assert ", 08:00<" in html
+    assert ", 14:00<" not in html
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("cookie", [None, "Mars/Olympus_Mons", "../../etc/passwd"])
+def test_list_falls_back_to_service_zone(client: Client, cookie: str | None) -> None:
+    _published_suchar()
+    if cookie is not None:
+        client.cookies[TIMEZONE_COOKIE_NAME] = cookie
+
+    html = client.get(reverse("suchary:list")).content.decode()
+
+    assert ", 14:00<" in html
+
+
+@pytest.mark.django_db
+def test_zone_does_not_leak_into_the_next_request(client: Client) -> None:
+    _published_suchar()
+    client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+    client.get(reverse("suchary:list"))
+    del client.cookies[TIMEZONE_COOKIE_NAME]
+
+    html = client.get(reverse("suchary:list")).content.decode()
+
+    assert ", 14:00<" in html
+
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_list_displays_in_cookie_zone_async(async_client: AsyncClient) -> None:
+    await sync_to_async(_published_suchar)()
+    async_client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+
+    response = await async_client.get(reverse("suchary:list"))
+
+    assert ", 08:00<" in response.content.decode()
+
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+async def test_list_falls_back_to_service_zone_async(async_client: AsyncClient) -> None:
+    await sync_to_async(_published_suchar)()
+
+    response = await async_client.get(reverse("suchary:list"))
+
+    assert ", 14:00<" in response.content.decode()
+
+
+# ---------------------------------------------------------------------------
+# Input — the scheduling form reads naive values in the visitor's zone
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_scheduled_time_is_read_in_cookie_zone(client: Client) -> None:
+    """14:00 entered in New York (EDT, UTC-4) publishes at 18:00Z."""
+    author = make_user("tz410add")
+    client.force_login(author)
+    client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+
+    response = client.post(
+        reverse("suchary:add"),
+        {"text": "Scheduled from New York", "published_at": "2099-07-15 14:00"},
+    )
+
+    assert response.status_code == HTTPStatus.FOUND
+    suchar = Suchar.objects.get(author=author)
+    assert suchar.published_at == datetime.datetime(
+        2099,
+        7,
+        15,
+        18,
+        0,
+        tzinfo=datetime.UTC,
+    )
+
+
+@pytest.mark.django_db
+def test_edit_form_round_trips_in_cookie_zone(client: Client) -> None:
+    author = make_user("tz410edit")
+    scheduled_at = datetime.datetime(2099, 7, 15, 14, 0, tzinfo=NEW_YORK)
+    suchar = Suchar.objects.create(
+        text="Scheduled",
+        author=author,
+        published_at=scheduled_at,
+    )
+    client.force_login(author)
+    client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+    url = reverse("suchary:update", kwargs={"pk": suchar.pk})
+
+    value = _rendered_publish_value(client.get(url).content.decode())
+    assert value == "2099-07-15 14:00"
+    response = client.post(url, {"text": "Scheduled, edited", "published_at": value})
+
+    assert response.status_code == HTTPStatus.FOUND
+    suchar.refresh_from_db()
+    assert suchar.published_at == scheduled_at
