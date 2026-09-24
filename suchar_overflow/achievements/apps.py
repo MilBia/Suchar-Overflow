@@ -190,14 +190,19 @@ class AchievementsConfig(AppConfig):
             minute=5,
             id="award-best-suchar-year",
         )
-        # Hourly: award COUNT_SUCHAR/STREAK/NIGHT_OWL tiers for suchary whose
-        # published_at has passed since the last run, so a scheduled suchar's
-        # achievements land within ~1h of publication rather than only on the
-        # author's next suchar (#389).
+        # Every minute: award COUNT_SUCHAR/STREAK/NIGHT_OWL tiers for suchary
+        # whose published_at has passed since the last run, so a scheduled
+        # suchar's achievements (and the SSE toast) land within ~1 min of
+        # publication rather than only on the author's next suchar (#389).
+        # Was hourly at :05, which read as "never awarded" to an author whose
+        # first suchar was scheduled (#402). A one-off "date" job per suchar
+        # was rejected: views can't reach this local scheduler, edits of
+        # published_at would need reschedule/remove, and the in-memory
+        # jobstore still needs this sweep as a restart safety net.
         scheduler.add_job(
             award_publication_achievements,
             "cron",
-            minute=5,
+            minute="*",
             id="award-publication-achievements",
         )
         scheduler.start()

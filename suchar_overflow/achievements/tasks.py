@@ -187,7 +187,9 @@ PUBLICATION_ACHIEVEMENTS_JOB_ID = "award-publication-achievements"
 #: On the very first run (no ``SchedulerRun`` marker) only suchary published
 #: within this window are re-checked. Anything older was already handled by the
 #: ``post_save`` path when it was created, or by an earlier process — a fresh
-#: deploy must not sweep the whole table. Matches the job's hourly cadence.
+#: deploy must not sweep the whole table. Only the first run uses it — every
+#: later run starts from the previous marker — so it is deliberately wider than
+#: the job's per-minute cadence (#402).
 PUBLICATION_CATCHUP_FLOOR = timedelta(hours=1)
 
 #: How far the catch-up window reaches back *before* the previous run.
@@ -212,11 +214,11 @@ def award_publication_achievements(
     *published* suchary, so creating a scheduled suchar no longer awards its
     author a ``COUNT_SUCHAR`` / ``STREAK_LOGIN`` / ``NIGHT_OWL`` tier at
     ``post_save`` time. Nothing fires the engine when a scheduled suchar's
-    ``published_at`` simply passes, so this hourly job — and its boot-time
+    ``published_at`` simply passes, so this per-minute job — and its boot-time
     catch-up in ``AchievementsConfig._catch_up_missed_publication_run`` — walks
     every suchar whose ``published_at`` crossed
     ``(SchedulerRun.ran_at - PUBLICATION_CATCHUP_OVERLAP, now]`` and re-checks
-    its author, bounding the award lag to ~1h.
+    its author, bounding the award lag to ~1 min (#402; hourly before that).
 
     Iterates suchary and passes ``instance=suchar`` rather than looping distinct
     authors: ``NightOwlRule`` returns ``None`` without a ``Suchar`` instance.
@@ -226,7 +228,7 @@ def award_publication_achievements(
 
     A failure while checking one suchar is logged and skipped, not propagated:
     otherwise a single poison record would abort the loop before the
-    ``SchedulerRun`` marker is rewritten, and every subsequent hourly run would
+    ``SchedulerRun`` marker is rewritten, and every subsequent run would
     re-hit it and stall the same way.
 
     Runs in the scheduler's daemon thread; closes stale ORM connections on the

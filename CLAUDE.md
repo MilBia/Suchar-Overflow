@@ -903,8 +903,8 @@ Django-RQ has been removed entirely. `AchievementsConfig.ready()`
 see issue #159: semi-abandoned, no declared Django 6.x support) on a plain thread,
 scheduling `award_best_suchar` as two cron jobs: `award-best-suchar-month` (day=1,
 00:05 UTC) and `award-best-suchar-year` (month=1, day=1, 00:05 UTC — see #168), plus
-a third, `award-publication-achievements` (`award_publication_achievements`, hourly at
-:05 — see below, #389). The
+a third, `award-publication-achievements` (`award_publication_achievements`, every
+minute — `minute="*"`; see below, #389/#402). The
 scheduler is skipped under pytest and for management commands in `_NO_SCHEDULER`
 (`migrate`, `makemigrations`, `collectstatic`, `compress`, `check`, `shell`,
 `createsuperuser`) to avoid starting duplicate/unwanted schedulers. Since the
@@ -967,8 +967,23 @@ with the previous one: `SucharForm.clean_published_at` accepts a `published_at` 
 `ran_at`, and a bare `published_at__gt=last_ran_at` would then drop it forever (nothing
 re-checks a suchar once its `published_at` passes). The per-suchar `check_achievements`
 call is wrapped in `try/except` + `logger.exception`: a single poison record must not
-abort the loop before the marker is rewritten, or every subsequent hourly run re-hits
+abort the loop before the marker is rewritten, or every subsequent run re-hits
 it and stalls.
+**Cadence is every minute (#402), not hourly.** At the original hourly `:05` an author
+whose *first* suchar was scheduled got "First Suchar" (and its SSE toast) up to ~1h
+after the suchar went live, which read as "never awarded". A one-off `date` job per
+suchar at its `published_at` was rejected: views can't reach the scheduler (a local in
+`_start_scheduler`), editing `published_at` would need reschedule/remove, and the
+in-memory jobstore would still need this sweep as a restart safety net. The query and
+constants are unchanged — each suchar is simply re-checked ~16 times across the 15 min
+overlap, which the idempotent engine makes cheap. Don't narrow the queryset with a
+`published_at__gt=F("created_at")`-style "only scheduled ones" filter: editing a
+scheduled suchar can move its `published_at` up to 5 min into the past without any
+`SUCHAR_POSTED` event, and this job is the only thing that then catches it. Because
+of the per-minute cadence, `LOGGING` sets the `apscheduler.executors` logger to
+`WARNING` (in `base.py` *and* `production.py`, which rebuilds `loggers`) — otherwise
+its INFO "Running job … / executed successfully" pair adds ~2880 lines a day; job
+errors and missed-run warnings still log.
 Idempotent — the engine skips owned achievements (so the window overlap and any
 re-processing are no-ops) — and closes stale ORM connections on exit like
 `award_best_suchar` (skipped inside an atomic block).
@@ -1192,9 +1207,9 @@ all filter `Suchar.objects.filter(... published_at__lte=timezone.now())` (`__lte
 `COUNT_SUCHAR`/streak/night-owl tier that shows on the author's public profile before
 the suchar itself is visible (#389). Nothing fires the engine when a scheduled suchar's
 `published_at` merely passes, so `award_publication_achievements`
-(`achievements/tasks.py`, scheduled hourly — see Background scheduling) re-runs the
+(`achievements/tasks.py`, scheduled every minute — see Background scheduling) re-runs the
 engine for every suchar that crossed into visibility since its last `SchedulerRun`,
-bounding the award lag to ~1h. `EditCountRule`, `PolarizerRule`, `SumScoreRule` and
+bounding the award lag to ~1 min (#402). `EditCountRule`, `PolarizerRule`, `SumScoreRule` and
 `DryMasterRule` are deliberately **not** gated: editing is only possible before
 publication ("Recydywa" is earned entirely on scheduled suchary by design), and the
 vote-driven rules already can't latch pre-publication (`_maybe_mark_overdried`'s lower

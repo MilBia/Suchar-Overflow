@@ -158,7 +158,9 @@ logging_config["handlers"]["mail_admins"] = {
     "filters": ["require_debug_false"],
     "class": "django.utils.log.AdminEmailHandler",
 }
+# Merge into (not replace) base's loggers — it quiets apscheduler.executors (#402).
 logging_config["loggers"] = {
+    **logging_config.get("loggers", {}),
     "django.request": {
         "handlers": ["mail_admins"],
         "level": "ERROR",
