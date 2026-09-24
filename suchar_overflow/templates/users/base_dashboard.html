@@ -20,7 +20,7 @@
 {% block content %}
   <div class="container py-4">
     <div class="row g-4 justify-content-center">
-      {% if not request.resolver_match.view_name == 'users:detail' or request.user == object %}
+      {% if request.resolver_match.view_name != 'users:detail' or request.user == object %}
         <!-- Sidebar (Only for own profile/settings) -->
         <div class="col-lg-3">
           <div class="card shadow-md border-0 sticky-top sticky-sidebar dashboard-card">

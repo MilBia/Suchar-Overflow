@@ -143,7 +143,7 @@
 .profile-stats-card .d-flex,
 .profile-feed .suchar-card .d-flex {
     flex-wrap: wrap;
-    column-gap: var(--space-sm);
+    gap: var(--space-xs) var(--space-sm);
 }
 
 .profile-best-joke-text {
