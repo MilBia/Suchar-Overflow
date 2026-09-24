@@ -411,4 +411,6 @@ def test_start_scheduler_registers_all_recurring_jobs() -> None:
     assert jobs_by_id["award-best-suchar-month"]["day"] == 1
     assert jobs_by_id["award-best-suchar-year"]["month"] == 1
     assert jobs_by_id["award-best-suchar-year"]["day"] == 1
-    assert jobs_by_id["award-publication-achievements"]["minute"] == 5  # noqa: PLR2004
+    # Every minute, not hourly: a scheduled suchar's achievements must land
+    # with negligible lag after publication (#402).
+    assert jobs_by_id["award-publication-achievements"]["minute"] == "*"

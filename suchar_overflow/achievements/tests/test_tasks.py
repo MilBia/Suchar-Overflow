@@ -920,7 +920,7 @@ def test_award_best_suchar_logs_warning_when_achievement_missing(
 # ---------------------------------------------------------------------------
 # award_publication_achievements — re-run the engine for suchary that crossed
 # into visibility since the last run, so a scheduled suchar's COUNT_SUCHAR /
-# STREAK_LOGIN / NIGHT_OWL tiers land within ~1h of publication rather than
+# STREAK_LOGIN / NIGHT_OWL tiers land within ~1 min of publication rather than
 # only on the author's next suchar (#389).
 # ---------------------------------------------------------------------------
 
@@ -1216,7 +1216,7 @@ def test_award_publication_achievements_one_bad_suchar_does_not_stall_the_job(
 ) -> None:
     """An exception while checking one suchar is logged and skipped: the marker
     still advances and the other suchary are still processed, so a single
-    poison record cannot wedge the hourly job forever.
+    poison record cannot wedge the job forever.
     """
     now = timezone.now()
     author_bad = User.objects.create_user(

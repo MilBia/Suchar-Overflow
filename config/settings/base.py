@@ -328,6 +328,12 @@ LOGGING = {
         },
     },
     "root": {"level": "INFO", "handlers": ["console"]},
+    "loggers": {
+        # award-publication-achievements runs every minute (#402); apscheduler's
+        # INFO "Running job" / "executed successfully" pair would add ~2880
+        # lines a day. Job errors and missed-run warnings still get through.
+        "apscheduler.executors": {"level": "WARNING"},
+    },
 }
 
 REDIS_URL = env("REDIS_URL", default="redis://redis:6379/0")
