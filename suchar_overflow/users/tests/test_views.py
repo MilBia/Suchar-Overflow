@@ -56,6 +56,32 @@ async def test_user_detail_authenticated(async_client: AsyncClient) -> None:
 
 @pytest.mark.anyio
 @pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("own_profile", [True, False], ids=["own", "other"])
+async def test_user_detail_account_menu_only_on_own_profile(
+    async_client: AsyncClient,
+    own_profile: bool,  # noqa: FBT001
+) -> None:
+    """The dashboard's "Your Account" menu belongs to the viewer's own profile only.
+
+    UserDetailView puts the profile owner in the context as `object`, not `user`,
+    so a `request.user == user` check in base_dashboard.html compared the viewer
+    with the auth context processor's `user` — i.e. with themselves — and every
+    profile got the menu and the narrower col-lg-9 column (#406).
+    """
+    viewer = await sync_to_async(UserFactory.create)()
+    target = viewer if own_profile else await sync_to_async(UserFactory.create)()
+    await async_client.aforce_login(viewer)
+    response = await async_client.get(
+        reverse("users:detail", kwargs={"username": target.username}),
+    )
+    content = response.content.decode()
+    assert ("dashboard-card" in content) is own_profile
+    assert ('class="col-lg-9"' in content) is own_profile
+    assert ("col-12 col-lg-10 mx-auto" in content) is not own_profile
+
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
 async def test_user_detail_not_authenticated(async_client: AsyncClient) -> None:
     target = await sync_to_async(UserFactory.create)()
     response = await async_client.get(

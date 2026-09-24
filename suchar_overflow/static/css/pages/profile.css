@@ -85,3 +85,97 @@
     align-items: center;
     width: 20px;
 }
+
+/* Profile stats + feed layout (#406). The profile content sits inside the
+   dashboard's own column (col-lg-9 next to the menu, col-lg-10 on someone
+   else's profile), so viewport breakpoints (col-md-* / col-xl-*) described the
+   wrong box: at >= 1200px the stats column shrank to ~150px of text. The grid
+   below is driven by the width of .profile-body itself instead.
+   Below the threshold: one column, stat cards side by side while they fit
+   (flex-wrap, each at least ~260px), full width on phones. Above it: stats
+   column with a 300px floor next to a 2fr feed. */
+.profile-body {
+    container-type: inline-size;
+}
+
+.profile-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-lg);
+}
+
+.profile-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-lg);
+    min-width: 0;
+}
+
+/* min-width: 0 on every grid/flex item: a responsive Chart.js canvas (and a
+   long unbroken word) would otherwise keep the item at its min-content width
+   and push it past the card edge — and keep it there after the window narrows. */
+.profile-stats > .card {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+.profile-feed {
+    min-width: 0;
+}
+
+@container (min-width: 720px) {
+    .profile-layout {
+        grid-template-columns: minmax(300px, 1fr) minmax(0, 2fr);
+    }
+
+    .profile-stats {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profile-stats > .card {
+        flex: 0 0 auto;
+    }
+}
+
+/* Label/value rows and the F/D badges wrap instead of spilling out of the card. */
+.profile-stats-card .d-flex,
+.profile-feed .suchar-card .d-flex {
+    flex-wrap: wrap;
+    column-gap: var(--space-sm);
+}
+
+.profile-best-joke-text {
+    overflow-wrap: anywhere;
+}
+
+/* A long display name / username must wrap next to the 120px avatar instead of
+   widening the page on phones (#406 — was a 37px horizontal scroll at 375px). */
+.profile-header-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* Phones: the profile card's .card-body already insets its content by
+   --space-lg (its `p-0` utility loses to cards.css's `.card-body` padding), so
+   the extra `px-4` on .profile-body left ~200px for the stat cards at 375px. */
+@media (max-width: 575.98px) {
+    .profile-body {
+        padding-inline: 0;
+    }
+}
+
+/* Narrow profile: stack the avatar above the name so the name gets the full
+   width rather than a sliver beside the 120px avatar. */
+@container (max-width: 400px) {
+    .profile-header-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .profile-header-wrapper .avatar-profile {
+        margin-right: 0;
+        margin-bottom: var(--space-sm);
+    }
+}

@@ -11,11 +11,11 @@
     <div class="profile-cover"></div>
 
     <div class="card-body p-0">
-      <div class="px-4 px-lg-5 pb-5">
+      <div class="px-4 px-lg-5 pb-5 profile-body">
         <!-- Avatar & Header -->
         <div class="d-flex align-items-end mb-4 profile-header-wrapper">
           <div class="avatar-profile flex-shrink-0 me-4">{% include "svgs/icon-user.svg" %}</div>
-          <div class="mb-2">
+          <div class="mb-2 profile-header-text">
             <h2 class="h2 fw-bold mb-0">{{ object.display_name }}</h2>
             {% if object.name %}
               <p class="text-muted mb-0">@{{ object.username }}</p>
@@ -81,15 +81,22 @@
             </div>
           </div>
 
-          <!-- Stats Column -->
-          <div class="col-md-4 col-xl-3">
-            <!-- Achievements -->
-            <div class="card border bg-white mb-4 overflow-visible">
-              <div class="card-body">
-                <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Achievements" %}</h6>
-                {% if user_achievements %}
-                  <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-xl-start">
-                    {% comment %}
+          {% comment %}
+            Stats + feed layout (#406): a CSS grid driven by a container query on
+            .profile-body (pages/profile.css), not viewport col-* breakpoints —
+            nested inside the dashboard column those squeezed the stats to ~150px.
+          {% endcomment %}
+          <div class="col-12">
+            <div class="profile-layout">
+              <!-- Stats Column -->
+              <div class="profile-stats">
+                <!-- Achievements -->
+                <div class="card border bg-white overflow-visible">
+                  <div class="card-body">
+                    <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Achievements" %}</h6>
+                    {% if user_achievements %}
+                      <div class="d-flex flex-wrap gap-2">
+                        {% comment %}
                       Both icon_content renders below are unescaped on purpose
                       (#335, #379): the field is trusted — it only comes from data
                       migrations or a superuser, because the admin hides it from
@@ -97,194 +104,197 @@
                       or currentColor and the inherited styling break. Guarded by
                       TestAchievementAdminIconContentPermission in
                       suchar_overflow/achievements/tests/test_admin.py.
-                    {% endcomment %}
-                    {% for user_ach in user_achievements %}
-                      <div class="achievement-container">
-                        <div class="achievement-badge-icon-wrapper text-warning"
-                             role="group"
-                             tabindex="0"
-                             aria-label="{{ user_ach.achievement.name }}"
-                             aria-describedby="ach-desc-{{ user_ach.achievement.pk }}">
-                          {% if user_ach.achievement.icon_content %}
-                            {{ user_ach.achievement.icon_content|safe }}
-                          {% else %}
-                            🏆
-                          {% endif %}
-                        </div>
+                        {% endcomment %}
+                        {% for user_ach in user_achievements %}
+                          <div class="achievement-container">
+                            <div class="achievement-badge-icon-wrapper text-warning"
+                                 role="group"
+                                 tabindex="0"
+                                 aria-label="{{ user_ach.achievement.name }}"
+                                 aria-describedby="ach-desc-{{ user_ach.achievement.pk }}">
+                              {% if user_ach.achievement.icon_content %}
+                                {{ user_ach.achievement.icon_content|safe }}
+                              {% else %}
+                                🏆
+                              {% endif %}
+                            </div>
 
-                        <div class="achievement-details-popover">
-                          <div class="achievement-details-icon text-warning" aria-hidden="true">
-                            {% if user_ach.achievement.icon_content %}
-                              {{ user_ach.achievement.icon_content|safe }}
-                            {% else %}
-                              🏆
-                            {% endif %}
+                            <div class="achievement-details-popover">
+                              <div class="achievement-details-icon text-warning" aria-hidden="true">
+                                {% if user_ach.achievement.icon_content %}
+                                  {{ user_ach.achievement.icon_content|safe }}
+                                {% else %}
+                                  🏆
+                                {% endif %}
+                              </div>
+                              <div class="achievement-details-content">
+                                <span class="achievement-title text-start">{{ user_ach.achievement.name }}</span>
+                                <span class="achievement-description text-start"
+                                      id="ach-desc-{{ user_ach.achievement.pk }}">{{ user_ach.achievement.description }}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div class="achievement-details-content">
-                            <span class="achievement-title text-start">{{ user_ach.achievement.name }}</span>
-                            <span class="achievement-description text-start"
-                                  id="ach-desc-{{ user_ach.achievement.pk }}">{{ user_ach.achievement.description }}</span>
-                          </div>
-                        </div>
+                        {% endfor %}
                       </div>
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  <p class="text-muted small mb-0">{% trans "No achievements yet." %}</p>
-                {% endif %}
-              </div>
-            </div>
-
-            <!-- Best Joke (Top Priority) -->
-            {% if best_joke %}
-              <div class="card border border-warning bg-warning bg-opacity-10 mb-4">
-                <div class="card-body position-relative">
-                  <div class="position-absolute top-0 end-0 p-2 opacity-25 trophy-icon">🏆</div>
-                  <h6 class="text-uppercase text-warning-emphasis small fw-bold mb-2">{% trans "The Best Of" %}</h6>
-                  <div class="mb-0 small fst-italic text-dark">{{ best_joke.text|linebreaksbr }}</div>
-                  <div class="mt-2 small fw-bold text-warning-emphasis d-flex gap-2 align-items-center">
-                    <span>{{ best_joke.total_votes|default:0 }} {% trans "Votes" %}</span>
-                    <span class="badge bg-warning text-dark opacity-75">{{ best_joke.funny_count }} F</span>
-                    <span class="badge bg-info text-white opacity-75">{{ best_joke.dry_count }} D</span>
+                    {% else %}
+                      <p class="text-muted small mb-0">{% trans "No achievements yet." %}</p>
+                    {% endif %}
                   </div>
                 </div>
-              </div>
-            {% endif %}
 
-            <!-- Combined Stats Card -->
-            <div class="card border bg-light mb-4">
-              <div class="card-body">
-                <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Statistics" %}</h6>
-                <div class="mb-2">
-                  <span>{% trans "Comedy Rank" %}</span>
-                  <span class="d-block fw-bold text-dark" title="#{{ global_rank }}">
-                    {{ global_rank_name }}
-                    <span class="fw-normal text-muted small">#{{ global_rank }}</span>
-                  </span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span>{% trans "Jokes" %}</span>
-                  <span class="fw-bold">{{ suchar_count|default:"0" }}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span>{% trans "Total Votes" %}</span>
-                  <span class="fw-bold text-primary">{{ object.total_score|default:"0" }}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
-                  <span>F: {{ total_funny_score }} / D: {{ total_dry_score }}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <span>{% trans "Joined" %}</span>
-                  <span>{{ object.date_joined|date:"M Y" }}</span>
-                </div>
-
-                {% if suchar_count and suchar_count > 0 %}
-                  <hr class="text-muted opacity-25 my-4" />
-
-                  <!-- Dryness Chart -->
-                  <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Dryness Level" %}</h6>
-                  <div class="chart-container-sm mb-4">
-                    {% trans "Jokes" as suchar_label %}
-                    <canvas id="userActivityChart" data-suchar-label="{{ suchar_label }}"></canvas>
-                  </div>
-
-                  <hr class="text-muted opacity-25 my-4" />
-
-                  <!-- Reception Chart -->
-                  <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Reception" %}</h6>
-                  <div class="chart-container-sm">
-                    {% trans "Funny" as funny_label %}
-                    {% trans "Dry" as dry_label %}
-                    <canvas id="userReceptionChart"
-                            data-funny-label="{{ funny_label }}"
-                            data-dry-label="{{ dry_label }}"></canvas>
-                  </div>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-
-          <!-- Feed Column -->
-          <div class="col-md-8 col-xl-9">
-
-            <h4 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
-              <span class="text-primary" aria-hidden="true">{% include "svgs/icon-edit.svg" %}</span>
-              {% trans "Latest Jokes" %}
-            </h4>
-
-            {% if scheduled_suchary %}
-              <div class="card bg-white border border-primary border-opacity-25 shadow-sm mb-4">
-                <div class="card-header border-0 fw-bold d-flex align-items-center gap-2 bg-primary text-white">
-                  <span class="fs-5">🕒</span> {% trans "Scheduled for Publication" %}
-                </div>
-                <div class="card-body p-0">
-                  <div class="list-group list-group-flush">
-                    {% for suchar in scheduled_suchary %}
-                      <div class="list-group-item p-3">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                          <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill pe-none user-select-none">{{ suchar.published_at|date:"d M Y, H:i" }}</span>
-                          <a href="{% url 'suchary:update' suchar.pk %}"
-                             class="btn btn-sm btn-outline-primary py-0 px-2 small">{% trans "Edit" %}</a>
-                        </div>
-                        <p class="mb-0 text-muted">{{ suchar.text|linebreaksbr }}</p>
-                        <div class="mt-2 small text-muted">
-                          {% for tag in suchar.tags.all %}
-                            <a href="{% url 'suchary:list' %}?tag={{ tag.slug }}"
-                               class="badge text-secondary border me-1 text-decoration-none bg-light">#{{ tag.name }}</a>
-                          {% endfor %}
-                        </div>
-                      </div>
-                    {% endfor %}
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-
-            {% if latest_suchary %}
-              <div class="d-flex flex-column gap-3">
-                {% for suchar in latest_suchary %}
-                  <!-- Ensure vertical stacking with w-100 -->
-                  <div class="card suchar-card bg-white w-100 d-block">
-                    <div class="card-body p-3">
-                      <div class="mb-2">{{ suchar.text|linebreaksbr }}</div>
-                      <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">{{ suchar.created_at|date:"d M Y, H:i" }}</small>
-                        <div class="d-flex gap-2 align-items-center">
-                          <small class="fw-bold text-dark">{{ suchar.score|default:0 }} {% trans "Votes" %}</small>
-                          <span class="badge bg-warning text-dark rounded-pill py-0 px-2 small stats-text-sm">{{ suchar.funny_count }} F</span>
-                          <span class="badge bg-info text-white rounded-pill py-0 px-2 small stats-text-sm">{{ suchar.dry_count }} D</span>
-                        </div>
+                <!-- Best Joke (Top Priority) -->
+                {% if best_joke %}
+                  <div class="card border border-warning bg-warning bg-opacity-10 profile-best-joke">
+                    <div class="card-body position-relative">
+                      <div class="position-absolute top-0 end-0 p-2 opacity-25 trophy-icon">🏆</div>
+                      <h6 class="text-uppercase text-warning-emphasis small fw-bold mb-2">{% trans "The Best Of" %}</h6>
+                      <div class="mb-0 small fst-italic text-dark profile-best-joke-text">{{ best_joke.text|linebreaksbr }}</div>
+                      <div class="mt-2 small fw-bold text-warning-emphasis d-flex flex-wrap gap-2 align-items-center">
+                        <span>{{ best_joke.total_votes|default:0 }} {% trans "Votes" %}</span>
+                        <span class="badge bg-warning text-dark opacity-75">{{ best_joke.funny_count }} F</span>
+                        <span class="badge bg-info text-white opacity-75">{{ best_joke.dry_count }} D</span>
                       </div>
                     </div>
                   </div>
-                {% endfor %}
+                {% endif %}
+
+                <!-- Combined Stats Card -->
+                <div class="card border bg-light profile-stats-card">
+                  <div class="card-body">
+                    <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Statistics" %}</h6>
+                    <div class="mb-2">
+                      <span>{% trans "Comedy Rank" %}</span>
+                      <span class="d-block fw-bold text-dark" title="#{{ global_rank }}">
+                        {{ global_rank_name }}
+                        <span class="fw-normal text-muted small">#{{ global_rank }}</span>
+                      </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{% trans "Jokes" %}</span>
+                      <span class="fw-bold">{{ suchar_count|default:"0" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span>{% trans "Total Votes" %}</span>
+                      <span class="fw-bold text-primary">{{ object.total_score|default:"0" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
+                      <span>F: {{ total_funny_score }} / D: {{ total_dry_score }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <span>{% trans "Joined" %}</span>
+                      <span>{{ object.date_joined|date:"M Y" }}</span>
+                    </div>
+
+                    {% if suchar_count and suchar_count > 0 %}
+                      <hr class="text-muted opacity-25 my-4" />
+
+                      <!-- Dryness Chart -->
+                      <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Dryness Level" %}</h6>
+                      <div class="chart-container-sm mb-4">
+                        {% trans "Jokes" as suchar_label %}
+                        <canvas id="userActivityChart" data-suchar-label="{{ suchar_label }}"></canvas>
+                      </div>
+
+                      <hr class="text-muted opacity-25 my-4" />
+
+                      <!-- Reception Chart -->
+                      <h6 class="text-uppercase text-muted small fw-bold mb-3">{% trans "Reception" %}</h6>
+                      <div class="chart-container-sm">
+                        {% trans "Funny" as funny_label %}
+                        {% trans "Dry" as dry_label %}
+                        <canvas id="userReceptionChart"
+                                data-funny-label="{{ funny_label }}"
+                                data-dry-label="{{ dry_label }}"></canvas>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
               </div>
-              <div class="mt-3">
-                <a href="{% url 'suchary:list' %}?author={{ object.username }}"
-                   class="btn btn-outline btn-sm">{% trans "See all entries" %}</a>
+
+              <!-- Feed Column -->
+              <div class="profile-feed">
+
+                <h4 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+                  <span class="text-primary" aria-hidden="true">{% include "svgs/icon-edit.svg" %}</span>
+                  {% trans "Latest Jokes" %}
+                </h4>
+
+                {% if scheduled_suchary %}
+                  <div class="card bg-white border border-primary border-opacity-25 shadow-sm mb-4">
+                    <div class="card-header border-0 fw-bold d-flex align-items-center gap-2 bg-primary text-white">
+                      <span class="fs-5">🕒</span> {% trans "Scheduled for Publication" %}
+                    </div>
+                    <div class="card-body p-0">
+                      <div class="list-group list-group-flush">
+                        {% for suchar in scheduled_suchary %}
+                          <div class="list-group-item p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                              <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill pe-none user-select-none">{{ suchar.published_at|date:"d M Y, H:i" }}</span>
+                              <a href="{% url 'suchary:update' suchar.pk %}"
+                                 class="btn btn-sm btn-outline-primary py-0 px-2 small">{% trans "Edit" %}</a>
+                            </div>
+                            <p class="mb-0 text-muted">{{ suchar.text|linebreaksbr }}</p>
+                            <div class="mt-2 small text-muted">
+                              {% for tag in suchar.tags.all %}
+                                <a href="{% url 'suchary:list' %}?tag={{ tag.slug }}"
+                                   class="badge text-secondary border me-1 text-decoration-none bg-light">#{{ tag.name }}</a>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if latest_suchary %}
+                  <div class="d-flex flex-column gap-3">
+                    {% for suchar in latest_suchary %}
+                      <!-- Ensure vertical stacking with w-100 -->
+                      <div class="card suchar-card bg-white w-100 d-block">
+                        <div class="card-body p-3">
+                          <div class="mb-2">{{ suchar.text|linebreaksbr }}</div>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ suchar.created_at|date:"d M Y, H:i" }}</small>
+                            <div class="d-flex gap-2 align-items-center">
+                              <small class="fw-bold text-dark">{{ suchar.score|default:0 }} {% trans "Votes" %}</small>
+                              <span class="badge bg-warning text-dark rounded-pill py-0 px-2 small stats-text-sm">{{ suchar.funny_count }} F</span>
+                              <span class="badge bg-info text-white rounded-pill py-0 px-2 small stats-text-sm">{{ suchar.dry_count }} D</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  <div class="mt-3">
+                    <a href="{% url 'suchary:list' %}?author={{ object.username }}"
+                       class="btn btn-outline btn-sm">{% trans "See all entries" %}</a>
+                  </div>
+                {% else %}
+                  <div class="text-center py-5 bg-light rounded-4">
+                    <p class="text-muted mb-0">{% trans "User hasn't added any jokes yet." %}</p>
+                  </div>
+                {% endif %}
               </div>
-            {% else %}
-              <div class="text-center py-5 bg-light rounded-4">
-                <p class="text-muted mb-0">{% trans "User hasn't added any jokes yet." %}</p>
-              </div>
-            {% endif %}
+            </div>
           </div>
         </div>
       </div>
     </div>
-  {% endblock dashboard_content %}
+  </div>
+{% endblock dashboard_content %}
 
-  {% block javascript %}
-    {{ block.super }}
-    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-    {% compress js %}
-      <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
-    {% endcompress %}
-    {# json_script output must stay OUT of {% compress %} — see #205. #}
-    {{ activity_labels|json_script:"activity-labels-data" }}
-    {{ activity_values|json_script:"activity-values-data" }}
-    {{ reception_data|json_script:"reception-data-data" }}
-    {% compress js %}
-      <script defer src="{% static 'js/pages/user_detail.js' %}"></script>
-    {% endcompress %}
-  {% endblock javascript %}
+{% block javascript %}
+  {{ block.super }}
+  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+  {% compress js %}
+    <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
+  {% endcompress %}
+  {# json_script output must stay OUT of {% compress %} — see #205. #}
+  {{ activity_labels|json_script:"activity-labels-data" }}
+  {{ activity_values|json_script:"activity-values-data" }}
+  {{ reception_data|json_script:"reception-data-data" }}
+  {% compress js %}
+    <script defer src="{% static 'js/pages/user_detail.js' %}"></script>
+  {% endcompress %}
+{% endblock javascript %}

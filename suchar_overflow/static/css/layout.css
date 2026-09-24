@@ -49,9 +49,7 @@
 .col-md-8,
 .col-8,
 .col-12,
-.col-lg-8,
-.col-xl-3,
-.col-xl-9 {
+.col-lg-8 {
     padding-inline: var(--space-md);
     position: relative;
     width: 100%;
@@ -189,17 +187,5 @@
     .col-lg-10 {
         flex: 0 0 83.3333%;
         max-width: 83.3333%;
-    }
-}
-
-@media (min-width: 1200px) {
-    .col-xl-3 {
-        flex: 0 0 25%;
-        max-width: 25%;
-    }
-
-    .col-xl-9 {
-        flex: 0 0 75%;
-        max-width: 75%;
     }
 }

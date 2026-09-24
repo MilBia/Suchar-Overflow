@@ -725,12 +725,6 @@
     }
 }
 
-@media (min-width: 1200px) {
-    .justify-content-xl-start {
-        justify-content: flex-start !important;
-    }
-}
-
 /* Border Utilities */
 .border-0 {
     border: none !important;
