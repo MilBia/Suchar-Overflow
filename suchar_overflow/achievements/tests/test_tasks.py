@@ -1125,7 +1125,13 @@ def test_award_publication_achievements_passes_instance_for_night_owl() -> None:
         threshold=1,
     )
     suchar = _scheduled_suchar(author)
-    night_ts = now.replace(hour=2, minute=0, second=0, microsecond=0)
+    # Local hour 02:00 — NightOwlRule reads the TIME_ZONE wall clock (#405).
+    night_ts = timezone.localtime(now).replace(
+        hour=2,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
     Suchar.objects.filter(pk=suchar.pk).update(created_at=night_ts)
     _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
 

@@ -63,8 +63,10 @@ def get_daily_activity_data(
     days: int,
     counts_map: dict[date, int] | None = None,
 ) -> dict[str, list]:
-    start_date = (start_of_today - timedelta(days=days)).date()
-    end_date = now.date()
+    # localdate(): the day buckets are local (TruncDay), so an aware UTC
+    # argument must not shift the window by a day (#405).
+    start_date = timezone.localdate(start_of_today - timedelta(days=days))
+    end_date = timezone.localdate(now)
     if counts_map is None:
         counts_map = _fetch_daily_counts_map(start_date, now)
 
@@ -115,10 +117,12 @@ def get_all_time_activity_data(
         m_start = m.replace(day=1)
         counts_map[m_start] = entry["count"]
 
-    twelve_months_ago = (start_of_today - timedelta(days=365)).date().replace(day=1)
+    twelve_months_ago = timezone.localdate(
+        start_of_today - timedelta(days=365),
+    ).replace(day=1)
     start_date = min(counts_map, default=twelve_months_ago)
     start_date = min(start_date, twelve_months_ago)
-    end_date = now.date().replace(day=1)
+    end_date = timezone.localdate(now).replace(day=1)
 
     labels: list[str] = []
     values: list[int] = []
@@ -279,7 +283,9 @@ class LeaderboardView(View):
         prefetch_related_objects(rendered_suchary, "tags")
 
         widest_days = 90
-        widest_start_date = (start_of_today - timedelta(days=widest_days)).date()
+        widest_start_date = timezone.localdate(
+            start_of_today - timedelta(days=widest_days),
+        )
         counts_map = _fetch_daily_counts_map(widest_start_date, now)
         chart_datasets = {
             "7": get_daily_activity_data(start_of_today, now, 7, counts_map=counts_map),

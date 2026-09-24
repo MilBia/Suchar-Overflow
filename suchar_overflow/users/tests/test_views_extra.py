@@ -987,7 +987,13 @@ def test_heatmap_includes_todays_suchary(client: Client) -> None:
     client.force_login(user)
     response = client.get(detail_url("heatmap_today"))
 
-    assert heatmap_count_for(response.context["heatmap_weeks"], now.date()) == 1
+    assert (
+        heatmap_count_for(
+            response.context["heatmap_weeks"],
+            timezone.localdate(now),
+        )
+        == 1
+    )
 
 
 @pytest.mark.django_db
