@@ -12,6 +12,7 @@ import zoneinfo
 from unittest.mock import patch
 
 import pytest
+from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
 
 from suchar_overflow.achievements.apps import AchievementsConfig
@@ -243,15 +244,45 @@ def test_award_best_suchar_default_reference_date_is_local_yesterday() -> None:
     mock_range.assert_called_once_with("month", datetime.date(2024, 6, 30))
 
 
-def test_scheduler_runs_on_service_time_zone() -> None:
+@pytest.mark.parametrize(
+    ("job_id", "now", "expected_fire_utc"),
+    [
+        # July 1 00:05 CEST.
+        (
+            "award-best-suchar-month",
+            datetime.datetime(2024, 6, 30, 21, 0, tzinfo=UTC),
+            datetime.datetime(2024, 6, 30, 22, 5, tzinfo=UTC),
+        ),
+        # Nov 1 00:05 CET — the October DST switch lies in between.
+        (
+            "award-best-suchar-month",
+            datetime.datetime(2024, 10, 15, 12, 0, tzinfo=UTC),
+            datetime.datetime(2024, 10, 31, 23, 5, tzinfo=UTC),
+        ),
+        # Jan 1 2025 00:05 CET.
+        (
+            "award-best-suchar-year",
+            datetime.datetime(2024, 6, 15, 12, 0, tzinfo=UTC),
+            datetime.datetime(2024, 12, 31, 23, 5, tzinfo=UTC),
+        ),
+    ],
+)
+def test_scheduler_crons_fire_at_local_midnight(
+    job_id: str,
+    now: datetime.datetime,
+    expected_fire_utc: datetime.datetime,
+) -> None:
+    """Real APScheduler triggers (only ``start`` is stubbed): the contest crons
+    resolve on the Polish wall clock, so they fire at 00:05 local time."""
     with (
         patch.object(AchievementsConfig, "_catch_up_missed_monthly_run"),
         patch.object(AchievementsConfig, "_catch_up_missed_yearly_run"),
         patch.object(AchievementsConfig, "_catch_up_missed_publication_run"),
-        patch(
-            "apscheduler.schedulers.background.BackgroundScheduler",
-        ) as mock_scheduler_cls,
+        patch.object(BackgroundScheduler, "start", autospec=True) as mock_start,
     ):
         AchievementsConfig._start_scheduler()  # noqa: SLF001
 
-    mock_scheduler_cls.assert_called_once_with(timezone="Europe/Warsaw")
+    scheduler = mock_start.call_args.args[0]
+    job = scheduler.get_job(job_id)
+    assert job is not None
+    assert job.trigger.get_next_fire_time(None, now) == expected_fire_utc
