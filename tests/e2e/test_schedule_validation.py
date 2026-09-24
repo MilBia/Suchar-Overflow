@@ -1,14 +1,18 @@
 """E2E tests for schedule date validation in the suchar form (suchar_form.js)."""
 
-from datetime import datetime
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
 import pytest
+from django.utils import timezone
+
+from suchar_overflow.suchary.models import Suchar
 
 if TYPE_CHECKING:
     from playwright.sync_api import Page
     from pytest_django.live_server_helper import LiveServer
+
+    from suchar_overflow.users.models import User as UserModel
 
 
 @pytest.mark.e2e
@@ -62,7 +66,8 @@ def test_future_date_passes_client_validation(
     page.check("#scheduleCheck")
     page.wait_for_selector("#scheduleContainer:not(.d-none)")
 
-    future_str = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M")  # noqa: DTZ005
+    # The form reads a naive value on the service's wall clock (#405).
+    future_str = (timezone.localtime() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M")
     page.evaluate(f"document.getElementById('id_published_at').value = '{future_str}'")
     page.evaluate("document.getElementById('id_published_at').disabled = false")
 
@@ -71,3 +76,26 @@ def test_future_date_passes_client_validation(
     # Successful submission redirects back to the list
     page.wait_for_url(f"{live_server.url}/suchary/")
     assert "/suchary/" in page.url
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
+def test_edit_form_of_scheduled_suchar_opens_with_schedule_enabled(
+    page: Page,
+    live_server: LiveServer,
+    e2e_user: UserModel,
+) -> None:
+    """The edit form renders published_at as "Y-m-d H:i"; suchar_form.js must
+    parse it (ISO "T" form, not the space form older WebKit rejects) and start
+    with the schedule toggle on for a future publication."""
+    scheduled = Suchar.objects.create(
+        text="Zaplanowany suchar.",
+        author=e2e_user,
+        published_at=timezone.now() + timedelta(days=2),
+    )
+
+    page.goto(f"{live_server.url}/suchary/update/{scheduled.pk}/")
+
+    assert page.is_checked("#scheduleCheck")
+    assert page.locator("#scheduleContainer:not(.d-none)").is_visible()

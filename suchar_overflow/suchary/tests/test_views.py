@@ -1,4 +1,6 @@
+import datetime
 import re
+import zoneinfo
 from datetime import timedelta
 from http import HTTPStatus
 from typing import TYPE_CHECKING
@@ -13,6 +15,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext
 
+from suchar_overflow.conftest import make_user
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
@@ -21,6 +24,8 @@ if TYPE_CHECKING:
     from django.test import Client
 
     from suchar_overflow.users.models import User as UserModel
+
+WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
 
 
 @pytest.mark.django_db
@@ -527,3 +532,52 @@ def test_suchar_list_marks_overdried_cards(
     fresh_chunk = next(c for c in card_chunks if "Fresh joke" in c)
     assert "data-overdried" in dry_chunk
     assert "data-overdried" not in fresh_chunk
+
+
+# ---------------------------------------------------------------------------
+# Scheduling and display on the Polish wall clock (#405)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_suchar_list_shows_publication_time_in_polish_time(client: Client) -> None:
+    """Stored 12:00Z in July is displayed as 14:00 (CEST), not the UTC hour."""
+    author = make_user("tz405list")
+    suchar = Suchar.objects.create(text="Displayed in CEST", author=author)
+    stored = datetime.datetime(2024, 7, 10, 12, 0, tzinfo=datetime.UTC)
+    Suchar.objects.filter(pk=suchar.pk).update(created_at=stored, published_at=stored)
+
+    response = client.get(reverse("suchary:list"))
+
+    html = response.content.decode()
+    assert ", 14:00<" in html
+    assert ", 12:00<" not in html
+
+
+@pytest.mark.django_db
+def test_edit_form_round_trips_published_at_in_polish_time(client: Client) -> None:
+    """The edit form renders published_at as local wall time and posting that
+    value back leaves the stored instant unchanged (cf. #297's republish trap)."""
+    author = make_user("tz405edit")
+    scheduled_at = datetime.datetime(2099, 7, 15, 14, 0, tzinfo=WARSAW)
+    suchar = Suchar.objects.create(
+        text="Scheduled",
+        author=author,
+        published_at=scheduled_at,
+    )
+    client.force_login(author)
+    url = reverse("suchary:update", kwargs={"pk": suchar.pk})
+
+    page = client.get(url)
+    match = re.search(r'name="published_at"[^>]*value="([^"]*)"', page.content.decode())
+    assert match is not None
+    assert match.group(1) == "2099-07-15 14:00"
+
+    response = client.post(
+        url,
+        {"text": "Scheduled, edited", "published_at": match.group(1)},
+    )
+
+    assert response.status_code == HTTPStatus.FOUND
+    suchar.refresh_from_db()
+    assert suchar.published_at == scheduled_at

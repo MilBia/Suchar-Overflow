@@ -43,7 +43,7 @@ class Command(BaseCommand):
             reference_date = datetime.fromisoformat(date_str).date()
         else:
             # Default to yesterday to capture the previous period.
-            reference_date = timezone.now().date() - timedelta(days=1)
+            reference_date = timezone.localdate() - timedelta(days=1)
 
         self.stdout.write(
             f"Calculating best Suchar for {period} ending around {reference_date}...",

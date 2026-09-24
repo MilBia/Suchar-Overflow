@@ -895,6 +895,34 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
   production-storage `collectstatic` + `compress --force` bundle, not just
   `just test`.
 
+### Service time zone — `Europe/Warsaw` (#405)
+
+`TIME_ZONE = "Europe/Warsaw"` (`base.py`) with `USE_TZ = True`: the DB still stores
+UTC, but form input (`SucharForm`'s naive `datetime-local` value), template display,
+and every day/hour/period boundary use the Polish wall clock. There is **no**
+per-user zone (no `timezone.activate()` / middleware) — a possible stage 2 would
+only touch input/display; achievement rules and contests must stay on the fixed
+service zone because the engine also runs in the scheduler thread, with no request.
+
+- DB-side truncation already follows it: `TruncDay`/`TruncMonth`, `.dates()`,
+  `ExtractHour(tzinfo=...)`, `compute_period_range` (`make_aware` with the current
+  zone). What does **not** follow it is Python-side `.date()` / `.replace(hour=0)`
+  on `timezone.now()` — that is the **UTC** date and is wrong between 22:00/23:00
+  and 24:00 UTC. Use `timezone.localdate()` / `timezone.localtime()` for "today".
+- The scheduler is `BackgroundScheduler(timezone=settings.TIME_ZONE)`, so the
+  contest crons fire at 00:05 *local*; `due_monthly_run_at` / `due_yearly_run_at`
+  convert `now` with `timezone.localtime()` before reconstructing the fire time.
+  00:05 never falls in a DST gap/overlap (the switch is at 02:00/03:00). A
+  `SchedulerRun` marker written by the pre-#405 UTC cron (1st, 00:05Z = 01:05/02:05
+  local) is *after* the new local fire time, so the first boot after the switch
+  doesn't see a spurious missed run.
+- Tests that build a naive wall-clock string (form input) or a "local hour" must
+  start from `timezone.localtime()`, not `timezone.now()`. Boundary tests live in
+  `achievements/tests/test_timezone.py` and pick timestamps in the 22:00–24:00 UTC
+  window — the only window where a UTC-day bug is observable. A form value that
+  falls in a DST gap/overlap (e.g. 02:30 on the switch day) is a field
+  `ValidationError` from Django, not a 500.
+
 ### Background scheduling — APScheduler, not Django-RQ
 
 Django-RQ has been removed entirely. `AchievementsConfig.ready()`
@@ -902,7 +930,7 @@ Django-RQ has been removed entirely. `AchievementsConfig.ready()`
 (raw `apscheduler` 3.x, default in-memory jobstore — `django-apscheduler` was dropped,
 see issue #159: semi-abandoned, no declared Django 6.x support) on a plain thread,
 scheduling `award_best_suchar` as two cron jobs: `award-best-suchar-month` (day=1,
-00:05 UTC) and `award-best-suchar-year` (month=1, day=1, 00:05 UTC — see #168), plus
+00:05) and `award-best-suchar-year` (month=1, day=1, 00:05 — see #168), plus
 a third, `award-publication-achievements` (`award_publication_achievements`, every
 minute — `minute="*"`; see below, #389/#402). The
 scheduler is skipped under pytest and for management commands in `_NO_SCHEDULER`

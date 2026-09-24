@@ -1,5 +1,6 @@
 import datetime
 import logging
+import zoneinfo
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
@@ -28,6 +29,8 @@ if TYPE_CHECKING:
     from suchar_overflow.users.models import User as UserModel
 
 User = get_user_model()
+
+WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
 
 
 # ---------------------------------------------------------------------------
@@ -753,66 +756,66 @@ def test_award_best_suchar_skips_close_old_connections_inside_atomic_block() -> 
 
 
 def test_due_monthly_run_at_returns_due_date_when_never_run() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
     assert due_monthly_run_at(now, None) == datetime.datetime(
         2024,
         6,
         1,
         0,
         5,
-        tzinfo=datetime.UTC,
+        tzinfo=WARSAW,
     )
 
 
 def test_due_monthly_run_at_returns_due_date_when_last_run_before_it() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2024, 4, 1, 0, 5, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2024, 4, 1, 0, 5, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) == datetime.datetime(
         2024,
         6,
         1,
         0,
         5,
-        tzinfo=datetime.UTC,
+        tzinfo=WARSAW,
     )
 
 
 def test_due_monthly_run_at_none_when_last_run_on_due_date() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2024, 6, 1, 0, 5, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2024, 6, 1, 0, 5, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
 def test_due_monthly_run_at_none_when_last_run_after_due_date() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2024, 6, 1, 0, 6, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2024, 6, 1, 0, 6, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
 def test_due_monthly_run_at_before_first_of_month_fire_uses_previous_month() -> None:
-    """On the 1st, before 00:05 UTC, this month's cron hasn't fired yet — the
+    """On the 1st, before 00:05 local time, this month's cron hasn't fired yet — the
     due date falls back to the previous month's fire time."""
-    now = datetime.datetime(2024, 6, 1, 0, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2024, 5, 1, 0, 5, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2024, 5, 1, 0, 5, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
 def test_due_monthly_run_at_before_first_of_month_fire_still_detects_gap() -> None:
-    now = datetime.datetime(2024, 6, 1, 0, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2024, 4, 1, 0, 5, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2024, 4, 1, 0, 5, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) == datetime.datetime(
         2024,
         5,
         1,
         0,
         5,
-        tzinfo=datetime.UTC,
+        tzinfo=WARSAW,
     )
 
 
 def test_due_monthly_run_at_january_rolls_back_to_december() -> None:
-    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2023, 12, 1, 0, 5, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2023, 12, 1, 0, 5, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
@@ -822,60 +825,60 @@ def test_due_monthly_run_at_january_rolls_back_to_december() -> None:
 
 
 def test_due_yearly_run_at_returns_due_date_when_never_run() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
     assert due_yearly_run_at(now, None) == datetime.datetime(
         2024,
         1,
         1,
         0,
         5,
-        tzinfo=datetime.UTC,
+        tzinfo=WARSAW,
     )
 
 
 def test_due_yearly_run_at_returns_due_date_when_last_run_before_it() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=WARSAW)
     assert due_yearly_run_at(now, last_ran_at) == datetime.datetime(
         2024,
         1,
         1,
         0,
         5,
-        tzinfo=datetime.UTC,
+        tzinfo=WARSAW,
     )
 
 
 def test_due_yearly_run_at_none_when_last_run_on_due_date() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2024, 1, 1, 0, 5, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2024, 1, 1, 0, 5, tzinfo=WARSAW)
     assert due_yearly_run_at(now, last_ran_at) is None
 
 
 def test_due_yearly_run_at_none_when_last_run_after_due_date() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2024, 1, 1, 0, 6, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2024, 1, 1, 0, 6, tzinfo=WARSAW)
     assert due_yearly_run_at(now, last_ran_at) is None
 
 
 def test_due_yearly_run_at_before_first_of_year_fire_uses_previous_year() -> None:
-    """On Jan 1, before 00:05 UTC, this year's cron hasn't fired yet — the
+    """On Jan 1, before 00:05 local time, this year's cron hasn't fired yet — the
     due date falls back to the previous year's fire time."""
-    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2023, 1, 1, 0, 5, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2023, 1, 1, 0, 5, tzinfo=WARSAW)
     assert due_yearly_run_at(now, last_ran_at) is None
 
 
 def test_due_yearly_run_at_before_first_of_year_fire_still_detects_gap() -> None:
-    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.UTC)
-    last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=datetime.UTC)
+    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=WARSAW)
     assert due_yearly_run_at(now, last_ran_at) == datetime.datetime(
         2023,
         1,
         1,
         0,
         5,
-        tzinfo=datetime.UTC,
+        tzinfo=WARSAW,
     )
 
 
@@ -1122,7 +1125,13 @@ def test_award_publication_achievements_passes_instance_for_night_owl() -> None:
         threshold=1,
     )
     suchar = _scheduled_suchar(author)
-    night_ts = now.replace(hour=2, minute=0, second=0, microsecond=0)
+    # Local hour 02:00 — NightOwlRule reads the TIME_ZONE wall clock (#405).
+    night_ts = timezone.localtime(now).replace(
+        hour=2,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
     Suchar.objects.filter(pk=suchar.pk).update(created_at=night_ts)
     _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
 

@@ -1,4 +1,6 @@
+import datetime
 import logging
+import zoneinfo
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
@@ -41,7 +43,7 @@ def test_published_at_empty_defaults_to_now() -> None:
 @pytest.mark.django_db
 def test_published_at_future_date_is_valid() -> None:
     user = make_user("author")
-    future = timezone.now() + timedelta(days=3)
+    future = timezone.localtime() + timedelta(days=3)
     form = SucharForm(data=form_data(published_at=future.strftime("%Y-%m-%dT%H:%M")))
     form.instance.author = user
     assert form.is_valid(), form.errors
@@ -51,7 +53,7 @@ def test_published_at_future_date_is_valid() -> None:
 def test_published_at_recent_past_within_buffer_is_valid() -> None:
     """Dates up to 5 minutes in the past should be accepted (network/clock drift)."""
     user = make_user("author")
-    slight_past = timezone.now() - timedelta(minutes=3)
+    slight_past = timezone.localtime() - timedelta(minutes=3)
     form = SucharForm(
         data=form_data(published_at=slight_past.strftime("%Y-%m-%dT%H:%M")),
     )
@@ -62,7 +64,7 @@ def test_published_at_recent_past_within_buffer_is_valid() -> None:
 @pytest.mark.django_db
 def test_published_at_old_past_date_is_rejected() -> None:
     user = make_user("author")
-    old_past = timezone.now() - timedelta(minutes=10)
+    old_past = timezone.localtime() - timedelta(minutes=10)
     form = SucharForm(data=form_data(published_at=old_past.strftime("%Y-%m-%dT%H:%M")))
     form.instance.author = user
     assert not form.is_valid()
@@ -395,3 +397,60 @@ def test_save_tags_logs_when_a_name_collision_drops_a_tag(
         dropped_slug in record.message and record.levelno == logging.WARNING
         for record in caplog.records
     ), caplog.records
+
+
+# ---------------------------------------------------------------------------
+# published_at is entered on the service's wall clock (#405)
+# ---------------------------------------------------------------------------
+
+WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
+
+
+def _last_sunday(year: int, month: int) -> datetime.date:
+    """EU DST switches happen on the last Sunday of March and October."""
+    next_month = datetime.date(year, month + 1, 1)
+    last_day = next_month - timedelta(days=1)
+    return last_day - timedelta(days=(last_day.weekday() - 6) % 7)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("entered", "stored_utc"),
+    [
+        # Summer: CEST (UTC+2).
+        (
+            "2099-07-15T14:00",
+            datetime.datetime(2099, 7, 15, 12, 0, tzinfo=datetime.UTC),
+        ),
+        # Winter: CET (UTC+1).
+        (
+            "2099-01-15T14:00",
+            datetime.datetime(2099, 1, 15, 13, 0, tzinfo=datetime.UTC),
+        ),
+    ],
+)
+def test_published_at_naive_input_is_polish_time(
+    entered: str,
+    stored_utc: datetime.datetime,
+) -> None:
+    """A suchar scheduled for 14:00 goes live at 14:00 Polish time, not UTC."""
+    user = make_user("author")
+    form = SucharForm(data=form_data(published_at=entered))
+    form.instance.author = user
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data["published_at"] == stored_utc
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("month", [3, 10])
+def test_published_at_in_dst_gap_or_overlap_is_a_form_error(month: int) -> None:
+    """02:30 on the March switch day doesn't exist and on the October one is
+    ambiguous — Django reports that as a field error, never a 500."""
+    user = make_user("author")
+    switch_day = _last_sunday(2099, month)
+    form = SucharForm(
+        data=form_data(published_at=f"{switch_day.isoformat()}T02:30"),
+    )
+    form.instance.author = user
+    assert not form.is_valid()
+    assert "published_at" in form.errors

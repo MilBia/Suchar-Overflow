@@ -227,7 +227,8 @@ def _expected_awards(
 def _build_multi_metric_scenario() -> tuple[UserType, Suchar]:
     """A user sitting mid-way through several tiered series at once."""
     user = make_user("multi")
-    now = timezone.now()
+    # Local wall clock: the night window and streak days are local (#405).
+    now = timezone.localtime()
 
     # Suchary on 3 consecutive days, two of them inside the night window.
     for offset, hour in ((2, 12), (1, 1), (0, 2), (0, 13)):

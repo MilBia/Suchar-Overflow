@@ -76,7 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Init State
             const currentVal = publishedAtInput.value;
             const now = new Date();
-            const inputDate = currentVal ? new Date(currentVal) : null;
+            // "Y-m-d H:i" → ISO "T" form: a space-separated date string is not
+            // ISO 8601, and older WebKit parses it as Invalid Date.
+            const inputDate = currentVal ? new Date(currentVal.replace(' ', 'T')) : null;
 
             if (inputDate && inputDate > new Date(now.getTime() + 5 * 60000)) {
                 scheduleCheck.checked = true;

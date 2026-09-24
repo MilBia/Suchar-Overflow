@@ -56,14 +56,21 @@ def compute_period_range(
 
 
 def due_monthly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime | None:
-    """Return the monthly cron fire (day=1, 00:05 UTC) due at or before
-    ``now`` if it was never recorded by ``award_best_suchar``, else ``None``.
+    """Return the monthly cron fire (day=1, 00:05 service-local time) due at or
+    before ``now`` if it was never recorded by ``award_best_suchar``, else
+    ``None``.
 
     Used at process startup to detect a run missed while the process was
     down: apscheduler's default in-memory jobstore only knows about future
     fire times, so a restart silently skips any fire that should already
     have happened rather than catching it up on its own (see #169).
+
+    The fire time is reconstructed on the wall clock of ``TIME_ZONE`` (the
+    scheduler's own zone — #405), so ``now`` is converted first; the returned
+    value is aware in that zone. 00:05 is never inside a DST gap/overlap
+    (Europe/Warsaw switches at 02:00/03:00), so the wall time is unambiguous.
     """
+    now = timezone.localtime(now)
     due_at = now.replace(day=1, hour=0, minute=5, second=0, microsecond=0)
     if due_at > now:
         previous_month_end = due_at - timedelta(days=1)
@@ -80,13 +87,16 @@ def due_monthly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime 
 
 
 def due_yearly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime | None:
-    """Return the yearly cron fire (Jan 1, 00:05 UTC) due at or before
-    ``now`` if it was never recorded by ``award_best_suchar``, else ``None``.
+    """Return the yearly cron fire (Jan 1, 00:05 service-local time) due at
+    or before ``now`` if it was never recorded by ``award_best_suchar``, else
+    ``None``.
 
     Used at process startup to detect a run missed while the process was
     down — see ``due_monthly_run_at`` for why the in-memory jobstore needs
-    this at all (#169; extended to the yearly job in #168).
+    this at all (#169; extended to the yearly job in #168), and for the
+    local-time handling (#405).
     """
+    now = timezone.localtime(now)
     due_at = now.replace(month=1, day=1, hour=0, minute=5, second=0, microsecond=0)
     if due_at > now:
         due_at = due_at.replace(year=due_at.year - 1)
@@ -298,7 +308,9 @@ def award_best_suchar(period: str, reference_date: date | None = None) -> None:
     """
     try:
         if reference_date is None:
-            reference_date = timezone.now().date() - timedelta(days=1)
+            # localdate(), not now().date(): the cron fires at 00:05 local
+            # time, when the UTC date is still the previous day (#405).
+            reference_date = timezone.localdate() - timedelta(days=1)
         start_dt, end_dt, suffix = compute_period_range(period, reference_date)
 
         winners = find_best_suchary(start_dt, end_dt)

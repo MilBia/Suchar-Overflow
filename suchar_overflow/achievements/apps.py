@@ -136,6 +136,7 @@ class AchievementsConfig(AppConfig):
     @staticmethod
     def _start_scheduler() -> None:
         from apscheduler.schedulers.background import BackgroundScheduler
+        from django.conf import settings
 
         from suchar_overflow.achievements.tasks import award_best_suchar
         from suchar_overflow.achievements.tasks import award_publication_achievements
@@ -170,7 +171,10 @@ class AchievementsConfig(AppConfig):
         # See SchedulerRun (achievements/models.py) for last-run visibility.
         # The _catch_up_missed_*_run() calls above cover a run missed while
         # the process was down.
-        scheduler = BackgroundScheduler(timezone="UTC")
+        # Cron fields are read on the service's wall clock (TIME_ZONE, #405),
+        # so the contests roll over at Polish midnight — the same boundary
+        # compute_period_range() and due_*_run_at() use.
+        scheduler = BackgroundScheduler(timezone=settings.TIME_ZONE)
         scheduler.add_job(
             award_best_suchar,
             "cron",
