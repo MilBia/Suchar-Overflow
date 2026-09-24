@@ -1,7 +1,9 @@
+import datetime
 from datetime import timedelta
 from http import HTTPStatus
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 import pytest
 from django.core.cache import cache
@@ -511,3 +513,27 @@ def test_leaderboard_cache_repopulates_after_cache_clear(client: Client) -> None
     response = client.get(reverse(LEADERBOARD_URL))
     texts = [s.text for s in response.context["top_suchars_overall"]]
     assert "New" in texts
+
+
+# ---------------------------------------------------------------------------
+# Chart "today" is the Polish day (#405)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_daily_chart_today_is_local_day_after_utc_evening() -> None:
+    """At 22:30Z in July it is already July 11 in Poland: the 7-day chart must
+    end on July 11 and count a suchar published at 22:15Z there."""
+    author = make_user("chart405")
+    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    s = Suchar.objects.create(text="after local midnight", author=author)
+    Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
+    frozen_now = datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
+
+    with patch("django.utils.timezone.now", return_value=frozen_now):
+        context = LeaderboardView()._build_context()  # noqa: SLF001
+
+    week = context["chart_datasets"]["7"]
+    assert week["labels"][-1] == "11"
+    assert week["values"][-1] == 1
+    assert sum(week["values"]) == 1

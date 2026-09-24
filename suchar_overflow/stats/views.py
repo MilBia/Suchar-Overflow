@@ -205,7 +205,9 @@ class LeaderboardView(View):
         return context
 
     def _build_context(self) -> dict[str, Any]:
-        now = timezone.now()
+        # Local (TIME_ZONE), not UTC: `now.date()` / `start_of_today` below pick
+        # the chart's "today", which must match TruncDay's local buckets (#405).
+        now = timezone.localtime()
         start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
         # select_related("author") only — no prefetch_related("tags") here.

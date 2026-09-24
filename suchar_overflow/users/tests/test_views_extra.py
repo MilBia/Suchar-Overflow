@@ -343,7 +343,7 @@ def test_heatmap_level_buckets(client: Client) -> None:
     response = client.get(detail_url("heatmap_u3"))
 
     # Find today's entry in any week
-    today_str = today.date().strftime("%Y-%m-%d")
+    today_str = timezone.localdate(today).strftime("%Y-%m-%d")
     found = False
     for week in response.context["heatmap_weeks"]:
         for day in week["days"]:
@@ -418,7 +418,7 @@ def test_activity_chart_buckets_by_publication_day(client: Client) -> None:
     # The single bucket is the publication day (today), not the creation day
     # 45 days ago — which would fall outside the 30-day window entirely.
     assert response.context["activity_labels"] == [
-        timezone.now().date().strftime("%Y-%m-%d"),
+        timezone.localdate().strftime("%Y-%m-%d"),
     ]
 
 
@@ -995,7 +995,7 @@ def test_heatmap_includes_suchar_at_midnight_of_first_day(client: Client) -> Non
     """A suchar at exactly 00:00 of the grid's first day is inside the range."""
     user = make_user("heatmap_start")
     # Mirror the view's own window: 365 days back, aligned to the Monday before.
-    start_date = timezone.now().date() - datetime.timedelta(days=365)
+    start_date = timezone.localdate() - datetime.timedelta(days=365)
     start_date -= datetime.timedelta(days=start_date.weekday())
     midnight = timezone.make_aware(
         datetime.datetime.combine(start_date, datetime.time.min),
@@ -1013,7 +1013,7 @@ def test_heatmap_includes_suchar_at_midnight_of_first_day(client: Client) -> Non
 @pytest.mark.django_db
 def test_heatmap_excludes_suchar_before_the_window(client: Client) -> None:
     user = make_user("heatmap_before")
-    start_date = timezone.now().date() - datetime.timedelta(days=365)
+    start_date = timezone.localdate() - datetime.timedelta(days=365)
     start_date -= datetime.timedelta(days=start_date.weekday())
     before = timezone.make_aware(
         datetime.datetime.combine(start_date, datetime.time.min),
@@ -1063,3 +1063,27 @@ def test_profile_day_queries_compare_the_bare_published_at_column(
         assert '"suchary_suchar"."published_at" >=' in where, (
             f"expected a bare half-open lower bound on published_at: {sql}"
         )
+
+
+# ===========================================================================
+# Heatmap "today" is the Polish day (#405)
+# ===========================================================================
+
+
+@pytest.mark.django_db
+def test_heatmap_today_is_local_day_after_utc_evening() -> None:
+    """At 22:30Z in July it is already the next day in Poland (00:30 CEST): the
+    grid must end on that local day and bucket a suchar published at 22:15Z
+    into it — with a UTC "today" the grid would stop a day early."""
+    user = make_user("heatmap405")
+    frozen_now = datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
+    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    s = Suchar.objects.create(text="after local midnight", author=user)
+    Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
+
+    with patch("django.utils.timezone.now", return_value=frozen_now):
+        weeks = UserDetailView()._get_heatmap_weeks(user)  # noqa: SLF001
+
+    last_day = weeks[-1]["days"][-1]
+    assert last_day["date"] == "2024-07-11"
+    assert last_day["count"] == 1

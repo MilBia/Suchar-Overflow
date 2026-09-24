@@ -354,22 +354,23 @@ def test_streak_rule_engine_awards_achievement() -> None:
 # NightOwlRule
 # ---------------------------------------------------------------------------
 
-# Helpers used across NightOwl tests: TIME_ZONE=UTC so UTC hour == local hour.
+# Helpers used across NightOwl tests: hours are local (TIME_ZONE) wall-clock hours,
+# the same clock NightOwlRule reads (#405).
 
 
 def _make_night_suchar(user: User, hour: int = 2) -> Suchar:
-    """Create a Suchar at the given UTC hour (within 0-4 = night window)."""
+    """Create a Suchar at the given local hour (within 0-4 = night window)."""
     suchar = Suchar.objects.create(text=f"night joke h{hour}", author=user)
-    ts = timezone.now().replace(hour=hour, minute=0, second=0, microsecond=0)
+    ts = timezone.localtime().replace(hour=hour, minute=0, second=0, microsecond=0)
     Suchar.objects.filter(pk=suchar.pk).update(created_at=ts)
     suchar.refresh_from_db()
     return suchar
 
 
 def _make_day_suchar(user: User) -> Suchar:
-    """Create a Suchar at 12:00 UTC (outside night window)."""
+    """Create a Suchar at 12:00 local time (outside night window)."""
     suchar = Suchar.objects.create(text="day joke", author=user)
-    ts = timezone.now().replace(hour=12, minute=0, second=0, microsecond=0)
+    ts = timezone.localtime().replace(hour=12, minute=0, second=0, microsecond=0)
     Suchar.objects.filter(pk=suchar.pk).update(created_at=ts)
     suchar.refresh_from_db()
     return suchar
@@ -686,7 +687,7 @@ def test_streak_rule_excludes_scheduled_suchary() -> None:
 def test_night_owl_rule_scheduled_night_suchar_not_counted() -> None:
     user = make_user("u1")
     scheduled = _make_scheduled_suchar(user)
-    night_ts = timezone.now().replace(hour=2, minute=0, second=0, microsecond=0)
+    night_ts = timezone.localtime().replace(hour=2, minute=0, second=0, microsecond=0)
     Suchar.objects.filter(pk=scheduled.pk).update(created_at=night_ts)
     scheduled.refresh_from_db()
     # The instance itself is a night suchar authored by the user, but it is

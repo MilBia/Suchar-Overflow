@@ -274,7 +274,9 @@ class UserDetailView(AsyncLoginRequiredMixin):
 
     def _get_heatmap_weeks(self, user: User) -> list[dict]:
         now = timezone.now()
-        today = now.date()
+        # localdate(), not now.date(): "today" must match TruncDay's local
+        # buckets, or the grid ends a day early before 02:00 CEST (#405).
+        today = timezone.localdate(now)
         # Go back approx 1 year
         start_date = today - datetime.timedelta(days=365)
         # Align start_date to the previous Monday to ensure the grid starts correctly
