@@ -80,7 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // ISO 8601, and older WebKit parses it as Invalid Date.
             const inputDate = currentVal ? new Date(currentVal.replace(' ', 'T')) : null;
 
-            if (inputDate && inputDate > new Date(now.getTime() + 5 * 60000)) {
+            // Any future value means "scheduled": the add form renders the
+            // field empty (SucharForm.published_at_input_value), so there is no
+            // pre-filled "now" to tell apart with a buffer — and a buffer would
+            // hide the schedule of a suchar due within it on its edit form.
+            if (inputDate && inputDate > now) {
                 scheduleCheck.checked = true;
                 scheduleContainer.classList.remove('d-none');
             }

@@ -64,6 +64,40 @@ class SucharForm(forms.ModelForm):
     #: The format ``suchar_form.html`` renders and flatpickr submits.
     PUBLISHED_AT_FORMAT = "%Y-%m-%d %H:%M"
 
+    def published_at_input_value(self) -> str:
+        """What ``suchar_form.html`` puts in the scheduling input.
+
+        * Re-render of a submitted form (invalid POST): the raw posted string.
+          ``BoundField.value()`` is a string there, and the old template's
+          ``|date`` silently turned it into ``""`` — the JS then unchecked and
+          disabled the schedule input, so the next save published the suchar
+          immediately.
+        * Edit form: the instance's ``published_at`` on the active zone's wall
+          clock.
+        * Add form: empty. The model default (``timezone.now``) would otherwise
+          pre-fill "now", which the JS then had to tell apart from a real
+          schedule with a 5-minute buffer — hiding the schedule of a suchar
+          due within those 5 minutes on its edit form.
+        """
+        if self.is_bound:
+            return self.data.get("published_at", "")
+        if not self.instance.pk:
+            return ""
+        return timezone.localtime(self.instance.published_at).strftime(
+            self.PUBLISHED_AT_FORMAT,
+        )
+
+    def published_at_input_tz(self) -> str:
+        """The zone ``published_at_input_value`` is expressed in (#410).
+
+        On a re-render of a submitted form that is the zone the value was
+        *originally* rendered in, echoed from the POST — not the active zone —
+        or an untouched value would still shift on the next save.
+        """
+        if self.is_bound:
+            return self.data.get(self.RENDERED_TZ_FIELD, "")
+        return timezone.get_current_timezone_name()
+
     def _unchanged_published_at(self) -> datetime | None:
         """The instance's own ``published_at`` if the form sent back exactly
         the value it was rendered with, else ``None``.

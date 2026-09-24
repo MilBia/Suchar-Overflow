@@ -53,9 +53,18 @@
 
     function syncTimezoneCookie() {
         const zone = browserTimeZone();
-        if (!zone || readCookie() === zone) return false;
-        document.cookie = buildCookie(zone, window.location.protocol === 'https:');
-        return true;
+        if (!zone) return false;
+        // `document.cookie` throws a SecurityError when cookies are blocked
+        // (strict privacy settings, sandboxed iframe). This is the first script
+        // of the shared global bundle, so an uncaught throw here would stop
+        // every script after it — fall back to the service zone instead.
+        try {
+            if (readCookie() === zone) return false;
+            document.cookie = buildCookie(zone, window.location.protocol === 'https:');
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     syncTimezoneCookie();

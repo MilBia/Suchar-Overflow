@@ -950,6 +950,18 @@ No profile field — cookie only.
   rendered one in that (validated) zone. A value the user re-typed is parsed in the
   active zone — they typed it on the browser's clock. Without this a text-only edit
   would silently move the publication by the offset difference.
+- The scheduling input's value and that hidden zone come from
+  `SucharForm.published_at_input_value()` / `published_at_input_tz()`, not from
+  `{{ form.published_at.value|date }}` in the template: on an invalid-POST re-render
+  `value()` is the raw posted string and `|date` turns it into `""`, which made
+  `suchar_form.js` untick and disable the schedule — the next save published the
+  suchar immediately. A re-render echoes the *posted* `published_at_tz`, not the
+  active zone. The add form renders the input **empty** (no model-default "now"),
+  so the JS treats any future value as scheduled (`> now`, no 5-minute buffer — the
+  buffer hid the schedule of a suchar due within it on its edit form).
+- `timezone.js` is the first script of the shared global bundle: its `document.cookie`
+  access is wrapped in `try/catch` (a `SecurityError` with cookies blocked would
+  otherwise stop every script after it).
 
 ### Background scheduling — APScheduler, not Django-RQ
 

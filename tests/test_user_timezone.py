@@ -47,6 +47,12 @@ def _rendered_publish_value(html: str) -> str:
     return match.group(1)
 
 
+def _rendered_tz(html: str) -> str:
+    match = re.search(r'name="published_at_tz"\s+value="([^"]*)"', html)
+    assert match is not None
+    return match.group(1)
+
+
 # ---------------------------------------------------------------------------
 # zone_from_request — only exact IANA keys are accepted
 # ---------------------------------------------------------------------------
@@ -218,7 +224,7 @@ def test_untouched_value_survives_cookie_set_after_render(client: Client) -> Non
     html = client.get(url).content.decode()
     value = _rendered_publish_value(html)
     assert value == "2099-07-15 14:00"
-    assert 'name="published_at_tz" value="Europe/Warsaw"' in html
+    assert _rendered_tz(html) == "Europe/Warsaw"
 
     client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
     response = client.post(
@@ -294,3 +300,75 @@ def test_unknown_rendered_zone_falls_back_to_active_zone(
         0,
         tzinfo=datetime.UTC,
     )
+
+
+# ---------------------------------------------------------------------------
+# Scheduling input on add / edit / invalid re-render
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_add_form_renders_empty_schedule_input(client: Client) -> None:
+    """No pre-filled "now" from the model default — an empty input is what
+    lets suchar_form.js treat any future value as a real schedule."""
+    client.force_login(make_user("tz410addget"))
+
+    html = client.get(reverse("suchary:add")).content.decode()
+
+    assert _rendered_publish_value(html) == ""
+
+
+@pytest.mark.django_db
+def test_invalid_edit_rerender_keeps_schedule_and_rendered_zone(client: Client) -> None:
+    """An invalid POST re-renders the posted value (not ``""``, which made the
+    JS drop the schedule and publish on the next save) and echoes the zone the
+    value was originally rendered in, so saving it untouched still keeps the
+    stored instant."""
+    suchar, scheduled_at = _scheduled("tz410invalid")
+    client.force_login(suchar.author)
+    url = reverse("suchary:update", kwargs={"pk": suchar.pk})
+    client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
+
+    invalid = client.post(
+        url,
+        {
+            "text": "",
+            "published_at": "2099-07-15 14:00",
+            "published_at_tz": "Europe/Warsaw",
+        },
+    )
+
+    assert invalid.status_code == HTTPStatus.OK
+    html = invalid.content.decode()
+    assert _rendered_publish_value(html) == "2099-07-15 14:00"
+    assert _rendered_tz(html) == "Europe/Warsaw"
+
+    fixed = client.post(
+        url,
+        {
+            "text": "Now valid",
+            "published_at": "2099-07-15 14:00",
+            "published_at_tz": "Europe/Warsaw",
+        },
+    )
+
+    assert fixed.status_code == HTTPStatus.FOUND
+    suchar.refresh_from_db()
+    assert suchar.published_at == scheduled_at
+
+
+@pytest.mark.django_db
+def test_invalid_add_rerender_keeps_typed_schedule(client: Client) -> None:
+    client.force_login(make_user("tz410addinvalid"))
+
+    response = client.post(
+        reverse("suchary:add"),
+        {
+            "text": "",
+            "published_at": "2099-07-15 14:00",
+            "published_at_tz": "Europe/Warsaw",
+        },
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert _rendered_publish_value(response.content.decode()) == "2099-07-15 14:00"

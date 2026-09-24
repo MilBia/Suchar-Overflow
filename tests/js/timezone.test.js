@@ -102,6 +102,28 @@ describe("syncTimezoneCookie", () => {
   });
 });
 
+describe("blocked cookies", () => {
+  afterEach(() => {
+    delete document.cookie; // drop the own-property stub, back to the prototype
+  });
+
+  it("swallows a SecurityError instead of breaking the bundle", () => {
+    stubZone("America/New_York");
+    Object.defineProperty(document, "cookie", {
+      configurable: true,
+      get() {
+        throw new DOMException("cookies blocked", "SecurityError");
+      },
+      set() {
+        throw new DOMException("cookies blocked", "SecurityError");
+      },
+    });
+
+    expect(() => tz.syncTimezoneCookie()).not.toThrow();
+    expect(tz.syncTimezoneCookie()).toBe(false);
+  });
+});
+
 describe("buildCookie", () => {
   it("is site-wide, long-lived and SameSite=Lax", () => {
     const cookie = tz.buildCookie("Europe/Warsaw", false);
