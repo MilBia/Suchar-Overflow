@@ -11,6 +11,7 @@
   {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
   {# pages/profile.css covers this template's sidebar (.dashboard-card, #}
   {# .sticky-sidebar) plus the profile hero on user_detail.html — see #250. #}
+  {# It also lays out user_detail.html's stats/feed grid (#406). #}
   {% compress css %}
     <link href="{% static 'css/pages/profile.css' %}" rel="stylesheet" />
   {% endcompress %}
@@ -19,7 +20,7 @@
 {% block content %}
   <div class="container py-4">
     <div class="row g-4 justify-content-center">
-      {% if not request.resolver_match.view_name == 'users:detail' or request.user == user %}
+      {% if request.resolver_match.view_name != 'users:detail' or request.user == object %}
         <!-- Sidebar (Only for own profile/settings) -->
         <div class="col-lg-3">
           <div class="card shadow-md border-0 sticky-top sticky-sidebar dashboard-card">
@@ -53,7 +54,7 @@
       {% endif %}
 
       <!-- Main Content Area -->
-      <div class="{% if request.resolver_match.view_name == 'users:detail' and request.user != user %}col-12 col-lg-10 mx-auto{% else %}col-lg-9{% endif %}">
+      <div class="{% if request.resolver_match.view_name == 'users:detail' and request.user != object %}col-12 col-lg-10 mx-auto{% else %}col-lg-9{% endif %}">
         {% block dashboard_content %}
         {% endblock dashboard_content %}
       </div>
