@@ -11,7 +11,8 @@ for `async_to_sync`: the worker deadlocked for good, with no log line and no
 traceback. Only a restart brought it back (upstream django/asgiref#535).
 
 The script below is that sequence without Django, so the test does not depend
-on which request or middleware happens to hit the race. It runs in a
+on which request or middleware happens to hit the race; two events pin the
+ordering instead of sleeps, so a slow runner can't let it pass by luck. It runs in a
 subprocess because a regression hangs the event loop, and no in-process
 timeout can fire on a blocked loop.
 """
@@ -23,11 +24,14 @@ import textwrap
 _SCRIPT = textwrap.dedent(
     """
     import asyncio
-    import time
+    import threading
 
     from asgiref.sync import ThreadSensitiveContext
     from asgiref.sync import async_to_sync
     from asgiref.sync import sync_to_async
+
+    entered = threading.Event()
+    disconnected = threading.Event()
 
 
     async def rest_of_stack():
@@ -35,19 +39,23 @@ _SCRIPT = textwrap.dedent(
 
 
     def sync_middleware():
-        time.sleep(0.3)  # still in sync code when the client goes away
+        entered.set()
+        disconnected.wait(5)  # still in sync code when the client goes away
         async_to_sync(rest_of_stack)()  # now needs the event loop
 
 
     async def request():
         async with ThreadSensitiveContext():
             task = asyncio.create_task(sync_to_async(sync_middleware)())
-            await asyncio.sleep(0.1)
+            await asyncio.to_thread(entered.wait, 5)
             task.cancel()  # what ASGIHandler does on http.disconnect
             try:
                 await task
             except asyncio.CancelledError:
                 pass
+            # Nothing awaits between here and __aexit__, so the thread reaches
+            # async_to_sync while the loop is (on < 3.12) blocked joining it.
+            disconnected.set()
 
 
     asyncio.run(request())
