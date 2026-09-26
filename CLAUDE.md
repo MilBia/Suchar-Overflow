@@ -52,9 +52,21 @@ so a reload with a tab open used to hang the server until a container restart (#
 timeout graceful shutdown exceeded` line such a reload now logs is that expected
 cancellation, not a fault. If the dev server hangs anyway, `curl -m 5
 localhost:8000/` from the host (the image has no `curl`) tells server from browser
-(6-connection HTTP/1.1 limit, one per SSE tab), and `just dump-stacks` (SIGUSR1 →
+(6-connection HTTP/1.1 limit: one SSE per visible or recently hidden tab, *and* one
+per page kept in bfcache — DevTools doesn't show those; self-heals in ~1–3 min,
+#428), and `just dump-stacks` (SIGUSR1 →
 `faulthandler`, registered in `local.py`) prints every worker thread's stack to
 `just logs`.
+
+A hang with **no** reload in the log (#426) was an event-loop deadlock in asgiref
+< 3.12: a client disconnecting while the sync-only `WhiteNoiseMiddleware` was still
+running made `ThreadSensitiveContext.__aexit__` join its thread on the loop that
+thread was waiting for. Its stack dump reads main thread in `__aexit__` → `shutdown`
+→ `join`, a worker in `whitenoise/middleware.py` → `run_until_future`. The
+`asgiref>=3.12.1` floor in `pyproject.toml` fixes it (production's
+`UvicornWorker` runs the same stack); `tests/test_asgiref_disconnect_deadlock.py`
+guards it — keep the floor even though asgiref is otherwise only a Django
+transitive.
 
 `just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
 (defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated
