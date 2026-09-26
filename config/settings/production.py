@@ -18,7 +18,9 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["example.com"])
 
 # DATABASES
 # ------------------------------------------------------------------------------
-DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)
+# Default 0 under ASGI (see base.py, #430); a value > 0 leaks one connection
+# per request thread until Postgres runs out of max_connections.
+DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=0)
 
 # CACHES
 # ------------------------------------------------------------------------------

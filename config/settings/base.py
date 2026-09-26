@@ -95,7 +95,10 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {"default": env.db("DATABASE_URL")}
-DATABASES["default"]["CONN_MAX_AGE"] = 60
+# 0 = close after each request. Django's docs: "When using ASGI, persistent
+# connections should be disabled" — each request runs in its own thread, so a
+# kept-alive connection outlives it and piles up until Postgres refuses (#430).
+DATABASES["default"]["CONN_MAX_AGE"] = 0
 # ATOMIC_REQUESTS is disabled: async views are incompatible with it.
 # Views that need transactions use transaction.atomic() / transaction.aatomic() explicitly.
 # DEFAULT_AUTO_FIELD is not set explicitly: Django 6.0's default is already
