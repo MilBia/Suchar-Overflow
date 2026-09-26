@@ -34,6 +34,13 @@ docker compose -f docker-compose.local.yml run --rm django bash -c \
 
 Credentials are in `.envs/.local/.postgres`. The compose service is named `django`.
 
+`DATABASE_URL` is not in `.envs/.local/*` — `/entrypoint` assembles it from
+`POSTGRES_*`, and `docker compose exec` skips the ENTRYPOINT. The local image appends
+`compose/local/django/bashrc.sh` to `/etc/bash.bashrc`, so an *interactive*
+`docker compose exec django bash` has it set (#404); a non-interactive
+`exec django python manage.py …` / `bash -c …` still does not — use `just shell`
+(`shell_plus`), `just bash` (both need `just up`) or `just manage` instead.
+
 `just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
 (defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated
 explicitly in the override (see issue #214) — otherwise the E2E run drops and rebuilds

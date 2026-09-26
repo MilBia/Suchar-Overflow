@@ -37,6 +37,18 @@ logs *args:
 manage +args:
     @docker compose run --rm django python ./manage.py {{args}}
 
+# Needs `just up` (unlike `manage`, which spins up a fresh `run --rm` container).
+# Goes through /entrypoint because `docker compose exec` skips it, and it is what
+# sets DATABASE_URL (#404).
+# shell: Open shell_plus in the running django container.
+shell *args:
+    @docker compose exec django /entrypoint python ./manage.py shell_plus {{args}}
+
+# Needs `just up`; DATABASE_URL is set via /entrypoint, as for `shell` (#404).
+# bash: Open a bash shell in the running django container.
+bash:
+    @docker compose exec django /entrypoint bash
+
 # messages: Recompile the .po translation catalogs into .mo (also runs on every
 # `just up`). A running dev server reloads on its own — `start` passes
 # `--reload-include "*.mo"` to uvicorn. Extra args go to compilemessages,
