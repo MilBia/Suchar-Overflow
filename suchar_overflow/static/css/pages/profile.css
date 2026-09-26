@@ -40,8 +40,13 @@
     height: 60%;
 }
 
-/* Dashboard Sidebar Item */
+/* Dashboard Sidebar Item. padding-inline matches the section headers' `px-4`:
+   on the links `px-4` loses to list_group.css's `.list-group-item` padding
+   (utilities.css loads first), which left the icons 4px left of the header
+   text (#415). Not fixed with `!important` on `.px-4` — that would also beat
+   the phone `.profile-body` padding-inline rule below. */
 .dashboard-card .list-group-item {
+    padding-inline: 1.5rem;
     border: none;
     border-radius: var(--radius-md);
     margin-bottom: 2px;

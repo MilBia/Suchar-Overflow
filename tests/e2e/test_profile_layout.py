@@ -8,12 +8,14 @@ by a container query on `.profile-body` (pages/profile.css). `just test` has no
 CSS coverage, so this measures the real layout in a browser.
 """
 
+import re
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from playwright.sync_api import expect
 
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
@@ -163,18 +165,13 @@ _DASHBOARD_JS = """
     return el ? getComputedStyle(el).paddingLeft : null;
   };
   const content = document.querySelector('.profile-body');
-  // Each menu label must fit inside its own row: the rows sit in an
-  // overflow-hidden .list-group, so a label running past its row is cut off
-  // there (the card itself is wider and would not notice).
+  // Each menu row must fit its label: the rows sit in an overflow-hidden
+  // .list-group, so a label running past its row is cut off there (the card
+  // itself is wider and would not notice). scrollWidth covers both the header
+  // <span>s and the links' bare text nodes.
   const clipped = [];
   for (const row of document.querySelectorAll('.dashboard-card .list-group > *')) {
-    const box = row.getBoundingClientRect();
-    for (const el of row.querySelectorAll('span')) {
-      const r = el.getBoundingClientRect();
-      if (r.right > box.right + 0.5 || r.left < box.left - 0.5) {
-        clipped.push(el.textContent.trim());
-      }
-    }
+    if (row.scrollWidth > row.clientWidth + 1) clipped.push(row.textContent.trim());
   }
   return {
     nestedContainers: document.querySelectorAll('.container .container').length,
@@ -214,41 +211,47 @@ def test_dashboard_chrome(
         assert result["contentLeft"] <= 33.5, result  # noqa: PLR2004
 
 
-# The badge popover stays on screen when shown (#415): centred on a badge near
-# the card's right edge it ran past the viewport. Resolves once the popover has
-# finished its 0.1s delay + 0.3s transition (a Promise, not a bare expression —
-# the app CSP has no 'unsafe-eval').
-_POPOVER_RECT_JS = """
-() => new Promise((resolve) => {
-  const pop = [...document.querySelectorAll('.achievement-details-popover')].at(-1);
-  const poll = () => {
-    if (getComputedStyle(pop).opacity !== '1') return setTimeout(poll, 50);
-    const r = pop.getBoundingClientRect();
-    resolve({
-      left: r.left,
-      right: r.right,
-      clientWidth: document.documentElement.clientWidth,
-    });
-  };
-  poll();
-})
-"""
+# The badge popover stays on screen when shown and next to its badge (#415):
+# centred on a badge near the card's edge it ran past the viewport (right for
+# the last badge, left for the first); anchoring it to the whole grid instead
+# floated it rows above a bottom-row badge. 8 badges make at least two rows.
+_CLIENT_WIDTH_JS = "() => document.documentElement.clientWidth"
+
+# The gap the base rule leaves between a badge and its popover is ~11px (5px
+# once the focused badge scales up); anything past this means it drifted.
+_MAX_POPOVER_GAP = 20
 
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("badge", ["first", "last"])
 @pytest.mark.parametrize("viewport_width", [375, 768, 1200])
 def test_achievement_popover_stays_on_screen(
     login: Page,
     profile_url: str,
     viewport_width: int,
+    badge: str,
 ) -> None:
     page = login
     page.set_viewport_size({"width": viewport_width, "height": 900})
     page.goto(profile_url)
     page.wait_for_selector("#userReceptionChart")
 
-    page.locator(".achievement-badge-icon-wrapper").last.focus()
-    rect: dict[str, Any] = page.evaluate(_POPOVER_RECT_JS)
-    assert rect["left"] >= 0, rect
-    assert rect["right"] <= rect["clientWidth"], rect
+    containers = page.locator(".profile-stats .achievement-container")
+    container = containers.first if badge == "first" else containers.last
+    icon = container.locator(".achievement-badge-icon-wrapper")
+    popover = container.locator(".achievement-details-popover")
+    icon.focus()
+    # Past the 0.1s delay + 0.3s transition; bounded, unlike a polling evaluate.
+    expect(popover).to_have_css("opacity", "1")
+    expect(popover).to_have_css("transform", re.compile(r"matrix\(1, 0, 0, 1,"))
+
+    pop = popover.bounding_box()
+    icon_box = icon.bounding_box()
+    assert pop is not None
+    assert icon_box is not None
+    client_width = page.evaluate(_CLIENT_WIDTH_JS)
+    assert pop["x"] >= 0, pop
+    assert pop["x"] + pop["width"] <= client_width, (pop, client_width)
+    gap = icon_box["y"] - (pop["y"] + pop["height"])
+    assert 0 <= gap <= _MAX_POPOVER_GAP, (gap, pop, icon_box)
