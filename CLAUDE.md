@@ -52,9 +52,8 @@ so a reload with a tab open used to hang the server until a container restart (#
 timeout graceful shutdown exceeded` line such a reload now logs is that expected
 cancellation, not a fault. If the dev server hangs anyway, `curl -m 5
 localhost:8000/` from the host (the image has no `curl`) tells server from browser
-(6-connection HTTP/1.1 limit: one SSE per visible or recently hidden tab, *and* one
-per page kept in bfcache — DevTools doesn't show those; self-heals in ~1–3 min,
-#428), and `just dump-stacks` (SIGUSR1 →
+(6-connection HTTP/1.1 limit: one SSE per visible tab or one hidden < 30 s; pages
+in bfcache no longer hold one, #428), and `just dump-stacks` (SIGUSR1 →
 `faulthandler`, registered in `local.py`) prints every worker thread's stack to
 `just logs`.
 
@@ -373,6 +372,26 @@ shared key out from under the visible one) and holds an in-flight flag (the loop
 re-emits `data: toast` every 2 s until the fetch clears the key). Keep this scope
 tight — one flag, one canned toast, no per-message payload in the cache; anything
 richer belongs behind its own endpoint, not a wider SSE protocol.
+
+**Client lifecycle (#428).** Each open stream is one long-lived connection, and the
+HTTP/1.1 dev server gets only 6 per host from the browser (production's Traefik
+negotiates HTTP/2 on 443, where the limit doesn't apply — config-based, not measured),
+so `project.js` holds a stream only while the page is shown: a tab hidden for
+`HIDDEN_STREAM_CLOSE_DELAY_MS` (30 s) closes it and reopens on return, and `pagehide`
+closes it on the way into the bfcache, because Chromium keeps a bfcache'd
+page's `EventSource` connected (each link click in one tab used to park another
+stream, ~5 clicks hung the next navigation) and a frozen page never runs the hidden
+timer. Closing loses nothing — the pending flags live in the cache and the reopened
+stream re-reads them. On restore Chromium fires `visibilitychange` (visible) before
+the persisted `pageshow`, so the visible branch reconnects and `pageshow` is only the
+fallback (a no-op behind `!es`); the hidden branch arms no timer when `es` is already
+`null`. Never add an `unload` listener (it disables bfcache). Guarded
+by `tests/e2e/test_sse_bfcache.py` — parametrized, the second run suppresses
+`visibilitychange` so the `pageshow` fallback is exercised too — which launches its own full-Chromium browser
+(`channel="chromium"`) without Playwright's default `--disable-back-forward-cache` —
+the headless shell refuses bfcache (`BackForwardCacheDisabledForDelegate`) — and
+fakes `EventSource`; a restore fires no `load`, so it uses
+`go_back(wait_until="commit")`.
 
 Because the generator never completes on its own, the general test advice
 "consume with `b"".join(response.streaming_content)`" (see Test patterns above)
