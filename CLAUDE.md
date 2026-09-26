@@ -67,16 +67,6 @@ thread was waiting for. Its stack dump reads main thread in `__aexit__` → `shu
 guards it — keep the floor even though asgiref is otherwise only a Django
 transitive.
 
-`CONN_MAX_AGE` is `0` in `base.py` and is the default in `production.py` (#430). Under ASGI
-every request runs its sync code in its own `ThreadSensitiveContext` thread, so a
-persistent connection outlives the request. Idle connections then pile up, one per
-thread, until Postgres answers `too many clients already` (measured: 92 idle → 500s at
-`60`; 11 and no errors at `0`). Django's docs: "When using ASGI, persistent connections
-should be disabled". The env override remains, but don't raise it. If connection
-reuse is ever needed, use psycopg's pool (`OPTIONS["pool"]`, needs the `pool` extra,
-`max_size` below `max_connections`). Django refuses to combine that with
-`CONN_MAX_AGE > 0` anyway. `tests/test_db_connection_settings.py` guards it.
-
 `just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
 (defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated
 explicitly in the override (see issue #214) — otherwise the E2E run drops and rebuilds
@@ -319,6 +309,18 @@ Rules:
 Current safe defaults in `base.py`:
 - `COMPRESS_ENABLED = False` — production.py sets `True`
 - `COMPRESS_OFFLINE = False` — production.py sets `True`
+
+`CONN_MAX_AGE` is `0` in `base.py` and is the default in `production.py` (#430). Under ASGI
+every request runs its sync code in its own `ThreadSensitiveContext` thread, so a
+persistent connection outlives the request. Idle connections then pile up, one per
+thread, until Postgres answers `too many clients already` (measured: 92 idle → 500s at
+`60`; 11 and no errors at `0`). Django's docs: "When using ASGI, persistent connections
+should be disabled". The env override remains, but don't raise it. If connection
+reuse is ever needed, use psycopg's pool (`OPTIONS["pool"]`, needs the `pool` extra,
+`max_size` below `max_connections`). Django refuses to combine that with a non-zero
+`CONN_MAX_AGE` anyway, though only lazily, on first use. That is why the guard in
+`tests/test_db_connection_settings.py` checks `CONN_MAX_AGE == 0` alone, with no
+pool exemption.
 
 ## Architecture notes
 

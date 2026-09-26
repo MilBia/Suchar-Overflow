@@ -5,7 +5,10 @@ production). Each request runs sync code in its own ``ThreadSensitiveContext``
 thread with its own connection, so ``CONN_MAX_AGE > 0`` leaves one idle
 connection behind per request until Postgres hits ``max_connections``. Django's
 docs: "When using ASGI, persistent connections should be disabled" — reuse must
-come from a connection pool (``OPTIONS["pool"]``) instead, if ever.
+come from a connection pool (``OPTIONS["pool"]``) instead, if ever. The guard is
+``CONN_MAX_AGE == 0`` alone, with no pool exemption: a pool requires 0 anyway
+(Django raises only lazily, on first use), and a falsy ``OPTIONS["pool"]``
+(``False`` / ``{}``) means no pool, so exempting on the key would hide the leak.
 
 ``production.py`` is imported directly with the env vars its import needs
 stubbed, as in ``tests/test_hsts_settings.py``.
@@ -53,7 +56,7 @@ def _load_production_settings(
 
 
 def _no_persistent_connections(db: dict[str, Any]) -> bool:
-    return db["CONN_MAX_AGE"] == 0 or "pool" in db.get("OPTIONS", {})
+    return db["CONN_MAX_AGE"] == 0
 
 
 def test_base_disables_persistent_connections() -> None:
