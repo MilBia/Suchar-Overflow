@@ -37,6 +37,13 @@ logs *args:
 manage +args:
     @docker compose run --rm django python ./manage.py {{args}}
 
+# messages: Recompile the .po translation catalogs into .mo (also runs on every
+# `just up`). A running dev server reloads on its own — `start` passes
+# `--reload-include "*.mo"` to uvicorn. Extra args go to compilemessages,
+# e.g. `just messages -l pl`.
+messages *args:
+    @docker compose run --rm django python ./manage.py compilemessages --ignore=.venv --ignore=node_modules {{args}}
+
 # test: Run unit/integration tests (excludes E2E). Use `just test-e2e` for Playwright tests.
 test *args:
     @docker compose run --rm django pytest -m "not e2e" {{args}}
