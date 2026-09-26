@@ -629,7 +629,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // - a tab hidden for HIDDEN_STREAM_CLOSE_DELAY_MS closes it, and reopens on
     //   return (30 s, not minutes: every recently viewed tab otherwise keeps one);
     // - a page leaving for the back/forward cache closes it on `pagehide`, and
-    //   reopens on a persisted `pageshow`. Chromium keeps a bfcache'd page's
+    //   reopens on restore (the visible `visibilitychange`, with a persisted
+    //   `pageshow` as the fallback). Chromium keeps a bfcache'd page's
     //   EventSource connected, so without this each link click in one tab parked
     //   another stream, and the frozen page never runs the hidden-tab timer.
     // Closing loses nothing: the pending flags live in the cache (days/hours TTL)
@@ -724,7 +725,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.visibilityState === 'hidden') {
                 if (hiddenTimeoutId) {
                     clearTimeout(hiddenTimeoutId);
+                    hiddenTimeoutId = null;
                 }
+                // Nothing to close — e.g. `pagehide` already closed it on the
+                // way into the bfcache (Chromium fires `hidden` after it). The
+                // visible branch reconnects on `!es` either way.
+                if (!es) return;
                 hiddenTimeoutId = setTimeout(() => {
                     hiddenTimeoutId = null;
                     if (es) {
@@ -748,7 +754,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // for the bfcache altogether.
         window.addEventListener('pagehide', () => {
             if (hiddenTimeoutId) {
-                // A frozen page's pending timer would resume after a restore.
+                // A tab hidden *before* the page left (its timer armed) would
+                // otherwise carry that timer into the bfcache and resume it
+                // after a restore.
                 clearTimeout(hiddenTimeoutId);
                 hiddenTimeoutId = null;
             }
@@ -760,8 +768,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.addEventListener('pageshow', (event) => {
             // Non-persisted `pageshow` is a normal load — the initial connect
-            // below covers it. The `!es` guard matters: the order of this and a
-            // restore-time `visibilitychange` isn't fixed, and either may connect.
+            // below covers it. On a restore Chromium fires `visibilitychange`
+            // (visible) first, which already reconnects, so there this is a
+            // no-op behind `!es`; it stays as the fallback for an engine that
+            // restores without a visibility change.
             if (!event.persisted || streamDisabled || es) return;
             if (document.visibilityState === 'visible') {
                 connectAchievementStream();

@@ -378,12 +378,16 @@ HTTP/1.1 dev server gets only 6 per host from the browser (production's Traefik
 negotiates HTTP/2 on 443, where the limit doesn't apply — config-based, not measured),
 so `project.js` holds a stream only while the page is shown: a tab hidden for
 `HIDDEN_STREAM_CLOSE_DELAY_MS` (30 s) closes it and reopens on return, and `pagehide`
-closes it / a persisted `pageshow` reopens it, because Chromium keeps a bfcache'd
+closes it on the way into the bfcache, because Chromium keeps a bfcache'd
 page's `EventSource` connected (each link click in one tab used to park another
 stream, ~5 clicks hung the next navigation) and a frozen page never runs the hidden
 timer. Closing loses nothing — the pending flags live in the cache and the reopened
-stream re-reads them. Never add an `unload` listener (it disables bfcache). Guarded
-by `tests/e2e/test_sse_bfcache.py`, which launches its own full-Chromium browser
+stream re-reads them. On restore Chromium fires `visibilitychange` (visible) before
+the persisted `pageshow`, so the visible branch reconnects and `pageshow` is only the
+fallback (a no-op behind `!es`); the hidden branch arms no timer when `es` is already
+`null`. Never add an `unload` listener (it disables bfcache). Guarded
+by `tests/e2e/test_sse_bfcache.py` — parametrized, the second run suppresses
+`visibilitychange` so the `pageshow` fallback is exercised too — which launches its own full-Chromium browser
 (`channel="chromium"`) without Playwright's default `--disable-back-forward-cache` —
 the headless shell refuses bfcache (`BackForwardCacheDisabledForDelegate`) — and
 fakes `EventSource`; a restore fires no `load`, so it uses

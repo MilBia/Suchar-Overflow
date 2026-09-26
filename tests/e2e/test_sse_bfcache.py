@@ -31,8 +31,6 @@ if TYPE_CHECKING:
     from playwright.sync_api import Page
     from pytest_django.live_server_helper import LiveServer
 
-    from suchar_overflow.users.models import User as UserModel
-
 _LOG_KEY = "__sse_log"
 
 # Runs before any page script in every document. `docId` is per document, so a
@@ -77,23 +75,41 @@ _FAKE_EVENT_SOURCE_JS = """
 """ % {"key": _LOG_KEY}  # noqa: UP031
 
 
-@pytest.fixture
+# Restore-time `visibilitychange` (visible) is what reconnects in Chromium, so
+# the persisted-`pageshow` fallback in project.js only runs once that is taken
+# out. A capture listener on `window` sees the event before project.js's own
+# listener on `document` and stops it there.
+_SUPPRESS_VISIBILITYCHANGE_JS = """
+window.addEventListener('visibilitychange', (e) => {
+  e.stopImmediatePropagation();
+}, true);
+"""
+
+
+@pytest.fixture(params=[False, True], ids=["visibilitychange", "pageshow-only"])
 def bfcache_page(
+    request: pytest.FixtureRequest,
     browser_type: BrowserType,
     browser_type_launch_args: dict[str, Any],
     browser_context_args: dict[str, Any],
 ) -> Iterator[Page]:
     browser = browser_type.launch(
-        **browser_type_launch_args,
+        **{
+            **browser_type_launch_args,
+            # The default headless shell refuses bfcache outright
+            # (`BackForwardCacheDisabledForDelegate` in CDP's
+            # Page.backForwardCacheNotUsed); full Chromium's new headless mode,
+            # already installed by `playwright install chromium`, supports it.
+            # Merged into the dict so a `--browser-channel` on the command line
+            # can't collide with it as a duplicate keyword.
+            "channel": "chromium",
+        },
         ignore_default_args=["--disable-back-forward-cache"],
-        # The default headless shell refuses bfcache outright
-        # (`BackForwardCacheDisabledForDelegate` in CDP's
-        # Page.backForwardCacheNotUsed); full Chromium's new headless mode,
-        # already installed by `playwright install chromium`, supports it.
-        channel="chromium",
     )
     context = browser.new_context(**browser_context_args)
     context.add_init_script(_FAKE_EVENT_SOURCE_JS)
+    if request.param:
+        context.add_init_script(_SUPPRESS_VISIBILITYCHANGE_JS)
     page = context.new_page()
     yield page
     context.close()
@@ -120,11 +136,17 @@ def _wait_for_restore(page: Page) -> dict[str, Any]:
 
 @pytest.mark.e2e
 @pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("e2e_user")
 def test_bfcached_page_releases_and_restores_its_stream(
     bfcache_page: Page,
     live_server: LiveServer,
-    e2e_user: UserModel,  # noqa: ARG001
 ) -> None:
+    """Closed on the way into the bfcache, reopened exactly once on restore.
+
+    Parametrized: as-is, Chromium's restore-time `visibilitychange` reconnects
+    (and `pageshow` is a no-op behind `!es`); with that event suppressed the
+    persisted-`pageshow` fallback has to do it alone.
+    """
     page = bfcache_page
     page.goto(f"{live_server.url}/accounts/login/")
     page.fill("input[name='username']", "e2etestuser")
@@ -147,8 +169,7 @@ def test_bfcached_page_releases_and_restores_its_stream(
         if e["doc"] == restore["doc"] and e["ev"] in {"open", "close", "pagehide"}
     ]
     # The first load's stream is closed while the page leaves for the bfcache,
-    # then a fresh one opens on restore — from `pageshow` or a restore-time
-    # `visibilitychange`, whichever runs first; never both.
+    # then a fresh one opens on restore — never twice (the `!es` guard).
     assert [e["ev"] for e in log] == ["open", "pagehide", "close", "open"]
     assert log[1]["persisted"], "the page did not enter the bfcache"
     first, closed, reopened = log[0], log[2], log[3]
