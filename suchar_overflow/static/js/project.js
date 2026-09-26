@@ -622,12 +622,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Achievements via SSE — browser auto-reconnects after server closes connection.
-    // We also close the connection when the tab has been hidden for a while and
-    // reopen it on return, so backgrounded tabs don't keep piling up long-lived
-    // polling connections on the backend.
+    // Each open stream is one long-lived connection, and over plain HTTP/1.1 (the
+    // dev server) the browser allows only 6 per host — exhausting them hangs every
+    // further request, page loads included (#428). So a stream is held only while
+    // the page is actually shown:
+    // - a tab hidden for HIDDEN_STREAM_CLOSE_DELAY_MS closes it, and reopens on
+    //   return (30 s, not minutes: every recently viewed tab otherwise keeps one);
+    // - a page leaving for the back/forward cache closes it on `pagehide`, and
+    //   reopens on restore (the visible `visibilitychange`, with a persisted
+    //   `pageshow` as the fallback). Chromium keeps a bfcache'd page's
+    //   EventSource connected, so without this each link click in one tab parked
+    //   another stream, and the frozen page never runs the hidden-tab timer.
+    // Closing loses nothing: the pending flags live in the cache (days/hours TTL)
+    // and the reopened stream re-reads them on its first poll.
     const userLink = document.querySelector('.user-link');
     if (userLink && window.EventSource) {
-        const HIDDEN_STREAM_CLOSE_DELAY_MS = 3 * 60 * 1000;
+        const HIDDEN_STREAM_CLOSE_DELAY_MS = 30 * 1000;
         let es = null;
         let streamDisabled = false;
         let hiddenTimeoutId = null;
@@ -715,7 +725,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.visibilityState === 'hidden') {
                 if (hiddenTimeoutId) {
                     clearTimeout(hiddenTimeoutId);
+                    hiddenTimeoutId = null;
                 }
+                // Nothing to close — e.g. `pagehide` already closed it on the
+                // way into the bfcache (Chromium fires `hidden` after it). The
+                // visible branch reconnects on `!es` either way.
+                if (!es) return;
                 hiddenTimeoutId = setTimeout(() => {
                     hiddenTimeoutId = null;
                     if (es) {
@@ -731,6 +746,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!es) {
                     connectAchievementStream();
                 }
+            }
+        });
+
+        // `pagehide` fires for every unload, bfcache-bound or not; closing is
+        // harmless either way. Don't use `unload` — it makes the page ineligible
+        // for the bfcache altogether.
+        window.addEventListener('pagehide', () => {
+            if (hiddenTimeoutId) {
+                // A tab hidden *before* the page left (its timer armed) would
+                // otherwise carry that timer into the bfcache and resume it
+                // after a restore.
+                clearTimeout(hiddenTimeoutId);
+                hiddenTimeoutId = null;
+            }
+            if (es) {
+                es.close();
+                es = null;
+            }
+        });
+
+        window.addEventListener('pageshow', (event) => {
+            // Non-persisted `pageshow` is a normal load — the initial connect
+            // below covers it. On a restore Chromium fires `visibilitychange`
+            // (visible) first, which already reconnects, so there this is a
+            // no-op behind `!es`; it stays as the fallback for an engine that
+            // restores without a visibility change.
+            if (!event.persisted || streamDisabled || es) return;
+            if (document.visibilityState === 'visible') {
+                connectAchievementStream();
             }
         });
 
