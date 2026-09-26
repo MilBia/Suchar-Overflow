@@ -56,6 +56,14 @@ bash:
 exec +args:
     @docker compose exec django /entrypoint {{args}}
 
+# Needs `just up`. For a hung dev server (#403): SIGUSR1 makes the uvicorn worker
+# print every thread's Python stack to `just logs` (faulthandler, set in
+# local.py). Signals the worker — a child of PID 1 — never PID 1 itself: the
+# reloader has no handler, and SIGUSR1's default action would kill the container.
+# dump-stacks: Dump all thread stacks of the running dev server to its log.
+dump-stacks:
+    @docker compose exec -T django pkill -USR1 -P 1 -f multiprocessing.spawn
+
 # messages: Recompile the .po translation catalogs into .mo (also runs on every
 # `just up`). A running dev server reloads on its own — `start` passes
 # `--reload-include "*.mo"` to uvicorn. Extra args go to compilemessages,
