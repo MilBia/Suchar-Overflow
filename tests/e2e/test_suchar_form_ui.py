@@ -140,6 +140,15 @@ def test_schedule_checkbox_hides_date_container(
 
     page.check("#scheduleCheck")
     page.wait_for_selector("#scheduleContainer:not(.d-none)")
+    # Checking the toggle with an empty date opens flatpickr 100 ms later, and
+    # at this viewport it renders above the field, over the toggle. Wait for it
+    # and close it first; unchecking straight away only passed while the click
+    # beat that timer (#419).
+    page.wait_for_selector(".flatpickr-calendar.open")
+    # Click away, as a user would (Escape only closes it with focus inside
+    # flatpickr, and focus is still on the toggle).
+    page.click("#previewText")
+    page.wait_for_selector(".flatpickr-calendar.open", state="detached")
 
     page.uncheck("#scheduleCheck")
 

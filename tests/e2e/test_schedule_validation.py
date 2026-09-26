@@ -65,6 +65,16 @@ def test_future_date_passes_client_validation(
 
     page.check("#scheduleCheck")
     page.wait_for_selector("#scheduleContainer:not(.d-none)")
+    # The toggle opens flatpickr 100 ms later; close it before writing the
+    # value. A value written behind flatpickr's back while it is open is
+    # replaced with today 12:00 on close (in the past every afternoon), so
+    # setting it first only passed while the submit click beat the timer
+    # (#419).
+    page.wait_for_selector(".flatpickr-calendar.open")
+    # Click away, as a user would (Escape only closes it with focus inside
+    # flatpickr, and focus is still on the toggle).
+    page.click("#previewText")
+    page.wait_for_selector(".flatpickr-calendar.open", state="detached")
 
     # The form reads a naive value on the service's wall clock (#405).
     future_str = (timezone.localtime() + timedelta(days=1)).strftime("%Y-%m-%d %H:%M")
