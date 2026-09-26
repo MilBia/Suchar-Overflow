@@ -6,4 +6,9 @@ set -o nounset
 
 
 python manage.py migrate
+# *.mo is gitignored and the `.:/app` bind mount hides anything compiled into the
+# image, so compile the catalogs here or a fresh clone renders raw msgids (#407).
+# --ignore .venv: compilemessages walks every `locale` dir under cwd, including
+# the installed packages' own catalogs, which it must not rewrite.
+python manage.py compilemessages --ignore=.venv --ignore=node_modules
 exec uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --reload

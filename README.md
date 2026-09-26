@@ -111,6 +111,24 @@ Lub:
 just up
 ```
 
+Przy starcie kontener `django` sam stosuje migracje i kompiluje tłumaczenia
+(`compilemessages`: pliki `.po` → `.mo`). Pliki `.mo` nie są w repozytorium, więc bez tego
+kroku interfejs wyświetlałby surowe, nieprzetłumaczone teksty zamiast polskich.
+
+#### Ponowna kompilacja tłumaczeń
+
+Po edycji dowolnego pliku `locale/*/LC_MESSAGES/django.po` zrestartuj kontener `django` —
+przy starcie skompiluje katalogi od nowa:
+
+```bash
+docker compose -f docker-compose.local.yml restart django
+```
+
+Samo przekompilowanie nie wystarczy działającemu serwerowi: Django trzyma wczytane
+tłumaczenia w pamięci procesu, a `uvicorn --reload` reaguje wyłącznie na zmiany plików `*.py`.
+Do kompilacji bez restartu serwera (np. przed `just test`, który nie przechodzi przez skrypt
+startowy) służy `just messages`.
+
 ### 4. Zastosuj migracje i stwórz superusera
 
 ```bash
@@ -260,6 +278,7 @@ Projekt udostępnia skróty poprzez [just](https://github.com/casey/just):
 | `just prune`         | Zatrzymanie + usunięcie wolumenów     |
 | `just logs [serwis]` | Podgląd logów                         |
 | `just manage <cmd>`  | Wykonanie komendy `manage.py`         |
+| `just messages`      | Kompilacja tłumaczeń (`.po` → `.mo`)  |
 | `just test [args]`      | Uruchomienie testów jednostkowych (pytest)    |
 | `just test-e2e [args]`  | Uruchomienie testów E2E (Playwright)          |
 | `just test-all`         | Testy jednostkowe, a następnie E2E            |
@@ -301,10 +320,11 @@ just fill-translations --url 192.168.1.1:1234/v1 --language pl --all
 uv run manage.py fill_translations --url http://localhost:11434/v1 --language en --model llama3.2
 ```
 
-Po uzupełnieniu tłumaczeń skompiluj pliki `.po`:
+Po uzupełnieniu tłumaczeń zrestartuj serwer — skompiluje pliki `.po` przy starcie
+(zob. [Ponowna kompilacja tłumaczeń](#ponowna-kompilacja-tłumaczeń)):
 
 ```bash
-just manage compilemessages
+docker compose -f docker-compose.local.yml restart django
 ```
 
 ### Parametry

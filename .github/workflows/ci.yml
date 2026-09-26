@@ -145,6 +145,14 @@ jobs:
       - name: Run DB Migrations
         run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
 
+      # compilemessages runs msgfmt --check-format and exits non-zero on any
+      # broken catalog (e.g. a mismatched %(name)s placeholder), which otherwise
+      # only surfaced in the production image build (#407). The .mo files land in
+      # the bind-mounted workspace, so both test suites below also render with
+      # real catalogs, as production and local dev (compose/local/django/start) do.
+      - name: Compile translations
+        run: docker compose -f docker-compose.local.yml run --rm django python manage.py compilemessages --ignore=.venv --ignore=node_modules
+
       - name: Run Django Tests
         id: django_tests
         run: docker compose -f docker-compose.local.yml run --rm django coverage run -m pytest -vv -m "not e2e" --junitxml=root_junit.xml
