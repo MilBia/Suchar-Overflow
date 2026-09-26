@@ -1,5 +1,14 @@
+# uv comes from its own pinned image; Python from the official image (#431).
+# astral's `uv:python3.14-bookworm-slim` tag stopped moving at Python 3.14.2, whose
+# incremental GC (reverted in 3.14.5) let per-request garbage cycles pile up
+# faster than it collected them — worker RSS grew without bound under load.
+# `python:3.14-slim-bookworm` tracks the latest 3.14.x on the same Debian;
+# tests/test_python_runtime.py fails if a stale cached base slips back in.
+FROM ghcr.io/astral-sh/uv:0.9.30 AS uv
+
 # define an alias for the specific python version used in this file.
-FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS python
+FROM python:3.14-slim-bookworm AS python
+COPY --from=uv /uv /uvx /bin/
 
 # Python build stage
 FROM python AS python-build-stage

@@ -67,6 +67,20 @@ thread was waiting for. Its stack dump reads main thread in `__aexit__` → `shu
 guards it — keep the floor even though asgiref is otherwise only a Django
 transitive.
 
+Worker RSS that climbs under load and never comes back (#431) was CPython 3.14.2's
+incremental cycle collector, reverted in 3.14.5. Each ASGI request leaves its request
+graph in a reference cycle, and that collector fell behind them (135 → 270 MB over 8
+load rounds on 3.14.2, flat ~101 MB on 3.14.7). The image was stuck there because
+astral's `uv:python3.14-bookworm-slim` tag stopped moving, so both Dockerfiles now
+take Python from the official `python:3.14-slim-bookworm` and copy `uv` in from
+a pinned `ghcr.io/astral-sh/uv:<version>` stage. `tests/test_python_runtime.py`
+fails on a pre-3.14.5 interpreter, but only in the local/CI image. The fix is
+`just build --pull` (`just prod-build --pull` for production), because a plain build
+reuses the cached base. Locally, django-debug-toolbar with
+`SHOW_TEMPLATE_CONTEXT = True` still pushes a worker to a ~1.3 GB high-water mark
+under a request flood: about 9 MB per stored request, with the freed memory held by
+malloc. It is bounded and kept on purpose; don't read it as a leak.
+
 `just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
 (defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated
 explicitly in the override (see issue #214) — otherwise the E2E run drops and rebuilds
