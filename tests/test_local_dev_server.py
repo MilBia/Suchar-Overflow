@@ -20,7 +20,9 @@ _TIMEOUT_RE = re.compile(r"--timeout-graceful-shutdown[ =](\d+)")
 def test_local_uvicorn_bounds_graceful_shutdown() -> None:
     """A short bound lets the reload cancel SSE streams; clients reconnect."""
     text = START_SCRIPT.read_text(encoding="utf-8")
-    uvicorn_cmd = text[text.index("exec uvicorn") :]
+    start = text.find("exec uvicorn")
+    assert start != -1, "local start script no longer execs uvicorn"
+    uvicorn_cmd = text[start:]
     match = _TIMEOUT_RE.search(uvicorn_cmd)
     assert match, "local uvicorn must pass --timeout-graceful-shutdown (#403)"
     assert 0 < int(match.group(1)) <= 10  # noqa: PLR2004

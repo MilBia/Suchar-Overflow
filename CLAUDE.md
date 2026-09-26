@@ -48,10 +48,13 @@ The dev server (`compose/local/django/start`, copied into the image — edit it,
 `just build`) runs `uvicorn --reload --timeout-graceful-shutdown 3`. Keep the bound:
 uvicorn's default is none, and each open `/achievements/stream/` SSE never finishes,
 so a reload with a tab open used to hang the server until a container restart (#403;
-`tests/test_local_dev_server.py` guards it). If the dev server hangs anyway,
-`curl -m 5 localhost:8000/` tells server from browser (6-connection HTTP/1.1 limit,
-one per SSE tab), and `just dump-stacks` (SIGUSR1 → `faulthandler`, registered in
-`local.py`) prints every worker thread's stack to `just logs`.
+`tests/test_local_dev_server.py` guards it). The `ERROR: Cancel N running task(s),
+timeout graceful shutdown exceeded` line such a reload now logs is that expected
+cancellation, not a fault. If the dev server hangs anyway, `curl -m 5
+localhost:8000/` from the host (the image has no `curl`) tells server from browser
+(6-connection HTTP/1.1 limit, one per SSE tab), and `just dump-stacks` (SIGUSR1 →
+`faulthandler`, registered in `local.py`) prints every worker thread's stack to
+`just logs`.
 
 `just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
 (defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated

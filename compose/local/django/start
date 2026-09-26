@@ -17,5 +17,7 @@ python manage.py compilemessages --ignore=.venv --ignore=node_modules
 # any `/achievements/stream/` SSE connection open waits for it forever — the
 # reloader blocks joining the old worker and every new request hangs until the
 # container is restarted (#403). SSE clients reconnect on their own (`retry:`).
+# With a tab open every reload now logs "ERROR: Cancel N running task(s), timeout
+# graceful shutdown exceeded" — that is the expected SSE cancellation, not a bug.
 exec uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --reload \
   --reload-include "*.mo" --timeout-graceful-shutdown 3
