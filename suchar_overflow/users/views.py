@@ -90,8 +90,8 @@ class UserDetailView(AsyncLoginRequiredMixin):
 
         # 1. Latest Suchary
         # "Latest" = most recently *published*, not written (#412): a suchar
-        # written weeks ago and scheduled for today is new to readers today —
-        # same order as the main list. `-id` breaks equal-timestamp ties.
+        # written weeks ago and scheduled for today is new to readers today.
+        # Same order as `SucharListView`; `-id` breaks equal-timestamp ties.
         context["latest_suchary"] = (
             user.suchary.filter(published_at__lte=now)
             .annotate(
@@ -196,7 +196,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
         counts = {entry["date"].date(): entry["count"] for entry in activity_data}
         chart_days = [
             start_date + datetime.timedelta(days=offset)
-            for offset in range((today - start_date).days + 1)
+            for offset in range(ACTIVITY_CHART_DAYS + 1)
         ]
         context["activity_labels"] = [day.strftime("%Y-%m-%d") for day in chart_days]
         context["activity_values"] = [counts.get(day, 0) for day in chart_days]

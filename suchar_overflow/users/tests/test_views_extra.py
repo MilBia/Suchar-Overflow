@@ -11,9 +11,11 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.db import connection
+from django.template.defaultfilters import date as date_filter
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
+from django.utils import translation
 from django.utils.translation import gettext
 
 from suchar_overflow.achievements.models import Achievement
@@ -1162,17 +1164,20 @@ def _backdate(
 def test_latest_suchary_label_shows_publication_date(client: Client) -> None:
     user = make_user("latest412label")
     s = Suchar.objects.create(text="Written early, published later", author=user)
-    _backdate(
-        s,
-        created_at=datetime.datetime(2024, 3, 5, 10, 11, tzinfo=_WARSAW),
-        published_at=datetime.datetime(2024, 6, 20, 14, 47, tzinfo=_WARSAW),
-    )
+    created_at = datetime.datetime(2024, 3, 5, 10, 11, tzinfo=_WARSAW)
+    published_at = datetime.datetime(2024, 6, 20, 14, 47, tzinfo=_WARSAW)
+    _backdate(s, created_at=created_at, published_at=published_at)
 
     client.force_login(user)
     content = client.get(detail_url("latest412label")).content.decode()
 
-    assert "14:47" in content
-    assert "10:11" not in content
+    # The template's |date converts to the active (service) zone itself; the
+    # bare filter doesn't, hence localtime() here.
+    with translation.override("pl"):
+        published_label = date_filter(timezone.localtime(published_at), "d M Y, H:i")
+        created_label = date_filter(timezone.localtime(created_at), "d M Y, H:i")
+    assert published_label in content
+    assert created_label not in content
 
 
 @pytest.mark.django_db
@@ -1197,6 +1202,33 @@ def test_latest_suchary_ordered_by_publication(client: Client) -> None:
 
     assert texts == [f"Suchar {i}" for i in range(5)]
     assert "Suchar 5" not in texts
+
+
+@pytest.mark.django_db
+def test_best_joke_tie_goes_to_latest_published() -> None:
+    """Equal funny counts: "The Best Of" is the one published last, even when
+    it was written first (#412)."""
+    user = make_user("best412")
+    voter = make_user("best412voter")
+    base = datetime.datetime(2024, 5, 1, 12, 0, tzinfo=datetime.UTC)
+    written_first = Suchar.objects.create(text="Written first", author=user)
+    written_last = Suchar.objects.create(text="Written last", author=user)
+    _backdate(
+        written_first,
+        created_at=base,
+        published_at=base + datetime.timedelta(days=10),
+    )
+    _backdate(
+        written_last,
+        created_at=base + datetime.timedelta(days=1),
+        published_at=base + datetime.timedelta(days=1),
+    )
+    for suchar in (written_first, written_last):
+        Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+
+    context = UserDetailView()._build_context(user, is_owner=False)  # noqa: SLF001
+
+    assert context["best_joke"] == written_first
 
 
 # ===========================================================================
@@ -1233,16 +1265,18 @@ def test_activity_chart_window_starts_at_midnight(request_hour: int) -> None:
 
 
 @pytest.mark.django_db
-def test_activity_chart_fills_empty_days_with_zeros(client: Client) -> None:
+def test_activity_chart_fills_empty_days_with_zeros() -> None:
     user = make_user("activity413empty")
+    # Frozen, so the request and the expected labels can't straddle midnight.
+    frozen_now = datetime.datetime(2024, 7, 11, 12, 0, tzinfo=_WARSAW)
 
-    client.force_login(user)
-    response = client.get(detail_url("activity413empty"))
+    with patch("django.utils.timezone.now", return_value=frozen_now):
+        context = UserDetailView()._build_context(user, is_owner=False)  # noqa: SLF001
 
-    today = timezone.localdate(timezone.now(), _WARSAW)
+    today = frozen_now.date()
     expected = [
         (today - datetime.timedelta(days=offset)).isoformat()
         for offset in range(30, -1, -1)
     ]
-    assert response.context["activity_labels"] == expected
-    assert response.context["activity_values"] == [0] * 31
+    assert context["activity_labels"] == expected
+    assert context["activity_values"] == [0] * 31

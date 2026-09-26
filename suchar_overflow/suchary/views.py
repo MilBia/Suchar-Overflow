@@ -77,11 +77,15 @@ class SucharListView(View):
                 ),
             )
 
+        # Newest = most recently *published*, not written (#412): a suchar
+        # written weeks ago and scheduled for today belongs on page 1 today,
+        # next to the `published_at` date its card shows. `-id` makes equal
+        # timestamps paginate deterministically.
         sort = request.GET.get("sort")
         if sort == "top":
-            qs = qs.order_by("-funny_count", "-dry_count", "-created_at")
+            qs = qs.order_by("-funny_count", "-dry_count", "-published_at", "-id")
         else:
-            qs = qs.order_by("-created_at")
+            qs = qs.order_by("-published_at", "-id")
 
         q = request.GET.get("q")
         if q:

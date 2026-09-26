@@ -58,6 +58,33 @@ def test_create_suchar(client: Client, django_user_model: type[UserModel]) -> No
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("sort", ["newest", "top"])
+def test_suchar_list_orders_by_publication_not_creation(
+    client: Client,
+    sort: str,
+) -> None:
+    """A suchar written long ago and published just now leads the list, ahead
+    of one written later but published earlier (#412). Under `?sort=top` the
+    same holds as the tie-break between equal scores."""
+    user = make_user("list412")
+    now = timezone.now()
+    written_first = Suchar.objects.create(text="Written first", author=user)
+    written_last = Suchar.objects.create(text="Written last", author=user)
+    Suchar.objects.filter(pk=written_first.pk).update(
+        created_at=now - timedelta(days=14),
+        published_at=now - timedelta(minutes=1),
+    )
+    Suchar.objects.filter(pk=written_last.pk).update(
+        created_at=now - timedelta(days=7),
+        published_at=now - timedelta(days=7),
+    )
+
+    response = client.get(reverse("suchary:list"), {"sort": sort})
+
+    assert list(response.context["suchary"]) == [written_first, written_last]
+
+
+@pytest.mark.django_db
 def test_suchar_list_sorting(
     client: Client,
     django_user_model: type[UserModel],
@@ -69,11 +96,11 @@ def test_suchar_list_sorting(
     )
     s1 = Suchar.objects.create(text="Older joke", author=user)
     s2 = Suchar.objects.create(text="Newer joke", author=user)
-    # Force deterministic ordering by pinning created_at directly
+    # Force deterministic ordering by pinning published_at directly (#412)
     Suchar.objects.filter(pk=s1.pk).update(
-        created_at=timezone.now() - timedelta(seconds=10),
+        published_at=timezone.now() - timedelta(seconds=10),
     )
-    Suchar.objects.filter(pk=s2.pk).update(created_at=timezone.now())
+    Suchar.objects.filter(pk=s2.pk).update(published_at=timezone.now())
 
     url = reverse("suchary:list")
 
