@@ -117,7 +117,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         const overflow = Math.ceil(
                             bottom - (window.scrollY + window.innerHeight),
                         );
-                        if (overflow > 0) window.scrollBy(0, overflow);
+                        if (overflow > 0) {
+                            // Never scroll the toggle itself under the sticky
+                            // navbar: on a short viewport (landscape phone,
+                            // laptop with devtools open) a calendar cut off at
+                            // the bottom beats a toggle the first click can't
+                            // reach — which is the very bug this fixes.
+                            const nav = document.querySelector('.navbar');
+                            const navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
+                            const room = scheduleCheck.getBoundingClientRect().top
+                                - navBottom - 8;
+                            window.scrollBy(0, Math.min(overflow, Math.max(0, room)));
+                        }
                     });
                 }],
             });

@@ -249,14 +249,15 @@ def test_submit_adds_loading_state_and_status_string(
 _SETTLE_JS = "new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))"
 
 _CALENDAR_BOX_JS = """
-    (() => {
+    (async () => {
         const cal = document.querySelector('.flatpickr-calendar.open');
-        // From flatpickr's inline page-coordinate `top`, not the rect's own
-        // bottom: the fpFadeInDown opening animation still has the rect
-        // translated up to 20 px higher than where it settles.
-        const height = cal.getBoundingClientRect().height;
+        // Let the fpFadeInDown opening animation finish first: mid-animation
+        // the rect is still translated up to 20 px higher than where it
+        // settles. Measured independently of suchar_form.js's own
+        // style.top-based formula, so a wrong shared assumption can't pass.
+        await Promise.all(cal.getAnimations().map(a => a.finished));
         return {
-            bottom: parseFloat(cal.style.top) + height - window.scrollY,
+            bottom: cal.getBoundingClientRect().bottom,
             innerHeight: window.innerHeight,
             below: cal.classList.contains('arrowTop'),
         };
@@ -267,17 +268,19 @@ _CALENDAR_BOX_JS = """
 def _open_calendar_with_toggle_mid_viewport(
     page: Page,
     live_server: LiveServer,
+    block: str = "center",
 ) -> None:
-    """Tick "Schedule" with the toggle in the middle of the viewport.
+    """Tick "Schedule" with the toggle scrolled to `block` of the viewport.
 
-    That is where #419 measured the flip: with the date field at ~440-485 px
-    of an 800 px viewport only ~315 px are free below it, less than the
-    calendar's ~344 px, so flatpickr's "auto" position drew it above the
-    field — over the toggle.
+    The default, the middle, is where #419 measured the flip: with the date
+    field at ~440-485 px of an 800 px viewport only ~315 px are free below
+    it, less than the calendar's ~344 px, so flatpickr's "auto" position
+    drew it above the field — over the toggle.
     """
     page.goto(f"{live_server.url}/suchary/add/")
     page.evaluate(
-        "document.getElementById('scheduleCheck').scrollIntoView({block: 'center'})",
+        "block => document.getElementById('scheduleCheck').scrollIntoView({block})",
+        block,
     )
     page.check("#scheduleCheck")
     page.wait_for_selector(".flatpickr-calendar.open")
@@ -329,6 +332,36 @@ def test_schedule_calendar_toggle_unticks_in_one_click_on_narrow_screen(
     assert cal["below"]
     assert cal["bottom"] <= cal["innerHeight"]
 
+    _assert_one_click_unticks_toggle(page)
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
+@pytest.mark.parametrize(
+    ("width", "height", "block"),
+    [
+        (1280, 500, "end"),
+        (1280, 500, "center"),
+        (667, 375, "center"),
+        (667, 375, "end"),
+    ],
+)
+def test_schedule_calendar_short_viewport_keeps_toggle_below_navbar(
+    page: Page,
+    live_server: LiveServer,
+    width: int,
+    height: int,
+    block: str,
+) -> None:
+    """On a short viewport (laptop with devtools open, landscape phone) the
+    calendar can't fit below the field without the toggle scrolling under
+    the sticky navbar. The scroll is capped so the toggle stays clickable;
+    the calendar's bottom may stay cut off, so no in-viewport assertion."""
+    page.set_viewport_size({"width": width, "height": height})
+    _open_calendar_with_toggle_mid_viewport(page, live_server, block)
+
+    assert page.evaluate(_CALENDAR_BOX_JS)["below"]
     _assert_one_click_unticks_toggle(page)
 
 
