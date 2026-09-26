@@ -149,6 +149,29 @@
     border-color: var(--bg-surface) transparent transparent transparent;
 }
 
+/* Profile badge grid (#415): a popover centred on its own badge ran past the
+   viewport for a badge near the right edge of the card — on phones that was
+   cut off and added horizontal page scroll (the hidden popover still counts
+   toward scrollable overflow). Anchor it to the whole grid instead: centred
+   above the badges and never wider than them. The arrow would point at the
+   grid's centre rather than the hovered badge, so it is dropped here. */
+.achievement-grid {
+    position: relative;
+}
+
+.achievement-grid .achievement-container {
+    position: static;
+}
+
+.achievement-grid .achievement-details-popover {
+    bottom: calc(100% + 8px);
+    width: min(260px, 100%);
+}
+
+.achievement-grid .achievement-details-popover::after {
+    content: none;
+}
+
 /* Utilities */
 .overflow-visible {
     overflow: visible !important;

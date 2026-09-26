@@ -224,12 +224,18 @@
     padding-block: 3rem;
 }
 
+/* !important on the .p-* shorthands for the same reason as the #66 spacing
+   utilities above: utilities.css loads before components/*.css, so
+   `.card-body { padding }` (cards.css) and `.list-group-item { padding }`
+   (list_group.css) won at equal specificity and `card-body p-0` / `p-4` /
+   `p-5` rendered the component's 32px instead (#415). .p-md-5 below already
+   carried !important, so suchar_form.html was 32px below md and 48px above. */
 .p-0 {
-    padding: 0;
+    padding: 0 !important;
 }
 
 .p-2 {
-    padding: 0.5rem;
+    padding: 0.5rem !important;
 }
 
 .px-2 {
@@ -237,15 +243,15 @@
 }
 
 .p-3 {
-    padding: 1rem;
+    padding: 1rem !important;
 }
 
 .p-4 {
-    padding: 1.5rem;
+    padding: 1.5rem !important;
 }
 
 .p-5 {
-    padding: 3rem;
+    padding: 3rem !important;
 }
 
 .px-0 {
@@ -413,8 +419,11 @@
     background-color: var(--bg-surface);
 }
 
+/* !important: `.card { background }` (cards.css, loaded later) otherwise wins,
+   so suchar_form.html's `card bg-transparent` caption rendered as a white box
+   once its `p-0` took effect (#415). */
 .bg-transparent {
-    background-color: transparent;
+    background-color: transparent !important;
 }
 
 .bg-primary {

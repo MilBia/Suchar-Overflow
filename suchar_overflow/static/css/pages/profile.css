@@ -157,12 +157,12 @@
     overflow-wrap: anywhere;
 }
 
-/* Phones: the profile card's .card-body already insets its content by
-   --space-lg (its `p-0` utility loses to cards.css's `.card-body` padding), so
-   the extra `px-4` on .profile-body left ~200px for the stat cards at 375px. */
+/* Phones: .profile-body is the card's only inset (its .card-body is `p-0`,
+   which actually applies since #415), so trim `px-4` to --space-md to give
+   the stat cards the width back at 375px. */
 @media (max-width: 575.98px) {
     .profile-body {
-        padding-inline: 0;
+        padding-inline: var(--space-md);
     }
 }
 

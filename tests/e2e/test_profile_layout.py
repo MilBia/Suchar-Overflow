@@ -151,3 +151,104 @@ def test_profile_stats_column_is_not_squeezed(
     assert page.evaluate(_OVERFLOW_JS) == []
     badges = page.locator(".profile-stats .achievement-container")
     assert badges.count() == _BADGE_COUNT
+
+
+# Dashboard chrome around the profile (#415): `card-body p-0` used to render
+# cards.css's 32px, the dashboard nested a second .container inside base.html's,
+# and the account menu clipped "BEZPIECZEŃSTWO" at ~992px.
+_DASHBOARD_JS = """
+() => {
+  const pad = (sel) => {
+    const el = document.querySelector(sel);
+    return el ? getComputedStyle(el).paddingLeft : null;
+  };
+  const content = document.querySelector('.profile-body');
+  // Each menu label must fit inside its own row: the rows sit in an
+  // overflow-hidden .list-group, so a label running past its row is cut off
+  // there (the card itself is wider and would not notice).
+  const clipped = [];
+  for (const row of document.querySelectorAll('.dashboard-card .list-group > *')) {
+    const box = row.getBoundingClientRect();
+    for (const el of row.querySelectorAll('span')) {
+      const r = el.getBoundingClientRect();
+      if (r.right > box.right + 0.5 || r.left < box.left - 0.5) {
+        clipped.push(el.textContent.trim());
+      }
+    }
+  }
+  return {
+    nestedContainers: document.querySelectorAll('.container .container').length,
+    profileBodyPad: pad('.profile-body'),
+    profileCardBodyPad: pad('.card:has(> .profile-cover) > .card-body'),
+    menuCardBodyPad: pad('.dashboard-card > .card-body'),
+    contentLeft: content.getBoundingClientRect().left
+      + parseFloat(getComputedStyle(content).paddingLeft),
+    clipped,
+  };
+}
+"""
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("viewport_width", [375, 992, 1200])
+def test_dashboard_chrome(
+    login: Page,
+    profile_url: str,
+    viewport_width: int,
+) -> None:
+    page = login
+    page.set_viewport_size({"width": viewport_width, "height": 900})
+    page.goto(profile_url)
+    page.wait_for_selector("#userReceptionChart")
+
+    result: dict[str, Any] = page.evaluate(_DASHBOARD_JS)
+    assert result["nestedContainers"] == 0, result
+    assert result["profileCardBodyPad"] == "0px", result
+    if result["menuCardBodyPad"] is not None:
+        assert result["menuCardBodyPad"] == "0px", result
+    assert result["clipped"] == [], result
+    if viewport_width == 375:  # noqa: PLR2004
+        # 16px container gutter + 1px card border + 16px .profile-body inset.
+        assert result["profileBodyPad"] == "16px", result
+        assert result["contentLeft"] <= 33.5, result  # noqa: PLR2004
+
+
+# The badge popover stays on screen when shown (#415): centred on a badge near
+# the card's right edge it ran past the viewport. Resolves once the popover has
+# finished its 0.1s delay + 0.3s transition (a Promise, not a bare expression —
+# the app CSP has no 'unsafe-eval').
+_POPOVER_RECT_JS = """
+() => new Promise((resolve) => {
+  const pop = [...document.querySelectorAll('.achievement-details-popover')].at(-1);
+  const poll = () => {
+    if (getComputedStyle(pop).opacity !== '1') return setTimeout(poll, 50);
+    const r = pop.getBoundingClientRect();
+    resolve({
+      left: r.left,
+      right: r.right,
+      clientWidth: document.documentElement.clientWidth,
+    });
+  };
+  poll();
+})
+"""
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("viewport_width", [375, 768, 1200])
+def test_achievement_popover_stays_on_screen(
+    login: Page,
+    profile_url: str,
+    viewport_width: int,
+) -> None:
+    page = login
+    page.set_viewport_size({"width": viewport_width, "height": 900})
+    page.goto(profile_url)
+    page.wait_for_selector("#userReceptionChart")
+
+    page.locator(".achievement-badge-icon-wrapper").last.focus()
+    rect: dict[str, Any] = page.evaluate(_POPOVER_RECT_JS)
+    assert rect["left"] >= 0, rect
+    assert rect["right"] <= rect["clientWidth"], rect
