@@ -96,6 +96,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 minDate: "today",
                 time_24hr: true,
                 disableMobile: true, // Force custom UI
+                // Never above the field: the "Schedule" toggle sits right
+                // above it, and flatpickr's "auto" flips the calendar up
+                // whenever less than its height (~344 px) is free below —
+                // covering the toggle, so the first click to untick it hit
+                // the calendar instead (#424).
+                position: 'below',
+                onOpen: [(selectedDates, dateStr, instance) => {
+                    // onOpen fires before flatpickr positions the calendar,
+                    // so wait a frame, then scroll just enough to show it
+                    // when "below" runs past the bottom of the viewport.
+                    // Measured from the inline `top` flatpickr sets (page
+                    // coordinates), not getBoundingClientRect(): the opening
+                    // fpFadeInDown animation still has it translated 20 px
+                    // up, so scrollIntoView() stopped 20 px short.
+                    requestAnimationFrame(() => {
+                        const cal = instance.calendarContainer;
+                        const bottom = parseFloat(cal.style.top)
+                            + cal.getBoundingClientRect().height;
+                        const overflow = Math.ceil(
+                            bottom - (window.scrollY + window.innerHeight),
+                        );
+                        if (overflow > 0) window.scrollBy(0, overflow);
+                    });
+                }],
+            });
+
+            // flatpickr only listens for Escape on its own input and
+            // calendar, but opening it from the toggle leaves focus on the
+            // toggle — close it from anywhere so a keyboard user isn't stuck
+            // with it (#424). With focus inside flatpickr its own handler has
+            // already closed it by the time this runs, so isOpen is false.
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && fp.isOpen) {
+                    fp.close();
+                }
             });
 
             // Handle Schedule Toggle

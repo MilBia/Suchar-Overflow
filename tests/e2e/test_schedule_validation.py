@@ -71,8 +71,7 @@ def test_future_date_passes_client_validation(
     # setting it first only passed while the submit click beat the timer
     # (#419).
     page.wait_for_selector(".flatpickr-calendar.open")
-    # Click away, as a user would (Escape only closes it with focus inside
-    # flatpickr, and focus is still on the toggle).
+    # Click away, as a user would (Escape works too since #424).
     page.click("#previewText")
     page.wait_for_selector(".flatpickr-calendar.open", state="detached")
 

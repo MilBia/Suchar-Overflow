@@ -140,13 +140,12 @@ def test_schedule_checkbox_hides_date_container(
 
     page.check("#scheduleCheck")
     page.wait_for_selector("#scheduleContainer:not(.d-none)")
-    # Checking the toggle with an empty date opens flatpickr 100 ms later, and
-    # at this viewport it renders above the field, over the toggle. Wait for it
-    # and close it first; unchecking straight away only passed while the click
-    # beat that timer (#419).
+    # Checking the toggle with an empty date opens flatpickr 100 ms later.
+    # It used to render above the field, over the toggle (#419); since #424 it
+    # always opens below (covered by the calendar tests further down), but
+    # close it first anyway so this test only exercises the toggle.
     page.wait_for_selector(".flatpickr-calendar.open")
-    # Click away, as a user would (Escape only closes it with focus inside
-    # flatpickr, and focus is still on the toggle).
+    # Click away, as a user would (Escape works too since #424).
     page.click("#previewText")
     page.wait_for_selector(".flatpickr-calendar.open", state="detached")
 
@@ -239,3 +238,114 @@ def test_submit_adds_loading_state_and_status_string(
     expected = submit_btn.get_attribute("data-loading-text") or ""
     assert expected
     expect(status).to_have_text(expected)
+
+
+# ---------------------------------------------------------------------------
+# Schedule calendar placement / keyboard (#424)
+# ---------------------------------------------------------------------------
+
+# Two frames: flatpickr positions the calendar right after onOpen, and
+# suchar_form.js scrolls it into view one requestAnimationFrame later.
+_SETTLE_JS = "new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))"
+
+_CALENDAR_BOX_JS = """
+    (() => {
+        const cal = document.querySelector('.flatpickr-calendar.open');
+        // From flatpickr's inline page-coordinate `top`, not the rect's own
+        // bottom: the fpFadeInDown opening animation still has the rect
+        // translated up to 20 px higher than where it settles.
+        const height = cal.getBoundingClientRect().height;
+        return {
+            bottom: parseFloat(cal.style.top) + height - window.scrollY,
+            innerHeight: window.innerHeight,
+            below: cal.classList.contains('arrowTop'),
+        };
+    })()
+"""
+
+
+def _open_calendar_with_toggle_mid_viewport(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
+    """Tick "Schedule" with the toggle in the middle of the viewport.
+
+    That is where #419 measured the flip: with the date field at ~440-485 px
+    of an 800 px viewport only ~315 px are free below it, less than the
+    calendar's ~344 px, so flatpickr's "auto" position drew it above the
+    field — over the toggle.
+    """
+    page.goto(f"{live_server.url}/suchary/add/")
+    page.evaluate(
+        "document.getElementById('scheduleCheck').scrollIntoView({block: 'center'})",
+    )
+    page.check("#scheduleCheck")
+    page.wait_for_selector(".flatpickr-calendar.open")
+    page.evaluate(_SETTLE_JS)
+
+
+def _assert_one_click_unticks_toggle(page: Page) -> None:
+    box = page.locator("#scheduleCheck").bounding_box()
+    assert box is not None
+    # A raw mouse click, not page.uncheck(): Playwright's actionability check
+    # waits out anything intercepting the click, which is exactly the bug —
+    # the first click landing on the calendar instead of the toggle.
+    page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+    assert not page.is_checked("#scheduleCheck")
+    expect(page.locator("#scheduleContainer")).to_have_class(re.compile(r"\bd-none\b"))
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
+def test_schedule_calendar_opens_below_and_toggle_unticks_in_one_click(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
+    """The calendar never covers the toggle, and stays inside the viewport."""
+    _open_calendar_with_toggle_mid_viewport(page, live_server)
+
+    cal = page.evaluate(_CALENDAR_BOX_JS)
+    assert cal["below"]
+    assert cal["bottom"] <= cal["innerHeight"]
+
+    _assert_one_click_unticks_toggle(page)
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
+def test_schedule_calendar_toggle_unticks_in_one_click_on_narrow_screen(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
+    """Same on a phone-sized viewport, where the toggle and the field wrap
+    onto separate rows and scrolling the calendar into view moves the toggle
+    towards the sticky navbar."""
+    page.set_viewport_size({"width": 375, "height": 667})
+    _open_calendar_with_toggle_mid_viewport(page, live_server)
+
+    cal = page.evaluate(_CALENDAR_BOX_JS)
+    assert cal["below"]
+    assert cal["bottom"] <= cal["innerHeight"]
+
+    _assert_one_click_unticks_toggle(page)
+
+
+@pytest.mark.e2e
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.usefixtures("login")
+def test_schedule_calendar_closes_on_escape_with_focus_on_toggle(
+    page: Page,
+    live_server: LiveServer,
+) -> None:
+    """Opening the calendar from the toggle leaves focus on the toggle, where
+    flatpickr's own Escape handling never sees the key."""
+    _open_calendar_with_toggle_mid_viewport(page, live_server)
+    assert page.evaluate("document.activeElement.id") == "scheduleCheck"
+
+    page.keyboard.press("Escape")
+
+    page.wait_for_selector(".flatpickr-calendar.open", state="detached")
+    # Closing is all Escape does: the schedule stays on.
+    assert page.is_checked("#scheduleCheck")
