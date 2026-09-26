@@ -52,7 +52,9 @@ so a reload with a tab open used to hang the server until a container restart (#
 timeout graceful shutdown exceeded` line such a reload now logs is that expected
 cancellation, not a fault. If the dev server hangs anyway, `curl -m 5
 localhost:8000/` from the host (the image has no `curl`) tells server from browser
-(6-connection HTTP/1.1 limit, one per SSE tab), and `just dump-stacks` (SIGUSR1 →
+(6-connection HTTP/1.1 limit: one SSE per visible or recently hidden tab, *and* one
+per page kept in bfcache — DevTools doesn't show those; self-heals in ~1–3 min,
+#428), and `just dump-stacks` (SIGUSR1 →
 `faulthandler`, registered in `local.py`) prints every worker thread's stack to
 `just logs`.
 
