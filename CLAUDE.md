@@ -38,8 +38,11 @@ Credentials are in `.envs/.local/.postgres`. The compose service is named `djang
 `POSTGRES_*`, and `docker compose exec` skips the ENTRYPOINT. The local image appends
 `compose/local/django/bashrc.sh` to `/etc/bash.bashrc`, so an *interactive*
 `docker compose exec django bash` has it set (#404); a non-interactive
-`exec django python manage.py …` / `bash -c …` still does not — use `just shell`
-(`shell_plus`), `just bash` (both need `just up`) or `just manage` instead.
+`exec django python manage.py …` / `bash -c …` still does not. For that use
+`just exec <cmd>` (any command, e.g. `just exec python manage.py showmigrations`),
+`just shell` (`shell_plus`) or `just bash` (interactive shell, takes no args) — all
+three go through `/entrypoint` in the running container and need `just up` — or
+`just manage` (`run --rm`, no TTY required, the one to use from scripts).
 
 `just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
 (defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated

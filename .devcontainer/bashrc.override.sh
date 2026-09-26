@@ -7,13 +7,8 @@
 HISTFILE=~/.bash_history
 PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
-# set some django env vars
-source /entrypoint
-
-# restore default shell options
-set +o errexit
-set +o pipefail
-set +o nounset
+# DATABASE_URL comes from the image's /etc/bash.bashrc (compose/local/django/bashrc.sh,
+# #404), which runs before ~/.bashrc and never leaks the entrypoint's shell options.
 
 # start ssh-agent
 # https://code.visualstudio.com/docs/remote/troubleshooting
