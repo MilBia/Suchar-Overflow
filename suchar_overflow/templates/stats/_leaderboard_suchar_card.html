@@ -10,7 +10,7 @@
             <h6 class="mb-1 text-muted small">
               <span class="fw-bold text-dark rank-{{ suchar.rank }}">#{{ suchar.rank }}</span> by {{ suchar.author.display_name }}
             </h6>
-            <small class="text-muted">{{ suchar.created_at|date:"d M" }}</small>
+            <small class="text-muted">{{ suchar.published_at|date:"d M" }}</small>
           </div>
           <p class="mb-2 fst-italic">{{ suchar.text|truncatechars:100|linebreaksbr }}</p>
           <div class="d-flex justify-content-between align-items-center">

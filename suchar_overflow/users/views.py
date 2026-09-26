@@ -57,6 +57,10 @@ USER_RANK_CACHE_TTL = 60 * 5
 USER_RANK_CACHE_KEY_TEMPLATE = "user_funny_rank:v2:score:{score}"
 
 
+# Days before today shown by the profile's activity chart (#413).
+ACTIVITY_CHART_DAYS = 30
+
+
 def user_rank_cache_key(score: int) -> str:
     return USER_RANK_CACHE_KEY_TEMPLATE.format(score=score)
 
@@ -85,6 +89,9 @@ class UserDetailView(AsyncLoginRequiredMixin):
         now = timezone.now()
 
         # 1. Latest Suchary
+        # "Latest" = most recently *published*, not written (#412): a suchar
+        # written weeks ago and scheduled for today is new to readers today —
+        # same order as the main list. `-id` breaks equal-timestamp ties.
         context["latest_suchary"] = (
             user.suchary.filter(published_at__lte=now)
             .annotate(
@@ -92,7 +99,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
                 funny_count=Count("votes", filter=Q(votes__is_funny=True)),
                 dry_count=Count("votes", filter=Q(votes__is_dry=True)),
             )
-            .order_by("-created_at")[:5]
+            .order_by("-published_at", "-id")[:5]
         )
 
         # 1.5 Scheduled Suchary (Owner Only)
@@ -144,7 +151,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # published_at__lte filter (#372, same convention as `latest_suchary`
         # above and `SucharListView`): without it a scheduled, not-yet-published
         # suchar ties every other one at `funny_count = 0` (#331 makes voting on
-        # it impossible) and wins the `-created_at` tie-break, leaking its text
+        # it impossible) and wins the recency tie-break, leaking its text
         # to any other logged-in visitor as "The Best Of" before its
         # publication date (the profile itself requires login, so this isn't
         # exposed to anonymous visitors).
@@ -155,7 +162,8 @@ class UserDetailView(AsyncLoginRequiredMixin):
                 dry_count=Count("votes", filter=Q(votes__is_dry=True)),
                 total_votes=Count("votes"),
             )
-            .order_by("-funny_count", "-created_at")
+            # Ties go to the most recently published one (#412), not written.
+            .order_by("-funny_count", "-published_at", "-id")
             .first()
         )
 
@@ -166,21 +174,32 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # actually went public. The upper bound keeps future publications out.
         # Bucketed in the service zone, not the visitor's (#410): a public
         # profile's chart must read the same for everyone who opens it.
-        last_30_days = now - datetime.timedelta(days=30)
+        # Whole service-zone days, not a rolling 720 h window (#413): the window
+        # opens at midnight of `today - 30`, so the oldest bar is a full day no
+        # matter what hour the profile is opened. 31 buckets including today,
+        # like the leaderboard's 30-day chart (`get_daily_activity_data`).
+        # Empty days are filled with zeros: the x-axis is hidden, so a sparse
+        # series would draw days weeks apart as adjacent bars.
+        service_tz = timezone.get_default_timezone()
+        today = timezone.localdate(now, service_tz)
+        start_date = today - datetime.timedelta(days=ACTIVITY_CHART_DAYS)
+        range_start = timezone.make_aware(
+            datetime.datetime.combine(start_date, datetime.time.min),
+            service_tz,
+        )
         activity_data = (
-            user.suchary.filter(published_at__gte=last_30_days, published_at__lte=now)
-            .annotate(
-                date=TruncDay("published_at", tzinfo=timezone.get_default_timezone()),
-            )
+            user.suchary.filter(published_at__gte=range_start, published_at__lte=now)
+            .annotate(date=TruncDay("published_at", tzinfo=service_tz))
             .values("date")
             .annotate(count=Count("id"))
-            .order_by("date")
         )
-
-        chart_labels = [entry["date"].strftime("%Y-%m-%d") for entry in activity_data]
-        chart_values = [entry["count"] for entry in activity_data]
-        context["activity_labels"] = chart_labels
-        context["activity_values"] = chart_values
+        counts = {entry["date"].date(): entry["count"] for entry in activity_data}
+        chart_days = [
+            start_date + datetime.timedelta(days=offset)
+            for offset in range((today - start_date).days + 1)
+        ]
+        context["activity_labels"] = [day.strftime("%Y-%m-%d") for day in chart_days]
+        context["activity_values"] = [counts.get(day, 0) for day in chart_days]
 
         # 4. Reception Chart (Funny vs Dry received) — reuse already-computed stats
         context["reception_data"] = [stats["funny_score"] or 0, stats["dry_score"] or 0]
