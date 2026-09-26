@@ -44,6 +44,15 @@ Credentials are in `.envs/.local/.postgres`. The compose service is named `djang
 three go through `/entrypoint` in the running container and need `just up` — or
 `just manage` (`run --rm`, no TTY required, the one to use from scripts).
 
+The dev server (`compose/local/django/start`, copied into the image — edit it, then
+`just build`) runs `uvicorn --reload --timeout-graceful-shutdown 3`. Keep the bound:
+uvicorn's default is none, and each open `/achievements/stream/` SSE never finishes,
+so a reload with a tab open used to hang the server until a container restart (#403;
+`tests/test_local_dev_server.py` guards it). If the dev server hangs anyway,
+`curl -m 5 localhost:8000/` tells server from browser (6-connection HTTP/1.1 limit,
+one per SSE tab), and `just dump-stacks` (SIGUSR1 → `faulthandler`, registered in
+`local.py`) prints every worker thread's stack to `just logs`.
+
 `just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
 (defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated
 explicitly in the override (see issue #214) — otherwise the E2E run drops and rebuilds

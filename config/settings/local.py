@@ -1,3 +1,6 @@
+import faulthandler
+import signal
+
 from .base import *  # noqa: F403
 from .base import INSTALLED_APPS
 from .base import MIDDLEWARE
@@ -76,3 +79,9 @@ if env("USE_DOCKER", default="no") == "yes":
 # ------------------------------------------------------------------------------
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
 INSTALLED_APPS += ["django_extensions"]
+
+# Hang diagnostics (#403)
+# ------------------------------------------------------------------------------
+# `just dump-stacks` sends SIGUSR1 to the uvicorn worker; this prints the Python
+# stack of every thread to stderr (`just logs`) without stopping the process.
+faulthandler.register(signal.SIGUSR1, all_threads=True)
