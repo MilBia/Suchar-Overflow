@@ -385,13 +385,13 @@ timer. Closing loses nothing — the pending flags live in the cache and the reo
 stream re-reads them. On restore Chromium fires `visibilitychange` (visible) before
 the persisted `pageshow`, so the visible branch reconnects and `pageshow` is only the
 fallback (a no-op behind `!es`); the hidden branch arms no timer when `es` is already
-`null`. Never add an `unload` listener (it disables bfcache). Guarded
-by `tests/e2e/test_sse_bfcache.py` — parametrized, the second run suppresses
-`visibilitychange` so the `pageshow` fallback is exercised too — which launches its own full-Chromium browser
-(`channel="chromium"`) without Playwright's default `--disable-back-forward-cache` —
-the headless shell refuses bfcache (`BackForwardCacheDisabledForDelegate`) — and
+`null`. Never add an `unload` listener (it disables bfcache). Guarded by
+`tests/e2e/test_sse_bfcache.py`, which launches its own full-Chromium browser
+(`channel="chromium"`) without Playwright's default `--disable-back-forward-cache`
+(the headless shell refuses bfcache: `BackForwardCacheDisabledForDelegate`) and
 fakes `EventSource`; a restore fires no `load`, so it uses
-`go_back(wait_until="commit")`.
+`go_back(wait_until="commit")`. It is parametrized: the second run suppresses
+`visibilitychange`, so the `pageshow` fallback is exercised too.
 
 Because the generator never completes on its own, the general test advice
 "consume with `b"".join(response.streaming_content)`" (see Test patterns above)
