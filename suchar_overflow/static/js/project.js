@@ -622,12 +622,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Achievements via SSE — browser auto-reconnects after server closes connection.
-    // We also close the connection when the tab has been hidden for a while and
-    // reopen it on return, so backgrounded tabs don't keep piling up long-lived
-    // polling connections on the backend.
+    // Each open stream is one long-lived connection, and over plain HTTP/1.1 (the
+    // dev server) the browser allows only 6 per host — exhausting them hangs every
+    // further request, page loads included (#428). So a stream is held only while
+    // the page is actually shown:
+    // - a tab hidden for HIDDEN_STREAM_CLOSE_DELAY_MS closes it, and reopens on
+    //   return (30 s, not minutes: every recently viewed tab otherwise keeps one);
+    // - a page leaving for the back/forward cache closes it on `pagehide`, and
+    //   reopens on a persisted `pageshow`. Chromium keeps a bfcache'd page's
+    //   EventSource connected, so without this each link click in one tab parked
+    //   another stream, and the frozen page never runs the hidden-tab timer.
+    // Closing loses nothing: the pending flags live in the cache (days/hours TTL)
+    // and the reopened stream re-reads them on its first poll.
     const userLink = document.querySelector('.user-link');
     if (userLink && window.EventSource) {
-        const HIDDEN_STREAM_CLOSE_DELAY_MS = 3 * 60 * 1000;
+        const HIDDEN_STREAM_CLOSE_DELAY_MS = 30 * 1000;
         let es = null;
         let streamDisabled = false;
         let hiddenTimeoutId = null;
@@ -731,6 +740,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!es) {
                     connectAchievementStream();
                 }
+            }
+        });
+
+        // `pagehide` fires for every unload, bfcache-bound or not; closing is
+        // harmless either way. Don't use `unload` — it makes the page ineligible
+        // for the bfcache altogether.
+        window.addEventListener('pagehide', () => {
+            if (hiddenTimeoutId) {
+                // A frozen page's pending timer would resume after a restore.
+                clearTimeout(hiddenTimeoutId);
+                hiddenTimeoutId = null;
+            }
+            if (es) {
+                es.close();
+                es = null;
+            }
+        });
+
+        window.addEventListener('pageshow', (event) => {
+            // Non-persisted `pageshow` is a normal load — the initial connect
+            // below covers it. The `!es` guard matters: the order of this and a
+            // restore-time `visibilitychange` isn't fixed, and either may connect.
+            if (!event.persisted || streamDisabled || es) return;
+            if (document.visibilityState === 'visible') {
+                connectAchievementStream();
             }
         });
 
