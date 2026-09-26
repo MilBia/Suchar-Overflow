@@ -11,9 +11,11 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.db import connection
+from django.template.defaultfilters import date as date_filter
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
+from django.utils import translation
 from django.utils.translation import gettext
 
 from suchar_overflow.achievements.models import Achievement
@@ -416,11 +418,10 @@ def test_activity_chart_buckets_by_publication_day(client: Client) -> None:
     client.force_login(user)
     response = client.get(detail_url("activity388b"))
     assert sum(response.context["activity_values"]) == 1
-    # The single bucket is the publication day (today), not the creation day
+    # The lit bucket is the publication day (today), not the creation day
     # 45 days ago — which would fall outside the 30-day window entirely.
-    assert response.context["activity_labels"] == [
-        timezone.localdate().strftime("%Y-%m-%d"),
-    ]
+    assert response.context["activity_labels"][-1] == timezone.localdate().isoformat()
+    assert response.context["activity_values"][-1] == 1
 
 
 @pytest.mark.django_db
@@ -1135,4 +1136,147 @@ def test_activity_chart_ignores_active_request_zone() -> None:
     ):
         context = UserDetailView()._build_context(user, is_owner=False)  # noqa: SLF001
 
-    assert context["activity_labels"] == ["2024-07-11"]
+    assert context["activity_labels"][-1] == "2024-07-11"
+    assert context["activity_values"][-1] == 1
+    assert sum(context["activity_values"]) == 1
+
+
+# ===========================================================================
+# Profile shows and orders by publication, not creation (#412)
+# ===========================================================================
+
+_WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
+
+
+def _backdate(
+    suchar: Suchar,
+    *,
+    created_at: datetime.datetime,
+    published_at: datetime.datetime,
+) -> None:
+    Suchar.objects.filter(pk=suchar.pk).update(
+        created_at=created_at,
+        published_at=published_at,
+    )
+
+
+@pytest.mark.django_db
+def test_latest_suchary_label_shows_publication_date(client: Client) -> None:
+    user = make_user("latest412label")
+    s = Suchar.objects.create(text="Written early, published later", author=user)
+    created_at = datetime.datetime(2024, 3, 5, 10, 11, tzinfo=_WARSAW)
+    published_at = datetime.datetime(2024, 6, 20, 14, 47, tzinfo=_WARSAW)
+    _backdate(s, created_at=created_at, published_at=published_at)
+
+    client.force_login(user)
+    content = client.get(detail_url("latest412label")).content.decode()
+
+    # The template's |date converts to the active (service) zone itself; the
+    # bare filter doesn't, hence localtime() here.
+    with translation.override("pl"):
+        published_label = date_filter(timezone.localtime(published_at), "d M Y, H:i")
+        created_label = date_filter(timezone.localtime(created_at), "d M Y, H:i")
+    assert published_label in content
+    assert created_label not in content
+
+
+@pytest.mark.django_db
+def test_latest_suchary_ordered_by_publication(client: Client) -> None:
+    """The earliest-written suchar published last leads "Najnowsze"; the
+    latest-written one published first drops out of the top 5."""
+    user = make_user("latest412order")
+    base = datetime.datetime(2024, 5, 1, 12, 0, tzinfo=datetime.UTC)
+    suchary = [Suchar.objects.create(text=f"Suchar {i}", author=user) for i in range(6)]
+    # created_at ascends with i; published_at is set so that i=0 is newest
+    # and i=5 is oldest, i.e. the reverse of the creation order.
+    for i, s in enumerate(suchary):
+        _backdate(
+            s,
+            created_at=base + datetime.timedelta(days=i),
+            published_at=base + datetime.timedelta(days=30 - i),
+        )
+
+    client.force_login(user)
+    response = client.get(detail_url("latest412order"))
+    texts = [s.text for s in response.context["latest_suchary"]]
+
+    assert texts == [f"Suchar {i}" for i in range(5)]
+    assert "Suchar 5" not in texts
+
+
+@pytest.mark.django_db
+def test_best_joke_tie_goes_to_latest_published() -> None:
+    """Equal funny counts: "The Best Of" is the one published last, even when
+    it was written first (#412)."""
+    user = make_user("best412")
+    voter = make_user("best412voter")
+    base = datetime.datetime(2024, 5, 1, 12, 0, tzinfo=datetime.UTC)
+    written_first = Suchar.objects.create(text="Written first", author=user)
+    written_last = Suchar.objects.create(text="Written last", author=user)
+    _backdate(
+        written_first,
+        created_at=base,
+        published_at=base + datetime.timedelta(days=10),
+    )
+    _backdate(
+        written_last,
+        created_at=base + datetime.timedelta(days=1),
+        published_at=base + datetime.timedelta(days=1),
+    )
+    for suchar in (written_first, written_last):
+        Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
+
+    context = UserDetailView()._build_context(user, is_owner=False)  # noqa: SLF001
+
+    assert context["best_joke"] == written_first
+
+
+# ===========================================================================
+# 30-day activity chart uses whole service-zone days (#413)
+# ===========================================================================
+
+
+@pytest.mark.parametrize("request_hour", [7, 22])
+@pytest.mark.django_db
+def test_activity_chart_window_starts_at_midnight(request_hour: int) -> None:
+    """The oldest bucket is a full day regardless of the request's hour: both
+    its 00:30 and 23:30 suchary count, the evening before does not."""
+    user = make_user(f"activity413_{request_hour}")
+    frozen_now = datetime.datetime(2024, 7, 11, request_hour, 0, tzinfo=_WARSAW)
+    oldest_day = datetime.date(2024, 6, 11)  # today - 30
+    for hour, minute, day in ((0, 30, oldest_day), (23, 30, oldest_day)):
+        s = Suchar.objects.create(text=f"{hour}:{minute}", author=user)
+        at = datetime.datetime.combine(day, datetime.time(hour, minute), _WARSAW)
+        _backdate(s, created_at=at, published_at=at)
+    before = Suchar.objects.create(text="Day before the window", author=user)
+    at = datetime.datetime(2024, 6, 10, 23, 30, tzinfo=_WARSAW)
+    _backdate(before, created_at=at, published_at=at)
+
+    with patch("django.utils.timezone.now", return_value=frozen_now):
+        context = UserDetailView()._build_context(user, is_owner=False)  # noqa: SLF001
+
+    labels = context["activity_labels"]
+    values = context["activity_values"]
+    assert len(labels) == len(values) == 31  # noqa: PLR2004
+    assert labels[0] == oldest_day.isoformat()
+    assert labels[-1] == "2024-07-11"
+    assert values[0] == 2  # noqa: PLR2004
+    assert sum(values) == 2  # noqa: PLR2004
+
+
+@pytest.mark.django_db
+def test_activity_chart_fills_empty_days_with_zeros() -> None:
+    user = make_user("activity413empty")
+    # Frozen, so the request and the expected labels can't straddle midnight.
+    frozen_now = datetime.datetime(2024, 7, 11, 12, 0, tzinfo=_WARSAW)
+
+    with patch("django.utils.timezone.now", return_value=frozen_now):
+        context = UserDetailView()._build_context(user, is_owner=False)  # noqa: SLF001
+
+    today = frozen_now.date()
+    expected = [
+        (today - datetime.timedelta(days=offset)).isoformat()
+        for offset in range(30, -1, -1)
+    ]
+    assert context["activity_labels"] == expected
+    assert context["activity_values"] == [0] * 31

@@ -10,9 +10,11 @@ import pytest
 from django.core.cache import cache
 from django.db import connection
 from django.db.models import Count
+from django.template.defaultfilters import date as date_filter
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
+from django.utils import translation
 from django.utils.translation import gettext
 
 from suchar_overflow.conftest import make_user
@@ -582,3 +584,28 @@ def test_leaderboard_cache_is_not_poisoned_by_visitor_zone(client: Client) -> No
     week = cache.get(LEADERBOARD_CACHE_KEY)["chart_datasets"]["7"]
     assert week["labels"][-1] == "11"
     assert week["values"][-1] == 1
+
+
+@pytest.mark.django_db
+def test_suchar_card_shows_publication_date(client: Client) -> None:
+    """The leaderboard's suchar cards show when a suchar went public, like the
+    main list — not when its author wrote it (#412)."""
+    author = make_user("card412")
+    s = Suchar.objects.create(text="Scheduled long ago", author=author)
+    created_at = datetime.datetime(2024, 3, 5, 12, 0, tzinfo=datetime.UTC)
+    published_at = datetime.datetime(2024, 6, 20, 12, 0, tzinfo=datetime.UTC)
+    Suchar.objects.filter(pk=s.pk).update(
+        created_at=created_at,
+        published_at=published_at,
+    )
+    Vote.objects.create(suchar=s, user=make_user("card412voter"), is_funny=True)
+
+    content = client.get(reverse(LEADERBOARD_URL)).content.decode()
+
+    # The template's |date converts to the active zone itself; the bare
+    # filter doesn't, hence localtime() here.
+    with translation.override("pl"):
+        published_label = date_filter(timezone.localtime(published_at), "d M")
+        created_label = date_filter(timezone.localtime(created_at), "d M")
+    assert published_label in content
+    assert created_label not in content
