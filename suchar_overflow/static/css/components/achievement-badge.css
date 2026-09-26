@@ -149,6 +149,44 @@
     border-color: var(--bg-surface) transparent transparent transparent;
 }
 
+/* Profile badge grid (#415): a popover centred on its own badge ran past the
+   viewport for a badge near the right edge of the card — on phones that was
+   cut off and added horizontal page scroll (the hidden popover still counts
+   toward scrollable overflow). Split the anchoring by axis instead:
+   - horizontally it is centred on the whole grid (`left: 50%` resolves against
+     .achievement-grid, the nearest positioned ancestor once the containers are
+     static) and never wider than it;
+   - vertically it follows the hovered badge: with both `top` and `bottom` auto
+     an absolute box keeps its static position — right under the 44px badge in
+     its own container — and the translate lifts it above the badge by the same
+     125%-of-44px (55px) gap the base rule leaves.
+   The container's `:hover { z-index }` is inert here (static boxes ignore
+   z-index); the popover's own z-index still stacks it above the grid. The
+   arrow would point at the grid's centre, not the badge, so it is dropped. */
+.achievement-grid {
+    position: relative;
+}
+
+.achievement-grid .achievement-container {
+    position: static;
+}
+
+.achievement-grid .achievement-details-popover {
+    top: auto;
+    bottom: auto;
+    width: min(260px, 100%);
+    transform: translateX(-50%) translateY(calc(-100% - 55px + 10px)) scale(0.9);
+}
+
+.achievement-grid .achievement-container:hover .achievement-details-popover,
+.achievement-grid .achievement-container:focus-within .achievement-details-popover {
+    transform: translateX(-50%) translateY(calc(-100% - 55px)) scale(1);
+}
+
+.achievement-grid .achievement-details-popover::after {
+    content: none;
+}
+
 /* Utilities */
 .overflow-visible {
     overflow: visible !important;

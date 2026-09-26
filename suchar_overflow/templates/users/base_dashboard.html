@@ -18,7 +18,8 @@
 {% endblock css %}
 
 {% block content %}
-  <div class="container py-4">
+  {# base.html already wraps content in .container; a second one doubled the side gutter (#415). #}
+  <div class="py-4">
     <div class="row g-4 justify-content-center">
       {% if request.resolver_match.view_name != 'users:detail' or request.user == object %}
         <!-- Sidebar (Only for own profile/settings) -->
