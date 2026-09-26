@@ -278,6 +278,9 @@ Projekt udostępnia skróty poprzez [just](https://github.com/casey/just):
 | `just prune`         | Zatrzymanie + usunięcie wolumenów     |
 | `just logs [serwis]` | Podgląd logów                         |
 | `just manage <cmd>`  | Wykonanie komendy `manage.py`         |
+| `just shell`         | `shell_plus` w działającym kontenerze (po `just up`) |
+| `just bash`          | Bash w działającym kontenerze (po `just up`) |
+| `just exec <cmd>`    | Dowolna komenda w działającym kontenerze (po `just up`) |
 | `just messages`      | Kompilacja tłumaczeń (`.po` → `.mo`)  |
 | `just test [args]`      | Uruchomienie testów jednostkowych (pytest)    |
 | `just test-e2e [args]`  | Uruchomienie testów E2E (Playwright)          |

@@ -16,7 +16,8 @@ fi
 # otherwise produce a silently malformed DATABASE_URL. Host/port are structural and
 # left verbatim. `python3` is always on PATH in this image and cannot fail on a
 # plain quote() call, so it is safe under `set -o errexit`; this file is also
-# `source`d by the devcontainer bashrc, hence keep it dependency-free and tidy up
+# `source`d by the local image's /etc/bash.bashrc snippet
+# (compose/local/django/bashrc.sh, #404), hence keep it dependency-free and tidy up
 # the helper afterwards.
 _urlencode() {
     python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"
@@ -24,13 +25,12 @@ _urlencode() {
 export DATABASE_URL="postgres://$(_urlencode "${POSTGRES_USER}"):$(_urlencode "${POSTGRES_PASSWORD}")@${POSTGRES_HOST}:${POSTGRES_PORT}/$(_urlencode "${POSTGRES_DB}")"
 unset -f _urlencode
 
-# .devcontainer/bashrc.override.sh `source`s this file (not executes it) purely to
-# export DATABASE_URL/POSTGRES_USER into every fresh devcontainer terminal, then
-# restores `set +o errexit/pipefail/nounset` itself. Everything below this point is
-# blocking (wait-for-it, twice) or can hard-`exit 1` (an unparseable REDIS_URL) — run
-# under `source` with `set -o errexit`/`nounset` still active, a timeout or transient
-# Redis/Postgres blip would kill the whole interactive shell/terminal tab before that
-# restore line ever runs. Gate it to only run when this script is the process being
+# The local image's compose/local/django/bashrc.sh (#404) `source`s this file (not
+# executes it), in a child `bash -c`, purely to read DATABASE_URL for interactive
+# shells (`docker exec ... bash`, devcontainer terminals). Everything below this
+# point is blocking (wait-for-it, twice) or can hard-`exit 1` (an unparseable
+# REDIS_URL) — under `source` that would stall or abort every new shell on a
+# transient Redis/Postgres blip. Gate it to only run when this script is the process being
 # executed (the real Docker ENTRYPOINT invocation), not sourced.
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" -t 30

@@ -80,6 +80,12 @@ COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
+# Export DATABASE_URL in interactive `docker exec ... bash` shells, which skip the
+# ENTRYPOINT (#404). Appended to /etc/bash.bashrc so it applies to every user (root
+# and the devcontainer's dev-user) — see the snippet itself for the details.
+COPY ./compose/local/django/bashrc.sh /tmp/bashrc.sh
+RUN sed 's/\r$//g' /tmp/bashrc.sh >> /etc/bash.bashrc && rm /tmp/bashrc.sh
+
 # No `USER` directive here on purpose — unlike compose/production/django/Dockerfile.
 # docker-compose.local.yml bind-mounts the source tree (`.:/app:z`), so the
 # container process must own files created back on the host (migrations, __pycache__,
