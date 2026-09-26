@@ -11,4 +11,7 @@ python manage.py migrate
 # --ignore .venv: compilemessages walks every `locale` dir under cwd, including
 # the installed packages' own catalogs, which it must not rewrite.
 python manage.py compilemessages --ignore=.venv --ignore=node_modules
-exec uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --reload
+# Django caches loaded catalogs per process, so a recompiled .mo (`just messages`)
+# must restart the worker too, not just a changed *.py.
+exec uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --reload \
+  --reload-include "*.mo"

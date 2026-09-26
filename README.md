@@ -117,17 +117,17 @@ kroku interfejs wyświetlałby surowe, nieprzetłumaczone teksty zamiast polskic
 
 #### Ponowna kompilacja tłumaczeń
 
-Po edycji dowolnego pliku `locale/*/LC_MESSAGES/django.po` zrestartuj kontener `django` —
-przy starcie skompiluje katalogi od nowa:
+Po edycji dowolnego pliku `locale/*/LC_MESSAGES/django.po` przekompiluj katalogi:
 
 ```bash
-docker compose -f docker-compose.local.yml restart django
+just messages          # wszystkie języki
+just messages -l pl    # tylko wybrany język
 ```
 
-Samo przekompilowanie nie wystarczy działającemu serwerowi: Django trzyma wczytane
-tłumaczenia w pamięci procesu, a `uvicorn --reload` reaguje wyłącznie na zmiany plików `*.py`.
-Do kompilacji bez restartu serwera (np. przed `just test`, który nie przechodzi przez skrypt
-startowy) służy `just messages`.
+Działający serwer przeładuje się sam — `uvicorn` obserwuje także pliki `*.mo`
+(`--reload-include "*.mo"`), a restart procesu jest konieczny, bo Django trzyma wczytane
+tłumaczenia w pamięci. Restart kontenera (`docker compose -f docker-compose.local.yml restart
+django`) również kompiluje tłumaczenia przy starcie.
 
 ### 4. Zastosuj migracje i stwórz superusera
 
@@ -320,11 +320,11 @@ just fill-translations --url 192.168.1.1:1234/v1 --language pl --all
 uv run manage.py fill_translations --url http://localhost:11434/v1 --language en --model llama3.2
 ```
 
-Po uzupełnieniu tłumaczeń zrestartuj serwer — skompiluje pliki `.po` przy starcie
+Po uzupełnieniu tłumaczeń skompiluj pliki `.po`
 (zob. [Ponowna kompilacja tłumaczeń](#ponowna-kompilacja-tłumaczeń)):
 
 ```bash
-docker compose -f docker-compose.local.yml restart django
+just messages
 ```
 
 ### Parametry

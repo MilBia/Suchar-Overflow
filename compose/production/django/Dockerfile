@@ -78,8 +78,10 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 USER django
 
+# --ignore=.venv: compilemessages walks every `locale` dir under cwd, including
+# the installed packages' own (already compiled) catalogs in /app/.venv.
 RUN DATABASE_URL="" \
   DJANGO_SETTINGS_MODULE="config.settings.test" \
-  python manage.py compilemessages
+  python manage.py compilemessages --ignore=.venv
 
 ENTRYPOINT ["/entrypoint"]
