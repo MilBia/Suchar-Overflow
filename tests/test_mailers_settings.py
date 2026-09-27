@@ -163,6 +163,25 @@ def test_empty_email_var_counts_as_unset(monkeypatch: pytest.MonkeyPatch, tmp_pa
     assert options["use_tls"] is False
 
 
+@pytest.mark.parametrize("backend", [None, ""])
+def test_unset_or_empty_email_backend_is_smtp(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    backend: str | None,
+) -> None:
+    # An empty DJANGO_EMAIL_BACKEND= would import as BACKEND "" and only fail at
+    # send time (InvalidMailer) — for mail_admins, silently.
+    environment = {**MINIMAL_ENV} if backend is None else {**MINIMAL_ENV, "DJANGO_EMAIL_BACKEND": backend}
+    settings_module = load_base_settings(monkeypatch, tmp_path, environment)
+    assert settings_module.MAILERS["default"]["BACKEND"] == "django.core.mail.backends.smtp.EmailBackend"
+
+
+def test_email_backend_from_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    backend = "django.core.mail.backends.console.EmailBackend"
+    settings_module = load_base_settings(monkeypatch, tmp_path, {**MINIMAL_ENV, "DJANGO_EMAIL_BACKEND": backend})
+    assert settings_module.MAILERS["default"]["BACKEND"] == backend
+
+
 def test_local_env_file_points_mail_at_mailpit() -> None:
     # local.py no longer carries a MAILERS of its own (#453); the mailpit
     # host/port are data in .envs/.local/.django.

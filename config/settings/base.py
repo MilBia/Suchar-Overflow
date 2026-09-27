@@ -356,10 +356,10 @@ def _email_env(option: str, default: str) -> str:
 
 MAILERS = {
     "default": {
-        "BACKEND": env(
-            "DJANGO_EMAIL_BACKEND",
-            default="django.core.mail.backends.smtp.EmailBackend",
-        ),
+        # Same "empty = unset" rule as _email_env (no legacy EMAIL_BACKEND name to
+        # fall back to): a blank BACKEND imports fine but makes every send raise
+        # InvalidMailer, which logging swallows for mail_admins.
+        "BACKEND": env("DJANGO_EMAIL_BACKEND", default="") or "django.core.mail.backends.smtp.EmailBackend",
         "OPTIONS": {
             "host": _email_env("HOST", "localhost"),
             "port": int(_email_env("PORT", "25")),
