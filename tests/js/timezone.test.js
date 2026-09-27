@@ -1,7 +1,7 @@
 /**
  * Unit tests for suchar_overflow/static/js/timezone.js (issue #410): the
  * browser's IANA time zone is mirrored into the `user_tz` cookie, which
- * `suchar_overflow/middleware.py` activates for input parsing and display.
+ * `suchar_overflow/utils/middleware.py` activates for input parsing and display.
  *
  * Classic browser script reached through its guarded CommonJS tail (see
  * CLAUDE.md "JS tests (Vitest)"). `require()` runs the module body once, which

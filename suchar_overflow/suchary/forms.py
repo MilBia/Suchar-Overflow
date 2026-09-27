@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
-from suchar_overflow.middleware import known_zone
+from suchar_overflow.utils.middleware import known_zone
 
 from .models import Suchar
 from .models import Tag

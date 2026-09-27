@@ -132,6 +132,7 @@ LOCAL_APPS = [
     "suchar_overflow.suchary",
     "suchar_overflow.stats",
     "suchar_overflow.achievements",
+    "suchar_overflow.utils",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 # modeltranslation must precede django.contrib.admin
@@ -193,7 +194,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     # Visitor's browser zone for input/display only (#410).
-    "suchar_overflow.middleware.user_timezone_middleware",
+    "suchar_overflow.utils.middleware.user_timezone_middleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -259,7 +260,7 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.csp",
-                "suchar_overflow.context_processors.site_settings",
+                "suchar_overflow.utils.context_processors.site_settings",
                 "suchar_overflow.achievements.context_processors.achievements_bell",
             ],
         },
