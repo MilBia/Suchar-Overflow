@@ -12,11 +12,13 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 
-[*.{html,css,scss,js,json,yml,yaml,xml,toml}]
+[*.{html,css,scss,js,mjs,json,yml,yaml,xml,toml}]
 indent_style = space
 indent_size = 4
 
 [*.md]
+indent_style = space
+indent_size = 2
 trim_trailing_whitespace = false
 
 [Makefile]

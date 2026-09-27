@@ -86,6 +86,13 @@ updates:
       schedule:
           interval: 'daily'
       groups:
+          # Listed first, like lint-tools above: a prettier bump also needs the
+          # hook's additional_dependencies pin in .pre-commit-config.yaml, so its
+          # PR stays red (tests/test_precommit_hook_versions.py) until that commit
+          # lands — its own group keeps it from holding up the Vitest bumps.
+          prettier:
+              patterns:
+                  - 'prettier'
           js-dev:
               patterns:
                   - '*'

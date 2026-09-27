@@ -18,8 +18,7 @@ already spelled out there.
 ## Execution Rules
 
 1. **Running Server**:
-   - Use `just up` (or `docker compose -f docker-compose.local.yml up -d
---remove-orphans`) to start.
+   - Use `just up` (or `docker compose -f docker-compose.local.yml up -d --remove-orphans`) to start.
    - Use `just logs` (or `docker compose -f docker-compose.local.yml logs -f`) to
      monitor.
    - Do NOT run `python manage.py runserver` locally; use Docker.
