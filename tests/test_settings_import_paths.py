@@ -5,44 +5,21 @@ filters and formatters name their callables as strings. Neither ruff nor mypy
 reads them, and some only resolve lazily in production: ``mail_admins`` sits
 behind ``DEBUG = False`` and a production-only ``LOGGING``, so a stale path left
 by moving a module would first fail on the server. This imports each one for the
-test settings and for ``config.settings.production`` (loaded with stubbed env,
-the same way as ``tests/test_hsts_settings.py``).
+test settings and for ``config.settings.production`` (loaded with stubbed env
+through ``tests.settings_loader.load_production_settings``).
 """
 
-import importlib
-
-# Real import (not TYPE_CHECKING-guarded): kept plain to match every other test
-# module; ModuleType is only referenced in an annotation here.
-from types import ModuleType  # noqa: TC003
 from typing import Any
 
 import pytest
 from django.conf import settings
 from django.utils.module_loading import import_string
 
-from config.settings import base
-
-_REQUIRED_ENV = {
-    "DJANGO_SECRET_KEY": "dummy-secret-key-for-tests",
-    "DJANGO_ADMIN_URL": "admin/",
-    "DJANGO_ALLOWED_HOSTS": "example.com",
-    "DATABASE_URL": "postgres://user:pass@localhost:5432/db",
-    "REDIS_URL": "redis://localhost:6379/0",
-}
+from tests.settings_loader import load_production_settings
 
 #: dictConfig keys that name a class or factory: ``class`` for handlers,
 #: ``()`` for a custom factory (handlers, filters, formatters).
 _LOGGING_PATH_KEYS = ("class", "()")
-
-
-def _load_production_settings(monkeypatch: pytest.MonkeyPatch) -> ModuleType:
-    for key, value in _REQUIRED_ENV.items():
-        monkeypatch.setenv(key, value)
-    # production.py mutates base.DATABASES["default"] in place (CONN_MAX_AGE);
-    # restore it on teardown so the reload doesn't leak into live settings.
-    monkeypatch.setitem(base.DATABASES["default"], "CONN_MAX_AGE", 0)
-    module = importlib.import_module("config.settings.production")
-    return importlib.reload(module)
 
 
 def _dotted_paths(config: Any) -> list[str]:  # noqa: ANN401
@@ -80,7 +57,7 @@ def test_test_settings_paths_import() -> None:
 
 
 def test_production_settings_paths_import(monkeypatch: pytest.MonkeyPatch) -> None:
-    production = _load_production_settings(monkeypatch)
+    production = load_production_settings(monkeypatch)
     paths = _dotted_paths(production)
     # Not vacuous: the production-only handler and filter are collected. Read
     # from the settings, not spelled out, so a typo there still reaches
