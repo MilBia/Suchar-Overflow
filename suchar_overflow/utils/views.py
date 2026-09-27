@@ -10,7 +10,7 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext
 from django.views import defaults
 
-from suchar_overflow.db import releases_db_connections
+from suchar_overflow.utils.db import releases_db_connections
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -39,7 +39,7 @@ def fallback_500_html() -> str:
 
 # handler400/403/404 (#447). Under ASGI Django calls the error handlers in an
 # executor thread that request_finished never cleans up, and 403/404 pages read
-# request.user through context processors — see suchar_overflow.db.
+# request.user through context processors — see suchar_overflow.utils.db.
 bad_request = releases_db_connections(defaults.bad_request)
 permission_denied = releases_db_connections(defaults.permission_denied)
 page_not_found = releases_db_connections(defaults.page_not_found)

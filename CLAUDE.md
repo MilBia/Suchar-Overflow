@@ -8,7 +8,9 @@ Package manager: `uv`. Local dev and CI both run inside Docker Compose.
 Compose services: `django`, `postgres`, `redis`, `mailpit` (catches outgoing dev email at
 `localhost:8025`).
 Local Django apps: `suchar_overflow.users`, `suchar_overflow.suchary`,
-`suchar_overflow.stats`, `suchar_overflow.achievements`. Model-level translations
+`suchar_overflow.stats`, `suchar_overflow.achievements`, and `suchar_overflow.utils`
+(#455: cross-cutting code — error handlers, middleware, context processors, logging,
+DB-connection helpers, shared API schemas; no models). Model-level translations
 (`django-modeltranslation`, `MODELTRANSLATION_LANGUAGES = ("pl", "en")`) are separate
 from the `i18n`/`LANGUAGE_CODE` template-rendering language noted in Test patterns.
 
@@ -1048,7 +1050,7 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
 ### Time zones — service zone `Europe/Warsaw` (#405) + visitor zone for I/O (#410)
 
 `TIME_ZONE = "Europe/Warsaw"` (`base.py`) with `USE_TZ = True`: the DB stores UTC.
-On top of that, `suchar_overflow/middleware.py:user_timezone_middleware` (after
+On top of that, `suchar_overflow/utils/middleware.py:user_timezone_middleware` (after
 `LocaleMiddleware`, sync + async) wraps each request in `timezone.override(zone)`
 for the zone in the `user_tz` cookie, which `static/js/timezone.js` (first script
 in `base.html`'s global `{% compress js %}` block; runs for **anonymous** visitors
@@ -1556,15 +1558,15 @@ from the template-level `i18n` used elsewhere).
   render SVG. Regenerate it with `just gen-og-image` (#440): it runs Chromium in
   the container so the self-hosted fonts render, and its output is not
   byte-deterministic, so re-run only on a design change.
-- `handler500` is `suchar_overflow.views.server_error` (#442): it renders the
+- `handler500` is `suchar_overflow.utils.views.server_error` (#442): it renders the
   themed `500.html` and, if that raises, logs it and serves a static page. Keep
   that `try/except`. Under ASGI, an exception escaping `handler500` means no
   response and so no `request_finished`. `close_old_connections` then never runs,
   and the request's connection stays open in its dead per-request thread until
   cyclic GC finds it; an idle worker never does. Measured: 50 → 50 after 5 s idle.
   `tests/test_handler500_db_connection.py` drives `ASGIHandler` directly to guard it.
-- `handler400`/`403`/`404` are `suchar_overflow.views` wrappers of Django's defaults,
-  and every handler goes through `suchar_overflow.db.releases_db_connections`
+- `handler400`/`403`/`404` are `suchar_overflow.utils.views` wrappers of Django's defaults,
+  and every handler goes through `suchar_overflow.utils.db.releases_db_connections`
   (#447). Under ASGI, Django calls the error handlers, and `log_response` for every
   response >= 400, via `sync_to_async(thread_sensitive=False)`. They run in a
   loop-executor thread (`asyncio_N`) that `request_finished` never cleans up. The
@@ -1573,7 +1575,7 @@ from the template-level `i18n` used elsewhere).
   health-checked it either, so after a Postgres restart every error page served from
   that thread was a 500. The wrapper calls `close_if_unusable_or_obsolete()` on
   entry and exit, and skips atomic blocks. Production's `mail_admins` is
-  `suchar_overflow.log.AdminEmailHandler`, whose `emit` is wrapped the same way. It
+  `suchar_overflow.utils.log.AdminEmailHandler`, whose `emit` is wrapped the same way. It
   sits on the `django` logger. `base.py` clears the handlers Django's
   `DEFAULT_LOGGING` leaves there (`disable_existing_loggers=False` keeps them). That
   stock `AdminEmailHandler` had doubled every admin email and bypassed the wrapper.

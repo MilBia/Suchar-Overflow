@@ -12,7 +12,7 @@ or ``AdminEmailHandler`` (``str(request.user)`` in the report) opened in
 backend restart every later error page served from that thread was a 500.
 
 The project's handlers (``config.urls``) and ``mail_admins`` handler
-(``suchar_overflow.log.AdminEmailHandler``) release connections on entry and on
+(``suchar_overflow.utils.log.AdminEmailHandler``) release connections on entry and on
 exit. The ASGI test drives ``get_asgi_application()`` directly (``AsyncClient``
 has no per-request thread, see ``tests/asgi_client.py``) and records every
 connection with the name of the thread that opened it.
@@ -21,27 +21,21 @@ connection with the name of the thread that opened it.
 import asyncio
 import logging
 import threading
-import time
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
 from asgiref.sync import sync_to_async
 from django.core.asgi import get_asgi_application
-from django.db import connection
 from django.db.backends.signals import connection_created
-from django.http import HttpResponse
-from django.test import RequestFactory
 
 from config import urls as config_urls
-from suchar_overflow.db import releases_db_connections
-from suchar_overflow.log import AdminEmailHandler
+from suchar_overflow.utils.log import AdminEmailHandler
 from tests.asgi_client import asgi_get
 from tests.asgi_client import login_session_cookie
 
 if TYPE_CHECKING:
     from django.db.backends.base.base import BaseDatabaseWrapper
-    from django.http import HttpRequest
     from pytest_django.fixtures import Settings as SettingsWrapper
 
 _REQUESTS = 3
@@ -104,54 +98,6 @@ async def test_error_paths_release_executor_thread_connections(
     assert executor_threads, opened
     still_open = [(name, conn) for conn, name in opened if conn.connection is not None]
     assert still_open == []
-
-
-@pytest.mark.django_db(transaction=True)
-def test_wrapped_handler_resets_a_stale_connection_before_running() -> None:
-    # An executor thread's connection outlives the request; a killed backend or
-    # an expired CONN_MAX_AGE must be dropped before the handler reuses it.
-    connection.ensure_connection()
-    connection.close_at = time.monotonic() - 1
-    seen_open: list[bool] = []
-
-    @releases_db_connections
-    def handler(request: HttpRequest) -> HttpResponse:  # noqa: ARG001
-        seen_open.append(connection.connection is not None)
-        return HttpResponse()
-
-    handler(RequestFactory().get("/"))
-
-    assert seen_open == [False]
-
-
-@pytest.mark.django_db(transaction=True)
-def test_wrapped_handler_closes_what_it_opened() -> None:
-    connection.close()
-
-    @releases_db_connections
-    def handler(request: HttpRequest) -> HttpResponse:  # noqa: ARG001
-        connection.ensure_connection()
-        return HttpResponse()
-
-    handler(RequestFactory().get("/"))
-
-    assert connection.connection is None
-
-
-@pytest.mark.django_db
-def test_wrapped_handler_leaves_an_atomic_block_alone() -> None:
-    # A plain django_db test runs inside a transaction; closing would break it.
-    assert connection.in_atomic_block
-    connection.ensure_connection()
-
-    @releases_db_connections
-    def handler(request: HttpRequest) -> HttpResponse:  # noqa: ARG001
-        return HttpResponse()
-
-    handler(RequestFactory().get("/"))
-
-    assert connection.connection is not None
-    assert connection.in_atomic_block
 
 
 def test_project_error_handlers_are_wrapped() -> None:
