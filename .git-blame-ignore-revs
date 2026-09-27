@@ -1,0 +1,6 @@
+# Commits `git blame` should skip. Enable once per clone:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+# GitHub's blame view reads this file automatically.
+
+# Repo-wide reformat to 120 columns / 4-space indents / prettier (#452)
+ceefa52d5b7651529b613f7d83e6102ca9351431
