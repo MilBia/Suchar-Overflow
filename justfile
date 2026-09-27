@@ -115,9 +115,11 @@ gen-audio:
 # Runs in the Django container, which has Playwright's Chromium; the host
 # usually doesn't. Not byte-deterministic across Chromium versions, so re-run
 # only when the card's design changes. Runs as the image's root (Chromium lives
-# under root's Playwright cache), then hands the PNG back to you.
+# under root's Playwright cache), then hands the PNG back to you. Skips
+# /entrypoint, whose wait-for-it on Postgres/Redis would time out without
+# `just up`; the script needs neither.
 gen-og-image:
-    @docker compose run --rm --no-deps django bash -c "python scripts/generate_og_image.py && chown $(id -u):$(id -g) suchar_overflow/static/images/og-image.png"
+    @docker compose run --rm --no-deps --entrypoint "" django bash -c "python scripts/generate_og_image.py && chown $(id -u):$(id -g) suchar_overflow/static/images/og-image.png"
 
 # coverage: Run unit tests under coverage and print the report — same gate CI enforces (fail_under in pyproject.toml).
 coverage *args:

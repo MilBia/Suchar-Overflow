@@ -31,13 +31,16 @@
       Every static path here must exist: under production's manifest storage
       a missing one raises on render, turning every page into a 500 (#436).
       The 1200x630 PNG is regenerated with `just gen-og-image` (#440); the
-      width/height tags describe it, so update them if an override differs.
+      width/height/alt tags describe it, so a child that overrides og_image
+      overrides og_image_meta too.
     {% endcomment %}
     <meta property="og:image"
           content="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% endif %}{% block og_image %}{% static 'images/og-image.png' %}{% endblock og_image %}" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Suchar Overflow" />
+    {% block og_image_meta %}
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content="Suchar Overflow" />
+    {% endblock og_image_meta %}
     <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <link rel="icon" href="{% static 'images/favicons/favicon.svg' %}" />
