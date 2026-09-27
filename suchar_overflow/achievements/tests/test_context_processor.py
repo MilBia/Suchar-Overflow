@@ -87,8 +87,8 @@ def test_unseen_count_reflects_unseen_achievements() -> None:
 
     ctx = achievements_bell(request)
 
-    assert ctx["unseen_achievements_count"] == 2  # noqa: PLR2004
-    assert len(ctx["unseen_achievements_preview"]) == 2  # noqa: PLR2004
+    assert ctx["unseen_achievements_count"] == 2
+    assert len(ctx["unseen_achievements_preview"]) == 2
 
 
 @pytest.mark.django_db
@@ -120,8 +120,8 @@ def test_preview_capped_at_five() -> None:
 
     ctx = achievements_bell(request)
 
-    assert ctx["unseen_achievements_count"] == 7  # noqa: PLR2004
-    assert len(ctx["unseen_achievements_preview"]) == 5  # noqa: PLR2004
+    assert ctx["unseen_achievements_count"] == 7
+    assert len(ctx["unseen_achievements_preview"]) == 5
 
 
 @pytest.mark.django_db
@@ -242,7 +242,7 @@ def test_mark_seen_endpoint_invalidates_the_cached_count(client: Client) -> None
     client.force_login(user)
     response = client.post("/api/achievements/mark-seen")
 
-    assert response.status_code == 200  # noqa: PLR2004
+    assert response.status_code == 200
     assert cache.get(bell_cache_key(user.pk)) is None
     assert achievements_bell(request)["unseen_achievements_count"] == 0
 
@@ -283,9 +283,9 @@ def test_cold_cache_miss_with_full_preview_costs_two_queries() -> None:
     with CaptureQueriesContext(connection) as ctx:
         result = achievements_bell(_request_for(user))
 
-    assert len(ctx.captured_queries) == 2  # noqa: PLR2004
-    assert result["unseen_achievements_count"] == 6  # noqa: PLR2004
-    assert cache.get(bell_cache_key(user.pk)) == 6  # noqa: PLR2004
+    assert len(ctx.captured_queries) == 2
+    assert result["unseen_achievements_count"] == 6
+    assert cache.get(bell_cache_key(user.pk)) == 6
 
 
 @pytest.mark.django_db
@@ -303,7 +303,7 @@ def test_visiting_my_achievements_resets_the_bell(client: Client) -> None:
     client.force_login(user)
     response = client.get(reverse("achievements:mine"))
 
-    assert response.status_code == 200  # noqa: PLR2004
+    assert response.status_code == 200
     assert cache.get(bell_cache_key(user.pk)) == 0
 
 
@@ -329,7 +329,7 @@ def test_stable_warm_count_is_not_rewritten_on_every_request() -> None:
         result = achievements_bell(request)
 
     mock_set.assert_not_called()
-    assert result["unseen_achievements_count"] == 6  # noqa: PLR2004
+    assert result["unseen_achievements_count"] == 6
 
 
 @pytest.mark.django_db
@@ -345,12 +345,12 @@ def test_cached_count_survives_a_full_preview_page() -> None:
         )
     request = _request_for(user)
 
-    assert achievements_bell(request)["unseen_achievements_count"] == 6  # noqa: PLR2004
-    assert cache.get(bell_cache_key(user.pk)) == 6  # noqa: PLR2004
+    assert achievements_bell(request)["unseen_achievements_count"] == 6
+    assert cache.get(bell_cache_key(user.pk)) == 6
 
     with CaptureQueriesContext(connection) as ctx:
         result = achievements_bell(request)
 
     assert len(ctx.captured_queries) == 1
-    assert result["unseen_achievements_count"] == 6  # noqa: PLR2004
-    assert len(result["unseen_achievements_preview"]) == 5  # noqa: PLR2004
+    assert result["unseen_achievements_count"] == 6
+    assert len(result["unseen_achievements_preview"]) == 5

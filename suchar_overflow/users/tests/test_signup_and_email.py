@@ -229,7 +229,7 @@ def test_email_change_creates_request_and_sends_emails(client: Client) -> None:
         new_email="new@example.com",
     ).exists()
     # Two emails: one to new address (verify), one to old (revoke notification).
-    assert len(mail.outbox) == 2  # noqa: PLR2004
+    assert len(mail.outbox) == 2
     recipients = {msg.to[0] for msg in mail.outbox}
     assert "new@example.com" in recipients
     assert "old@example.com" in recipients

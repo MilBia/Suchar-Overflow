@@ -16,15 +16,14 @@
         <form method="get"
               class="d-flex align-items-center gap-2 justify-content-lg-end search-toolbar">
           {% for key, value in request.GET.items %}
-            {% if key != 'q' and key != 'sort' %}<input type="hidden" name="{{ key }}" value="{{ value }}" />{% endif %}
+            {% if key != "q" and key != "sort" %}<input type="hidden" name="{{ key }}" value="{{ value }}" />{% endif %}
           {% endfor %}
 
           <!-- Search Input Group with attached button -->
           <div class="input-group flex-nowrap align-items-stretch search-input-group">
             <input type="text"
                    name="q"
-                   class="form-control mb-0 rounded-end-0"
-                   style="border-right: 0"
+                   class="form-control mb-0 rounded-end-0 border-end-0"
                    placeholder="{% trans 'Search...' %}"
                    aria-label="{% trans 'Szukaj' %}"
                    value="{{ request.GET.q|default:'' }}" />
@@ -44,7 +43,7 @@
                     aria-expanded="false"
                     aria-label="{% trans 'Sortuj' %}">
               <span class="selected-label">
-                {% if request.GET.sort == 'top' %}
+                {% if request.GET.sort == "top" %}
                   {% trans "Top" %}
                 {% else %}
                   {% trans "Newest" %}

@@ -91,7 +91,7 @@ def test_streak_splits_days_at_local_midnight() -> None:
         Suchar.objects.create(text="day two", author=user),
         datetime.datetime(2024, 7, 10, 22, 30, tzinfo=UTC),
     )
-    assert StreakLoginRule.compute_value(user) == 2  # noqa: PLR2004
+    assert StreakLoginRule.compute_value(user) == 2
 
 
 # ---------------------------------------------------------------------------
@@ -323,7 +323,7 @@ def test_streak_ignores_active_request_zone() -> None:
             datetime.datetime(2024, 7, 10, hour, minute, tzinfo=UTC),
         )
     with timezone.override(NEW_YORK):
-        assert StreakLoginRule.compute_value(user) == 2  # noqa: PLR2004
+        assert StreakLoginRule.compute_value(user) == 2
 
 
 def test_compute_period_range_ignores_active_request_zone() -> None:

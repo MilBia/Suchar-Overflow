@@ -61,7 +61,7 @@ async def test_async_login_required_allows_authenticated(
 ) -> None:
     user = await django_user_model.objects.acreate_user(
         username="u",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     arf = AsyncRequestFactory()
     request = arf.get("/fake-path/")
@@ -78,7 +78,7 @@ async def test_async_user_passes_test_blocks_failing_user(
 ) -> None:
     user = await django_user_model.objects.acreate_user(
         username="blocked",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     arf = AsyncRequestFactory()
     request = arf.get("/fake-path/")
@@ -99,7 +99,7 @@ async def test_async_user_passes_test_allows_passing_user(
 ) -> None:
     user = await django_user_model.objects.acreate_user(
         username="allowed",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     arf = AsyncRequestFactory()
     request = arf.get("/fake-path/")

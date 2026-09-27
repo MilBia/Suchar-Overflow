@@ -39,7 +39,7 @@ def test_suchar_list_view(client: Client) -> None:
 def test_create_suchar(client: Client, django_user_model: type[UserModel]) -> None:
     user = django_user_model.objects.create_user(
         username="testuser",
-        password="password",  # noqa: S106
+        password="password",
     )
     client.force_login(user)
 
@@ -92,7 +92,7 @@ def test_suchar_list_sorting(
     user = django_user_model.objects.create_user(
         username="author",
         email="author@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     s1 = Suchar.objects.create(text="Older joke", author=user)
     s2 = Suchar.objects.create(text="Newer joke", author=user)
@@ -123,7 +123,7 @@ def test_suchar_list_search(client: Client, django_user_model: type[UserModel]) 
     user = django_user_model.objects.create_user(
         username="author",
         email="author@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     tag_it = Tag.objects.create(name="IT", slug="it")
     s1 = Suchar.objects.create(text="Python joke", author=user)
@@ -182,7 +182,7 @@ def test_create_suchar_with_tags(
     user = django_user_model.objects.create_user(
         username="testuser",
         email="testuser@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     client.force_login(user)
 
@@ -195,7 +195,7 @@ def test_create_suchar_with_tags(
     assert response.status_code == HTTPStatus.FOUND
     suchar = Suchar.objects.first()
     assert suchar is not None
-    assert suchar.tags.count() == 3  # noqa: PLR2004
+    assert suchar.tags.count() == 3
     assert suchar.tags.filter(slug="it").exists()
     assert suchar.tags.filter(slug="programming").exists()
     assert suchar.tags.filter(slug="suchar").exists()
@@ -209,7 +209,7 @@ def test_pagination_preserves_params(
     user = django_user_model.objects.create_user(
         username="author",
         email="author@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     tag_it = Tag.objects.create(name="IT", slug="it")
     # Create 15 suchary to trigger pagination (paginate_by = 10)
@@ -277,7 +277,7 @@ def test_pagination_elides_page_range_for_many_pages(
     user = django_user_model.objects.create_user(
         username="prolific",
         email="prolific@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     # 120 suchary / _PER_PAGE == 12 pages.
     _bulk_create_suchary(user, 120)
@@ -312,7 +312,7 @@ def test_pagination_shows_every_page_when_few_pages(
     user = django_user_model.objects.create_user(
         username="modest",
         email="modest@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     # 45 suchary / _PER_PAGE == 5 pages, below the elision threshold.
     _bulk_create_suchary(user, 45)
@@ -343,7 +343,7 @@ def test_search_query_with_special_chars_is_urlencoded_in_links(
     user = django_user_model.objects.create_user(
         username="author2",
         email="author2@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     tag_it = Tag.objects.create(name="IT2", slug="it2")
     for i in range(15):
@@ -378,7 +378,7 @@ def _cast_votes(
         voter = django_user_model.objects.create_user(
             username=f"voter-{suchar.pk}-{i}",
             email=f"voter-{suchar.pk}-{i}@example.com",
-            password="password",  # noqa: S106
+            password="password",
         )
         Vote.objects.create(
             suchar=suchar,
@@ -402,7 +402,7 @@ def test_search_counts_not_inflated_by_multiple_matching_tags(
     author = django_user_model.objects.create_user(
         username="tag-author",
         email="tag-author@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     suchar = Suchar.objects.create(text="A joke about nothing", author=author)
     suchar.tags.add(
@@ -417,8 +417,8 @@ def test_search_counts_not_inflated_by_multiple_matching_tags(
     results = list(response.context["suchary"])
     assert len(results) == 1
     # Two matching tags x five votes would yield 6/4 without distinct=True.
-    assert results[0].funny_count == 3  # noqa: PLR2004
-    assert results[0].dry_count == 2  # noqa: PLR2004
+    assert results[0].funny_count == 3
+    assert results[0].dry_count == 2
 
 
 @pytest.mark.django_db
@@ -430,7 +430,7 @@ def test_search_counts_correct_with_single_matching_tag(
     author = django_user_model.objects.create_user(
         username="single-tag-author",
         email="single-tag-author@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     suchar = Suchar.objects.create(text="Another joke", author=author)
     suchar.tags.add(Tag.objects.create(name="fajny-only", slug="fajny-only"))
@@ -441,8 +441,8 @@ def test_search_counts_correct_with_single_matching_tag(
     assert response.status_code == HTTPStatus.OK
     results = list(response.context["suchary"])
     assert len(results) == 1
-    assert results[0].funny_count == 3  # noqa: PLR2004
-    assert results[0].dry_count == 2  # noqa: PLR2004
+    assert results[0].funny_count == 3
+    assert results[0].dry_count == 2
 
 
 @pytest.mark.django_db
@@ -461,7 +461,7 @@ def test_search_counts_not_inflated_by_text_match_with_nonmatching_tags(
     author = django_user_model.objects.create_user(
         username="text-match-author",
         email="text-match-author@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     suchar = Suchar.objects.create(text="A joke about fajny things", author=author)
     suchar.tags.add(
@@ -476,8 +476,8 @@ def test_search_counts_not_inflated_by_text_match_with_nonmatching_tags(
     results = list(response.context["suchary"])
     assert len(results) == 1
     # Two non-matching tags x five votes would still yield 6/4 without distinct.
-    assert results[0].funny_count == 3  # noqa: PLR2004
-    assert results[0].dry_count == 2  # noqa: PLR2004
+    assert results[0].funny_count == 3
+    assert results[0].dry_count == 2
 
 
 @pytest.mark.django_db
@@ -496,7 +496,7 @@ def test_search_query_avoids_distinct_count_aggregate(
     author = django_user_model.objects.create_user(
         username="sql-shape-author",
         email="sql-shape-author@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     suchar = Suchar.objects.create(text="A joke about nothing", author=author)
     suchar.tags.add(
@@ -511,8 +511,8 @@ def test_search_query_avoids_distinct_count_aggregate(
     assert response.status_code == HTTPStatus.OK
     results = list(response.context["suchary"])
     assert len(results) == 1
-    assert results[0].funny_count == 3  # noqa: PLR2004
-    assert results[0].dry_count == 2  # noqa: PLR2004
+    assert results[0].funny_count == 3
+    assert results[0].dry_count == 2
 
     annotation_queries = [
         q["sql"]
@@ -542,7 +542,7 @@ def test_suchar_list_marks_overdried_cards(
     author = django_user_model.objects.create_user(
         username="overdried-author",
         email="overdried-author@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     Suchar.objects.create(text="Fresh joke", author=author)
     Suchar.objects.create(text="Bone-dry joke", author=author, is_overdried=True)

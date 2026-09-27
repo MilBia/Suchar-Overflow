@@ -37,7 +37,7 @@ def test_published_at_empty_defaults_to_now() -> None:
     assert form.is_valid(), form.errors
     # Should resolve to "now" (within a few seconds)
     published = form.cleaned_data["published_at"]
-    assert abs((published - timezone.now()).total_seconds()) < 5  # noqa: PLR2004
+    assert abs((published - timezone.now()).total_seconds()) < 5
 
 
 @pytest.mark.django_db
@@ -117,7 +117,7 @@ def test_tags_mixed_separators() -> None:
     instance.save()
     form.save_m2m()
 
-    assert instance.tags.count() == 3  # noqa: PLR2004
+    assert instance.tags.count() == 3
 
 
 @pytest.mark.django_db
@@ -322,7 +322,7 @@ def test_save_tags_mixes_existing_and_new() -> None:
     suchar = save_with_tags(user, "python django rust")
 
     assert tag_slugs(suchar) == {"python", "django", "rust"}
-    assert Tag.objects.filter(slug__in=["python", "django", "rust"]).count() == 3  # noqa: PLR2004
+    assert Tag.objects.filter(slug__in=["python", "django", "rust"]).count() == 3
 
 
 @pytest.mark.django_db

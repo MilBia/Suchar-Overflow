@@ -181,6 +181,15 @@ pre-commit run --all-files
 It auto-fixes some issues on first run (ruff, ruff-format, djlint).
 Always run a second time after auto-fixes to confirm all hooks pass.
 
+The `ruff` and `djLint` hook `rev`s must equal the `==` pins in `pyproject.toml`'s
+`dev` group — bump both together (and `django-upgrade`'s `--target-version` with
+Django's minor). `tests/test_precommit_hook_versions.py` fails on drift (#451),
+including a `--target-version` that isn't the Django minor in `[project.dependencies]`.
+Dependabot bumps the pins but never the hook revs, so its `lint-tools` group PR
+(ruff + djLint, split from the `python` group so it can't block other bumps) is red
+until you push a commit to that PR with the matching `rev`
+(`pre-commit autoupdate --repo <url>` bumps to the latest tag, so check it equals the pin).
+
 ## Test patterns
 
 - All tests use `@pytest.mark.django_db`.
@@ -285,8 +294,8 @@ Key rules that trip agents up:
 | `SLF001` | Private member access (`_attr`) | Add `# noqa: SLF001` in tests that must poke private state |
 | `PLC0415` | `import` inside a function | Move all imports to the top of the file. Exception: `*/apps.py` has a per-file-ignore for `PLC0415` — `AppConfig.ready()` methods (e.g. `AchievementsConfig`) may import inline. |
 | `N806` | Uppercase variable in function (`User = ...`) | Use `user_model = get_user_model()` |
-| `S106` | Hardcoded password string | Add `# noqa: S106` on test fixture passwords |
-| `PLR2004` | Magic value comparison | Add `# noqa: PLR2004` on numeric assertions in tests |
+| `S106` | Hardcoded password string | Per-file-ignored in tests and `conftest.py` (`[tool.ruff.lint.per-file-ignores]`) — no `noqa` needed there; outside tests, fix it |
+| `PLR2004` | Magic value comparison | Per-file-ignored in tests and `conftest.py` — write plain numeric assertions; outside tests, name the constant or add `# noqa: PLR2004` |
 | `E501` | Line > 88 chars | Shorten comments/docstrings; use `# noqa: E501` only as last resort |
 | `ARG001`/`ARG002`/`ARG003` | Unused function/method/classmethod argument | If genuinely removable (e.g. unused `*args, **kwargs` on a Django CBV method whose URL has no captured groups), delete it. If the name/position is mandated by a framework contract you don't control (Django signal receivers — dispatched by keyword, so the param name literally can't change; `ModelAdmin`/`ModelForm` overrides; polymorphic interfaces like `AchievementRule.evaluate`), add `# noqa: ARG00x` rather than renaming. For a pytest fixture used only for its side effect (never referenced in the test body), prefer `@pytest.mark.usefixtures("fixture_name")` over accepting-and-ignoring the parameter — it removes the violation and the dead parameter together. Never rename a pytest fixture parameter to silence this — fixtures are injected by exact parameter name. |
 | `ANN001`/`ANN201`/etc. | Missing type annotation | See "Type annotations (ANN)" below — this codebase has real gotchas around *when* an annotation-only import can go under `TYPE_CHECKING`. |

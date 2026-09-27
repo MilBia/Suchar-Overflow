@@ -20,7 +20,7 @@ class TestUserAdmin:
         User.objects.create_user(
             username="searchable",
             email="searchable@example.com",
-            password="pass",  # noqa: S106
+            password="pass",
         )
         url = reverse("admin:users_user_changelist")
         response = admin_client.get(url, data={"q": "searchable"})
@@ -59,7 +59,7 @@ class TestUserAdmin:
         User.objects.create_user(
             username="duplicate",
             email="dup@example.com",
-            password="pass",  # noqa: S106
+            password="pass",
         )
         url = reverse("admin:users_user_add")
         response = admin_client.post(
@@ -138,7 +138,7 @@ class TestUserAdmin:
         user = User.objects.create_user(
             username="to_delete",
             email="to_delete@example.com",
-            password="pass",  # noqa: S106
+            password="pass",
         )
         url = reverse("admin:users_user_delete", kwargs={"object_id": user.pk})
         response = admin_client.post(url, data={"post": "yes"})

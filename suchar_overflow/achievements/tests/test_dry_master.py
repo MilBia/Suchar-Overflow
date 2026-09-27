@@ -83,7 +83,7 @@ def test_rule_counts_overdried_suchary() -> None:
     Suchar.objects.create(text="a", author=user, is_overdried=True)
     Suchar.objects.create(text="b", author=user, is_overdried=True)
     Suchar.objects.create(text="c", author=user)
-    assert DryMasterRule.compute_value(user) == 2  # noqa: PLR2004
+    assert DryMasterRule.compute_value(user) == 2
 
 
 @pytest.mark.django_db

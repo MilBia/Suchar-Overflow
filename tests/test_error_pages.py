@@ -90,7 +90,7 @@ def test_missing_url_serves_themed_404_through_middleware() -> None:
     # rather than its own technical 404 page.
     response = Client().get("/no-such-url-exists/")
 
-    assert response.status_code == 404  # noqa: PLR2004
+    assert response.status_code == 404
     body = response.content.decode()
     assert 'class="error-page"' in body
     assert gettext("404 — ta strona wyparowała") in body

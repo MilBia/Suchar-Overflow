@@ -38,7 +38,7 @@ ISLAND_RE = re.compile(
 
 def _home(client: Client) -> str:
     response = client.get(reverse("home"))
-    assert response.status_code == 200, response.status_code  # noqa: PLR2004
+    assert response.status_code == 200, response.status_code
     return response.content.decode()
 
 
@@ -52,7 +52,7 @@ def test_pool_island_is_valid_json_list_of_strings() -> None:
 
     pool = json.loads(match.group(1))
     assert isinstance(pool, list)
-    assert len(pool) >= 2  # noqa: PLR2004
+    assert len(pool) >= 2
     assert all(isinstance(line, str) and line.strip() for line in pool)
 
 

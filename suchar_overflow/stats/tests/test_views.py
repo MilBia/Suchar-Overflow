@@ -213,7 +213,7 @@ def test_leaderboard_author_card_ties_share_dense_rank(client: Client) -> None:
     )[0]
 
     for section in (funny_authors_section, funny_suchary_section):
-        assert section.count(">#1</span>") == 2  # noqa: PLR2004
+        assert section.count(">#1</span>") == 2
         assert section.count(">#2</span>") == 1
         assert ">#3</span>" not in section
 
@@ -270,7 +270,7 @@ def test_ranked_top_n_orders_descending_and_caps_at_limit() -> None:
     items = list(Suchar.objects.annotate(score=Count("votes")))
     result = _ranked_top_n(items, "score", limit=3)
 
-    assert len(result) == 3  # noqa: PLR2004
+    assert len(result) == 3
     # .score comes from the .annotate(score=Count(...)) call above, not a
     # static model field — django-stubs can't see it.
     scores = [s.score for s in result]  # type: ignore[union-attr]

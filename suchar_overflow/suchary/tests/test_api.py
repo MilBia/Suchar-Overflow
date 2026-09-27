@@ -110,7 +110,7 @@ def test_list_tags_returns_tags_on_published_suchary(client: Client) -> None:
     response = client.get(TAGS_URL)
     assert response.status_code == HTTPStatus.OK
     data = response.json()
-    assert len(data) == 2  # noqa: PLR2004
+    assert len(data) == 2
     slugs = {item["slug"] for item in data}
     assert slugs == {"it", "programowanie"}
 
@@ -195,7 +195,7 @@ def test_list_tags_q_empty_string_returns_all_published(client: Client) -> None:
 
     response = client.get(TAGS_URL, {"q": ""})
     assert response.status_code == HTTPStatus.OK
-    assert len(response.json()) == 2  # noqa: PLR2004
+    assert len(response.json()) == 2
 
 
 @pytest.mark.django_db
@@ -206,7 +206,7 @@ def test_list_tags_capped_at_ten(client: Client) -> None:
 
     response = client.get(TAGS_URL)
     assert response.status_code == HTTPStatus.OK
-    assert len(response.json()) == 10  # noqa: PLR2004
+    assert len(response.json()) == 10
 
 
 @pytest.mark.django_db
@@ -385,7 +385,7 @@ def test_vote_response_counts_multiple_voters(client: Client) -> None:
 
     assert response.status_code == HTTPStatus.OK
     data = response.json()
-    assert data["funny_count"] == 2  # noqa: PLR2004
+    assert data["funny_count"] == 2
     assert data["dry_count"] == 1
 
 
@@ -1317,7 +1317,7 @@ def test_list_tags_q_only_hash_is_treated_as_no_filter(client: Client) -> None:
     _tag_on_published_suchar("Python", "python", author)
 
     response = client.get(TAGS_URL, {"q": "#"})
-    assert len(response.json()) == 2  # noqa: PLR2004
+    assert len(response.json()) == 2
 
 
 @pytest.mark.django_db
