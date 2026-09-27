@@ -1,0 +1,17 @@
+# Django templates are formatted by djLint.
+suchar_overflow/templates/
+
+# Vendored, already-minified third-party builds — never reformat.
+*.min.js
+*.min.css
+chart.umd.min.js
+
+# Generated / lockfiles.
+package-lock.json
+uv.lock
+locale/
+staticfiles/
+
+# Antigravity workflows: `// turbo` annotations sit on their own line above a
+# step, and prettier would fold them into the preceding list item.
+.agent/workflows/

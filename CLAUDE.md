@@ -229,8 +229,7 @@ here, Playwright E2E for the integration path — audio, the real
 `POST /api/achievements/frontend-event`, toasts, CSP).
 
 - **Why Vitest and not more E2E**: the logic that needs the most coverage is
-  time-window logic (idle timers, combo windows, the 3s hover dwell). `vi.useFake
-  Timers()` / `vi.advanceTimersByTime()` makes it deterministic and instant;
+  time-window logic (idle timers, combo windows, the 3s hover dwell). `vi.useFakeTimers()` / `vi.advanceTimersByTime()` makes it deterministic and instant;
   `page.clock` against a real browser + a `transaction=True` DB per test does not.
 - **Not a build step.** Vitest is a dev-only runner in the same category as pytest
   — it never transforms, bundles, or ships anything. The "no JS build step" rule
@@ -296,13 +295,20 @@ Key rules that trip agents up:
 | `N806` | Uppercase variable in function (`User = ...`) | Use `user_model = get_user_model()` |
 | `S106` | Hardcoded password string | Per-file-ignored in tests and `conftest.py` (`[tool.ruff.lint.per-file-ignores]`) — no `noqa` needed there; outside tests, fix it |
 | `PLR2004` | Magic value comparison | Per-file-ignored in tests and `conftest.py` — write plain numeric assertions; outside tests, name the constant or add `# noqa: PLR2004` |
-| `E501` | Line > 88 chars | Shorten comments/docstrings; use `# noqa: E501` only as last resort |
+| `E501` | Line > 120 chars | Shorten comments/docstrings; use `# noqa: E501` only as last resort |
 | `ARG001`/`ARG002`/`ARG003` | Unused function/method/classmethod argument | If genuinely removable (e.g. unused `*args, **kwargs` on a Django CBV method whose URL has no captured groups), delete it. If the name/position is mandated by a framework contract you don't control (Django signal receivers — dispatched by keyword, so the param name literally can't change; `ModelAdmin`/`ModelForm` overrides; polymorphic interfaces like `AchievementRule.evaluate`), add `# noqa: ARG00x` rather than renaming. For a pytest fixture used only for its side effect (never referenced in the test body), prefer `@pytest.mark.usefixtures("fixture_name")` over accepting-and-ignoring the parameter — it removes the violation and the dead parameter together. Never rename a pytest fixture parameter to silence this — fixtures are injected by exact parameter name. |
 | `ANN001`/`ANN201`/etc. | Missing type annotation | See "Type annotations (ANN)" below — this codebase has real gotchas around *when* an annotation-only import can go under `TYPE_CHECKING`. |
 | `ANN401` | Explicit `Any` in a signature | Legitimate for genuinely dynamic boundaries (Django management command `**options`, from argparse) — add `# noqa: ANN401` rather than mistyping as `object` and fighting mypy. |
 | `FBT001`/`FBT002` | Boolean positional argument | Fires the moment a previously-untyped bool param gets annotated. If the name/position is framework-mandated (`ModelForm.save(commit=...)`, factory_boy `post_generation` hooks, signal receivers' `created`), add `# noqa: FBT001`/`FBT002` — don't reorder to keyword-only unless you also control every call site. |
 
-`ruff format` enforces 88-char line width and import sorting (`force-single-line = true`).
+`ruff format` enforces 120-char line width and import sorting (`force-single-line = true`).
+Everything ruff and djLint don't format (JS, CSS, YAML, JSON, Markdown) goes through the
+`prettier` pre-commit hook (#452): 120 columns, 4-space indent (Markdown 2, so nested list
+blocks don't shift, and code inside Markdown fences is left as written), single quotes — options in `.prettierrc.json`, excluded paths
+(templates, vendored `*.min.*`, lockfiles, `locale/`) in `.prettierignore`. The one-off
+repo-wide reformat is listed in `.git-blame-ignore-revs`; run
+`git config blame.ignoreRevsFile .git-blame-ignore-revs` once per clone so `git blame`
+skips it.
 When combining a `# type: ignore[code]` with a `# noqa: CODE` on the same line, the
 `type: ignore` must come first — mypy only recognizes it as the leading comment.
 
@@ -1519,7 +1525,7 @@ from the template-level `i18n` used elsewhere).
 - CSS: `suchar_overflow/static/css/` — uses CSS custom properties (`variables.css`).
 - JS: `suchar_overflow/static/js/project.js` (main) + `js/features/` (split features).
 - djlint enforces template formatting. After editing templates, run `pre-commit` to
-  auto-format. djlint max line length for templates is 119 chars.
+  auto-format. djlint max line length for templates is 120 chars, indent 4 spaces.
 - **`{# … #}` comments are single-line only.** Django's lexer does not span newlines
   for that form, so a multi-line `{# … #}` is emitted into the page verbatim (it bit
   `base.html`'s `EE_AUDIO` block — #310, from #282, fixed with #284). Use

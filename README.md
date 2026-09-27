@@ -472,6 +472,18 @@ pre-commit run --all-files
 
 Konfiguracja hooków: [`.pre-commit-config.yaml`](.pre-commit-config.yaml)
 
+Konwencje formatowania: linia 120 znaków, wcięcia 4 spacje. Python formatuje ruff,
+szablony djLint, a resztę (JS, CSS, YAML, JSON, Markdown) hook `prettier` — opcje w
+[`.prettierrc.json`](.prettierrc.json), wykluczenia w [`.prettierignore`](.prettierignore).
+Hook sam pobiera Node przez pre-commit, więc lokalny Node nie jest wymagany.
+
+Jednorazowy reformat całego repo jest w [`.git-blame-ignore-revs`](.git-blame-ignore-revs).
+Żeby `git blame` go pomijał, wykonaj raz w klonie:
+
+```bash
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
+
 ---
 
 ## Licencja
