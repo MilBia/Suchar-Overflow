@@ -18,7 +18,11 @@ if READ_DOT_ENV_FILE:
     env.read_env(str(BASE_DIR / ".env"))
 # Secrets kept out of git (e.g. third-party API keys), loaded only when the file
 # exists. Like .env above, a variable already in the OS environment wins.
-# .gitignore and .dockerignore both exclude it (#453).
+# read_env() only setdefault()s, so the first source to set a name wins: OS env,
+# then .env (when DJANGO_READ_DOT_ENV_FILE), then this file.
+# .gitignore and .dockerignore both exclude it (#453), so it is a local-only
+# mechanism: the production image never contains it and production compose does
+# not mount it — production secrets go in .envs/.production/.django.
 SECRETS_ENV_FILE = BASE_DIR / ".envs" / ".secrets"
 if SECRETS_ENV_FILE.is_file():
     env.read_env(str(SECRETS_ENV_FILE))
@@ -108,7 +112,7 @@ def _postgres_url() -> str:
 
     Only called when DATABASE_URL is absent, so a DATABASE_URL-only environment
     (CI's mypy job) never needs POSTGRES_*. User, password and database name are
-    percent-encoded the same way compose/production/django/entrypoint does (#356);
+    percent-encoded the same way the /entrypoint script does (#356);
     a missing variable raises ImproperlyConfigured naming it. POSTGRES_USER
     defaults to the postgres image's own default, as in the entrypoint.
     """
@@ -334,10 +338,18 @@ X_FRAME_OPTIONS = "DENY"
 
 
 def _email_env(option: str, default: str) -> str:
-    """Raw value of DJANGO_EMAIL_<option>, else legacy EMAIL_<option>, else default."""
+    """Value of DJANGO_EMAIL_<option>, else legacy EMAIL_<option>, else default.
+
+    An empty value counts as unset, unlike DATABASE_URL's "presence, not
+    truthiness" rule above (which the production build relies on — don't unify
+    them). A blank `DJANGO_EMAIL_PORT=` left behind while migrating off EMAIL_*
+    would otherwise crash int() at import, and a blank `DJANGO_EMAIL_HOST=` would
+    shadow a still-set legacy EMAIL_HOST with host "". Every option's default is
+    what an empty value would mean anyway ("" user/password, False TLS/SSL).
+    """
     for name in (f"DJANGO_EMAIL_{option}", f"EMAIL_{option}"):
-        if name in env.ENVIRON:
-            return env.ENVIRON[name]
+        if value := env.ENVIRON.get(name, ""):
+            return value
     return default
 
 
@@ -369,8 +381,10 @@ ADMIN_URL = "admin/"
 # Comma-separated addresses, each either "mail@example.com" or
 # "Name <mail@example.com>" (no comma inside a name — it is the separator).
 # Django 6.x takes a plain list of address strings here; (name, address) pairs
-# are deprecated.
-ADMINS = env.list("DJANGO_ADMINS", default=[])
+# are deprecated. env.list() neither strips entries nor drops blank ones, and a
+# single " " entry (e.g. a trailing ", ") makes every mail_admins send raise, which
+# logging swallows — so 500 reports would vanish silently.
+ADMINS = [address.strip() for address in env.list("DJANGO_ADMINS", default=[]) if address.strip()]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 

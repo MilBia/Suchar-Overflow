@@ -189,18 +189,28 @@ def test_admins_come_from_django_admins(
     assert settings.MANAGERS == settings.ADMINS
 
 
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "Jan Kowalski <jan@example.com>,ops@example.com",
+        # The natural hand-written form, with a space after the comma.
+        "Jan Kowalski <jan@example.com>, ops@example.com",
+        # A trailing ", " used to leave a " " entry that made every send raise.
+        "Jan Kowalski <jan@example.com>, ops@example.com, ",
+        "  Jan Kowalski <jan@example.com> ,, ops@example.com ,",
+    ],
+)
 def test_admins_from_env_are_what_mail_admins_expects(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
     settings: SettingsWrapper,
+    raw: str,
 ) -> None:
     """Django 6.x wants plain address strings (``(name, address)`` pairs are
-    deprecated); a ``Name <mail>`` string is delivered as-is, warning-free."""
-    loaded = load_base_settings(
-        monkeypatch,
-        tmp_path,
-        {**MINIMAL_ENV, "DJANGO_ADMINS": "Jan Kowalski <jan@example.com>,ops@example.com"},
-    )
+    deprecated); a ``Name <mail>`` string is delivered as-is, warning-free.
+    Whitespace around entries and blank entries are dropped."""
+    loaded = load_base_settings(monkeypatch, tmp_path, {**MINIMAL_ENV, "DJANGO_ADMINS": raw})
+    assert loaded.ADMINS == ["Jan Kowalski <jan@example.com>", "ops@example.com"]
     settings.ADMINS = loaded.ADMINS
     mail.outbox.clear()
 

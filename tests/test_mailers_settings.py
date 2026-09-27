@@ -145,6 +145,24 @@ def test_django_email_var_wins_over_legacy_name(monkeypatch: pytest.MonkeyPatch,
     assert options["port"] == 2525
 
 
+def test_empty_email_var_counts_as_unset(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    # A blank line left behind while renaming EMAIL_* to DJANGO_EMAIL_* must
+    # neither crash the settings import (int("")) nor shadow the legacy value.
+    options = _mailer_options(
+        monkeypatch,
+        tmp_path,
+        DJANGO_EMAIL_HOST="",
+        EMAIL_HOST="smtp.old.example.com",
+        DJANGO_EMAIL_PORT="",
+        DJANGO_EMAIL_TIMEOUT="",
+        EMAIL_USE_TLS="",
+    )
+    assert options["host"] == "smtp.old.example.com"
+    assert options["port"] == 25
+    assert options["timeout"] == 5
+    assert options["use_tls"] is False
+
+
 def test_local_env_file_points_mail_at_mailpit() -> None:
     # local.py no longer carries a MAILERS of its own (#453); the mailpit
     # host/port are data in .envs/.local/.django.
