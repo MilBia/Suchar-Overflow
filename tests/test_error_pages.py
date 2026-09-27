@@ -20,7 +20,10 @@ from django.test import Client
 from django.test import RequestFactory
 from django.test import override_settings
 from django.urls import reverse
+from django.utils import translation
 from django.utils.translation import gettext
+
+from suchar_overflow.views import fallback_500_html
 
 CONTEXT_PAGES = [
     (
@@ -91,3 +94,20 @@ def test_missing_url_serves_themed_404_through_middleware() -> None:
     body = response.content.decode()
     assert 'class="error-page"' in body
     assert gettext("404 — ta strona wyparowała") in body
+
+
+@pytest.mark.parametrize("language", ["pl", "en"])
+def test_static_500_fallback_matches_themed_copy(language: str) -> None:
+    # The template-free fallback (#442) says what 500.html says, in the active
+    # language, and declares that language.
+    with translation.override(language):
+        html = fallback_500_html()
+        title = gettext("500 — coś chrupnęło")
+        joke = gettext(
+            "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — "
+            "odśwież za chwilę.",
+        )
+
+    assert f'<html lang="{language}">' in html
+    assert f"<h1>{title}</h1>" in html
+    assert f"<p>{joke}</p>" in html

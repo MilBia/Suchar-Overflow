@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING
 
 from django.http import HttpResponse
 from django.http import HttpResponseServerError
+from django.utils.html import escape
+from django.utils.translation import get_language
+from django.utils.translation import gettext
 from django.views import defaults
 
 if TYPE_CHECKING:
@@ -12,14 +15,25 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# No template loader, no base.html, no {% static %} / {% url %}: nothing here can
-# fail the way the themed 500.html can.
-FALLBACK_500_HTML = (
-    '<!doctype html><html lang="pl"><head><meta charset="utf-8">'
-    "<title>500</title></head><body><h1>500</h1>"
-    "<p>Coś chrupnęło po stronie serwera. Odśwież za chwilę.</p>"
-    "</body></html>"
-)
+
+def fallback_500_html() -> str:
+    """Static 500 page: no template loader, base.html, {% static %} or {% url %}.
+
+    Nothing here can fail the way the themed 500.html can. It reuses that
+    template's msgids, so both variants say the same thing in every language.
+    """
+    title = escape(gettext("500 — coś chrupnęło"))
+    joke = escape(
+        gettext(
+            "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — "
+            "odśwież za chwilę.",
+        ),
+    )
+    return (
+        f'<!doctype html><html lang="{escape(get_language() or "pl")}"><head>'
+        f'<meta charset="utf-8"><title>{title}</title></head>'
+        f"<body><h1>{title}</h1><p>{joke}</p></body></html>"
+    )
 
 
 def server_error(request: HttpRequest) -> HttpResponse:
@@ -36,4 +50,4 @@ def server_error(request: HttpRequest) -> HttpResponse:
         return defaults.server_error(request)
     except Exception:
         logger.exception("Rendering 500.html failed; serving the static fallback")
-        return HttpResponseServerError(FALLBACK_500_HTML)
+        return HttpResponseServerError(fallback_500_html())

@@ -29,7 +29,7 @@ from django.test import Client
 from django.urls import reverse
 
 from suchar_overflow.conftest import make_user
-from suchar_overflow.views import FALLBACK_500_HTML
+from suchar_overflow.views import fallback_500_html
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -137,5 +137,5 @@ async def test_failing_500_page_still_releases_db_connections(
     # Not vacuous: each request did open a connection (session lookup).
     assert len({id(conn) for conn in opened}) >= _REQUESTS
     assert all(conn.connection is None for conn in opened)
-    fallback = (HTTPStatus.INTERNAL_SERVER_ERROR, FALLBACK_500_HTML.encode())
+    fallback = (HTTPStatus.INTERNAL_SERVER_ERROR, fallback_500_html().encode())
     assert results == [fallback] * _REQUESTS
