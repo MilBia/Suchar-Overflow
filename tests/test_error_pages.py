@@ -23,7 +23,7 @@ from django.urls import reverse
 from django.utils import translation
 from django.utils.translation import gettext
 
-from suchar_overflow.views import fallback_500_html
+from suchar_overflow.utils.views import fallback_500_html
 
 CONTEXT_PAGES = [
     (

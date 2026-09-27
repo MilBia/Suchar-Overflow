@@ -5,10 +5,10 @@ from django.urls import include
 from django.urls import path
 from django.views.generic import TemplateView
 
-from suchar_overflow.views import bad_request
-from suchar_overflow.views import page_not_found
-from suchar_overflow.views import permission_denied
-from suchar_overflow.views import server_error
+from suchar_overflow.utils.views import bad_request
+from suchar_overflow.utils.views import page_not_found
+from suchar_overflow.utils.views import permission_denied
+from suchar_overflow.utils.views import server_error
 
 from .api import api
 

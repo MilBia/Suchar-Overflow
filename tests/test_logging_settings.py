@@ -68,4 +68,4 @@ def test_production_emails_and_prints_each_django_error_once(
     # One email and one console line per error, not two of either.
     assert sorted(reached) == ["console", "mail_admins"]
     # Through the subclass that releases its DB connection (#447).
-    assert logging_config["handlers"]["mail_admins"]["class"] == "suchar_overflow.log.AdminEmailHandler"
+    assert logging_config["handlers"]["mail_admins"]["class"] == "suchar_overflow.utils.log.AdminEmailHandler"

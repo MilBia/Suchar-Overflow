@@ -18,13 +18,13 @@ from django.utils import translation
 from django.utils.translation import gettext
 
 from suchar_overflow.conftest import make_user
-from suchar_overflow.middleware import TIMEZONE_COOKIE_NAME
 from suchar_overflow.stats.views import LEADERBOARD_CACHE_KEY
 from suchar_overflow.stats.views import LeaderboardView
 from suchar_overflow.stats.views import _ranked_top_n
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
+from suchar_overflow.utils.middleware import TIMEZONE_COOKIE_NAME
 
 if TYPE_CHECKING:
     from django.test import Client

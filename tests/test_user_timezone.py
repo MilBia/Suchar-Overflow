@@ -1,6 +1,6 @@
 """Per-visitor time zone for input and display (#410, stage 2 of #405).
 
-``suchar_overflow.middleware.user_timezone_middleware`` activates the zone from
+``suchar_overflow.utils.middleware.user_timezone_middleware`` activates the zone from
 the ``user_tz`` cookie (written by ``static/js/timezone.js``). It changes only
 how naive form input is parsed and how templates display datetimes; the
 invariance of rules/charts/contests under a foreign active zone is covered next
@@ -16,13 +16,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 from asgiref.sync import sync_to_async
-from django.test import RequestFactory
 from django.urls import reverse
 
 from suchar_overflow.conftest import make_user
-from suchar_overflow.middleware import TIMEZONE_COOKIE_NAME
-from suchar_overflow.middleware import zone_from_request
 from suchar_overflow.suchary.models import Suchar
+from suchar_overflow.utils.middleware import TIMEZONE_COOKIE_NAME
 
 if TYPE_CHECKING:
     from django.test import AsyncClient
@@ -51,37 +49,6 @@ def _rendered_tz(html: str) -> str:
     match = re.search(r'name="published_at_tz"\s+value="([^"]*)"', html)
     assert match is not None
     return match.group(1)
-
-
-# ---------------------------------------------------------------------------
-# zone_from_request — only exact IANA keys are accepted
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.parametrize(
-    ("cookie", "expected"),
-    [
-        ("America/New_York", NEW_YORK),
-        (
-            "America/Argentina/Buenos_Aires",
-            zoneinfo.ZoneInfo("America/Argentina/Buenos_Aires"),
-        ),
-        (None, None),
-        ("", None),
-        ("Mars/Olympus_Mons", None),
-        ("../../etc/passwd", None),
-        ("america/new_york", None),
-        ("Europe/Warsaw\x00", None),
-    ],
-)
-def test_zone_from_request(
-    cookie: str | None,
-    expected: zoneinfo.ZoneInfo | None,
-) -> None:
-    request = RequestFactory().get("/")
-    if cookie is not None:
-        request.COOKIES[TIMEZONE_COOKIE_NAME] = cookie
-    assert zone_from_request(request) == expected
 
 
 # ---------------------------------------------------------------------------

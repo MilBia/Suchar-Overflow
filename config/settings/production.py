@@ -140,7 +140,7 @@ logging_config["handlers"]["mail_admins"] = {
     "filters": ["require_debug_false"],
     # Releases the DB connection the report's request.user read opens in
     # log_response's executor thread (#447).
-    "class": "suchar_overflow.log.AdminEmailHandler",
+    "class": "suchar_overflow.utils.log.AdminEmailHandler",
 }
 # Merge into (not replace) base's loggers — it quiets apscheduler.executors (#402).
 # mail_admins sits on "django" itself, so every django.* error (django.request,

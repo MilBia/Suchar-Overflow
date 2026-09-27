@@ -9,7 +9,7 @@ left open in the dead per-request thread until cyclic GC collects it. Measured
 before the fix: 50 concurrent failing requests left 50 connections open, still
 50 after 5 s idle, 0 only after `gc.collect()`.
 
-`suchar_overflow.views.server_error` falls back to a static page, so a response
+`suchar_overflow.utils.views.server_error` falls back to a static page, so a response
 always goes out. The test drives `get_asgi_application()` directly, because
 `AsyncClient` has no per-request `ThreadSensitiveContext` (see #434), and
 records connections through `connection_created`: holding the wrappers keeps
@@ -26,7 +26,7 @@ from django.core.asgi import get_asgi_application
 from django.db.backends.signals import connection_created
 from django.urls import reverse
 
-from suchar_overflow.views import fallback_500_html
+from suchar_overflow.utils.views import fallback_500_html
 from tests.asgi_client import asgi_get
 from tests.asgi_client import login_session_cookie
 

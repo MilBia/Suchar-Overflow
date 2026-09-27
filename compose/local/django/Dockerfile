@@ -6,10 +6,12 @@
 # off bookworm, which docker-library will eventually stop rebuilding too). Keep the
 # tag identical to both stages of compose/production/django/Dockerfile;
 # tests/test_python_runtime.py fails on a mismatch or a stale cached base.
+# Every FROM names its registry (`docker.io/...`, `ghcr.io/...`): podman does not
+# assume Docker Hub for a short name (#456).
 FROM ghcr.io/astral-sh/uv:0.12.19 AS uv
 
 # define an alias for the specific python version used in this file.
-FROM python:3.14-slim-trixie AS python
+FROM docker.io/python:3.14-slim-trixie AS python
 COPY --from=uv /uv /uvx /bin/
 
 # Python build stage
@@ -83,7 +85,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     uv sync --locked
 
-COPY ./compose/production/django/entrypoint /entrypoint
+COPY ./compose/base/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 

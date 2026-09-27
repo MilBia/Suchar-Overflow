@@ -1,6 +1,6 @@
 /* Strefa czasowa przeglądarki → cookie `user_tz` (issue #410, etap 2 #405).
  *
- * Serwer (`suchar_overflow/middleware.py`) aktywuje tę strefę dla żądania —
+ * Serwer (`suchar_overflow/utils/middleware.py`) aktywuje tę strefę dla żądania —
  * wyłącznie do interpretacji wejścia (godzina planowania suchara) i
  * wyświetlania dat. Reguły osiągnięć, konkursy, wykresy i heatmapa zostają przy
  * strefie serwisu (`TIME_ZONE`), niezależnie od cookie.

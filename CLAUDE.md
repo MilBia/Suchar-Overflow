@@ -7,8 +7,17 @@ Frontend: Django templates (DjangoTemplates backend), vanilla JS, CSS custom pro
 Package manager: `uv`. Local dev and CI both run inside Docker Compose.
 Compose services: `django`, `postgres`, `redis`, `mailpit` (catches outgoing dev email at
 `localhost:8025`).
+`compose/base/` holds what both stacks share (`django/entrypoint`, the `postgres/` image and
+its `maintenance/` backup scripts); `compose/local/` and `compose/production/` hold only their
+own Django `Dockerfile`/`start` plus Traefik/nginx (#456). Every `FROM` and pulled `image:`
+names its registry (`docker.io/…`, `ghcr.io/…`), because podman doesn't assume Docker Hub;
+`tests/test_compose_images.py` guards that. Postgres, Redis and Mailpit have healthchecks and
+`django` waits for `service_healthy`. Django itself has none yet. Redis snapshots to a
+named `/data` volume (`--save 60 1`).
 Local Django apps: `suchar_overflow.users`, `suchar_overflow.suchary`,
-`suchar_overflow.stats`, `suchar_overflow.achievements`. Model-level translations
+`suchar_overflow.stats`, `suchar_overflow.achievements`, and `suchar_overflow.utils`
+(#455: cross-cutting code — error handlers, middleware, context processors, logging,
+DB-connection helpers, shared API schemas; no models). Model-level translations
 (`django-modeltranslation`, `MODELTRANSLATION_LANGUAGES = ("pl", "en")`) are separate
 from the `i18n`/`LANGUAGE_CODE` template-rendering language noted in Test patterns.
 
@@ -70,9 +79,9 @@ incremental cycle collector, reverted in 3.14.5. Each ASGI request leaves its re
 graph in a reference cycle, and that collector fell behind them (135 → 270 MB over 8
 load rounds on 3.14.2, flat ~101 MB on 3.14.7). The image was stuck there because
 astral's `uv:python3.14-bookworm-slim` tag stopped moving, so both Dockerfiles now
-take Python from the official `python:3.14-slim-trixie` (Debian 13, #437) and copy
+take Python from the official `docker.io/python:3.14-slim-trixie` (Debian 13, #437) and copy
 `uv` in from a pinned `ghcr.io/astral-sh/uv:<version>` stage. All three `FROM
-python:` lines (local; production build and run) must name the same tag, so the
+docker.io/python:` lines (local; production build and run) must name the same tag, so the
 venv is never built against a different glibc than the one that runs it.
 `tests/test_python_runtime.py` checks that statically, and in the local/CI image it
 also fails on a pre-3.14.5 interpreter or a Debian release that doesn't match the
@@ -90,9 +99,10 @@ which is never a silent pass; the pull and the API call are retried once first, 
 single network blip doesn't alert. On failure the workflow opens one issue titled
 "Obraz bazowy python wygląda na zamrożony (#445)", or comments on it if it is already
 open. A manual run with the `force_stale` input (limit 0 days) exercises that path on
-a healthy image and marks the issue text as a drill. A PR that touches the script or
-the workflow runs the check report-only. It needs the network, so it is not in `just
-test`; only its pure logic is (`tests/test_base_image_freshness.py`). Dependabot never
+a healthy image and marks the issue text as a drill. A PR that touches the script, the
+workflow or the production Django Dockerfile it parses runs the check report-only. It
+needs the network, so it is not in `just test`; only its pure logic is
+(`tests/test_base_image_freshness.py`). Dependabot never
 proposes a Python bump for the floating `3.14-slim-trixie` tag (minor/major are
 ignored and the tag has no patch part), so its `docker-python` group PRs are in
 practice uv bumps only. Residual blind spot: GitHub disables scheduled workflows after
@@ -100,7 +110,8 @@ practice uv bumps only. Residual blind spot: GitHub disables scheduled workflows
 spell. To check by hand, run `./scripts/check_base_image_freshness.py` on the host
 (needs Docker). When it reports a frozen tag, switch every stage to the next Debian
 codename at once. When the next Debian becomes stable, move then rather than waiting
-for the freeze.
+for the freeze. `compose/base/postgres/Dockerfile` pins the codename the same way
+(`docker.io/postgres:18-trixie`, #456); move it in the same change.
 
 Locally, django-debug-toolbar with `SHOW_TEMPLATE_CONTEXT = True` still pushes a
 worker to a ~1.3 GB high-water mark under a request flood: about 9 MB per stored
@@ -409,6 +420,13 @@ reuse is ever needed, use psycopg's pool (`OPTIONS["pool"]`, needs the `pool` ex
 `CONN_MAX_AGE` anyway, though only lazily, on first use. That is why the guard in
 `tests/test_db_connection_settings.py` checks `CONN_MAX_AGE == 0` alone, with no
 pool exemption.
+
+Every dotted path the settings name as a string — `MIDDLEWARE`, the template
+`context_processors`, and the `LOGGING` handler/filter/formatter `class`/`()` keys — is
+imported by `tests/test_settings_import_paths.py` for both the test settings and
+`config.settings.production` (#455). Ruff and mypy never read these strings, and some
+(`mail_admins`) only resolve in production, so a module move that misses one fails there
+first; keep the test green when moving code into or out of `suchar_overflow.utils`.
 
 ## Architecture notes
 
@@ -1068,7 +1086,7 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
 ### Time zones — service zone `Europe/Warsaw` (#405) + visitor zone for I/O (#410)
 
 `TIME_ZONE = "Europe/Warsaw"` (`base.py`) with `USE_TZ = True`: the DB stores UTC.
-On top of that, `suchar_overflow/middleware.py:user_timezone_middleware` (after
+On top of that, `suchar_overflow/utils/middleware.py:user_timezone_middleware` (after
 `LocaleMiddleware`, sync + async) wraps each request in `timezone.override(zone)`
 for the zone in the `user_tz` cookie, which `static/js/timezone.js` (first script
 in `base.html`'s global `{% compress js %}` block; runs for **anonymous** visitors
@@ -1576,15 +1594,15 @@ from the template-level `i18n` used elsewhere).
   render SVG. Regenerate it with `just gen-og-image` (#440): it runs Chromium in
   the container so the self-hosted fonts render, and its output is not
   byte-deterministic, so re-run only on a design change.
-- `handler500` is `suchar_overflow.views.server_error` (#442): it renders the
+- `handler500` is `suchar_overflow.utils.views.server_error` (#442): it renders the
   themed `500.html` and, if that raises, logs it and serves a static page. Keep
   that `try/except`. Under ASGI, an exception escaping `handler500` means no
   response and so no `request_finished`. `close_old_connections` then never runs,
   and the request's connection stays open in its dead per-request thread until
   cyclic GC finds it; an idle worker never does. Measured: 50 → 50 after 5 s idle.
   `tests/test_handler500_db_connection.py` drives `ASGIHandler` directly to guard it.
-- `handler400`/`403`/`404` are `suchar_overflow.views` wrappers of Django's defaults,
-  and every handler goes through `suchar_overflow.db.releases_db_connections`
+- `handler400`/`403`/`404` are `suchar_overflow.utils.views` wrappers of Django's defaults,
+  and every handler goes through `suchar_overflow.utils.db.releases_db_connections`
   (#447). Under ASGI, Django calls the error handlers, and `log_response` for every
   response >= 400, via `sync_to_async(thread_sensitive=False)`. They run in a
   loop-executor thread (`asyncio_N`) that `request_finished` never cleans up. The
@@ -1593,7 +1611,7 @@ from the template-level `i18n` used elsewhere).
   health-checked it either, so after a Postgres restart every error page served from
   that thread was a 500. The wrapper calls `close_if_unusable_or_obsolete()` on
   entry and exit, and skips atomic blocks. Production's `mail_admins` is
-  `suchar_overflow.log.AdminEmailHandler`, whose `emit` is wrapped the same way. It
+  `suchar_overflow.utils.log.AdminEmailHandler`, whose `emit` is wrapped the same way. It
   sits on the `django` logger. `base.py` clears the handlers Django's
   `DEFAULT_LOGGING` leaves there (`disable_existing_loggers=False` keeps them). That
   stock `AdminEmailHandler` had doubled every admin email and bypassed the wrapper.
