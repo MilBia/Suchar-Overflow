@@ -3,8 +3,9 @@
 pre-commit runs on the host from `.pre-commit-config.yaml` revs, while the
 container (and anyone running `ruff`/`djlint` directly) uses the versions
 pinned in the `dev` dependency group. When the two drift, the same file is
-formatted differently depending on where the tool ran. Parsed as text so no
-YAML dependency is needed.
+formatted differently depending on where the tool ran. django-upgrade's
+--target-version is checked against the Django minor the same way. Parsed as
+text so no YAML dependency is needed.
 """
 
 import re
@@ -54,3 +55,23 @@ def test_precommit_hook_rev_matches_pyproject_pin(package: str) -> None:
         f"{package}: bump the hook rev in .pre-commit-config.yaml and the pin in "
         "pyproject.toml together"
     )
+
+
+def _django_minor() -> str:
+    pyproject = tomllib.loads(_PYPROJECT.read_text(encoding="utf-8"))
+    for requirement in pyproject["project"]["dependencies"]:
+        match = re.fullmatch(r"django\s*>=\s*(\d+\.\d+)\b.*", requirement.strip())
+        if match:
+            return match.group(1)
+    pytest.fail("no `django>=X.Y` requirement in [project.dependencies]")
+
+
+def test_django_upgrade_targets_the_pinned_django_minor() -> None:
+    # A stale --target-version makes django-upgrade silently skip the rewrites
+    # for the Django minor the project actually runs (#451 found it on 6.0).
+    if not _PRECOMMIT.exists():
+        pytest.skip(".pre-commit-config.yaml not present (image without bind mount)")
+    config = _PRECOMMIT.read_text(encoding="utf-8")
+    match = re.search(r"['\"]--target-version['\"],\s*['\"]([\d.]+)['\"]", config)
+    assert match, "no django-upgrade --target-version in .pre-commit-config.yaml"
+    assert match.group(1) == _django_minor()

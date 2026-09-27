@@ -300,5 +300,5 @@ def test_form_save_does_not_clobber_engine_managed_fields() -> None:
 
     suchar.refresh_from_db()
     assert suchar.text == "after"
-    assert suchar.edit_count == 4
+    assert suchar.edit_count == 4  # not reset to the stale 0
     assert suchar.is_overdried is True

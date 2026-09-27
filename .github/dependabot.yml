@@ -65,6 +65,15 @@ updates:
     schedule:
       interval: 'daily'
     groups:
+      # Listed first: a dependency joins the first group it matches. ruff and
+      # djLint bumps also need the hook rev in .pre-commit-config.yaml, which
+      # Dependabot doesn't touch, so tests/test_precommit_hook_versions.py fails
+      # their PR until that commit is added (#451). Their own group keeps that
+      # red test from holding up the rest of the python bumps.
+      lint-tools:
+        patterns:
+          - 'ruff'
+          - 'djlint'
       python:
         update-types:
           - 'minor'

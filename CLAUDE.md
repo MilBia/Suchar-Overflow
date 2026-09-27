@@ -183,7 +183,12 @@ Always run a second time after auto-fixes to confirm all hooks pass.
 
 The `ruff` and `djLint` hook `rev`s must equal the `==` pins in `pyproject.toml`'s
 `dev` group — bump both together (and `django-upgrade`'s `--target-version` with
-Django's minor). `tests/test_precommit_hook_versions.py` fails on drift (#451).
+Django's minor). `tests/test_precommit_hook_versions.py` fails on drift (#451),
+including a `--target-version` that isn't the Django minor in `[project.dependencies]`.
+Dependabot bumps the pins but never the hook revs, so its `lint-tools` group PR
+(ruff + djLint, split from the `python` group so it can't block other bumps) is red
+until you push a commit to that PR with the matching `rev`
+(`pre-commit autoupdate --repo <url>` bumps to the latest tag, so check it equals the pin).
 
 ## Test patterns
 
