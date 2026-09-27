@@ -72,11 +72,31 @@ incremental cycle collector, reverted in 3.14.5. Each ASGI request leaves its re
 graph in a reference cycle, and that collector fell behind them (135 → 270 MB over 8
 load rounds on 3.14.2, flat ~101 MB on 3.14.7). The image was stuck there because
 astral's `uv:python3.14-bookworm-slim` tag stopped moving, so both Dockerfiles now
-take Python from the official `python:3.14-slim-bookworm` and copy `uv` in from
-a pinned `ghcr.io/astral-sh/uv:<version>` stage. `tests/test_python_runtime.py`
-fails on a pre-3.14.5 interpreter, but only in the local/CI image. The fix is
-`just build --pull` (`just prod-build --pull` for production), because a plain build
-reuses the cached base. Locally, django-debug-toolbar with
+take Python from the official `python:3.14-slim-trixie` (Debian 13, #437) and copy
+`uv` in from a pinned `ghcr.io/astral-sh/uv:<version>` stage. All three `FROM
+python:` lines (local; production build and run) must name the same tag, so the
+venv is never built against a different glibc than the one that runs it.
+`tests/test_python_runtime.py` checks that statically, and in the local/CI image it
+also fails on a pre-3.14.5 interpreter or a Debian release that doesn't match the
+tag. The fix is `just build --pull` (`just prod-build --pull` for production),
+because a plain build reuses the cached base.
+
+No test notices when an official tag itself **freezes** (docker-library stops
+rebuilding a Debian variant, as astral did) — it needs the network, so it doesn't
+belong in `just test`. Check it by hand on each Dependabot `docker-python` PR or
+periodic dependency review:
+
+```bash
+docker pull -q python:3.14-slim-trixie
+docker image inspect python:3.14-slim-trixie \
+  --format '{{.Created}} {{range .Config.Env}}{{println .}}{{end}}' | grep -E '^20|PYTHON_VERSION'
+curl -s https://endoflife.date/api/python/3.14.json   # "latest": newest 3.14.x
+```
+
+An image `Created` more than a few weeks back, or a `PYTHON_VERSION` behind a 3.14.x
+that has been out for over a week, means the tag stopped moving: switch every stage
+to the next Debian codename at once. When the next Debian becomes stable, move then
+rather than waiting for the freeze. Locally, django-debug-toolbar with
 `SHOW_TEMPLATE_CONTEXT = True` still pushes a worker to a ~1.3 GB high-water mark
 under a request flood: about 9 MB per stored request, with the freed memory held by
 malloc. It is bounded and kept on purpose; don't read it as a leak.
