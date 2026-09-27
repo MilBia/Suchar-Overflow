@@ -15,56 +15,42 @@ fi
 # generated user/password are alphanumeric, but a value containing @ : / % # ? would
 # otherwise produce a silently malformed DATABASE_URL. Host/port are structural and
 # left verbatim. `python3` is always on PATH in this image and cannot fail on a
-# plain quote() call, so it is safe under `set -o errexit`; this file is also
-# `source`d by the local image's /etc/bash.bashrc snippet
-# (compose/local/django/bashrc.sh, #404), hence keep it dependency-free and tidy up
-# the helper afterwards.
+# plain quote() call, so it is safe under `set -o errexit`. config/settings/base.py
+# builds the same DSN itself when DATABASE_URL is absent (#453), so processes that
+# skip this ENTRYPOINT (`docker compose exec`) still get a database.
 _urlencode() {
     python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"
 }
 export DATABASE_URL="postgres://$(_urlencode "${POSTGRES_USER}"):$(_urlencode "${POSTGRES_PASSWORD}")@${POSTGRES_HOST}:${POSTGRES_PORT}/$(_urlencode "${POSTGRES_DB}")"
 unset -f _urlencode
 
-# The local image's compose/local/django/bashrc.sh (#404) `source`s this file (not
-# executes it), in a child `bash -c`, purely to read DATABASE_URL for interactive
-# shells (`docker exec ... bash`, devcontainer terminals). Everything below this
-# point is blocking (wait-for-it, twice) or can hard-`exit 1` (an unparseable
-# REDIS_URL) — under `source` that would stall or abort every new shell on a
-# transient Redis/Postgres blip. Gate it to only run when this script is the process being
-# executed (the real Docker ENTRYPOINT invocation), not sourced.
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" -t 30
+wait-for-it "${POSTGRES_HOST}:${POSTGRES_PORT}" -t 30
 
-    >&2 echo 'PostgreSQL is available'
+>&2 echo 'PostgreSQL is available'
 
-    # Parse host/port out of REDIS_URL (e.g. redis://[:password@]host[:port]/db, or
-    # rediss:// for TLS) the same way config/settings/base.py derives REDIS_SSL, so we
-    # wait on the exact host/port Django's cache backend (django_redis) will connect
-    # to instead of hardcoding the compose service name. The port is optional in the
-    # Redis URI spec (redis-py/django-redis default it to 6379), and a bracketed IPv6
-    # host (redis://[::1]:6379/0) must not be split on the colons inside the brackets.
-    # This entrypoint is also used by the local/CI image
-    # (compose/local/django/Dockerfile), whose env files don't set REDIS_URL as a
-    # shell var — Django's own default (config/settings/base.py) is a Python-level
-    # env() default, not a shell one — so fall back to that exact same default string
-    # here too, under `set -o nounset`.
-    redis_url="${REDIS_URL:-redis://redis:6379/0}"
-    if [[ "${redis_url}" =~ ^rediss?://([^/@]*@)?(\[[^]]+\]|[^:/]+)(:([0-9]+))? ]]; then
-        REDIS_HOST="${BASH_REMATCH[2]}"
-        REDIS_PORT="${BASH_REMATCH[4]:-6379}"
-        # Strip the brackets an IPv6 host was matched with.
-        REDIS_HOST="${REDIS_HOST#[}"
-        REDIS_HOST="${REDIS_HOST%]}"
-    else
-        >&2 echo "Could not parse host/port out of REDIS_URL=${redis_url}"
-        exit 1
-    fi
-
-    wait-for-it "${REDIS_HOST}:${REDIS_PORT}" -t 30
-
-    >&2 echo 'Redis is available'
-
-    unset redis_url REDIS_HOST REDIS_PORT
-
-    exec "$@"
+# Parse host/port out of REDIS_URL (e.g. redis://[:password@]host[:port]/db, or
+# rediss:// for TLS) the same way config/settings/base.py derives REDIS_SSL, so we
+# wait on the exact host/port Django's cache backend (django_redis) will connect
+# to instead of hardcoding the compose service name. The port is optional in the
+# Redis URI spec (redis-py/django-redis default it to 6379), and a bracketed IPv6
+# host (redis://[::1]:6379/0) must not be split on the colons inside the brackets.
+# REDIS_URL has no default here or in settings: both env files set it (#453).
+redis_url="${REDIS_URL:?REDIS_URL must be set in the .envs/.*/.django env file}"
+if [[ "${redis_url}" =~ ^rediss?://([^/@]*@)?(\[[^]]+\]|[^:/]+)(:([0-9]+))? ]]; then
+    REDIS_HOST="${BASH_REMATCH[2]}"
+    REDIS_PORT="${BASH_REMATCH[4]:-6379}"
+    # Strip the brackets an IPv6 host was matched with.
+    REDIS_HOST="${REDIS_HOST#[}"
+    REDIS_HOST="${REDIS_HOST%]}"
+else
+    >&2 echo "Could not parse host/port out of REDIS_URL=${redis_url}"
+    exit 1
 fi
+
+wait-for-it "${REDIS_HOST}:${REDIS_PORT}" -t 30
+
+>&2 echo 'Redis is available'
+
+unset redis_url REDIS_HOST REDIS_PORT
+
+exec "$@"

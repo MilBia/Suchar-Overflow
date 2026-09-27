@@ -38,23 +38,23 @@ manage +args:
     @docker compose run --rm django python ./manage.py {{args}}
 
 # Needs `just up` (unlike `manage`, which spins up a fresh `run --rm` container).
-# Goes through /entrypoint because `docker compose exec` skips it, and it is what
-# sets DATABASE_URL (#404).
+# `docker compose exec` skips /entrypoint; settings build DATABASE_URL from
+# POSTGRES_* themselves (#453), so none of these needs it.
 # shell: Open shell_plus in the running django container.
 shell *args:
-    @docker compose exec django /entrypoint python ./manage.py shell_plus {{args}}
+    @docker compose exec django python ./manage.py shell_plus {{args}}
 
-# Needs `just up`; DATABASE_URL is set via /entrypoint, as for `shell` (#404).
+# Needs `just up`.
 # bash: Open a bash shell in the running django container.
 bash:
-    @docker compose exec django /entrypoint bash
+    @docker compose exec django bash
 
-# Needs `just up`; DATABASE_URL is set via /entrypoint (#404). Like `shell`/`bash`
-# it allocates a TTY, so from a script/cron (stdin not a terminal) use `just manage`
-# (`run --rm`) instead. Example: `just exec python manage.py showmigrations`.
+# Needs `just up`. Like `shell`/`bash` it allocates a TTY, so from a script/cron
+# (stdin not a terminal) use `just manage` (`run --rm`) instead.
+# Example: `just exec python manage.py showmigrations`.
 # exec: Run any command in the running django container.
 exec +args:
-    @docker compose exec django /entrypoint {{args}}
+    @docker compose exec django {{args}}
 
 # Needs `just up`. For a hung dev server (#403): SIGUSR1 makes the uvicorn worker
 # print every thread's Python stack to `just logs` (faulthandler, set in

@@ -2,3 +2,15 @@
 # ------------------------------------------------------------------------------
 USE_DOCKER=yes
 DJANGO_SETTINGS_MODULE=config.settings.local
+# Local-only development key (settings carry no default for it, #453).
+DJANGO_SECRET_KEY=cyK4VvpwGM7EpstJLbiTOtPh2On3tyUNs9p331Yo38OPkiBqgiLCeLnjaNT5VPUi
+
+# Email
+# ------------------------------------------------------------------------------
+# The mailpit container; its web UI is on localhost:8025.
+DJANGO_EMAIL_HOST=mailpit
+DJANGO_EMAIL_PORT=1025
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0

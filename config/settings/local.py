@@ -11,10 +11,8 @@ from .base import env
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = env(
-    "DJANGO_SECRET_KEY",
-    default="cyK4VvpwGM7EpstJLbiTOtPh2On3tyUNs9p331Yo38OPkiBqgiLCeLnjaNT5VPUi",
-)
+# No default in code: the dev key lives in .envs/.local/.django (#453).
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 # Wildcard is fine for local dev only; the other entries were redundant.
 ALLOWED_HOSTS = ["*"]
@@ -31,18 +29,8 @@ CACHES = {
 
 # EMAIL
 # ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/topics/email/#mailers
-# Route dev mail to the mailpit container (web UI on localhost:8025).
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
-        "OPTIONS": {
-            "host": env("EMAIL_HOST", default="mailpit"),
-            "port": env.int("EMAIL_PORT", default=1025),
-            "timeout": 5,
-        },
-    },
-}
+# base.py's MAILERS reads DJANGO_EMAIL_HOST/PORT; .envs/.local/.django points them
+# at the mailpit container (web UI on localhost:8025).
 
 # WhiteNoise
 # ------------------------------------------------------------------------------

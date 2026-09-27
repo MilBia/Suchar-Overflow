@@ -64,6 +64,9 @@ async def test_error_paths_release_executor_thread_connections(
     cookie = await sync_to_async(login_session_cookie)("error-handler-probe")
     settings.DEBUG = False
     settings.ROOT_URLCONF = "tests.error_probe_urls"
+    # AdminEmailHandler skips building the report (and reading request.user)
+    # when there is nobody to mail; ADMINS is empty unless DJANGO_ADMINS is set (#453).
+    settings.ADMINS = ["admin@example.com"]
     opened: list[tuple[BaseDatabaseWrapper, str]] = []
 
     def record(

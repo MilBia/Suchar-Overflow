@@ -97,6 +97,7 @@ jobs:
             # --no-deps + empty entrypoint + a dummy DATABASE_URL: mypy / django-stubs
             # only loads settings, it never opens a DB or Redis connection, so there is
             # no reason to build & start postgres/redis/mailpit or wait on them (~50s).
+            # With DATABASE_URL set, settings never read POSTGRES_* (#453).
             # Nothing runs in the background, so there is nothing to tear down.
             - name: Run mypy
               run: >-
