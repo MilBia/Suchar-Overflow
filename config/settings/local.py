@@ -4,6 +4,7 @@ import signal
 from .base import *  # noqa: F403
 from .base import INSTALLED_APPS
 from .base import MIDDLEWARE
+from .base import TEMPLATES
 from .base import env
 
 # GENERAL
@@ -17,15 +18,19 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 # Wildcard is fine for local dev only; the other entries were redundant.
 ALLOWED_HOSTS = ["*"]
 
-# CACHES
+# TEMPLATES
 # ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#caches
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "",
-    },
-}
+# Non-cached loaders (#454). With DEBUG on, Django still wraps the loaders in the
+# cached loader and relies on runserver's autoreloader to reset it when a template
+# changes. The dev server is uvicorn, which never sends that signal, and its
+# --reload only restarts on *.py/*.mo, so an edited *.html kept rendering the old
+# version until a restart. Listing the loaders explicitly (APP_DIRS must then be
+# False) re-reads every template on each render.
+TEMPLATES[0]["APP_DIRS"] = False
+TEMPLATES[0]["OPTIONS"]["loaders"] = [  # type: ignore[index]
+    "django.template.loaders.filesystem.Loader",
+    "django.template.loaders.app_directories.Loader",
+]
 
 # EMAIL
 # ------------------------------------------------------------------------------
