@@ -1523,6 +1523,13 @@ from the template-level `i18n` used elsewhere).
   render SVG. Regenerate it with `just gen-og-image` (#440): it runs Chromium in
   the container so the self-hosted fonts render, and its output is not
   byte-deterministic, so re-run only on a design change.
+- `handler500` is `suchar_overflow.views.server_error` (#442): it renders the
+  themed `500.html` and, if that raises, logs it and serves a static page. Keep
+  that `try/except`. Under ASGI, an exception escaping `handler500` means no
+  response and so no `request_finished`. `close_old_connections` then never runs,
+  and the request's connection stays open in its dead per-request thread until
+  cyclic GC finds it; an idle worker never does. Measured: 50 → 50 after 5 s idle.
+  `tests/test_handler500_db_connection.py` drives `ASGIHandler` directly to guard it.
 - Never use `innerHTML` with untrusted data. Use `createElement`/`textContent` or
   `appendChild` for dynamic DOM construction.
 
