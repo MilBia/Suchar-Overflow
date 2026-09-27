@@ -36,13 +36,15 @@ def _load() -> ModuleType:
 
 freshness = _load()
 
+NOW = datetime(2026, 9, 27, 12, tzinfo=UTC)
+
 
 @pytest.fixture(autouse=True)
-def _no_retry_delay(monkeypatch: pytest.MonkeyPatch) -> None:
+def _pinned_clock_no_retry_delay(monkeypatch: pytest.MonkeyPatch) -> None:
+    # main() judges the stubbed Created/release dates against "now"; a real
+    # clock would turn fresh stubs stale once they age past MAX_IMAGE_AGE.
+    monkeypatch.setattr(freshness, "_now", lambda: NOW)
     monkeypatch.setattr(freshness, "RETRY_DELAY", timedelta(0))
-
-
-NOW = datetime(2026, 9, 27, 12, tzinfo=UTC)
 
 
 def _evaluate(

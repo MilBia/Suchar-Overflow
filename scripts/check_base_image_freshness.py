@@ -177,6 +177,11 @@ def fetch_latest(cycle: str) -> tuple[str, datetime]:
         raise CheckError(msg) from exc
 
 
+def _now() -> datetime:
+    """The reference time; tests pin it so main()'s verdicts don't age."""
+    return datetime.now(tz=UTC)
+
+
 def with_retry[T](func: Callable[[str], T], arg: str) -> T:
     """Call ``func(arg)``, retrying once on ``CheckError`` after ``RETRY_DELAY``."""
     for attempt in range(1, ATTEMPTS + 1):
@@ -257,7 +262,7 @@ def main(argv: list[str] | None = None) -> int:
             python_version=python_version,
             latest=latest,
             latest_release_date=latest_release_date,
-            now=datetime.now(tz=UTC),
+            now=_now(),
             max_age=timedelta(days=args.max_age_days),
         )
         report = build_report(
