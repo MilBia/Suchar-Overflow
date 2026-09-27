@@ -7,6 +7,13 @@ Frontend: Django templates (DjangoTemplates backend), vanilla JS, CSS custom pro
 Package manager: `uv`. Local dev and CI both run inside Docker Compose.
 Compose services: `django`, `postgres`, `redis`, `mailpit` (catches outgoing dev email at
 `localhost:8025`).
+`compose/base/` holds what both stacks share (`django/entrypoint`, the `postgres/` image and
+its `maintenance/` backup scripts); `compose/local/` and `compose/production/` hold only their
+own Django `Dockerfile`/`start` plus Traefik/nginx (#456). Every `FROM` and pulled `image:`
+names its registry (`docker.io/…`, `ghcr.io/…`), because podman doesn't assume Docker Hub;
+`tests/test_compose_images.py` guards that. Postgres, Redis and Mailpit have healthchecks and
+`django` waits for `service_healthy`. Django itself has none yet. Redis snapshots to a
+named `/data` volume (`--save 60 1`).
 Local Django apps: `suchar_overflow.users`, `suchar_overflow.suchary`,
 `suchar_overflow.stats`, `suchar_overflow.achievements`, and `suchar_overflow.utils`
 (#455: cross-cutting code — error handlers, middleware, context processors, logging,
@@ -74,9 +81,9 @@ incremental cycle collector, reverted in 3.14.5. Each ASGI request leaves its re
 graph in a reference cycle, and that collector fell behind them (135 → 270 MB over 8
 load rounds on 3.14.2, flat ~101 MB on 3.14.7). The image was stuck there because
 astral's `uv:python3.14-bookworm-slim` tag stopped moving, so both Dockerfiles now
-take Python from the official `python:3.14-slim-trixie` (Debian 13, #437) and copy
+take Python from the official `docker.io/python:3.14-slim-trixie` (Debian 13, #437) and copy
 `uv` in from a pinned `ghcr.io/astral-sh/uv:<version>` stage. All three `FROM
-python:` lines (local; production build and run) must name the same tag, so the
+docker.io/python:` lines (local; production build and run) must name the same tag, so the
 venv is never built against a different glibc than the one that runs it.
 `tests/test_python_runtime.py` checks that statically, and in the local/CI image it
 also fails on a pre-3.14.5 interpreter or a Debian release that doesn't match the
@@ -94,9 +101,10 @@ which is never a silent pass; the pull and the API call are retried once first, 
 single network blip doesn't alert. On failure the workflow opens one issue titled
 "Obraz bazowy python wygląda na zamrożony (#445)", or comments on it if it is already
 open. A manual run with the `force_stale` input (limit 0 days) exercises that path on
-a healthy image and marks the issue text as a drill. A PR that touches the script or
-the workflow runs the check report-only. It needs the network, so it is not in `just
-test`; only its pure logic is (`tests/test_base_image_freshness.py`). Dependabot never
+a healthy image and marks the issue text as a drill. A PR that touches the script, the
+workflow or the production Django Dockerfile it parses runs the check report-only. It
+needs the network, so it is not in `just test`; only its pure logic is
+(`tests/test_base_image_freshness.py`). Dependabot never
 proposes a Python bump for the floating `3.14-slim-trixie` tag (minor/major are
 ignored and the tag has no patch part), so its `docker-python` group PRs are in
 practice uv bumps only. Residual blind spot: GitHub disables scheduled workflows after
@@ -104,7 +112,8 @@ practice uv bumps only. Residual blind spot: GitHub disables scheduled workflows
 spell. To check by hand, run `./scripts/check_base_image_freshness.py` on the host
 (needs Docker). When it reports a frozen tag, switch every stage to the next Debian
 codename at once. When the next Debian becomes stable, move then rather than waiting
-for the freeze.
+for the freeze. `compose/base/postgres/Dockerfile` pins the codename the same way
+(`docker.io/postgres:18-trixie`, #456); move it in the same change.
 
 Locally, django-debug-toolbar with `SHOW_TEMPLATE_CONTEXT = True` still pushes a
 worker to a ~1.3 GB high-water mark under a request flood: about 9 MB per stored

@@ -6,7 +6,7 @@
 # keep both FROM lines on one tag (#437, tests/test_python_runtime.py).
 FROM ghcr.io/astral-sh/uv:0.12.19 AS uv
 
-FROM python:3.14-slim-trixie AS python-build-stage
+FROM docker.io/python:3.14-slim-trixie AS python-build-stage
 COPY --from=uv /uv /uvx /bin/
 
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=0
@@ -36,7 +36,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
 # Python 'run' stage
-FROM python:3.14-slim-trixie AS python-run-stage
+FROM docker.io/python:3.14-slim-trixie AS python-run-stage
 
 ARG APP_HOME=/app
 
@@ -59,7 +59,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && rm -rf /var/lib/apt/lists/*
 
 
-COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint
+COPY --chown=django:django ./compose/base/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 
