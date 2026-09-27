@@ -45,7 +45,7 @@ def _load_production_settings(monkeypatch: pytest.MonkeyPatch) -> ModuleType:
     return importlib.reload(module)
 
 
-def dotted_paths(config: Any) -> list[str]:  # noqa: ANN401
+def _dotted_paths(config: Any) -> list[str]:  # noqa: ANN401
     """The dotted paths ``config`` (a settings module or ``django.conf.settings``) names."""
     paths = list(config.MIDDLEWARE)
     for engine in config.TEMPLATES:
@@ -68,7 +68,7 @@ def _assert_all_import(paths: list[str]) -> None:
 
 
 def test_test_settings_paths_import() -> None:
-    paths = dotted_paths(settings)
+    paths = _dotted_paths(settings)
     # Not vacuous: middleware, context processors and LOGGING are all collected.
     assert set(settings.MIDDLEWARE) <= set(paths)
     # django-stubs types TEMPLATES/LOGGING loosely; widen them to index into them.
@@ -81,7 +81,7 @@ def test_test_settings_paths_import() -> None:
 
 def test_production_settings_paths_import(monkeypatch: pytest.MonkeyPatch) -> None:
     production = _load_production_settings(monkeypatch)
-    paths = dotted_paths(production)
+    paths = _dotted_paths(production)
     # Not vacuous: the production-only handler and filter are collected. Read
     # from the settings, not spelled out, so a typo there still reaches
     # import_string below (test_logging_settings pins the class name itself).

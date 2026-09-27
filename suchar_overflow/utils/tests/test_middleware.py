@@ -14,9 +14,8 @@ from suchar_overflow.utils.middleware import zone_from_request
 
 NEW_YORK = zoneinfo.ZoneInfo("America/New_York")
 
+
 # Only exact IANA keys are accepted.
-
-
 @pytest.mark.parametrize(
     ("cookie", "expected"),
     [
