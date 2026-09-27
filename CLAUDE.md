@@ -384,13 +384,6 @@ Rules:
 - Never use expressions that reference sibling settings in `base.py` defaults
   (e.g. `X = not DEBUG`) if child files need a different value.
 
-Every dotted path the settings name as a string — `MIDDLEWARE`, the template
-`context_processors`, and the `LOGGING` handler/filter/formatter `class`/`()` keys — is
-imported by `tests/test_settings_import_paths.py` for both the test settings and
-`config.settings.production` (#455). Ruff and mypy never read these strings, and some
-(`mail_admins`) only resolve in production, so a module move that misses one fails there
-first; keep the test green when moving code into or out of `suchar_overflow.utils`.
-
 Current safe defaults in `base.py`:
 
 - `COMPRESS_ENABLED = False` — production.py sets `True`
@@ -407,6 +400,13 @@ reuse is ever needed, use psycopg's pool (`OPTIONS["pool"]`, needs the `pool` ex
 `CONN_MAX_AGE` anyway, though only lazily, on first use. That is why the guard in
 `tests/test_db_connection_settings.py` checks `CONN_MAX_AGE == 0` alone, with no
 pool exemption.
+
+Every dotted path the settings name as a string — `MIDDLEWARE`, the template
+`context_processors`, and the `LOGGING` handler/filter/formatter `class`/`()` keys — is
+imported by `tests/test_settings_import_paths.py` for both the test settings and
+`config.settings.production` (#455). Ruff and mypy never read these strings, and some
+(`mail_admins`) only resolve in production, so a module move that misses one fails there
+first; keep the test green when moving code into or out of `suchar_overflow.utils`.
 
 ## Architecture notes
 
