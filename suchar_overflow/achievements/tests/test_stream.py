@@ -1,12 +1,17 @@
 """Tests for the achievement SSE stream endpoint."""
 
+import asyncio
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
 from asgiref.sync import sync_to_async
+from django.conf import settings as django_settings
+from django.core.asgi import get_asgi_application
 from django.core.cache import cache
 from django.db import connections
+from django.db.backends.signals import connection_created
+from django.test import Client
 from django.urls import reverse
 
 from suchar_overflow.achievements.cache import pending_cache_key
@@ -14,6 +19,10 @@ from suchar_overflow.achievements.cache import toast_cache_key
 from suchar_overflow.conftest import make_user
 
 if TYPE_CHECKING:
+    from asgiref.typing import ASGIReceiveEvent
+    from asgiref.typing import ASGISendEvent
+    from django.core.handlers.asgi import ASGIHandler
+    from django.db.backends.base.base import BaseDatabaseWrapper
     from django.test import AsyncClient
     from pytest_django.fixtures import Settings as SettingsWrapper
 
@@ -181,3 +190,105 @@ async def test_open_stream_releases_db_connection_after_session_save(
     """
     settings.SESSION_SAVE_EVERY_REQUEST = True
     await _assert_stream_holds_no_db_connection(async_client)
+
+
+_ASGI_STREAMS = 3
+
+
+def _login_session_cookie() -> str:
+    client = Client()
+    client.force_login(make_user("asgi-probe"))
+    return client.cookies[django_settings.SESSION_COOKIE_NAME].value
+
+
+async def _run_stream(
+    app: ASGIHandler,
+    cookie: str,
+    first_chunk: asyncio.Event,
+    disconnect: asyncio.Event,
+) -> None:
+    path = reverse(STREAM_URL)
+    scope = {
+        "type": "http",
+        "asgi": {"version": "3.0"},
+        "http_version": "1.1",
+        "method": "GET",
+        "scheme": "http",
+        "path": path,
+        "raw_path": path.encode(),
+        "query_string": b"",
+        "root_path": "",
+        "headers": [
+            (b"host", b"testserver"),
+            (b"cookie", f"{django_settings.SESSION_COOKIE_NAME}={cookie}".encode()),
+        ],
+        "client": ("127.0.0.1", 1),
+        "server": ("testserver", 80),
+    }
+    request_sent = False
+
+    async def receive() -> ASGIReceiveEvent:
+        nonlocal request_sent
+        if not request_sent:
+            request_sent = True
+            return {"type": "http.request", "body": b"", "more_body": False}
+        await disconnect.wait()
+        return {"type": "http.disconnect"}
+
+    async def send(message: ASGISendEvent) -> None:
+        if message["type"] == "http.response.start":
+            assert message["status"] == HTTPStatus.OK
+        elif message["type"] == "http.response.body" and message.get("body"):
+            first_chunk.set()
+
+    await app(scope, receive, send)  # type: ignore[arg-type]
+
+
+@pytest.mark.anyio
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("save_every_request", [False, True])
+async def test_open_streams_release_db_connections_under_asgi_handler(
+    settings: SettingsWrapper,
+    save_every_request: bool,  # noqa: FBT001
+) -> None:
+    """Same guarantee on the real ASGIHandler path (#434).
+
+    AsyncClient has no per-request ThreadSensitiveContext; ASGIHandler does, so
+    each stream's sync work gets its own thread and its own connection. Every
+    connection opened while the streams are served is recorded through
+    ``connection_created`` (not counted in pg_stat_activity, which other
+    connections to the test DB would skew) and must be closed again once each
+    stream has sent its first chunk.
+    """
+    settings.SESSION_SAVE_EVERY_REQUEST = save_every_request
+    cookie = await sync_to_async(_login_session_cookie)()
+    opened: list[BaseDatabaseWrapper] = []
+
+    def record(
+        sender: object,  # noqa: ARG001
+        connection: BaseDatabaseWrapper,
+        **kwargs: object,  # noqa: ARG001
+    ) -> None:
+        opened.append(connection)
+
+    app = get_asgi_application()
+    disconnect = asyncio.Event()
+    first_chunks = [asyncio.Event() for _ in range(_ASGI_STREAMS)]
+    tasks: list[asyncio.Task[None]] = []
+    connection_created.connect(record, weak=False)
+    try:
+        tasks.extend(
+            asyncio.create_task(_run_stream(app, cookie, event, disconnect))
+            for event in first_chunks
+        )
+        await asyncio.wait_for(
+            asyncio.gather(*(event.wait() for event in first_chunks)),
+            timeout=10,
+        )
+        # Not vacuous: each request did open a connection (session lookup).
+        assert len({id(conn) for conn in opened}) >= _ASGI_STREAMS
+        assert all(conn.connection is None for conn in opened)
+    finally:
+        connection_created.disconnect(record)
+        disconnect.set()
+        await asyncio.wait_for(asyncio.gather(*tasks), timeout=10)
