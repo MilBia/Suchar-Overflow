@@ -1,10 +1,12 @@
 
 # uv from its own pinned image, Python from the official one — see the note in
 # compose/local/django/Dockerfile (#431: astral's python3.14-bookworm tag froze at
-# 3.14.2). Both stages then share the same interpreter the bytecode is built for.
+# 3.14.2). Both stages then share the same interpreter the bytecode is built for,
+# and the same Debian release (glibc) the venv's C extensions are built against —
+# keep both FROM lines on one tag (#437, tests/test_python_runtime.py).
 FROM ghcr.io/astral-sh/uv:0.12.19 AS uv
 
-FROM python:3.14-slim-bookworm AS python-build-stage
+FROM python:3.14-slim-trixie AS python-build-stage
 COPY --from=uv /uv /uvx /bin/
 
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=0
@@ -34,7 +36,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
 # Python 'run' stage
-FROM python:3.14-slim-bookworm AS python-run-stage
+FROM python:3.14-slim-trixie AS python-run-stage
 
 ARG APP_HOME=/app
 

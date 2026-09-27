@@ -2,12 +2,14 @@
 # astral's `uv:python3.14-bookworm-slim` tag stopped moving at Python 3.14.2, whose
 # incremental GC (reverted in 3.14.5) let per-request garbage cycles pile up
 # faster than it collected them — worker RSS grew without bound under load.
-# `python:3.14-slim-bookworm` tracks the latest 3.14.x on the same Debian;
-# tests/test_python_runtime.py fails if a stale cached base slips back in.
+# `python:3.14-slim-trixie` tracks the latest 3.14.x on Debian 13 (#437 moved it
+# off bookworm, which docker-library will eventually stop rebuilding too). Keep the
+# tag identical to both stages of compose/production/django/Dockerfile;
+# tests/test_python_runtime.py fails on a mismatch or a stale cached base.
 FROM ghcr.io/astral-sh/uv:0.12.19 AS uv
 
 # define an alias for the specific python version used in this file.
-FROM python:3.14-slim-bookworm AS python
+FROM python:3.14-slim-trixie AS python
 COPY --from=uv /uv /uvx /bin/
 
 # Python build stage
