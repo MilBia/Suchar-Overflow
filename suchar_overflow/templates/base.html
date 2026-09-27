@@ -23,9 +23,16 @@
           content="{% block og_title %}Suchar Overflow{% endblock og_title %}" />
     <meta property="og:description"
           content="{% block og_description %}{% trans 'Joke aggregator with critically low humidity levels.' %}{% endblock og_description %}" />
+    {% comment %}
+      og:image must be an absolute URL (Open Graph spec), so the origin is
+      prepended here and an og_image override supplies only the path. The
+      500 page renders without a request (#286): the origin is then omitted
+      and the path is emitted as-is rather than as a broken "://host".
+      Every static path here must exist: under production's manifest storage
+      a missing one raises on render, turning every page into a 500 (#436).
+    {% endcomment %}
     <meta property="og:image"
-          content="{% block og_image %}{% static 'images/favicons/favicon.ico' %}{% endblock og_image %}" />
-    <!-- "{% static 'images/logo.svg' %}" -->
+          content="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% endif %}{% block og_image %}{% static 'images/favicons/favicon.svg' %}{% endblock og_image %}" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
     <link rel="icon" href="{% static 'images/favicons/favicon.svg' %}" />
     {% block css %}
