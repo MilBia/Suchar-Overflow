@@ -158,7 +158,7 @@ def test_global_rank_increases_when_others_have_more_votes(client: Client) -> No
 
     client.force_login(u1)
     response = client.get(detail_url("rank_u1"))
-    assert response.context["global_rank"] == 2  # noqa: PLR2004
+    assert response.context["global_rank"] == 2
 
 
 @pytest.mark.django_db
@@ -195,7 +195,7 @@ def test_global_rank_ignores_dry_votes_received(client: Client) -> None:
     client.force_login(dry_only)
     response = client.get(detail_url("dry_only"))
     # 5 dry votes are worth nothing here; funny_only's 3 funny votes rank higher.
-    assert response.context["global_rank"] == 2  # noqa: PLR2004
+    assert response.context["global_rank"] == 2
 
 
 @pytest.mark.django_db
@@ -223,7 +223,7 @@ def test_global_rank_ties_share_position() -> None:
 
     # Two users sit on 5 funny votes (one tier above), so competition ranking
     # would put the 3-vote tier at position 3; dense ranking puts it at 2.
-    assert UserDetailView._compute_rank(3) == 2  # noqa: SLF001, PLR2004
+    assert UserDetailView._compute_rank(3) == 2  # noqa: SLF001
     assert UserDetailView._compute_rank(5) == 1  # noqa: SLF001
 
 
@@ -272,7 +272,7 @@ def test_global_rank_recomputes_after_cache_expiry(client: Client) -> None:
 
     cache.delete(user_rank_cache_key(0))
     response = client.get(detail_url("rank_stale_u"))
-    assert response.context["global_rank"] == 2  # noqa: PLR2004
+    assert response.context["global_rank"] == 2
 
 
 @pytest.mark.django_db
@@ -291,7 +291,7 @@ def test_global_rank_reflects_owner_score_change_within_ttl(client: Client) -> N
     client.force_login(owner)
     # 0 funny votes → behind the rival on 2.
     before = client.get(detail_url("own_change_u")).context["global_rank"]
-    assert before == 2  # noqa: PLR2004
+    assert before == 2
 
     s_owner = Suchar.objects.create(text="owner joke", author=owner)
     for i in range(5):
@@ -351,8 +351,8 @@ def test_heatmap_level_buckets(client: Client) -> None:
     for week in response.context["heatmap_weeks"]:
         for day in week["days"]:
             if day["date"] == today_str:
-                assert day["level"] == 4  # noqa: PLR2004
-                assert day["count"] == 5  # noqa: PLR2004
+                assert day["level"] == 4
+                assert day["count"] == 5
                 found = True
     assert found, "Today's date not found in heatmap"
 
@@ -490,7 +490,7 @@ def test_best_joke_has_funny_and_dry_counts(client: Client) -> None:
     client.force_login(user)
     response = client.get(detail_url("bestjoke_counts_u"))
     best_joke = response.context["best_joke"]
-    assert best_joke.funny_count == 2  # noqa: PLR2004
+    assert best_joke.funny_count == 2
     assert best_joke.dry_count == 1
 
 
@@ -557,7 +557,7 @@ def test_best_joke_total_votes_counts_funny_and_dry(client: Client) -> None:
     client.force_login(user)
     response = client.get(detail_url("bestjoke_total_u"))
     best_joke = response.context["best_joke"]
-    assert best_joke.total_votes == 3  # noqa: PLR2004
+    assert best_joke.total_votes == 3
 
 
 @pytest.mark.django_db
@@ -709,7 +709,7 @@ def test_reception_data_is_list_of_two(client: Client) -> None:
     response = client.get(detail_url("recv_u"))
     data = response.context["reception_data"]
     assert isinstance(data, list)
-    assert len(data) == 2  # noqa: PLR2004
+    assert len(data) == 2
 
 
 # ===========================================================================
@@ -771,7 +771,7 @@ def test_signup_creates_inactive_user(client: Client) -> None:
 
 @pytest.mark.django_db
 def test_password_change_form_uses_shared_error_bubble_styling(client: Client) -> None:
-    user = make_user("pwchange_user", password="OriginalPass123")  # noqa: S106
+    user = make_user("pwchange_user", password="OriginalPass123")
     client.force_login(user)
 
     response = client.post(
@@ -858,8 +858,8 @@ def test_profile_badges_query_count_does_not_grow_with_badge_count(
     second_queries = _achievement_queries(second_ctx)
 
     # Guard against a vacuous pass: the badges really are rendered.
-    assert first_response.content.decode().count("achievement-container") == 2  # noqa: PLR2004
-    assert second_response.content.decode().count("achievement-container") == 5  # noqa: PLR2004
+    assert first_response.content.decode().count("achievement-container") == 2
+    assert second_response.content.decode().count("achievement-container") == 5
 
     assert len(second_queries) == len(first_queries), (
         f"Liczba zapytań o osiągnięcia rośnie z liczbą odznak: "
@@ -899,7 +899,7 @@ def test_build_context_fetches_badges_in_one_query() -> None:
         q["sql"] for q in ctx.captured_queries if "achievements_" in q["sql"]
     ]
     assert len(badge_queries) == 1
-    assert len(context["user_achievements"]) == 3  # noqa: PLR2004
+    assert len(context["user_achievements"]) == 3
 
 
 @pytest.mark.django_db
@@ -943,7 +943,7 @@ def test_profile_badge_without_icon_content_renders_trophy_fallback(
     content = response.content.decode()
 
     assert response.status_code == HTTPStatus.OK
-    assert content.count("🏆") == 2  # noqa: PLR2004
+    assert content.count("🏆") == 2
 
 
 @pytest.mark.django_db
@@ -1257,11 +1257,11 @@ def test_activity_chart_window_starts_at_midnight(request_hour: int) -> None:
 
     labels = context["activity_labels"]
     values = context["activity_values"]
-    assert len(labels) == len(values) == 31  # noqa: PLR2004
+    assert len(labels) == len(values) == 31
     assert labels[0] == oldest_day.isoformat()
     assert labels[-1] == "2024-07-11"
-    assert values[0] == 2  # noqa: PLR2004
-    assert sum(values) == 2  # noqa: PLR2004
+    assert values[0] == 2
+    assert sum(values) == 2
 
 
 @pytest.mark.django_db

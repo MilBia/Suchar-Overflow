@@ -41,7 +41,7 @@ def test_keys_are_distinct() -> None:
         toast_cache_key(5),
         suchar_toast_sent_cache_key(5),
     }
-    assert len(keys) == 4  # noqa: PLR2004
+    assert len(keys) == 4
 
 
 @pytest.mark.django_db

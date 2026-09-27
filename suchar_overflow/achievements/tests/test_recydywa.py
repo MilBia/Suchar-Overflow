@@ -74,7 +74,7 @@ def test_rule_reports_highest_edit_count_among_authored_suchary() -> None:
     Suchar.objects.create(text="a", author=user, edit_count=2)
     Suchar.objects.create(text="b", author=user, edit_count=7)
     Suchar.objects.create(text="c", author=user, edit_count=0)
-    assert EditCountRule.compute_value(user) == 7  # noqa: PLR2004
+    assert EditCountRule.compute_value(user) == 7
 
 
 @pytest.mark.django_db
@@ -300,5 +300,5 @@ def test_form_save_does_not_clobber_engine_managed_fields() -> None:
 
     suchar.refresh_from_db()
     assert suchar.text == "after"
-    assert suchar.edit_count == 4  # noqa: PLR2004 — not reset to the stale 0
+    assert suchar.edit_count == 4
     assert suchar.is_overdried is True

@@ -57,7 +57,7 @@ def test_all_django_image_stages_share_one_python_base() -> None:
     # the unit/E2E suites run on what production ships.
     images = _python_base_images()
     # local: 1 alias stage; production: build + run stage.
-    assert len(images) == 3, images  # noqa: PLR2004
+    assert len(images) == 3, images
     assert len(set(images)) == 1, f"Python base images differ: {images}"
 
 

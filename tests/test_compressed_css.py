@@ -61,7 +61,7 @@ def compressed_home(settings: Settings) -> str:
     cache.clear()
 
     response = Client().get("/")
-    assert response.status_code == 200  # noqa: PLR2004
+    assert response.status_code == 200
 
     hrefs = LINK_RE.findall(response.content.decode())
     # base.html's {% compress css %} block must collapse to exactly one request.

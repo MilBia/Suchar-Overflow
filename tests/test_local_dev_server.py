@@ -25,4 +25,4 @@ def test_local_uvicorn_bounds_graceful_shutdown() -> None:
     uvicorn_cmd = text[start:]
     match = _TIMEOUT_RE.search(uvicorn_cmd)
     assert match, "local uvicorn must pass --timeout-graceful-shutdown (#403)"
-    assert 0 < int(match.group(1)) <= 10  # noqa: PLR2004
+    assert 0 < int(match.group(1)) <= 10

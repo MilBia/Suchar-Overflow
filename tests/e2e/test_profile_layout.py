@@ -106,7 +106,7 @@ def other_user(db: None) -> UserModel:  # noqa: ARG001
     return User.objects.create_user(
         username="innyprofil",
         email="inny@test.example.com",
-        password="unused-password-123",  # noqa: S106
+        password="unused-password-123",
     )
 
 
@@ -205,10 +205,10 @@ def test_dashboard_chrome(
     if result["menuCardBodyPad"] is not None:
         assert result["menuCardBodyPad"] == "0px", result
     assert result["clipped"] == [], result
-    if viewport_width == 375:  # noqa: PLR2004
+    if viewport_width == 375:
         # 16px container gutter + 1px card border + 16px .profile-body inset.
         assert result["profileBodyPad"] == "16px", result
-        assert result["contentLeft"] <= 33.5, result  # noqa: PLR2004
+        assert result["contentLeft"] <= 33.5, result
 
 
 # The badge popover stays on screen when shown and next to its badge (#415):

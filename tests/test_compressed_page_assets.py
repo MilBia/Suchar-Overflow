@@ -56,7 +56,7 @@ def _render(client: Client, settings: SettingsWrapper, url: str) -> str:
     cache.clear()
 
     response = client.get(url)
-    assert response.status_code == 200, (url, response.status_code)  # noqa: PLR2004
+    assert response.status_code == 200, (url, response.status_code)
     return response.content.decode()
 
 
@@ -232,7 +232,7 @@ def test_user_detail_css_is_compressed(
     hrefs = LINK_TAG_RE.findall(html)
     uncompressed = [href for href in hrefs if not href.startswith("/static/CACHE/css/")]
     assert not uncompressed, uncompressed
-    assert len(set(hrefs)) == 2, hrefs  # noqa: PLR2004
+    assert len(set(hrefs)) == 2, hrefs
 
 
 # Every page with its own `{% compress %}` block (#205, plus #250 which moved
@@ -285,7 +285,7 @@ def test_pages_render_under_offline_compression(
                 resolved["username"] = user.username
             url = reverse(url_name, kwargs=resolved)
             response = client.get(url)
-            assert response.status_code == 200, (url, response.status_code)  # noqa: PLR2004
+            assert response.status_code == 200, (url, response.status_code)
     finally:
         # django-stubs doesn't know compressor's settings; "manifest.json" is
         # its documented default for COMPRESS_OFFLINE_MANIFEST.

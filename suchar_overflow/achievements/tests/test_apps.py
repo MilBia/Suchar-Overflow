@@ -105,17 +105,17 @@ def test_catch_up_missed_monthly_run_awards_the_missed_period_not_current() -> N
     may_winner = User.objects.create_user(
         username="may-winner",
         email="may-winner@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     june_poster = User.objects.create_user(
         username="june-poster",
         email="june-poster@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     voter = User.objects.create_user(
         username="voter169",
         email="voter169@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
 
     may_at = datetime.datetime(2024, 5, 15, 12, 0, tzinfo=datetime.UTC)
@@ -211,17 +211,17 @@ def test_catch_up_missed_yearly_run_awards_the_missed_period_not_current() -> No
     year_winner = User.objects.create_user(
         username="year-winner",
         email="year-winner@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     current_year_poster = User.objects.create_user(
         username="current-year-poster",
         email="current-year-poster@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     voter = User.objects.create_user(
         username="voter168",
         email="voter168@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
 
     year_at = datetime.datetime(2023, 5, 15, 12, 0, tzinfo=datetime.UTC)
@@ -279,7 +279,7 @@ def test_catch_up_missed_publication_run_awards_a_suchar_published_while_down() 
     author = User.objects.create_user(
         username="downtime-author",
         email="downtime-author@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = Achievement.objects.create(
         slug="catchup-count-1",

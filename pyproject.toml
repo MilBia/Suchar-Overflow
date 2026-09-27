@@ -148,6 +148,12 @@ ignore = [
 # One-off dev build scripts (run on the host, never imported) — progress output
 # on stdout is the point.
 "scripts/*" = ["T201"]
+# Tests: magic numbers in assertions and fixture passwords are the norm, not a
+# smell — ignore them per-file instead of a `# noqa` on every such line (#451).
+"conftest.py" = ["PLR2004", "S106"]
+"**/conftest.py" = ["PLR2004", "S106"]
+"**/tests/**/*.py" = ["PLR2004", "S106"]
+"tests/**/*.py" = ["PLR2004", "S106"]
 
 [tool.ruff.lint.isort]
 force-single-line = true

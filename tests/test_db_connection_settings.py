@@ -79,4 +79,4 @@ def test_production_conn_max_age_stays_overridable_via_env(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     settings = _load_production_settings(monkeypatch, CONN_MAX_AGE="30")
-    assert settings.DATABASES["default"]["CONN_MAX_AGE"] == 30  # noqa: PLR2004
+    assert settings.DATABASES["default"]["CONN_MAX_AGE"] == 30

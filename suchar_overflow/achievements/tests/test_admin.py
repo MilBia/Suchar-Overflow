@@ -716,7 +716,7 @@ class TestSubTierTranslationCopy:
                 "tier_thresholds": "5,10,25",
             },
         )
-        if response.status_code != 302:  # noqa: PLR2004
+        if response.status_code != 302:
             pytest.fail(response.context["adminform"].form.errors.as_text())
 
         silver = self._localized("ladder-base-silver")

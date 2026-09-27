@@ -91,7 +91,7 @@ def test_pages_render_under_manifest_storage(client: Client) -> None:
 
     # Anonymous first: the home page is the one a link-preview crawler hits.
     response = client.get(reverse("home"))
-    assert response.status_code == 200  # noqa: PLR2004
+    assert response.status_code == 200
 
     client.force_login(user)
     for url_name, kwargs in PAGES:
@@ -100,7 +100,7 @@ def test_pages_render_under_manifest_storage(client: Client) -> None:
             resolved["username"] = user.username
         url = reverse(url_name, kwargs=resolved)
         response = client.get(url)
-        assert response.status_code == 200, (url, response.status_code)  # noqa: PLR2004
+        assert response.status_code == 200, (url, response.status_code)
 
 
 @pytest.mark.django_db

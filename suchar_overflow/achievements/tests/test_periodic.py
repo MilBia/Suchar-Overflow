@@ -22,12 +22,12 @@ def test_award_periodic_month() -> None:
     winner = User.objects.create_user(
         username="winner",
         email="winner@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     loser = User.objects.create_user(
         username="loser",
         email="loser@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
 
     mid_last_month = last_month_mid()
@@ -47,7 +47,7 @@ def test_award_periodic_month() -> None:
         u = User.objects.create_user(
             username=f"voter{i}",
             email=f"voter{i}@example.com",
-            password="password",  # noqa: S106
+            password="password",
         )
         Vote.objects.create(suchar=s1, user=u, is_funny=True)
 
@@ -71,7 +71,7 @@ def test_award_periodic_year() -> None:
     winner = User.objects.create_user(
         username="year_winner",
         email="year_winner@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
 
     s1 = Suchar.objects.create(text="Yearly best", author=winner)
@@ -81,7 +81,7 @@ def test_award_periodic_year() -> None:
     voter = User.objects.create_user(
         username="voter_y",
         email="voter_y@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     Vote.objects.create(suchar=s1, user=voter, is_funny=True)
 
@@ -109,12 +109,12 @@ def test_award_periodic_month_tie_awards_all_tied_authors() -> None:
     author_a = User.objects.create_user(
         username="cmd-tie-a",
         email="cmd-tie-a@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     author_b = User.objects.create_user(
         username="cmd-tie-b",
         email="cmd-tie-b@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
 
     mid_last_month = last_month_mid()
@@ -155,12 +155,12 @@ def test_award_periodic_month_missing_main_achievement_reports_error_even_with_t
     author_a = User.objects.create_user(
         username="missing-main-a",
         email="missing-main-a@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
     author_b = User.objects.create_user(
         username="missing-main-b",
         email="missing-main-b@example.com",
-        password="password",  # noqa: S106
+        password="password",
     )
 
     mid_last_month = last_month_mid()
@@ -191,7 +191,7 @@ def test_award_periodic_month_winner_is_highest_vote_getter() -> None:
         User.objects.create_user(
             username=f"author{i}",
             email=f"author{i}@example.com",
-            password="password",  # noqa: S106
+            password="password",
         )
         for i in range(3)
     ]
@@ -210,7 +210,7 @@ def test_award_periodic_month_winner_is_highest_vote_getter() -> None:
             voter = User.objects.create_user(
                 username=f"v{i}_{j}",
                 email=f"v{i}_{j}@example.com",
-                password="password",  # noqa: S106
+                password="password",
             )
             Vote.objects.create(suchar=suchars[i], user=voter, is_funny=True)
 

@@ -90,7 +90,7 @@ def test_python_behind_latest_within_grace_passes() -> None:
 
 def test_both_reasons_reported() -> None:
     _, reasons = _evaluate(created_days_ago=100, python_version="3.14.2")
-    assert len(reasons) == 2  # noqa: PLR2004
+    assert len(reasons) == 2
 
 
 def test_versions_compare_numerically() -> None:

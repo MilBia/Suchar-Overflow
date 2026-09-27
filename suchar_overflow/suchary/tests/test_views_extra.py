@@ -143,12 +143,12 @@ def test_list_annotates_user_is_funny_for_authenticated(
     author = django_user_model.objects.create_user(
         username="auth_author",
         email="aa@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     voter = django_user_model.objects.create_user(
         username="auth_voter",
         email="av@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     suchar = Suchar.objects.create(text="annotated joke", author=author)
     Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
@@ -169,12 +169,12 @@ def test_list_annotates_user_is_dry_for_authenticated(
     author = django_user_model.objects.create_user(
         username="dry_author",
         email="da@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     voter = django_user_model.objects.create_user(
         username="dry_voter",
         email="dv@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     suchar = Suchar.objects.create(text="dry annotated joke", author=author)
     Vote.objects.create(suchar=suchar, user=voter, is_dry=True)
@@ -194,7 +194,7 @@ def test_list_no_user_vote_annotations_for_anonymous(
     author = django_user_model.objects.create_user(
         username="anon_author",
         email="ano@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     Suchar.objects.create(text="anon joke", author=author)
 
@@ -218,7 +218,7 @@ def test_list_combined_text_and_tag_filter(
     author = django_user_model.objects.create_user(
         username="combo_auth",
         email="combo@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     tag_py = Tag.objects.create(name="Python", slug="python")
     s_match = Suchar.objects.create(text="Python joke", author=author)
@@ -252,12 +252,12 @@ def test_list_author_filter_exact_match(
     u1 = django_user_model.objects.create_user(
         username="alice",
         email="alice@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     u2 = django_user_model.objects.create_user(
         username="bob",
         email="bob@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     s_alice = Suchar.objects.create(text="Alice joke", author=u1)
     Suchar.objects.create(text="Bob joke", author=u2)
@@ -296,7 +296,7 @@ def _make_editable_suchar(django_user_model: type[UserModel], slug: str) -> Such
     author = django_user_model.objects.create_user(
         username=f"upd_{slug}",
         email=f"{slug}@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     future = timezone.now() + timedelta(days=1)
     return Suchar.objects.create(
@@ -315,7 +315,7 @@ def test_update_non_author_forbidden(
     other = django_user_model.objects.create_user(
         username="upd_other",
         email="uo@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
 
     client.force_login(other)
@@ -445,7 +445,7 @@ def test_update_author_gets_too_late_page_for_published(
     author = django_user_model.objects.create_user(
         username="upd_auth3",
         email="ua3@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     past = timezone.now() - timedelta(seconds=1)
     suchar = Suchar.objects.create(text="Old joke", author=author, published_at=past)

@@ -83,12 +83,12 @@ def test_find_best_suchary_returns_single_winner_when_no_tie() -> None:
     author = User.objects.create_user(
         username="solo",
         email="solo@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     other = User.objects.create_user(
         username="solo-other",
         email="solo-other@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     s_win = Suchar.objects.create(text="Winner", author=author)
     s_win.created_at = s_win.published_at = mid
@@ -110,17 +110,17 @@ def test_find_best_suchary_returns_all_suchary_tied_for_top_vote_count() -> None
     author_a = User.objects.create_user(
         username="tie-a",
         email="tie-a@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     author_b = User.objects.create_user(
         username="tie-b",
         email="tie-b@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     author_c = User.objects.create_user(
         username="tie-c",
         email="tie-c@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     s_a = Suchar.objects.create(text="A", author=author_a)
     s_a.created_at = s_a.published_at = mid
@@ -163,12 +163,12 @@ def test_find_best_suchary_returns_empty_list_when_all_suchary_have_zero_votes()
     author_a = User.objects.create_user(
         username="zero-a",
         email="zero-a@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     author_b = User.objects.create_user(
         username="zero-b",
         email="zero-b@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     for author in (author_a, author_b):
         s = Suchar.objects.create(text=f"No votes for {author.username}", author=author)
@@ -196,12 +196,12 @@ def test_find_best_suchary_window_follows_published_at_not_created_at() -> None:
     author = User.objects.create_user(
         username="scheduled-author",
         email="scheduled-author@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     voter = User.objects.create_user(
         username="scheduled-voter",
         email="scheduled-voter@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     scheduled = Suchar.objects.create(text="Written in January", author=author)
     scheduled.created_at = datetime.datetime(2024, 1, 30, 12, 0, tzinfo=datetime.UTC)
@@ -236,12 +236,12 @@ def test_find_best_suchary_window_follows_published_at_not_created_at_year() -> 
     author = User.objects.create_user(
         username="scheduled-author-year",
         email="scheduled-author-year@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     voter = User.objects.create_user(
         username="scheduled-voter-year",
         email="scheduled-voter-year@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     scheduled = Suchar.objects.create(text="Written in December", author=author)
     scheduled.created_at = datetime.datetime(2023, 12, 28, 12, 0, tzinfo=datetime.UTC)
@@ -276,7 +276,7 @@ def test_award_winners_single_winner_gets_no_tie_achievement() -> None:
     winner = User.objects.create_user(
         username="award-solo",
         email="award-solo@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     s = Suchar.objects.create(text="Solo joke", author=winner)
 
@@ -300,12 +300,12 @@ def test_award_winners_different_authors_tied_both_get_main_and_tie_achievement(
     author_a = User.objects.create_user(
         username="award-tie-a",
         email="award-tie-a@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     author_b = User.objects.create_user(
         username="award-tie-b",
         email="award-tie-b@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     s_a = Suchar.objects.create(text="Tie A", author=author_a)
     s_b = Suchar.objects.create(text="Tie B", author=author_b)
@@ -332,12 +332,12 @@ def test_award_winners_results_are_ordered_by_username() -> None:
     author_z = User.objects.create_user(
         username="zzz-order",
         email="zzz-order@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     author_a = User.objects.create_user(
         username="aaa-order",
         email="aaa-order@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     s_z = Suchar.objects.create(text="Z", author=author_z)
     s_a = Suchar.objects.create(text="A", author=author_a)
@@ -367,7 +367,7 @@ def test_award_winners_same_author_tied_with_self_gets_no_tie_achievement() -> N
     author = User.objects.create_user(
         username="award-self-tie",
         email="award-self-tie@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     s1 = Suchar.objects.create(text="Self A", author=author)
     s2 = Suchar.objects.create(text="Self B", author=author)
@@ -404,12 +404,12 @@ def test_award_best_suchar_month_awards_winner() -> None:
     winner = User.objects.create_user(
         username="winner",
         email="w@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     loser = User.objects.create_user(
         username="loser",
         email="l@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
 
     mid = last_month_mid()
@@ -424,7 +424,7 @@ def test_award_best_suchar_month_awards_winner() -> None:
         u = User.objects.create_user(
             username=f"v{i}",
             email=f"v{i}@example.com",
-            password="pw",  # noqa: S106
+            password="pw",
         )
         Vote.objects.create(suchar=s_win, user=u, is_funny=True)
     Vote.objects.create(suchar=s_lose, user=winner, is_funny=True)
@@ -455,12 +455,12 @@ def test_award_best_suchar_month_tie_awards_all_tied_authors() -> None:
     author_a = User.objects.create_user(
         username="task-tie-a",
         email="task-tie-a@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     author_b = User.objects.create_user(
         username="task-tie-b",
         email="task-tie-b@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
 
     mid = last_month_mid()
@@ -501,7 +501,7 @@ def test_award_best_suchar_uses_explicit_reference_date_when_given() -> None:
     winner = User.objects.create_user(
         username="explicit-ref",
         email="explicit-ref@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     may_at = datetime.datetime(2024, 5, 15, 12, 0, tzinfo=datetime.UTC)
     s = Suchar.objects.create(text="May joke", author=winner)
@@ -510,7 +510,7 @@ def test_award_best_suchar_uses_explicit_reference_date_when_given() -> None:
     voter = User.objects.create_user(
         username="voter-explicit-ref",
         email="voter-explicit-ref@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     Vote.objects.create(suchar=s, user=voter, is_funny=True)
 
@@ -535,12 +535,12 @@ def test_award_best_suchar_awards_a_scheduled_suchar_in_its_publication_month() 
     author = User.objects.create_user(
         username="sched-award",
         email="sched-award@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     voter = User.objects.create_user(
         username="sched-award-voter",
         email="sched-award-voter@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     scheduled = Suchar.objects.create(text="Scheduled joke", author=author)
     scheduled.created_at = datetime.datetime(2024, 1, 30, 12, 0, tzinfo=datetime.UTC)
@@ -591,7 +591,7 @@ def test_award_best_suchar_month_missing_achievement_does_not_crash() -> None:
     winner = User.objects.create_user(
         username="w2",
         email="w2@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     mid = last_month_mid()
     s = Suchar.objects.create(text="Joke", author=winner)
@@ -600,7 +600,7 @@ def test_award_best_suchar_month_missing_achievement_does_not_crash() -> None:
     voter = User.objects.create_user(
         username="vw2",
         email="vw2@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     Vote.objects.create(suchar=s, user=voter, is_funny=True)
 
@@ -629,7 +629,7 @@ def test_award_best_suchar_is_idempotent() -> None:
     winner = User.objects.create_user(
         username="idem",
         email="idem@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     mid = last_month_mid()
     s = Suchar.objects.create(text="Idempotent joke", author=winner)
@@ -638,7 +638,7 @@ def test_award_best_suchar_is_idempotent() -> None:
     voter = User.objects.create_user(
         username="votidem",
         email="vi@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     Vote.objects.create(suchar=s, user=voter, is_funny=True)
 
@@ -891,7 +891,7 @@ def test_award_best_suchar_logs_warning_when_achievement_missing(
     winner = User.objects.create_user(
         username="w3",
         email="w3@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     mid = last_month_mid()
     s = Suchar.objects.create(text="Joke", author=winner)
@@ -900,7 +900,7 @@ def test_award_best_suchar_logs_warning_when_achievement_missing(
     voter = User.objects.create_user(
         username="vw3",
         email="vw3@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     Vote.objects.create(suchar=s, user=voter, is_funny=True)
 
@@ -971,7 +971,7 @@ def test_award_publication_achievements_awards_after_scheduled_suchar_goes_live(
     author = User.objects.create_user(
         username="pub1",
         email="pub1@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
@@ -1013,7 +1013,7 @@ def test_award_publication_achievements_ignores_suchar_published_before_last_run
     author = User.objects.create_user(
         username="pub2",
         email="pub2@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
@@ -1037,7 +1037,7 @@ def test_award_publication_achievements_processes_suchar_published_after_last_ru
     author = User.objects.create_user(
         username="pub3",
         email="pub3@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
@@ -1058,7 +1058,7 @@ def test_award_publication_achievements_first_run_floor_ignores_old_suchary() ->
     author = User.objects.create_user(
         username="pub4",
         email="pub4@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
@@ -1075,7 +1075,7 @@ def test_award_publication_achievements_ignores_still_scheduled_suchary() -> Non
     author = User.objects.create_user(
         username="pub5",
         email="pub5@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = _count_suchar_achievement()
     _scheduled_suchar(author)  # published_at is a day in the future
@@ -1091,7 +1091,7 @@ def test_award_publication_achievements_is_idempotent() -> None:
     author = User.objects.create_user(
         username="pub6",
         email="pub6@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
@@ -1112,7 +1112,7 @@ def test_award_publication_achievements_passes_instance_for_night_owl() -> None:
     author = User.objects.create_user(
         username="pub7",
         email="pub7@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     night_owl = Achievement.objects.create(
         slug="pub-night-owl-1",
@@ -1175,7 +1175,7 @@ def test_award_publication_achievements_overlap_recovers_backdated_publish() -> 
     author = User.objects.create_user(
         username="pub-overlap",
         email="pub-overlap@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
@@ -1205,7 +1205,7 @@ def test_award_publication_achievements_overlap_still_has_a_lower_bound() -> Non
     author = User.objects.create_user(
         username="pub-lb",
         email="pub-lb@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
@@ -1231,12 +1231,12 @@ def test_award_publication_achievements_one_bad_suchar_does_not_stall_the_job(
     author_bad = User.objects.create_user(
         username="pub-bad",
         email="pub-bad@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     author_ok = User.objects.create_user(
         username="pub-ok",
         email="pub-ok@example.com",
-        password="pw",  # noqa: S106
+        password="pw",
     )
     ach = _count_suchar_achievement()
     bad = _scheduled_suchar(author_bad, text="boom")

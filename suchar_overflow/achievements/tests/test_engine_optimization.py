@@ -56,12 +56,12 @@ class TestAchievementEngineOptimizations:
         user = User.objects.create_user(
             username="testuser",
             email="1@a.com",
-            password="123",  # noqa: S106
+            password="123",
         )
         other_user = User.objects.create_user(
             username="otheruser",
             email="2@a.com",
-            password="123",  # noqa: S106
+            password="123",
         )
 
         # Create achievement checking metric SUM_SCORE
@@ -261,8 +261,8 @@ def _build_multi_metric_scenario() -> tuple[UserType, Suchar]:
         Vote.objects.create(
             suchar=foreign,
             user=user,
-            is_funny=i < 2,  # noqa: PLR2004
-            is_dry=i >= 2,  # noqa: PLR2004
+            is_funny=i < 2,
+            is_dry=i >= 2,
         )
 
     # Tiered series straddling what the user has actually reached.
