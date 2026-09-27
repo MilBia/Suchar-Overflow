@@ -137,6 +137,26 @@ def test_check_failure_is_not_a_pass(
     assert "Nie udało się" in report.read_text(encoding="utf-8")
 
 
+def test_unexpected_error_is_not_a_pass_either(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    # Not a CheckError: an uncaught one would exit 1 ("stale") with no report.
+    monkeypatch.setattr(
+        freshness,
+        "inspect_image",
+        lambda _image: (datetime(2026, 9, 19, tzinfo=UTC), "3.14.8rc1"),
+    )
+    monkeypatch.setattr(
+        freshness,
+        "fetch_latest",
+        lambda _cycle: ("3.14.7", datetime(2026, 8, 5, tzinfo=UTC)),
+    )
+    report = tmp_path / "report.md"
+    assert freshness.main(["--report", str(report)]) == freshness.EXIT_ERROR
+    assert "Nie udało się" in report.read_text(encoding="utf-8")
+
+
 def test_stale_result_exits_one(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         freshness,

@@ -46,7 +46,7 @@ jobs:
           python3 scripts/check_base_image_freshness.py --report report.md
           code=$?
           echo "code=$code" >> "$GITHUB_OUTPUT"
-          cat report.md >> "$GITHUB_STEP_SUMMARY"
+          cat report.md >> "$GITHUB_STEP_SUMMARY" || true
           exit "$code"
 
       - name: Open or update the frozen-image issue
@@ -56,12 +56,14 @@ jobs:
           CODE: ${{ steps.check.outputs.code }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          if [ "$CODE" = "2" ]; then
-            header="Sprawdzenie świeżości obrazu bazowego nie powiodło się."
-          else
+          # Only exit 1 is a verdict; 2, or no code at all, means the check broke.
+          if [ "$CODE" = "1" ]; then
             header="Tygodniowe sprawdzenie wykryło nieaktualny obraz bazowy."
+          else
+            header="Sprawdzenie świeżości obrazu bazowego nie powiodło się."
           fi
-          { echo "$header"; echo; cat report.md; echo; echo "Run: $RUN_URL"; } > body.md
+          report=$(cat report.md 2>/dev/null || echo "(brak raportu, szczegóły w logu runu)")
+          { echo "$header"; echo; echo "$report"; echo; echo "Run: $RUN_URL"; } > body.md
           existing=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" \
             --json number,title --limit 50 \
             | jq -r --arg t "$ISSUE_TITLE" '[.[] | select(.title == $t)][0].number // empty')

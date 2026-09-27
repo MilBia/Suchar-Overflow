@@ -221,30 +221,32 @@ def main(argv: list[str] | None = None) -> int:
         image = f"python:{tag}"
         created, python_version = inspect_image(image)
         latest, latest_release_date = fetch_latest(release_cycle(tag))
-    except CheckError as exc:
-        emit(
-            "Nie udało się sprawdzić świeżości obrazu bazowego "
-            f"(to nie jest wynik „aktualny”):\n\n```\n{exc}\n```\n",
+        verdict = evaluate(
+            created=created,
+            python_version=python_version,
+            latest=latest,
+            latest_release_date=latest_release_date,
+            now=datetime.now(tz=UTC),
         )
-        return EXIT_ERROR
-
-    verdict = evaluate(
-        created=created,
-        python_version=python_version,
-        latest=latest,
-        latest_release_date=latest_release_date,
-        now=datetime.now(tz=UTC),
-    )
-    emit(
-        build_report(
+        report = build_report(
             image=image,
             created=created,
             python_version=python_version,
             latest=latest,
             latest_release_date=latest_release_date,
             verdict=verdict,
-        ),
-    )
+        )
+    # Anything unexpected (an API field renamed, a version like "3.14.8rc1") is
+    # "could not check" too: an uncaught traceback would exit 1, i.e. "stale",
+    # and leave the workflow without a report for the issue.
+    except Exception as exc:  # noqa: BLE001
+        emit(
+            "Nie udało się sprawdzić świeżości obrazu bazowego "
+            f"(to nie jest wynik „aktualny”):\n\n```\n{exc!r}\n```\n",
+        )
+        return EXIT_ERROR
+
+    emit(report)
     return EXIT_STALE if verdict.stale else EXIT_FRESH
 
 
