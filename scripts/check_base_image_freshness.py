@@ -24,15 +24,15 @@ import subprocess
 import sys
 import time
 import urllib.request
+
+# A real import, not TYPE_CHECKING: the script also runs on hosts whose python3
+# predates 3.14's lazy annotations (PEP 649), where with_retry's would fail.
+from collections.abc import Callable  # noqa: TC003
 from dataclasses import dataclass
 from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCKERFILE = REPO_ROOT / "compose" / "production" / "django" / "Dockerfile"

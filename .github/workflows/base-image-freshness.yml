@@ -44,6 +44,12 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v7
 
+      # The runner's system python3 lags the project's; use the same one as ci.yml.
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: '.python-version'
+
       - name: Check the base image
         id: check
         # 0 fresh, 1 stale, 2 the check could not run — both non-zero fail the
@@ -66,7 +72,8 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           # Only exit 1 is a verdict; 2, or no code at all, means the check broke.
-          if [ "$CODE" = "1" ]; then
+          # A crash before main() (import/syntax error) also exits 1, without a report.
+          if [ "$CODE" = "1" ] && [ -f report.md ]; then
             header="Tygodniowe sprawdzenie wykryło nieaktualny obraz bazowy."
           else
             header="Sprawdzenie świeżości obrazu bazowego nie powiodło się."
