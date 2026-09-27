@@ -627,12 +627,14 @@ msgstr ""
 #: suchar_overflow/templates/500.html:10 suchar_overflow/templates/500.html:15
 #: tests/test_error_pages.py:70
 msgid "500 — coś chrupnęło"
-msgstr ""
+msgstr "500 — something cracked"
 
 #: suchar_overflow/templates/500.html:17 tests/test_error_pages.py:73
 msgid ""
 "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — odśwież za chwilę."
 msgstr ""
+"The server heard a dry joke and fell apart. We are already on it — refresh in "
+"a moment."
 
 #: suchar_overflow/templates/achievements/_card.html:20
 msgid "Achievement locked. Discover its secret by playing!"
