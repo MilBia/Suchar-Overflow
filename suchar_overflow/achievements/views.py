@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from asgiref.sync import sync_to_async
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.db import connections
 from django.http import StreamingHttpResponse
 from django.shortcuts import render
 
@@ -22,6 +23,21 @@ if TYPE_CHECKING:
     from django.http import HttpResponse
 
 
+def _release_db_connections() -> None:
+    """Close this thread's DB connections so an open SSE stream doesn't pin one.
+
+    Under ASGI a request's sync code (``auser()``, the session lookup, the
+    middleware's response phase) runs in a per-request ``ThreadSensitiveContext``
+    thread whose connection is only released by ``request_finished`` — i.e. when
+    the stream ends, possibly hours later. The loop only reads the cache, so it
+    needs none (#434). Skipped inside an atomic block (a non-``transaction=True``
+    pytest-django test), where closing would break the transaction.
+    """
+    for conn in connections.all(initialized_only=True):
+        if not conn.in_atomic_block:
+            conn.close()
+
+
 @login_required
 async def achievement_stream(request: HttpRequest) -> StreamingHttpResponse:
     """SSE: check for pending achievements in a loop, keeping connection open."""
@@ -36,6 +52,12 @@ async def achievement_stream(request: HttpRequest) -> StreamingHttpResponse:
     toast_key = toast_cache_key(user.pk)
 
     async def event_stream() -> AsyncGenerator[str]:
+        # Here, not in the view: the generator only starts once the whole
+        # middleware response phase (e.g. SessionMiddleware saving a modified
+        # session) has run, and that could reopen a connection closed earlier.
+        # sync_to_async (thread-sensitive) runs in the same per-request thread
+        # that owns the connection.
+        await sync_to_async(_release_db_connections)()
         yield "retry: 5000\n\n"
         while True:
             try:

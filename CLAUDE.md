@@ -419,6 +419,18 @@ fakes `EventSource`; a restore fires no `load`, so it uses
 `go_back(wait_until="commit")`. It is parametrized: the second run suppresses
 `visibilitychange`, so the `pageshow` fallback is exercised too.
 
+**No pinned Postgres connection (#434).** The request's sync work (`auser()`, the
+session lookup) opens a connection in its per-request `ThreadSensitiveContext`
+thread. Only `request_finished` releases it, when the stream ends, so each open
+tab held one idle connection (measured 1/5/10 for 1/5/10 streams). The loop reads
+only the cache, so `event_stream()` calls `_release_db_connections()` as its
+**first** step, via thread-sensitive `sync_to_async` in that same thread. It is
+not called in the view body. The middleware response phase runs after the view
+returns, and a session save there reopens the connection: with
+`SESSION_SAVE_EVERY_REQUEST` a view-level close still left 5/10 connections, while
+the generator close left 0. `test_open_stream_releases_db_connection*` in
+`achievements/tests/test_stream.py` guards both placements.
+
 Because the generator never completes on its own, the general test advice
 "consume with `b"".join(response.streaming_content)`" (see Test patterns above)
 **does not apply to this endpoint** — it would hang. Tests instead iterate
