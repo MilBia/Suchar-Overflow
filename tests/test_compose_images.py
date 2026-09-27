@@ -76,7 +76,8 @@ def test_django_waits_for_healthy_backing_services(compose_file: Path) -> None:
     assert isinstance(depends_on, dict), "use the long depends_on form with a condition"
     for dependency, spec in depends_on.items():
         assert "healthcheck" in services[dependency], f"{dependency} has no healthcheck"
-        assert spec == {"condition": "service_healthy"}, dependency
+        # .get: leaves room for `restart: true` / `required:` next to the condition.
+        assert spec.get("condition") == "service_healthy", dependency
 
 
 @pytest.mark.parametrize("compose_file", _COMPOSE_FILES, ids=lambda p: p.name)
@@ -84,7 +85,10 @@ def test_postgres_healthcheck_targets_the_configured_database(compose_file: Path
     test = _load(compose_file)["services"]["postgres"]["healthcheck"]["test"]
     # `$$` so compose leaves the variables to the container's shell, which has
     # them from the env file; without -d pg_isready probes a DB named after the user.
-    assert test == ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+    # -h 127.0.0.1 because the temporary server the image runs during initdb on a
+    # fresh volume listens on the Unix socket only (`listen_addresses=''`): a socket
+    # probe reports "accepting connections" before the real server is up.
+    assert test == ["CMD-SHELL", "pg_isready -h 127.0.0.1 -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
 
 
 @pytest.mark.parametrize("compose_file", _COMPOSE_FILES, ids=lambda p: p.name)

@@ -57,7 +57,7 @@ cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowa
 | **Baza danych**               | PostgreSQL 18                                         |
 | **Cache**                     | Redis 8 (django-redis)                                |
 | **Harmonogram zadań**         | APScheduler (wbudowany w Django)                      |
-| **Serwer WSGI**               | Gunicorn                                              |
+| **Serwer ASGI**               | Gunicorn + Uvicorn                                    |
 | **Reverse Proxy**             | Traefik 3 (produkcja)                                 |
 | **Media Proxy**               | Nginx (produkcja)                                     |
 | **Konteneryzacja**            | Docker & Docker Compose                               |
@@ -108,6 +108,9 @@ docker compose -f docker-compose.local.yml up -d --remove-orphans
 Postgres, Redis i Mailpit mają healthchecki, a `django` startuje dopiero, gdy są
 `healthy` — stan widać w `docker compose -f docker-compose.local.yml ps`. Redis zapisuje
 migawkę na wolumen (`--save 60 1`), więc jego dane przetrwają restart kontenera.
+Obraz Postgresa buduje się teraz lokalnie jako `suchar_overflow_local_postgres`; stary
+`suchar_overflow_production_postgres` z wcześniejszych buildów można usunąć:
+`docker image rm suchar_overflow_production_postgres` (tylko na maszynie deweloperskiej, nie na serwerze).
 
 Lub:
 
