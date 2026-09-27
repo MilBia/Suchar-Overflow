@@ -9,13 +9,15 @@ way as ``tests/test_hsts_settings.py``.
 """
 
 import importlib
+import logging
 
 # Real import (not TYPE_CHECKING-guarded): kept plain to match every other test
 # module; ModuleType and pytest are only referenced in annotations here.
 from types import ModuleType  # noqa: TC003
 from typing import Any
 
-import pytest  # noqa: TC002
+import pytest
+from django.utils import log
 
 from config.settings import base
 
@@ -49,5 +51,47 @@ def test_production_keeps_apscheduler_quiet_and_its_own_loggers(
 ) -> None:
     loggers = _load_production_settings(monkeypatch).LOGGING["loggers"]
     assert loggers["apscheduler.executors"]["level"] == "WARNING"
-    assert loggers["django.request"]["handlers"] == ["mail_admins"]
+    assert loggers["django.request"]["level"] == "ERROR"
     assert "django.security.DisallowedHost" in loggers
+
+
+def test_base_drops_djangos_default_django_handlers() -> None:
+    # Django's DEFAULT_LOGGING attaches a stock AdminEmailHandler to "django"
+    # and disable_existing_loggers=False would keep it: a second email for every
+    # error, sent from a handler that strands executor-thread connections (#447).
+    logging_config: dict[str, Any] = base.LOGGING
+    assert logging_config["loggers"]["django"]["handlers"] == []
+    live = logging.getLogger("django").handlers
+    assert not [h for h in live if isinstance(h, log.AdminEmailHandler)]
+
+
+@pytest.mark.parametrize(
+    "logger_name",
+    ["django.request", "django.security.DisallowedHost", "django.security.csrf"],
+)
+def test_production_emails_each_django_error_once(
+    monkeypatch: pytest.MonkeyPatch,
+    logger_name: str,
+) -> None:
+    logging_config = _load_production_settings(monkeypatch).LOGGING
+    loggers = logging_config["loggers"]
+    mail_handlers: list[str] = []
+    # Walk the propagation chain the way logging does: this logger, its dotted
+    # ancestors, then root, stopping at the first one with propagate=False.
+    parts = logger_name.split(".")
+    chain = [".".join(parts[:i]) for i in range(len(parts), 0, -1)]
+    for name in chain:
+        entry = loggers.get(name, {})
+        mail_handlers += [h for h in entry.get("handlers", []) if h == "mail_admins"]
+        if not entry.get("propagate", True):
+            break
+    else:
+        mail_handlers += [
+            h for h in logging_config["root"]["handlers"] if h == "mail_admins"
+        ]
+    assert mail_handlers == ["mail_admins"]
+    # Through the subclass that releases its DB connection (#447).
+    assert (
+        logging_config["handlers"]["mail_admins"]["class"]
+        == "suchar_overflow.log.AdminEmailHandler"
+    )

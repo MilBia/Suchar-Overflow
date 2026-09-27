@@ -1533,6 +1533,24 @@ from the template-level `i18n` used elsewhere).
   and the request's connection stays open in its dead per-request thread until
   cyclic GC finds it; an idle worker never does. Measured: 50 → 50 after 5 s idle.
   `tests/test_handler500_db_connection.py` drives `ASGIHandler` directly to guard it.
+- `handler400`/`403`/`404` are `suchar_overflow.views` wrappers of Django's defaults,
+  and every handler goes through `suchar_overflow.db.releases_db_connections`
+  (#447). Under ASGI, Django calls the error handlers, and `log_response` for every
+  response >= 400, via `sync_to_async(thread_sensitive=False)`. They run in a
+  loop-executor thread (`asyncio_N`) that `request_finished` never cleans up. The
+  403/404 pages read `request.user` through context processors, and the admin email
+  report reads it too. The connection that read opens was never closed. Nothing
+  health-checked it either, so after a Postgres restart every error page served from
+  that thread was a 500. The wrapper calls `close_if_unusable_or_obsolete()` on
+  entry and exit, and skips atomic blocks. Production's `mail_admins` is
+  `suchar_overflow.log.AdminEmailHandler`, whose `emit` is wrapped the same way. It
+  sits on the `django` logger. `base.py` clears the handlers Django's
+  `DEFAULT_LOGGING` leaves there (`disable_existing_loggers=False` keeps them). That
+  stock `AdminEmailHandler` had doubled every admin email and bypassed the wrapper.
+  Keep the `"django": {"handlers": []}` entry in base. A new `handler*`, or an error
+  path that runs in the executor, needs the wrapper.
+  `tests/test_error_handler_db_connections.py` (`ASGIHandler` + the thread name
+  that opened each connection) and `tests/test_logging_settings.py` guard this.
 - Never use `innerHTML` with untrusted data. Use `createElement`/`textContent` or
   `appendChild` for dynamic DOM construction.
 
