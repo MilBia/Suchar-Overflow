@@ -105,9 +105,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # 1.5 Scheduled Suchary (Owner Only)
         if is_owner:
             context["scheduled_suchary"] = (
-                user.suchary.filter(published_at__gt=now)
-                .prefetch_related("tags")
-                .order_by("published_at")
+                user.suchary.filter(published_at__gt=now).prefetch_related("tags").order_by("published_at")
             )
 
         # 2. Total Score & Count
@@ -194,10 +192,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
             .annotate(count=Count("id"))
         )
         counts = {entry["date"].date(): entry["count"] for entry in activity_data}
-        chart_days = [
-            start_date + datetime.timedelta(days=offset)
-            for offset in range(ACTIVITY_CHART_DAYS + 1)
-        ]
+        chart_days = [start_date + datetime.timedelta(days=offset) for offset in range(ACTIVITY_CHART_DAYS + 1)]
         context["activity_labels"] = [day.strftime("%Y-%m-%d") for day in chart_days]
         context["activity_values"] = [counts.get(day, 0) for day in chart_days]
 
@@ -259,11 +254,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
             ),
         )
         ranked_population = scored_users.filter(funny_score__gt=0).count()
-        higher_users = (
-            ranked_population
-            if threshold == 0
-            else scored_users.filter(funny_score__gt=threshold).count()
-        )
+        higher_users = ranked_population if threshold == 0 else scored_users.filter(funny_score__gt=threshold).count()
         return {
             "rank": cls._compute_rank(threshold),
             "higher_users": higher_users,

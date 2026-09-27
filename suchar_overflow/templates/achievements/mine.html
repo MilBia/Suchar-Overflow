@@ -3,37 +3,38 @@
 {% load static i18n compress %}
 
 {% block title %}
-  {% trans "My Achievements" %} | Suchar Overflow
+    {% trans "My Achievements" %} | Suchar Overflow
 {% endblock title %}
 
 {% block css %}
-  {{ block.super }}
-  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-  {% compress css %}
-    <link href="{% static 'css/achievement-page.css' %}" rel="stylesheet" />
-  {% endcompress %}
+    {{ block.super }}
+    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+    {% compress css %}
+        <link href="{% static 'css/achievement-page.css' %}" rel="stylesheet" />
+    {% endcompress %}
 {% endblock css %}
 
 {% block content %}
-  <div class="achievements-container fade-in-up">
-    <header class="achievements-header text-center pb-4 mb-5 border-bottom border-secondary">
-      <h1 class="achievements-title gradient-text fw-bold">{% trans "My Achievements" %}</h1>
-      <p class="achievements-subtitle text-muted fs-5">{% trans "All achievements you have earned, newest first." %}</p>
-      <a href="{% url 'achievements:list' %}"
-         class="btn btn-outline btn-sm mt-2">{% trans "Browse all achievements" %}</a>
-    </header>
+    <div class="achievements-container fade-in-up">
+        <header class="achievements-header text-center pb-4 mb-5 border-bottom border-secondary">
+            <h1 class="achievements-title gradient-text fw-bold">{% trans "My Achievements" %}</h1>
+            <p class="achievements-subtitle text-muted fs-5">{% trans "All achievements you have earned, newest first." %}</p>
+            <a href="{% url 'achievements:list' %}"
+               class="btn btn-outline btn-sm mt-2">{% trans "Browse all achievements" %}</a>
+        </header>
 
-    {% if user_achievements %}
-      <div class="achievements-grid">
-        {% for ua in user_achievements %}
-          {% include "achievements/_card.html" with achievement=ua.achievement locked=False awarded_at=ua.awarded_at %}
-        {% endfor %}
-      </div>
-    {% else %}
-      <div class="text-center text-muted py-5">
-        <p class="fs-5">{% trans "No achievements yet — go post some jokes!" %}</p>
-        <a href="{% url 'achievements:list' %}" class="btn btn-primary mt-2">{% trans "Browse achievements" %}</a>
-      </div>
-    {% endif %}
-  </div>
+        {% if user_achievements %}
+            <div class="achievements-grid">
+                {% for ua in user_achievements %}
+                    {% include "achievements/_card.html" with achievement=ua.achievement locked=False awarded_at=ua.awarded_at %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center text-muted py-5">
+                <p class="fs-5">{% trans "No achievements yet — go post some jokes!" %}</p>
+                <a href="{% url 'achievements:list' %}"
+                   class="btn btn-primary mt-2">{% trans "Browse achievements" %}</a>
+            </div>
+        {% endif %}
+    </div>
 {% endblock content %}

@@ -1,13 +1,13 @@
 {% load i18n %}
 
 <div class="achievement-card {% if locked %}locked{% else %}unlocked{% endif %} tier-{{ achievement.tier }}">
-  {% if not locked %}<div class="achievement-glow"></div>{% endif %}
-  <div class="achievement-icon-wrapper tier-icon-{{ achievement.tier }}"
-       aria-hidden="true">
-    {% if is_secret %}
-      <div class="lock-icon text-muted">🔒</div>
-    {% elif achievement.icon_content %}
-      {% comment %}
+    {% if not locked %}<div class="achievement-glow"></div>{% endif %}
+    <div class="achievement-icon-wrapper tier-icon-{{ achievement.tier }}"
+         aria-hidden="true">
+        {% if is_secret %}
+            <div class="lock-icon text-muted">🔒</div>
+        {% elif achievement.icon_content %}
+            {% comment %}
         Rendering the icon unescaped is deliberate (#335, #379). icon_content is
         trusted content: it only ever comes from data migrations or from a
         superuser, since the admin hides the field from non-superuser staff —
@@ -15,27 +15,27 @@
         suchar_overflow/achievements/tests/test_admin.py. The SVG has to reach
         the browser raw, otherwise currentColor and the inherited tier styling
         stop working. Sanitizing it was considered and rejected for that reason.
-      {% endcomment %}
-      {{ achievement.icon_content|safe }}
-    {% elif locked %}
-      <div class="lock-icon text-muted">🔒</div>
-    {% else %}
-      <div class="default-icon">🏆</div>
-    {% endif %}
-  </div>
-  <div class="achievement-info {% if locked %}text-muted{% endif %}">
-    {% if is_secret %}
-      <h3 class="achievement-name">???</h3>
-      <p class="achievement-desc">{% trans "Achievement locked. Discover its secret by playing!" %}</p>
-    {% else %}
-      <h3 class="achievement-name">{{ achievement.name }}</h3>
-      <p class="achievement-desc">{{ achievement.description }}</p>
-      {% include "achievements/_tags.html" with achievement=achievement %}
-      {% if awarded_at %}
-        <p class="text-muted mt-2 mb-0 fs-sm">
-          {% blocktrans with date=awarded_at|date:"j N Y, H:i" %}Unlocked: {{ date }}{% endblocktrans %}
-        </p>
-      {% endif %}
-    {% endif %}
-  </div>
+            {% endcomment %}
+            {{ achievement.icon_content|safe }}
+        {% elif locked %}
+            <div class="lock-icon text-muted">🔒</div>
+        {% else %}
+            <div class="default-icon">🏆</div>
+        {% endif %}
+    </div>
+    <div class="achievement-info {% if locked %}text-muted{% endif %}">
+        {% if is_secret %}
+            <h3 class="achievement-name">???</h3>
+            <p class="achievement-desc">{% trans "Achievement locked. Discover its secret by playing!" %}</p>
+        {% else %}
+            <h3 class="achievement-name">{{ achievement.name }}</h3>
+            <p class="achievement-desc">{{ achievement.description }}</p>
+            {% include "achievements/_tags.html" with achievement=achievement %}
+            {% if awarded_at %}
+                <p class="text-muted mt-2 mb-0 fs-sm">
+                    {% blocktrans with date=awarded_at|date:"j N Y, H:i" %}Unlocked: {{ date }}{% endblocktrans %}
+                </p>
+            {% endif %}
+        {% endif %}
+    </div>
 </div>

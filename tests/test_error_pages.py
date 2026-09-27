@@ -73,8 +73,7 @@ def test_500_renders_without_request() -> None:
     assert gettext("500 — coś chrupnęło") in html
     assert (
         gettext(
-            "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — "
-            "odśwież za chwilę.",
+            "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — odśwież za chwilę.",
         )
         in html
     )
@@ -104,8 +103,7 @@ def test_static_500_fallback_matches_themed_copy(language: str) -> None:
         html = fallback_500_html()
         title = gettext("500 — coś chrupnęło")
         joke = gettext(
-            "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — "
-            "odśwież za chwilę.",
+            "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — odśwież za chwilę.",
         )
 
     assert f'<html lang="{language}">' in html

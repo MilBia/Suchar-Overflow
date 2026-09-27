@@ -24,7 +24,7 @@
 .rank-col {
     width: 40px;
     min-width: 40px;
-    font-feature-settings: "tnum";
+    font-feature-settings: 'tnum';
     font-variant-numeric: tabular-nums;
 }
 
@@ -95,7 +95,7 @@
     position: relative;
 }
 
-[data-theme="dark"] #leaderboardTabs {
+[data-theme='dark'] #leaderboardTabs {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
@@ -105,7 +105,9 @@
     border-radius: 50px;
     pointer-events: none;
     z-index: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        0 1px 3px rgba(0, 0, 0, 0.1);
     transition:
         left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
         top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
@@ -142,7 +144,7 @@
     color: var(--text-main);
 }
 
-[data-theme="dark"] #leaderboardTabs .nav-link:not(.active) {
+[data-theme='dark'] #leaderboardTabs .nav-link:not(.active) {
     color: rgba(255, 255, 255, 0.6);
 }
 
@@ -153,16 +155,22 @@
 }
 
 /* Tab Colors (applied to the slider via JS data attributes) */
-#leaderboardTabs[data-active-tab="overall"] .leaderboard-tab-slider { background-color: #f59e0b; }
-#leaderboardTabs[data-active-tab="funny"]   .leaderboard-tab-slider { background-color: var(--color-funny); }
-#leaderboardTabs[data-active-tab="dry"]     .leaderboard-tab-slider { background-color: var(--color-dry); }
+#leaderboardTabs[data-active-tab='overall'] .leaderboard-tab-slider {
+    background-color: #f59e0b;
+}
+#leaderboardTabs[data-active-tab='funny'] .leaderboard-tab-slider {
+    background-color: var(--color-funny);
+}
+#leaderboardTabs[data-active-tab='dry'] .leaderboard-tab-slider {
+    background-color: var(--color-dry);
+}
 
 /* Tab Animations & Visibility Fixes */
-.tab-content>.tab-pane {
+.tab-content > .tab-pane {
     display: none;
 }
 
-.tab-content>.active {
+.tab-content > .active {
     display: block;
 }
 
@@ -193,7 +201,7 @@
     z-index: 1;
 }
 
-[data-theme="dark"] .chart-timeframe-selector {
+[data-theme='dark'] .chart-timeframe-selector {
     background-color: rgba(255, 255, 255, 0.05);
 }
 

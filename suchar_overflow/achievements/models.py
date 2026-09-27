@@ -123,11 +123,7 @@ class UserAchievement(models.Model):
         ]
 
     def __str__(self) -> str:
-        user_name = (
-            self.user.username
-            if "user" in self._state.fields_cache
-            else f"User #{self.user_id}"
-        )
+        user_name = self.user.username if "user" in self._state.fields_cache else f"User #{self.user_id}"
         achievement_name = (
             self.achievement.name
             if "achievement" in self._state.fields_cache

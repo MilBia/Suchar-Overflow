@@ -1,6 +1,6 @@
 /* User detail page: activity (dryness) and reception charts */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Activity Chart
     const ctxActivity = document.getElementById('userActivityChart');
     if (ctxActivity) {
@@ -11,36 +11,38 @@ document.addEventListener('DOMContentLoaded', function() {
             type: 'bar',
             data: {
                 labels: labels,
-                datasets: [{
-                    label: ctxActivity.dataset.sucharLabel,
-                    data: data,
-                    backgroundColor: '#3b82f6',
-                    borderRadius: 2
-                }]
+                datasets: [
+                    {
+                        label: ctxActivity.dataset.sucharLabel,
+                        data: data,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 2,
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false
-                    }
+                        display: false,
+                    },
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            display: false
+                            display: false,
                         },
                         grid: {
-                            display: false
-                        }
+                            display: false,
+                        },
                     },
                     x: {
-                        display: false
-                    }
-                }
-            }
+                        display: false,
+                    },
+                },
+            },
         });
     }
 
@@ -53,11 +55,13 @@ document.addEventListener('DOMContentLoaded', function() {
             type: 'doughnut',
             data: {
                 labels: [ctxReception.dataset.funnyLabel, ctxReception.dataset.dryLabel],
-                datasets: [{
-                    data: data,
-                    backgroundColor: ['#E58E26', '#0ea5e9'], // Orange (Funny), Blue (Dry)
-                    borderWidth: 0
-                }]
+                datasets: [
+                    {
+                        data: data,
+                        backgroundColor: ['#E58E26', '#0ea5e9'], // Orange (Funny), Blue (Dry)
+                        borderWidth: 0,
+                    },
+                ],
             },
             options: {
                 responsive: true,
@@ -66,11 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     legend: {
                         position: 'right',
                         labels: {
-                            boxWidth: 10
-                        }
-                    }
-                }
-            }
+                            boxWidth: 10,
+                        },
+                    },
+                },
+            },
         });
     }
 });

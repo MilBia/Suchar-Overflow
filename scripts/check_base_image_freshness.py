@@ -112,8 +112,7 @@ def evaluate(  # noqa: PLR0913
     age = now - created
     if age > max_age:
         reasons.append(
-            f"Obraz zbudowano {age.days} dni temu ({created:%Y-%m-%d}), "
-            f"limit to {max_age.days} dni.",
+            f"Obraz zbudowano {age.days} dni temu ({created:%Y-%m-%d}), limit to {max_age.days} dni.",
         )
     if parse_version(python_version) < parse_version(latest):
         lag = now - latest_release_date
@@ -278,8 +277,7 @@ def main(argv: list[str] | None = None) -> int:
     # and leave the workflow without a report for the issue.
     except Exception as exc:  # noqa: BLE001
         emit(
-            "Nie udało się sprawdzić świeżości obrazu bazowego "
-            f"(to nie jest wynik „aktualny”):\n\n```\n{exc!r}\n```\n",
+            f"Nie udało się sprawdzić świeżości obrazu bazowego (to nie jest wynik „aktualny”):\n\n```\n{exc!r}\n```\n",
         )
         return EXIT_ERROR
 

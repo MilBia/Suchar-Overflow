@@ -185,8 +185,7 @@ def test_streak_query_count_independent_of_number_of_tiers() -> None:
     with_four_tiers = len(_capture_check(user, Achievement.EventType.SUCHAR_POSTED))
 
     assert with_four_tiers == with_two_tiers, (
-        f"Query count grew with the number of streak tiers "
-        f"({with_two_tiers} → {with_four_tiers})."
+        f"Query count grew with the number of streak tiers ({with_two_tiers} → {with_four_tiers})."
     )
 
 

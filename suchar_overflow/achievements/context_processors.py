@@ -36,9 +36,7 @@ def achievements_bell(request: HttpRequest) -> AchievementsBellContext:
     # included, into a value that then gets cached (cf. the defer("password")
     # note in stats/views.py).
     preview = list(
-        unseen.select_related("achievement").order_by("-awarded_at")[
-            :BELL_PREVIEW_LIMIT
-        ],
+        unseen.select_related("achievement").order_by("-awarded_at")[:BELL_PREVIEW_LIMIT],
     )
 
     if len(preview) < BELL_PREVIEW_LIMIT:

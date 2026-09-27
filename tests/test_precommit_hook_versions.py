@@ -52,8 +52,7 @@ def test_precommit_hook_rev_matches_pyproject_pin(package: str) -> None:
         pytest.skip(".pre-commit-config.yaml not present (image without bind mount)")
     config = _PRECOMMIT.read_text(encoding="utf-8")
     assert _hook_rev(config, HOOK_REPOS[package]) == _dev_pin(package), (
-        f"{package}: bump the hook rev in .pre-commit-config.yaml and the pin in "
-        "pyproject.toml together"
+        f"{package}: bump the hook rev in .pre-commit-config.yaml and the pin in pyproject.toml together"
     )
 
 

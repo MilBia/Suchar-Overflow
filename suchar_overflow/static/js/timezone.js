@@ -45,8 +45,7 @@
     }
 
     function buildCookie(zone, secure) {
-        let cookie = COOKIE_NAME + '=' + zone
-            + '; path=/; max-age=' + MAX_AGE_SECONDS + '; SameSite=Lax';
+        let cookie = COOKIE_NAME + '=' + zone + '; path=/; max-age=' + MAX_AGE_SECONDS + '; SameSite=Lax';
         if (secure) cookie += '; Secure';
         return cookie;
     }

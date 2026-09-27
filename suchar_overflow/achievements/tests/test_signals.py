@@ -215,7 +215,7 @@ def test_rising_star_awarded_on_fifth_vote() -> None:
 @pytest.mark.django_db
 @pytest.mark.usefixtures("ensure_achievements")
 def test_rising_star_dry_votes_count_negatively() -> None:
-    """Dry votes subtract from SUM_SCORE so 5 dry-only votes must NOT award rising-star."""  # noqa: E501
+    """Dry votes subtract from SUM_SCORE so 5 dry-only votes must NOT award rising-star."""
     author = make_user("popular_author")
     suchar = Suchar.objects.create(text="A controversial classic", author=author)
 

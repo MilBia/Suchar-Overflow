@@ -3,141 +3,143 @@
 {% load static i18n compress %}
 
 {% block title %}
-  {% trans "Leaderboard" %}
+    {% trans "Leaderboard" %}
 {% endblock title %}
 
 {% block css %}
-  {{ block.super }}
-  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-  {% compress css %}
-    <link href="{% static 'css/pages/leaderboard.css' %}" rel="stylesheet" />
-  {% endcompress %}
+    {{ block.super }}
+    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+    {% compress css %}
+        <link href="{% static 'css/pages/leaderboard.css' %}" rel="stylesheet" />
+    {% endcompress %}
 {% endblock css %}
 
 {% block content %}
-  <div class="container py-5">
-    <div class="text-center mb-5">
-      <h1 class="display-4 fw-bold text-primary">{% trans "Leaderboard" %}</h1>
-      <p class="lead text-muted">{% trans "Celebrating the best (and the driest) caused by our community." %}</p>
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary">{% trans "Leaderboard" %}</h1>
+            <p class="lead text-muted">{% trans "Celebrating the best (and the driest) caused by our community." %}</p>
+        </div>
+
+        <!-- Global Activity Chart -->
+        <div class="card shadow-sm border-0 mb-5">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                    <h5 class="fw-bold mb-0">{% trans "Activity" %}</h5>
+                    <div class="btn-group chart-timeframe-selector"
+                         role="group"
+                         aria-label="Chart timeframe">
+                        <button type="button" class="btn btn-outline btn-sm" data-timeframe="7">7d</button>
+                        <button type="button"
+                                class="btn btn-outline btn-sm active"
+                                data-timeframe="30">30d</button>
+                        <button type="button" class="btn btn-outline btn-sm" data-timeframe="90">90d</button>
+                        <button type="button"
+                                class="btn btn-outline btn-sm"
+                                data-timeframe="all">{% trans "All time" %}</button>
+                    </div>
+                </div>
+                <div class="chart-container-lg">
+                    {% trans "New Jokes" as new_jokes_label %}
+                    <canvas id="activityChart" data-new-jokes-label="{{ new_jokes_label }}"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-pills mb-4" id="leaderboardTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill fw-bold"
+                        id="overall-tab"
+                        data-toggle="tab"
+                        data-target="#overall"
+                        type="button"
+                        role="tab"
+                        aria-controls="overall"
+                        aria-selected="true">🏆 {% trans "Overall" %}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill fw-bold"
+                        id="funny-tab"
+                        data-toggle="tab"
+                        data-target="#funny"
+                        type="button"
+                        role="tab"
+                        aria-controls="funny"
+                        aria-selected="false">🤣 {% trans "Funny" %}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill fw-bold"
+                        id="dry-tab"
+                        data-toggle="tab"
+                        data-target="#dry"
+                        type="button"
+                        role="tab"
+                        aria-controls="dry"
+                        aria-selected="false">🌵 {% trans "Dry" %}</button>
+            </li>
+        </ul>
+
+        <!-- Tabs Content -->
+        {% trans "Jeszcze nie ma czego rankingować." as no_data_text %}
+        {% trans "Jeszcze nic śmiesznego — scena wolna." as no_funny_data_text %}
+        {% trans "Wciąż za mało suszy." as no_dry_data_text %}
+        {% trans "Most Active Authors" as most_active_authors_title %}
+        {% trans "Hall of Fame" as hall_of_fame_title %}
+        {% trans "Comedy Kings" as comedy_kings_title %}
+        {% trans "Top Funny Jokes" as top_funny_jokes_title %}
+        {% trans "Lords of Drought" as lords_of_drought_title %}
+        {% trans "Top Dry Jokes" as top_dry_jokes_title %}
+        <div class="tab-content" id="leaderboardTabsContent">
+
+            <!-- 1. Overall Tab -->
+            <div class="tab-pane fade show active"
+                 id="overall"
+                 role="tabpanel"
+                 aria-labelledby="overall-tab">
+                <div class="row g-5">
+                    {% include "stats/_leaderboard_author_card.html" with header_class="card-header-gold" header_text_class="" icon_svg="svgs/icon-user.svg" icon_wrapper_class="header-icon-user" title=most_active_authors_title authors=top_authors_overall empty_text=no_data_text badge_mode="overall" %}
+                    {% include "stats/_leaderboard_suchar_card.html" with header_class="card-header-gold" header_text_class="" icon_svg="svgs/icon-cracker-stack.svg" icon_wrapper_class="header-icon-cracker" title=hall_of_fame_title suchary=top_suchars_overall badge_mode="overall" %}
+                </div>
+            </div>
+
+            <!-- 2. Funny Tab -->
+            <div class="tab-pane fade"
+                 id="funny"
+                 role="tabpanel"
+                 aria-labelledby="funny-tab">
+                <div class="row g-5">
+                    {% include "stats/_leaderboard_author_card.html" with header_class="card-header-funny" header_text_class="text-white" icon_emoji="🤣" icon_wrapper_class="header-icon-emoji" title=comedy_kings_title authors=top_authors_funny empty_text=no_funny_data_text badge_mode="funny" %}
+                    {% include "stats/_leaderboard_suchar_card.html" with header_class="card-header-funny" header_text_class="text-white" icon_emoji="🎭" icon_wrapper_class="header-icon-emoji" title=top_funny_jokes_title suchary=top_suchars_funny badge_mode="funny" %}
+                </div>
+            </div>
+
+            <!-- 3. Dry Tab -->
+            <div class="tab-pane fade"
+                 id="dry"
+                 role="tabpanel"
+                 aria-labelledby="dry-tab">
+                <div class="row g-5">
+                    {% include "stats/_leaderboard_author_card.html" with header_class="card-header-dry" header_text_class="text-white" icon_emoji="🌵" icon_wrapper_class="header-icon-emoji" title=lords_of_drought_title authors=top_authors_dry empty_text=no_dry_data_text badge_mode="dry" %}
+                    {% include "stats/_leaderboard_suchar_card.html" with header_class="card-header-dry" header_text_class="text-white" icon_emoji="💧" icon_wrapper_class="header-icon-emoji" title=top_dry_jokes_title suchary=top_suchars_dry badge_mode="dry" %}
+                </div>
+            </div>
+
+        </div>
+        <!-- End Tab Content -->
     </div>
-
-    <!-- Global Activity Chart -->
-    <div class="card shadow-sm border-0 mb-5">
-      <div class="card-body p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-          <h5 class="fw-bold mb-0">{% trans "Activity" %}</h5>
-          <div class="btn-group chart-timeframe-selector"
-               role="group"
-               aria-label="Chart timeframe">
-            <button type="button" class="btn btn-outline btn-sm" data-timeframe="7">7d</button>
-            <button type="button"
-                    class="btn btn-outline btn-sm active"
-                    data-timeframe="30">30d</button>
-            <button type="button" class="btn btn-outline btn-sm" data-timeframe="90">90d</button>
-            <button type="button" class="btn btn-outline btn-sm" data-timeframe="all">{% trans "All time" %}</button>
-          </div>
-        </div>
-        <div class="chart-container-lg">
-          {% trans "New Jokes" as new_jokes_label %}
-          <canvas id="activityChart" data-new-jokes-label="{{ new_jokes_label }}"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabs Navigation -->
-    <ul class="nav nav-pills mb-4" id="leaderboardTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active rounded-pill fw-bold"
-                id="overall-tab"
-                data-toggle="tab"
-                data-target="#overall"
-                type="button"
-                role="tab"
-                aria-controls="overall"
-                aria-selected="true">🏆 {% trans "Overall" %}</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-pill fw-bold"
-                id="funny-tab"
-                data-toggle="tab"
-                data-target="#funny"
-                type="button"
-                role="tab"
-                aria-controls="funny"
-                aria-selected="false">🤣 {% trans "Funny" %}</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-pill fw-bold"
-                id="dry-tab"
-                data-toggle="tab"
-                data-target="#dry"
-                type="button"
-                role="tab"
-                aria-controls="dry"
-                aria-selected="false">🌵 {% trans "Dry" %}</button>
-      </li>
-    </ul>
-
-    <!-- Tabs Content -->
-    {% trans "Jeszcze nie ma czego rankingować." as no_data_text %}
-    {% trans "Jeszcze nic śmiesznego — scena wolna." as no_funny_data_text %}
-    {% trans "Wciąż za mało suszy." as no_dry_data_text %}
-    {% trans "Most Active Authors" as most_active_authors_title %}
-    {% trans "Hall of Fame" as hall_of_fame_title %}
-    {% trans "Comedy Kings" as comedy_kings_title %}
-    {% trans "Top Funny Jokes" as top_funny_jokes_title %}
-    {% trans "Lords of Drought" as lords_of_drought_title %}
-    {% trans "Top Dry Jokes" as top_dry_jokes_title %}
-    <div class="tab-content" id="leaderboardTabsContent">
-
-      <!-- 1. Overall Tab -->
-      <div class="tab-pane fade show active"
-           id="overall"
-           role="tabpanel"
-           aria-labelledby="overall-tab">
-        <div class="row g-5">
-          {% include "stats/_leaderboard_author_card.html" with header_class="card-header-gold" header_text_class="" icon_svg="svgs/icon-user.svg" icon_wrapper_class="header-icon-user" title=most_active_authors_title authors=top_authors_overall empty_text=no_data_text badge_mode="overall" %}
-          {% include "stats/_leaderboard_suchar_card.html" with header_class="card-header-gold" header_text_class="" icon_svg="svgs/icon-cracker-stack.svg" icon_wrapper_class="header-icon-cracker" title=hall_of_fame_title suchary=top_suchars_overall badge_mode="overall" %}
-        </div>
-      </div>
-
-      <!-- 2. Funny Tab -->
-      <div class="tab-pane fade"
-           id="funny"
-           role="tabpanel"
-           aria-labelledby="funny-tab">
-        <div class="row g-5">
-          {% include "stats/_leaderboard_author_card.html" with header_class="card-header-funny" header_text_class="text-white" icon_emoji="🤣" icon_wrapper_class="header-icon-emoji" title=comedy_kings_title authors=top_authors_funny empty_text=no_funny_data_text badge_mode="funny" %}
-          {% include "stats/_leaderboard_suchar_card.html" with header_class="card-header-funny" header_text_class="text-white" icon_emoji="🎭" icon_wrapper_class="header-icon-emoji" title=top_funny_jokes_title suchary=top_suchars_funny badge_mode="funny" %}
-        </div>
-      </div>
-
-      <!-- 3. Dry Tab -->
-      <div class="tab-pane fade"
-           id="dry"
-           role="tabpanel"
-           aria-labelledby="dry-tab">
-        <div class="row g-5">
-          {% include "stats/_leaderboard_author_card.html" with header_class="card-header-dry" header_text_class="text-white" icon_emoji="🌵" icon_wrapper_class="header-icon-emoji" title=lords_of_drought_title authors=top_authors_dry empty_text=no_dry_data_text badge_mode="dry" %}
-          {% include "stats/_leaderboard_suchar_card.html" with header_class="card-header-dry" header_text_class="text-white" icon_emoji="💧" icon_wrapper_class="header-icon-emoji" title=top_dry_jokes_title suchary=top_suchars_dry badge_mode="dry" %}
-        </div>
-      </div>
-
-    </div>
-    <!-- End Tab Content -->
-  </div>
-  <!-- End Container -->
+    <!-- End Container -->
 {% endblock content %}
 
 {% block javascript %}
-  {{ block.super }}
-  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-  {% compress js %}
-    <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
-  {% endcompress %}
-  {# json_script output must stay OUT of {% compress %} — see #205. #}
-  {{ chart_datasets|json_script:"chart-datasets-data" }}
-  {% compress js %}
-    <script defer src="{% static 'js/pages/leaderboard.js' %}"></script>
-  {% endcompress %}
+    {{ block.super }}
+    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+    {% compress js %}
+        <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
+    {% endcompress %}
+    {# json_script output must stay OUT of {% compress %} — see #205. #}
+    {{ chart_datasets|json_script:"chart-datasets-data" }}
+    {% compress js %}
+        <script defer src="{% static 'js/pages/leaderboard.js' %}"></script>
+    {% endcompress %}
 {% endblock javascript %}

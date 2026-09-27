@@ -176,11 +176,7 @@ class NightOwlRule(AchievementRule):
         # A scheduled suchar's created_at may already be in the night window,
         # but it must not award until it is published (#389); the
         # ``award-publication-achievements`` job re-runs the engine then.
-        if not (
-            isinstance(instance, Suchar)
-            and instance.author == user
-            and instance.published_at <= now
-        ):
+        if not (isinstance(instance, Suchar) and instance.author == user and instance.published_at <= now):
             return None
         # The service zone, never the request's (#410): a visitor's own time
         # zone only affects input and display, not what counts as "night".

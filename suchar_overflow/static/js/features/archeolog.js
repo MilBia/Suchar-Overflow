@@ -122,8 +122,7 @@
         // same fact (suchar_list.html sets both) — cheap insurance against
         // that template changing shape later without this reading stale.
         const nextItem = items[items.length - 1];
-        const hasNext =
-            !nextItem.classList.contains('disabled') && nextItem.querySelector('a') !== null;
+        const hasNext = !nextItem.classList.contains('disabled') && nextItem.querySelector('a') !== null;
 
         const activeLink = pagination.querySelector('li.page-item.active .page-link');
         const currentPage = activeLink ? parseInt(activeLink.textContent, 10) : NaN;

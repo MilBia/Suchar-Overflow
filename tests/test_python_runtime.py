@@ -87,6 +87,5 @@ def test_image_runs_the_debian_release_its_dockerfile_names() -> None:
     tag = _python_base_images()[0].split("@", 1)[0]
     expected = tag.rsplit("-", 1)[-1]
     assert codename == expected, (
-        f"image runs Debian {codename}, Dockerfile names {expected}; "
-        "rebuild with a fresh base: `just build --pull`"
+        f"image runs Debian {codename}, Dockerfile names {expected}; rebuild with a fresh base: `just build --pull`"
     )

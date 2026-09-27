@@ -1005,9 +1005,7 @@ def test_first_funny_vote_adds_no_query_for_the_toast(client: Client) -> None:
     with CaptureQueriesContext(connection) as ctx:
         _post_vote(client, suchar.pk, "funny")
 
-    community_funny_queries = [
-        q["sql"] for q in ctx.captured_queries if "community_funny" in q["sql"]
-    ]
+    community_funny_queries = [q["sql"] for q in ctx.captured_queries if "community_funny" in q["sql"]]
     assert len(community_funny_queries) == 1, community_funny_queries
     # Same statement carries the other two counts — it is one aggregate call.
     assert '"funny"' in community_funny_queries[0]
@@ -1047,14 +1045,11 @@ def test_vote_loads_author_with_the_suchar(client: Client) -> None:
     assert Vote.objects.filter(user=voter, suchar=suchar).exists()
 
     suchar_selects = [
-        q["sql"]
-        for q in ctx.captured_queries
-        if q["sql"].startswith("SELECT") and '"suchary_suchar"' in q["sql"]
+        q["sql"] for q in ctx.captured_queries if q["sql"].startswith("SELECT") and '"suchary_suchar"' in q["sql"]
     ]
     assert suchar_selects, "expected the endpoint to load the suchar"
     assert any('"users_user"' in sql for sql in suchar_selects), (
-        "the suchar must be fetched with its author joined in "
-        f"(queries seen: {suchar_selects})"
+        f"the suchar must be fetched with its author joined in (queries seen: {suchar_selects})"
     )
 
     # The effect issue #203 point 1 actually asks for: no separate author
@@ -1063,12 +1058,10 @@ def test_vote_loads_author_with_the_suchar(client: Client) -> None:
     standalone_author_lookups = [
         q["sql"]
         for q in ctx.captured_queries
-        if f'"users_user"."id" = {author.pk}' in q["sql"]
-        and '"suchary_suchar"' not in q["sql"]
+        if f'"users_user"."id" = {author.pk}' in q["sql"] and '"suchary_suchar"' not in q["sql"]
     ]
     assert not standalone_author_lookups, (
-        "the author was re-fetched in a standalone query despite select_related "
-        f"({standalone_author_lookups})"
+        f"the author was re-fetched in a standalone query despite select_related ({standalone_author_lookups})"
     )
 
 

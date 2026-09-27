@@ -6,13 +6,15 @@
 
 /* Global Typography & Layout */
 body {
-  background-color: var(--bg-app);
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
 }
 
 /* Theme Toggle Transition Class */
@@ -20,49 +22,49 @@ body {
 .theme-transition *,
 .theme-transition *:before,
 .theme-transition *:after {
-  transition: all 0.5s ease !important;
-  transition-delay: 0s !important;
+    transition: all 0.5s ease !important;
+    transition-delay: 0s !important;
 }
 
 /* Aurora Background */
 body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(circle at 15% 15%, hsla(var(--hue-primary), 80%, 80%, 0.15) 0%, transparent 35%),
-    radial-gradient(circle at 85% 85%, hsla(var(--hue-secondary), 80%, 80%, 0.15) 0%, transparent 35%);
-  z-index: -1;
-  pointer-events: none;
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 15% 15%, hsla(var(--hue-primary), 80%, 80%, 0.15) 0%, transparent 35%),
+        radial-gradient(circle at 85% 85%, hsla(var(--hue-secondary), 80%, 80%, 0.15) 0%, transparent 35%);
+    z-index: -1;
+    pointer-events: none;
 }
 
 [data-theme='dark'] body::before {
-  background:
-    radial-gradient(circle at 15% 15%, hsla(var(--hue-primary), 80%, 60%, 0.08) 0%, transparent 35%),
-    radial-gradient(circle at 85% 85%, hsla(var(--hue-secondary), 80%, 60%, 0.08) 0%, transparent 35%);
+    background:
+        radial-gradient(circle at 15% 15%, hsla(var(--hue-primary), 80%, 60%, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 85% 85%, hsla(var(--hue-secondary), 80%, 60%, 0.08) 0%, transparent 35%);
 }
 
 /* Main Content Wrapper */
 .main-wrapper {
-  flex: 1;
-  padding-bottom: 3rem;
+    flex: 1;
+    padding-bottom: 3rem;
 }
 
 /* Tag Hover Effects */
 .badge {
-  transition: all 0.2s ease;
-  padding: 0.5em 0.8em;
-  border-radius: 6px;
+    transition: all 0.2s ease;
+    padding: 0.5em 0.8em;
+    border-radius: 6px;
 }
 
 a.badge:hover,
 button.badge:hover {
-  background-color: var(--color-primary) !important;
-  color: white !important;
-  box-shadow: var(--shadow-sm);
+    background-color: var(--color-primary) !important;
+    color: white !important;
+    box-shadow: var(--shadow-sm);
 }
 
 /* Shrinks the F/D vote-count badges. Used by both the leaderboard partial
@@ -71,76 +73,78 @@ button.badge:hover {
    so it keeps beating `.small` (utilities.css) on cascade order at equal
    specificity, exactly as it did from pages/leaderboard.css before. */
 .stats-text-sm {
-  font-size: 0.7em;
+    font-size: 0.7em;
 }
 
 /* Home Page Hero Icon */
 .hero-icon-wrapper {
-  transform: scale(1.5);
-  display: inline-block;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+    transform: scale(1.5);
+    display: inline-block;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
 }
 
 /* Adaptive Logo */
 .brand-logo {
-  height: 40px;
-  width: auto;
-  color: var(--text-main);
+    height: 40px;
+    width: auto;
+    color: var(--text-main);
 }
 
 /* Suchar Card */
 .suchar-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid var(--border-color);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    border: 1px solid var(--border-color);
 }
 
 .suchar-card:hover {
-  box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md);
 }
 
 /* Misc Utilities */
 .trophy-icon {
-  font-size: 3rem;
-  line-height: 1;
+    font-size: 3rem;
+    line-height: 1;
 }
 
 .form-max-width {
-  max-width: 600px;
+    max-width: 600px;
 }
 
 .tracking-wide {
-  letter-spacing: 0.05em;
+    letter-spacing: 0.05em;
 }
 
 .chart-container-sm {
-  position: relative;
-  height: 150px;
+    position: relative;
+    height: 150px;
 }
 
 .chart-container-lg {
-  position: relative;
-  height: 300px;
+    position: relative;
+    height: 300px;
 }
 
 /* Custom Tooltip Styling */
 .custom-tooltip-box {
-  position: absolute;
-  z-index: 1080;
-  display: block;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--bg-app);
-  text-align: center;
-  background-color: var(--text-main);
-  border-radius: 6px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    z-index: 1080;
+    display: block;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--bg-app);
+    text-align: center;
+    background-color: var(--text-main);
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .custom-tooltip-box.show {
-  opacity: 0.95;
+    opacity: 0.95;
 }

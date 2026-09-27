@@ -154,9 +154,7 @@ def test_find_best_suchary_returns_empty_list_when_no_suchars() -> None:
 
 
 @pytest.mark.django_db
-def test_find_best_suchary_returns_empty_list_when_all_suchary_have_zero_votes() -> (
-    None
-):
+def test_find_best_suchary_returns_empty_list_when_all_suchary_have_zero_votes() -> None:
     """A period where Suchary were posted but none received any votes has no
     winner — the max vote count of 0 doesn't count as a "best" tie (#171)."""
     mid = last_month_mid()
@@ -294,9 +292,7 @@ def test_award_winners_single_winner_gets_no_tie_achievement() -> None:
 
 @pytest.mark.django_db
 @pytest.mark.usefixtures("periodic_achievements")
-def test_award_winners_different_authors_tied_both_get_main_and_tie_achievement() -> (
-    None
-):
+def test_award_winners_different_authors_tied_both_get_main_and_tie_achievement() -> None:
     author_a = User.objects.create_user(
         username="award-tie-a",
         email="award-tie-a@example.com",
@@ -347,14 +343,8 @@ def test_award_winners_results_are_ordered_by_username() -> None:
     # Two award_winners calls happen here (main + tie achievement), each
     # producing its own sorted run — check ordering within each, not across
     # the concatenated list.
-    main_usernames = [
-        user.username for slug, user, _created in results if slug == "best-suchar-month"
-    ]
-    tie_usernames = [
-        user.username
-        for slug, user, _created in results
-        if slug == "best-suchar-month-tie"
-    ]
+    main_usernames = [user.username for slug, user, _created in results if slug == "best-suchar-month"]
+    tie_usernames = [user.username for slug, user, _created in results if slug == "best-suchar-month-tie"]
     assert main_usernames == sorted(main_usernames)
     assert tie_usernames == sorted(tie_usernames)
 
@@ -964,9 +954,7 @@ def _retroactively_publish(suchar: Suchar, published_at: datetime.datetime) -> N
 
 
 @pytest.mark.django_db
-def test_award_publication_achievements_awards_after_scheduled_suchar_goes_live() -> (
-    None
-):
+def test_award_publication_achievements_awards_after_scheduled_suchar_goes_live() -> None:
     now = timezone.now()
     author = User.objects.create_user(
         username="pub1",
@@ -1002,9 +990,7 @@ def test_award_publication_achievements_updates_existing_marker() -> None:
 
 
 @pytest.mark.django_db
-def test_award_publication_achievements_ignores_suchar_published_before_last_run() -> (
-    None
-):
+def test_award_publication_achievements_ignores_suchar_published_before_last_run() -> None:
     now = timezone.now()
     SchedulerRun.objects.create(
         job_id="award-publication-achievements",
@@ -1026,9 +1012,7 @@ def test_award_publication_achievements_ignores_suchar_published_before_last_run
 
 
 @pytest.mark.django_db
-def test_award_publication_achievements_processes_suchar_published_after_last_run() -> (
-    None
-):
+def test_award_publication_achievements_processes_suchar_published_after_last_run() -> None:
     now = timezone.now()
     SchedulerRun.objects.create(
         job_id="award-publication-achievements",

@@ -3,48 +3,49 @@
 {% load i18n %}
 
 {% block title %}
-  {% translate "Revoked" %}
+    {% translate "Revoked" %}
 {% endblock title %}
 
 {% block content %}
-  <div class="row justify-content-center text-center">
-    <div class="col-md-6">
-      <div class="card shadow-sm border-0 p-5">
-        <style>
-          .icon-wrapper svg {
-            width: 5rem;
-            height: 5rem;
-          }
-        </style>
-        {% if reverted %}
-          <div class="mb-4 text-warning d-flex justify-content-center">
-            <div class="icon-wrapper">{% include "svgs/icon-refresh-cw.svg" %}</div>
-          </div>
-          <h1 class="h2 mb-3">{% trans "We've reverted the changes!" %}</h1>
-          <p class="text-muted mb-4">
-            {% trans "Phew, that was close. Your email address has been restored to its previous state." %}
-            <br />
-            {% trans "You can breathe a sigh of relief. We recommend changing your password." %}
-          </p>
-        {% else %}
-          <div class="mb-4 text-warning d-flex justify-content-center">
-            <div class="icon-wrapper">{% include "svgs/icon-shield.svg" %}</div>
-          </div>
+    <div class="row justify-content-center text-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-5">
+                <style>
+                    .icon-wrapper svg {
+                        width: 5rem;
+                        height: 5rem;
+                    }
+                </style>
+                {% if reverted %}
+                    <div class="mb-4 text-warning d-flex justify-content-center">
+                        <div class="icon-wrapper">{% include "svgs/icon-refresh-cw.svg" %}</div>
+                    </div>
+                    <h1 class="h2 mb-3">{% trans "We've reverted the changes!" %}</h1>
+                    <p class="text-muted mb-4">
+                        {% trans "Phew, that was close. Your email address has been restored to its previous state." %}
+                        <br />
+                        {% trans "You can breathe a sigh of relief. We recommend changing your password." %}
+                    </p>
+                {% else %}
+                    <div class="mb-4 text-warning d-flex justify-content-center">
+                        <div class="icon-wrapper">{% include "svgs/icon-shield.svg" %}</div>
+                    </div>
 
-          <h1 class="h2 mb-3">{% trans "Change cancelled" %}</h1>
-          <p class="text-muted mb-4">
-            {% trans "All active email change links have been invalidated." %}
-            <br />
-            {% trans "If it wasn't you who tried to change the email, we recommend changing your password." %}
-          </p>
-        {% endif %}
+                    <h1 class="h2 mb-3">{% trans "Change cancelled" %}</h1>
+                    <p class="text-muted mb-4">
+                        {% trans "All active email change links have been invalidated." %}
+                        <br />
+                        {% trans "If it wasn't you who tried to change the email, we recommend changing your password." %}
+                    </p>
+                {% endif %}
 
-        <div class="d-grid gap-2 col-8 mx-auto">
-          <a href="{% url 'password_change' %}" class="btn btn-danger">{% trans "Change password (just in case)" %}</a>
-          <a href="{% url 'users:detail' request.user.username %}"
-             class="btn btn-outline-secondary">{% trans "Back to profile" %}</a>
+                <div class="d-grid gap-2 col-8 mx-auto">
+                    <a href="{% url 'password_change' %}"
+                       class="btn btn-danger">{% trans "Change password (just in case)" %}</a>
+                    <a href="{% url 'users:detail' request.user.username %}"
+                       class="btn btn-outline-secondary">{% trans "Back to profile" %}</a>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 {% endblock content %}

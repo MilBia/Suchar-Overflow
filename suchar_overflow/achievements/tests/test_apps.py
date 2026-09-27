@@ -399,10 +399,7 @@ def test_start_scheduler_registers_all_recurring_jobs() -> None:
     ):
         AchievementsConfig._start_scheduler()  # noqa: SLF001
 
-    jobs_by_id = {
-        call.kwargs["id"]: call.kwargs
-        for call in mock_scheduler_cls.return_value.add_job.call_args_list
-    }
+    jobs_by_id = {call.kwargs["id"]: call.kwargs for call in mock_scheduler_cls.return_value.add_job.call_args_list}
     assert jobs_by_id.keys() == {
         "award-best-suchar-month",
         "award-best-suchar-year",

@@ -376,8 +376,7 @@ def _suchar_select_count(ctx: CaptureQueriesContext) -> int:
         [
             q
             for q in ctx.captured_queries
-            if 'FROM "suchary_suchar"' in q["sql"]
-            and '"suchary_suchar"."id" =' in q["sql"]
+            if 'FROM "suchary_suchar"' in q["sql"] and '"suchary_suchar"."id" =' in q["sql"]
         ],
     )
 

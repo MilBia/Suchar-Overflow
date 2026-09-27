@@ -6,7 +6,7 @@ Wchodzisz na własną odpowiedzialność (i z butelką wody).
 [![CI](https://github.com/MilBia/Suchar-Overflow/actions/workflows/ci.yml/badge.svg)](https://github.com/MilBia/Suchar-Overflow/actions/workflows/ci.yml)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](<>)
 
 ---
 
@@ -49,30 +49,30 @@ cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowa
 
 ## Technologie
 
-| Warstwa          | Technologia                                        |
-| ---------------- | -------------------------------------------------- |
-| **Język**        | Python 3.14                                        |
-| **Framework**    | Django 6.1                                         |
-| **REST API**     | Django Ninja                                       |
-| **Baza danych**  | PostgreSQL 18                                      |
-| **Cache**        | Redis 7 (django-redis)                             |
-| **Harmonogram zadań** | APScheduler (wbudowany w Django)                     |
-| **Serwer WSGI** | Gunicorn                                           |
-| **Reverse Proxy** | Traefik 3 (produkcja)                             |
-| **Media Proxy**  | Nginx (produkcja)                                  |
-| **Konteneryzacja** | Docker & Docker Compose                          |
-| **Zarządzanie zależnościami** | [uv](https://docs.astral.sh/uv/)     |
-| **Minifikacja CSS/JS** | django-compressor + rcssmin + rjsmin          |
-| **Linting**      | Ruff, djLint                                       |
-| **Type checking** | mypy + django-stubs                               |
-| **Testy**        | pytest, pytest-django, factory-boy, pytest-playwright |
+| Warstwa                       | Technologia                                           |
+| ----------------------------- | ----------------------------------------------------- |
+| **Język**                     | Python 3.14                                           |
+| **Framework**                 | Django 6.1                                            |
+| **REST API**                  | Django Ninja                                          |
+| **Baza danych**               | PostgreSQL 18                                         |
+| **Cache**                     | Redis 7 (django-redis)                                |
+| **Harmonogram zadań**         | APScheduler (wbudowany w Django)                      |
+| **Serwer WSGI**               | Gunicorn                                              |
+| **Reverse Proxy**             | Traefik 3 (produkcja)                                 |
+| **Media Proxy**               | Nginx (produkcja)                                     |
+| **Konteneryzacja**            | Docker & Docker Compose                               |
+| **Zarządzanie zależnościami** | [uv](https://docs.astral.sh/uv/)                      |
+| **Minifikacja CSS/JS**        | django-compressor + rcssmin + rjsmin                  |
+| **Linting**                   | Ruff, djLint                                          |
+| **Type checking**             | mypy + django-stubs                                   |
+| **Testy**                     | pytest, pytest-django, factory-boy, pytest-playwright |
 
 ---
 
 ## Wymagania
 
 - [Docker](https://docs.docker.com/get-docker/) (w wersji z Compose V2)
-- [just](https://github.com/casey/just) *(opcjonalnie – skróty do komend)*
+- [just](https://github.com/casey/just) _(opcjonalnie – skróty do komend)_
 
 > **Uwaga:** Nie musisz instalować Pythona lokalnie – wszystko działa wewnątrz kontenerów Docker.
 
@@ -145,12 +145,12 @@ just manage createsuperuser
 
 ### 5. Otwórz w przeglądarce
 
-| Usługa      | URL                          |
-| ----------- | ---------------------------- |
-| Aplikacja   | http://127.0.0.1:8000        |
-| Mailpit     | http://127.0.0.1:8025        |
-| Admin       | http://127.0.0.1:8000/admin/ |
-| API         | http://127.0.0.1:8000/api/   |
+| Usługa    | URL                          |
+| --------- | ---------------------------- |
+| Aplikacja | http://127.0.0.1:8000        |
+| Mailpit   | http://127.0.0.1:8025        |
+| Admin     | http://127.0.0.1:8000/admin/ |
+| API       | http://127.0.0.1:8000/api/   |
 
 > Maile (aktywacja konta, zmiana e-maila) są wysyłane synchronicznie przez Django mail backend.
 > Cykliczne zadania (np. przyznawanie osiągnięcia „Najlepszy suchar miesiąca") obsługuje
@@ -184,18 +184,18 @@ cp .envs/.production/.postgres.example .envs/.production/.postgres
 
 **Wymagane zmienne w `.envs/.production/.django`:**
 
-| Zmienna                  | Opis                                          |
-| ------------------------ | --------------------------------------------- |
-| `DJANGO_SECRET_KEY`      | Losowy, długi klucz – np. wygenerowany `python -c "import secrets; print(secrets.token_urlsafe(64))"` |
-| `DJANGO_ADMIN_URL`       | Ukryta ścieżka do panelu admin (np. `s3cr3t-admin/`) |
-| `DJANGO_ALLOWED_HOSTS`   | Domena(y) produkcyjne, np. `example.com`      |
+| Zmienna                | Opis                                                                                                  |
+| ---------------------- | ----------------------------------------------------------------------------------------------------- |
+| `DJANGO_SECRET_KEY`    | Losowy, długi klucz – np. wygenerowany `python -c "import secrets; print(secrets.token_urlsafe(64))"` |
+| `DJANGO_ADMIN_URL`     | Ukryta ścieżka do panelu admin (np. `s3cr3t-admin/`)                                                  |
+| `DJANGO_ALLOWED_HOSTS` | Domena(y) produkcyjne, np. `example.com`                                                              |
 
 **Wymagane zmienne w `.envs/.production/.postgres`:**
 
-| Zmienna              | Opis                                          |
-| -------------------- | --------------------------------------------- |
-| `POSTGRES_USER`      | Losowa nazwa użytkownika bazy                 |
-| `POSTGRES_PASSWORD`  | Losowe, silne hasło                           |
+| Zmienna             | Opis                          |
+| ------------------- | ----------------------------- |
+| `POSTGRES_USER`     | Losowa nazwa użytkownika bazy |
+| `POSTGRES_PASSWORD` | Losowe, silne hasło           |
 
 ### 2. Skonfiguruj domenę w Traefik
 
@@ -270,32 +270,32 @@ Projekt udostępnia skróty poprzez [just](https://github.com/casey/just):
 
 ### Lokalne (development)
 
-| Komenda              | Opis                                  |
-| -------------------- | ------------------------------------- |
-| `just build`         | Budowanie obrazów Docker              |
-| `just up`            | Uruchomienie kontenerów               |
-| `just down`          | Zatrzymanie kontenerów                |
-| `just prune`         | Zatrzymanie + usunięcie wolumenów     |
-| `just logs [serwis]` | Podgląd logów                         |
-| `just manage <cmd>`  | Wykonanie komendy `manage.py`         |
-| `just shell`         | `shell_plus` w działającym kontenerze (po `just up`) |
-| `just bash`          | Bash w działającym kontenerze (po `just up`) |
-| `just exec <cmd>`    | Dowolna komenda w działającym kontenerze (po `just up`) |
-| `just messages`      | Kompilacja tłumaczeń (`.po` → `.mo`)  |
-| `just test [args]`      | Uruchomienie testów jednostkowych (pytest)    |
-| `just test-e2e [args]`  | Uruchomienie testów E2E (Playwright)          |
-| `just test-all`         | Testy jednostkowe, a następnie E2E            |
-| `just fill-translations [args]` | Uzupełnianie tłumaczeń przez lokalny model AI |
+| Komenda                         | Opis                                                    |
+| ------------------------------- | ------------------------------------------------------- |
+| `just build`                    | Budowanie obrazów Docker                                |
+| `just up`                       | Uruchomienie kontenerów                                 |
+| `just down`                     | Zatrzymanie kontenerów                                  |
+| `just prune`                    | Zatrzymanie + usunięcie wolumenów                       |
+| `just logs [serwis]`            | Podgląd logów                                           |
+| `just manage <cmd>`             | Wykonanie komendy `manage.py`                           |
+| `just shell`                    | `shell_plus` w działającym kontenerze (po `just up`)    |
+| `just bash`                     | Bash w działającym kontenerze (po `just up`)            |
+| `just exec <cmd>`               | Dowolna komenda w działającym kontenerze (po `just up`) |
+| `just messages`                 | Kompilacja tłumaczeń (`.po` → `.mo`)                    |
+| `just test [args]`              | Uruchomienie testów jednostkowych (pytest)              |
+| `just test-e2e [args]`          | Uruchomienie testów E2E (Playwright)                    |
+| `just test-all`                 | Testy jednostkowe, a następnie E2E                      |
+| `just fill-translations [args]` | Uzupełnianie tłumaczeń przez lokalny model AI           |
 
 ### Produkcyjne
 
-| Komenda                  | Opis                                  |
-| ------------------------ | ------------------------------------- |
-| `just prod-build`        | Budowanie obrazów produkcyjnych       |
-| `just prod-up`           | Uruchomienie produkcji                |
-| `just prod-down`         | Zatrzymanie produkcji                 |
-| `just prod-logs [serwis]`| Podgląd logów produkcyjnych           |
-| `just prod-manage <cmd>` | Wykonanie komendy `manage.py`         |
+| Komenda                   | Opis                            |
+| ------------------------- | ------------------------------- |
+| `just prod-build`         | Budowanie obrazów produkcyjnych |
+| `just prod-up`            | Uruchomienie produkcji          |
+| `just prod-down`          | Zatrzymanie produkcji           |
+| `just prod-logs [serwis]` | Podgląd logów produkcyjnych     |
+| `just prod-manage <cmd>`  | Wykonanie komendy `manage.py`   |
 
 ---
 
@@ -332,16 +332,16 @@ just messages
 
 ### Parametry
 
-| Parametr | Opis | Domyślna wartość |
-| --- | --- | --- |
-| `--url` | URL endpointu API (schemat `http://` jest opcjonalny) | *wymagany* |
-| `--model` | Nazwa modelu | `translategemma` |
-| `--language` | Kod języka docelowego (np. `pl`, `en`) | wszystkie języki |
-| `--source-lang` | Kod języka źródłowego stringów `msgid` | `en` |
-| `--locale-dir` | Ścieżka do katalogu locale | `LOCALE_PATHS[0]` z ustawień Django |
-| `--all` | Przetłumacz też już wypełnione wpisy | `false` |
-| `--dry-run` | Wyświetl wynik bez zapisu | `false` |
-| `--api-key` | Klucz API (dla lokalnych modeli zwykle zbędny) | `nokey` |
+| Parametr        | Opis                                                  | Domyślna wartość                    |
+| --------------- | ----------------------------------------------------- | ----------------------------------- |
+| `--url`         | URL endpointu API (schemat `http://` jest opcjonalny) | _wymagany_                          |
+| `--model`       | Nazwa modelu                                          | `translategemma`                    |
+| `--language`    | Kod języka docelowego (np. `pl`, `en`)                | wszystkie języki                    |
+| `--source-lang` | Kod języka źródłowego stringów `msgid`                | `en`                                |
+| `--locale-dir`  | Ścieżka do katalogu locale                            | `LOCALE_PATHS[0]` z ustawień Django |
+| `--all`         | Przetłumacz też już wypełnione wpisy                  | `false`                             |
+| `--dry-run`     | Wyświetl wynik bez zapisu                             | `false`                             |
+| `--api-key`     | Klucz API (dla lokalnych modeli zwykle zbędny)        | `nokey`                             |
 
 ---
 
@@ -388,10 +388,10 @@ Suchar-Overflow/
 
 Projekt posiada dwa oddzielne zestawy testów, które **muszą być uruchamiane osobno**:
 
-| Zestaw | Marker | Komenda |
-| ------ | ------ | ------- |
-| Testy jednostkowe / integracyjne | *(brak markera)* | `just test` |
-| Testy E2E (Playwright) | `@pytest.mark.e2e` | `just test-e2e` |
+| Zestaw                           | Marker             | Komenda         |
+| -------------------------------- | ------------------ | --------------- |
+| Testy jednostkowe / integracyjne | _(brak markera)_   | `just test`     |
+| Testy E2E (Playwright)           | `@pytest.mark.e2e` | `just test-e2e` |
 
 ### Testy jednostkowe
 

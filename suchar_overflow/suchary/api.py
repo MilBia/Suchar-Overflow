@@ -181,9 +181,7 @@ def vote_suchar(
     # just switched `is_dry` on, false on removal. It replays on every fresh
     # self dry-vote (no latch) — it is pure UI delight, no achievement.
     added_dry = vote_type == "dry" and (created or vote.is_dry)
-    self_dry_vote_toast = (
-        _("Odwaga. Szacunek.") if added_dry and user.pk == suchar.author_id else None
-    )
+    self_dry_vote_toast = _("Odwaga. Szacunek.") if added_dry and user.pk == suchar.author_id else None
 
     return {
         "funny_count": counts["funny"] or 0,

@@ -251,8 +251,7 @@ def _is_translategemma(model: str) -> bool:
 def _looks_like_hallucination(msgid: str, response: str) -> bool:
     """Return True if the response is suspiciously long."""
     return len(response) > _MAX_RESPONSE_CHARS or (
-        len(msgid) >= _MIN_MSGID_FOR_RATIO
-        and len(response) > len(msgid) * _MAX_LENGTH_RATIO
+        len(msgid) >= _MIN_MSGID_FOR_RATIO and len(response) > len(msgid) * _MAX_LENGTH_RATIO
     )
 
 
@@ -372,11 +371,7 @@ class Command(BaseCommand):
                 self.style.WARNING("DRY RUN — no files will be modified."),
             )
 
-        po_glob = (
-            f"{options['language']}/LC_MESSAGES/*.po"
-            if options["language"]
-            else "*/LC_MESSAGES/*.po"
-        )
+        po_glob = f"{options['language']}/LC_MESSAGES/*.po" if options["language"] else "*/LC_MESSAGES/*.po"
         po_files = sorted(locale_dir.glob(po_glob))
 
         if not po_files:
@@ -424,8 +419,7 @@ class Command(BaseCommand):
             lang_code = po_path.parts[-3]
             if lang_code == source_lang:
                 self.stdout.write(
-                    f"\nSkipping {po_path.name} [{lang_code}]"
-                    f" — same as source language.",
+                    f"\nSkipping {po_path.name} [{lang_code}] — same as source language.",
                 )
                 continue
             lang_name = LANGUAGE_NAMES.get(lang_code, lang_code)
@@ -496,14 +490,12 @@ class Command(BaseCommand):
             if entry.msgid in _PROTECTED_TERMS:
                 if dry_run:
                     self.stdout.write(
-                        f"  [dry] {entry.msgid!r}\n"
-                        f"       -> {entry.msgid!r} (protected)",
+                        f"  [dry] {entry.msgid!r}\n       -> {entry.msgid!r} (protected)",
                     )
                 else:
                     entry.msgstr = entry.msgid
                     self.stdout.write(
-                        f"  {entry.msgid!r} -> {entry.msgid!r}"
-                        " (protected, verbatim copy)",
+                        f"  {entry.msgid!r} -> {entry.msgid!r} (protected, verbatim copy)",
                     )
                 translated += 1
                 continue
@@ -597,8 +589,7 @@ class Command(BaseCommand):
         if _looks_like_hallucination(msgid, result):
             self.stderr.write(
                 self.style.WARNING(
-                    f"  Hallucination for {msgid!r} "
-                    f"(len {len(result)} vs {len(msgid)}), skipping.",
+                    f"  Hallucination for {msgid!r} (len {len(result)} vs {len(msgid)}), skipping.",
                 ),
             )
             return None
@@ -619,8 +610,7 @@ class Command(BaseCommand):
         if _has_format_specifier_corruption(msgid, result):
             self.stderr.write(
                 self.style.WARNING(
-                    f"  Format specifier corruption for {msgid!r}: {result!r},"
-                    " skipping.",
+                    f"  Format specifier corruption for {msgid!r}: {result!r}, skipping.",
                 ),
             )
             return None

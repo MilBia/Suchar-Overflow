@@ -515,16 +515,12 @@ def test_search_query_avoids_distinct_count_aggregate(
     assert results[0].dry_count == 2
 
     annotation_queries = [
-        q["sql"]
-        for q in ctx.captured_queries
-        if "funny_count" in q["sql"] or "dry_count" in q["sql"]
+        q["sql"] for q in ctx.captured_queries if "funny_count" in q["sql"] or "dry_count" in q["sql"]
     ]
     assert annotation_queries
     assert not any("DISTINCT" in sql for sql in annotation_queries)
 
-    count_queries = [
-        q["sql"] for q in ctx.captured_queries if "SELECT COUNT(*)" in q["sql"]
-    ]
+    count_queries = [q["sql"] for q in ctx.captured_queries if "SELECT COUNT(*)" in q["sql"]]
     assert count_queries
     assert not any("funny_count" in sql or "dry_count" in sql for sql in count_queries)
 

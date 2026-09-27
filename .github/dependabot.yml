@@ -3,90 +3,89 @@
 
 version: 2
 updates:
-  # Update GitHub actions in workflows
-  - package-ecosystem: 'github-actions'
-    directory: '/'
-    # Every weekday
-    schedule:
-      interval: 'daily'
-    groups:
-      github-actions:
-        patterns:
-          - '*'
+    # Update GitHub actions in workflows
+    - package-ecosystem: 'github-actions'
+      directory: '/'
+      # Every weekday
+      schedule:
+          interval: 'daily'
+      groups:
+          github-actions:
+              patterns:
+                  - '*'
 
-  # Enable version updates for Docker
-  - package-ecosystem: 'docker'
-    # Look for a `Dockerfile` in the `compose/local/django` directory
-    directories:
-      - 'compose/local/django/'
-      - 'compose/production/django/'
-    # Every weekday
-    schedule:
-      interval: 'daily'
-    # Keep Python on 3.14.x: ignore its minor/major bumps (3.14 -> 3.15) but take
-    # patches. Scoped to `python` on purpose (#431): the pinned
-    # ghcr.io/astral-sh/uv stage is 0.x, where every uv release is a "minor", so a
-    # '*' ignore would freeze it for good — the same silent staleness as the
-    # astral python3.14-bookworm tag this replaced.
-    ignore:
-      - dependency-name: 'python'
-        update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
-    groups:
-      docker-python:
-        patterns:
-          - '*'
+    # Enable version updates for Docker
+    - package-ecosystem: 'docker'
+      # Look for a `Dockerfile` in the `compose/local/django` directory
+      directories:
+          - 'compose/local/django/'
+          - 'compose/production/django/'
+      # Every weekday
+      schedule:
+          interval: 'daily'
+      # Keep Python on 3.14.x: ignore its minor/major bumps (3.14 -> 3.15) but take
+      # patches. Scoped to `python` on purpose (#431): the pinned
+      # ghcr.io/astral-sh/uv stage is 0.x, where every uv release is a "minor", so a
+      # '*' ignore would freeze it for good — the same silent staleness as the
+      # astral python3.14-bookworm tag this replaced.
+      ignore:
+          - dependency-name: 'python'
+            update-types:
+                - 'version-update:semver-major'
+                - 'version-update:semver-minor'
+      groups:
+          docker-python:
+              patterns:
+                  - '*'
 
+    - package-ecosystem: 'docker'
+      # Look for a `Dockerfile` in the listed directories
+      directories:
+          - 'compose/production/postgres/'
+          - 'compose/production/traefik/'
+          - 'compose/production/nginx/'
+      # Every weekday
+      schedule:
+          interval: 'daily'
 
-  - package-ecosystem: 'docker'
-    # Look for a `Dockerfile` in the listed directories
-    directories:
-      - 'compose/production/postgres/'
-      - 'compose/production/traefik/'
-      - 'compose/production/nginx/'
-    # Every weekday
-    schedule:
-      interval: 'daily'
+    # Enable version updates for Docker Compose files
+    - package-ecosystem: 'docker-compose'
+      directories:
+          - '/'
+      # Every weekday
+      schedule:
+          interval: 'daily'
 
-  # Enable version updates for Docker Compose files
-  - package-ecosystem: 'docker-compose'
-    directories:
-      - '/'
-    # Every weekday
-    schedule:
-      interval: 'daily'
+    # Enable version updates for Python/uv
+    - package-ecosystem: 'uv'
+      # Look for a `pyproject.toml` in the `root` directory
+      directory: '/'
+      # Every weekday
+      schedule:
+          interval: 'daily'
+      groups:
+          # Listed first: a dependency joins the first group it matches. ruff and
+          # djLint bumps also need the hook rev in .pre-commit-config.yaml, which
+          # Dependabot doesn't touch, so tests/test_precommit_hook_versions.py fails
+          # their PR until that commit is added (#451). Their own group keeps that
+          # red test from holding up the rest of the python bumps.
+          lint-tools:
+              patterns:
+                  - 'ruff'
+                  - 'djlint'
+          python:
+              update-types:
+                  - 'minor'
+                  - 'patch'
 
-  # Enable version updates for Python/uv
-  - package-ecosystem: 'uv'
-    # Look for a `pyproject.toml` in the `root` directory
-    directory: '/'
-    # Every weekday
-    schedule:
-      interval: 'daily'
-    groups:
-      # Listed first: a dependency joins the first group it matches. ruff and
-      # djLint bumps also need the hook rev in .pre-commit-config.yaml, which
-      # Dependabot doesn't touch, so tests/test_precommit_hook_versions.py fails
-      # their PR until that commit is added (#451). Their own group keeps that
-      # red test from holding up the rest of the python bumps.
-      lint-tools:
-        patterns:
-          - 'ruff'
-          - 'djlint'
-      python:
-        update-types:
-          - 'minor'
-          - 'patch'
-
-  # Dev-only JS test runner (Vitest + jsdom). Not a runtime/vendored dependency —
-  # see CLAUDE.md "JS tests (Vitest)". Kept on Dependabot so it doesn't become
-  # the same no-bot blind spot as the hand-vendored libs (issue #177).
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'daily'
-    groups:
-      js-dev:
-        patterns:
-          - '*'
+    # Dev-only JS test runner (Vitest + jsdom). Not a runtime/vendored dependency —
+    # see CLAUDE.md "JS tests (Vitest)". Kept on Dependabot so it doesn't become
+    # the same no-bot blind spot as the hand-vendored libs (issue #177).
+    - package-ecosystem: 'npm'
+      directory: '/'
+      schedule:
+          interval: 'daily'
+      groups:
+          js-dev:
+              patterns:
+                  - '*'

@@ -3,13 +3,13 @@
 {% load i18n %}
 
 {% block title %}
-  {% trans "404 — ta strona wyparowała" %}
+    {% trans "404 — ta strona wyparowała" %}
 {% endblock title %}
 {% block content %}
-  <div class="error-page">
-    <p class="error-page__code" aria-hidden="true">404</p>
-    <h1 class="error-page__title">{% trans "404 — ta strona wyparowała" %}</h1>
-    <p class="error-page__joke">{% trans "Była tak sucha, że wyparowała. Zostały tylko okruszki i ten komunikat." %}</p>
-    <a class="btn btn-primary" href="{% url 'home' %}">{% trans "Wróć na stronę główną" %}</a>
-  </div>
+    <div class="error-page">
+        <p class="error-page__code" aria-hidden="true">404</p>
+        <h1 class="error-page__title">{% trans "404 — ta strona wyparowała" %}</h1>
+        <p class="error-page__joke">{% trans "Była tak sucha, że wyparowała. Zostały tylko okruszki i ten komunikat." %}</p>
+        <a class="btn btn-primary" href="{% url 'home' %}">{% trans "Wróć na stronę główną" %}</a>
+    </div>
 {% endblock content %}

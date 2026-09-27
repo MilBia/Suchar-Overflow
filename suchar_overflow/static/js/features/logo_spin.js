@@ -78,9 +78,9 @@
     // JS reduced-motion gate already skips this branch, but if the class is ever
     // added anyway the animation still collapses to nothing.
     const SPIN_CSS =
-        '@keyframes ee-logo-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}'
-        + '.ee-logo-spin{animation:ee-logo-spin 600ms ease-in-out}'
-        + '@media (prefers-reduced-motion: reduce){.ee-logo-spin{animation:none}}';
+        '@keyframes ee-logo-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}' +
+        '.ee-logo-spin{animation:ee-logo-spin 600ms ease-in-out}' +
+        '@media (prefers-reduced-motion: reduce){.ee-logo-spin{animation:none}}';
 
     // ── Module-level mutable state (reset between Vitest tests via _resetForTests) ─
     let clickHandler = null;
@@ -110,11 +110,7 @@
             const raw = sessionStorage.getItem(STORAGE_KEY);
             if (!raw) return { count: 0, last: 0 };
             const parsed = JSON.parse(raw);
-            if (
-                !parsed
-                || typeof parsed.count !== 'number'
-                || typeof parsed.last !== 'number'
-            ) {
+            if (!parsed || typeof parsed.count !== 'number' || typeof parsed.last !== 'number') {
                 return { count: 0, last: 0 };
             }
             return { count: parsed.count, last: parsed.last };

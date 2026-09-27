@@ -3,30 +3,30 @@
 {% load i18n %}
 
 {% block title %}
-  {% translate "Email Changed" %}
+    {% translate "Email Changed" %}
 {% endblock title %}
 
 {% block content %}
-  <div class="row justify-content-center text-center">
-    <div class="col-md-6">
-      <div class="card shadow-sm border-0 p-5">
-        <div class="mb-4 text-success d-flex justify-content-center">
-          <style>
-            .icon-wrapper svg {
-              width: 5rem;
-              height: 5rem;
-            }
-          </style>
-          <div class="icon-wrapper">{% include "svgs/icon-check.svg" %}</div>
+    <div class="row justify-content-center text-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-5">
+                <div class="mb-4 text-success d-flex justify-content-center">
+                    <style>
+                        .icon-wrapper svg {
+                            width: 5rem;
+                            height: 5rem;
+                        }
+                    </style>
+                    <div class="icon-wrapper">{% include "svgs/icon-check.svg" %}</div>
+                </div>
+
+                <h1 class="h2 mb-3">{% trans "It worked!" %}</h1>
+                <p class="text-muted mb-4">
+                    {% trans "Your email address has been changed. You can now sleep peacefully (or not)." %}
+                </p>
+
+                <a href="{% url 'users:update' %}" class="btn btn-primary mt-3">{% trans "Back to settings" %}</a>
+            </div>
         </div>
-
-        <h1 class="h2 mb-3">{% trans "It worked!" %}</h1>
-        <p class="text-muted mb-4">
-          {% trans "Your email address has been changed. You can now sleep peacefully (or not)." %}
-        </p>
-
-        <a href="{% url 'users:update' %}" class="btn btn-primary mt-3">{% trans "Back to settings" %}</a>
-      </div>
     </div>
-  </div>
 {% endblock content %}

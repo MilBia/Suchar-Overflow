@@ -205,8 +205,7 @@ def test_bell_button_label_matches_the_polish_msgid_convention() -> None:
 def test_language_search_field_has_an_accessible_name() -> None:
     html = _get(Client(), reverse("home"))
     assert re.search(
-        r'class="language-search"[^>]*aria-label="'
-        + re.escape(gettext("Szukaj języka")),
+        r'class="language-search"[^>]*aria-label="' + re.escape(gettext("Szukaj języka")),
         html,
         re.DOTALL,
     )

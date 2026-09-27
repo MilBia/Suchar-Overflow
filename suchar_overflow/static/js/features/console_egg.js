@@ -39,14 +39,11 @@
         "   '========'",
     ].join('\n');
 
-    const TEXT =
-        '😉 Zaglądasz pod maskę? Kod, Issues i suchary czekają:\n   ' + REPO_URL;
+    const TEXT = '😉 Zaglądasz pod maskę? Kod, Issues i suchary czekają:\n   ' + REPO_URL;
 
     const ART_STYLE =
-        "color:#E58E26;font-family:'Fira Code',ui-monospace,monospace;"
-        + 'font-weight:bold;line-height:1.15';
-    const TEXT_STYLE =
-        'color:inherit;font-family:ui-sans-serif,system-ui,sans-serif;font-size:12px';
+        "color:#E58E26;font-family:'Fira Code',ui-monospace,monospace;" + 'font-weight:bold;line-height:1.15';
+    const TEXT_STYLE = 'color:inherit;font-family:ui-sans-serif,system-ui,sans-serif;font-size:12px';
 
     // In-memory dedupe for the current page; `sessionStorage` covers the rest of
     // the session. Reset between Vitest tests via `_resetForTests`.

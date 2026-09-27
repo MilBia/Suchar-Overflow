@@ -69,9 +69,5 @@ def test_send_mail_still_reaches_the_outbox_without_deprecation_warnings() -> No
     assert len(mail.outbox) == 1
     assert mail.outbox[0].to == ["someone@example.com"]
 
-    mailers_warnings = [
-        str(w.message)
-        for w in caught
-        if issubclass(w.category, RemovedInDjango70Warning)
-    ]
+    mailers_warnings = [str(w.message) for w in caught if issubclass(w.category, RemovedInDjango70Warning)]
     assert mailers_warnings == []

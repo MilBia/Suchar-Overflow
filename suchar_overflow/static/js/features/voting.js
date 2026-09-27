@@ -112,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.setAttribute('data-overdried', '');
                 }
             }
-
         } catch (error) {
             console.error('Vote failed:', error);
 
@@ -125,8 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dryBtn.querySelector('.vote-count').textContent = snapshot.dryCount;
 
             if (window.showToast) {
-                const errorText = container.dataset.errorText
-                    || 'Głos ugrzązł w suszy. Spróbuj ponownie.';
+                const errorText = container.dataset.errorText || 'Głos ugrzązł w suszy. Spróbuj ponownie.';
                 window.showToast(errorText, 'Błąd', 'error');
             }
         } finally {
@@ -138,6 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Test-only handle for the busy-state helper — inert in the browser (`module`
 // is undefined there) and preserved by rjsmin. See CLAUDE.md "JS tests
 // (Vitest)"; not dead code.
-if (typeof module !== "undefined" && module.exports) {
+if (typeof module !== 'undefined' && module.exports) {
     module.exports = { setVotingBusy };
 }

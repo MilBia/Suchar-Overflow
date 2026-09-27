@@ -30,7 +30,7 @@
     display: inline-block;
 }
 
-[data-theme="dark"] .gradient-text {
+[data-theme='dark'] .gradient-text {
     background: linear-gradient(135deg, #12c2e9 0%, #c471ed 50%, #f64f59 100%);
     background-clip: text;
     -webkit-background-clip: text;
@@ -50,7 +50,10 @@
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
     min-height: 180px;
     display: flex;
     flex-direction: column;
@@ -93,7 +96,7 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-[data-theme="dark"] .achievement-icon-wrapper {
+[data-theme='dark'] .achievement-icon-wrapper {
     background: rgba(255, 255, 255, 0.05);
 }
 

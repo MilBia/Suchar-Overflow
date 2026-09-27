@@ -36,7 +36,7 @@ Credentials are in `.envs/.local/.postgres`. The compose service is named `djang
 
 `DATABASE_URL` is not in `.envs/.local/*` — `/entrypoint` assembles it from
 `POSTGRES_*`, and `docker compose exec` skips the ENTRYPOINT. The local image appends
-`compose/local/django/bashrc.sh` to `/etc/bash.bashrc`, so an *interactive*
+`compose/local/django/bashrc.sh` to `/etc/bash.bashrc`, so an _interactive_
 `docker compose exec django bash` has it set (#404); a non-interactive
 `exec django python manage.py …` / `bash -c …` still does not. For that use
 `just exec <cmd>` (any command, e.g. `just exec python manage.py showmigrations`),
@@ -113,7 +113,7 @@ don't read it as a leak.
 (defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated
 explicitly in the override (see issue #214) — otherwise the E2E run drops and rebuilds
 the test DB from scratch even though the unit-test step in the same CI job already built
-an identical schema moments earlier, and the *next* unit-test run after E2E pays for
+an identical schema moments earlier, and the _next_ unit-test run after E2E pays for
 rebuilding it again (measured locally: unit suite ~10s with an existing DB vs. ~15s
 immediately after a no-`--reuse-db` E2E run had dropped it). This is safe despite the
 migration-seeded-data flush artifact described in "Migration-seeded achievements" below:
@@ -137,10 +137,10 @@ overrides the default: `just test-e2e tests/e2e/test_konami_easter_egg.py` (see 
 
 There are two separate test suites that **must never be run together with the same settings**:
 
-| Suite | Marker | Settings | Command |
-|-------|--------|----------|---------|
-| Unit/integration | *(no marker)* | `config.settings.test` | `just test` |
-| Playwright E2E | `@pytest.mark.e2e` | `config.settings.e2e` | `just test-e2e` |
+| Suite            | Marker             | Settings               | Command         |
+| ---------------- | ------------------ | ---------------------- | --------------- |
+| Unit/integration | _(no marker)_      | `config.settings.test` | `just test`     |
+| Playwright E2E   | `@pytest.mark.e2e` | `config.settings.e2e`  | `just test-e2e` |
 
 `config.settings.e2e` extends `test` but adds `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`
 for `127.0.0.1`/`localhost` (needed because Playwright POSTs trigger CSRF Origin checks).
@@ -233,7 +233,7 @@ here, Playwright E2E for the integration path — audio, the real
   `page.clock` against a real browser + a `transaction=True` DB per test does not.
 - **Not a build step.** Vitest is a dev-only runner in the same category as pytest
   — it never transforms, bundles, or ships anything. The "no JS build step" rule
-  (see *Vendored JS libraries* / *Content Security Policy*) is unaffected: npm for
+  (see _Vendored JS libraries_ / _Content Security Policy_) is unaffected: npm for
   vendoring or bundling runtime assets stays rejected; npm as a test runner is the
   accepted, separate case.
 - **Run it**: `just test-js` (or `npm test`). Runs on the **host**, not in a
@@ -254,8 +254,8 @@ here, Playwright E2E for the integration path — audio, the real
   `module` is undefined in the browser, so it is inert there and survives `rjsmin`.
   It is **not** dead code (like `window.__hiddenAchievementsReady`) — don't strip it
   in a JS sweep. `hidden_achievements.js` is the reference; `easter_eggs.js` (#282)
-  follows the same pattern. Don't restructure a `{% compress js %}` block *to reach
-  a script from a test* — the CJS tail is what makes that unnecessary;
+  follows the same pattern. Don't restructure a `{% compress js %}` block _to reach
+  a script from a test_ — the CJS tail is what makes that unnecessary;
   `tests/test_compressed_page_assets.py` guards that the served bundle stays a valid
   classic script. (Adding a genuinely global module to `base.html`'s block for a
   product reason, as #282 did with `easter_eggs.js`, is a different thing and is
@@ -277,7 +277,7 @@ here, Playwright E2E for the integration path — audio, the real
   in-memory dedupe `Set`, its audio cache) survives between tests too.
   `easter_eggs.js` exposes `_resetForTests()` (attached only in the CJS tail,
   never on the browser `window.easterEggs`) which clears all of it; `beforeEach`
-  in *both* `tests/js/easter_eggs.test.js` and `tests/js/hidden_achievements.test.js`
+  in _both_ `tests/js/easter_eggs.test.js` and `tests/js/hidden_achievements.test.js`
   calls it right after the `require`. New modules with module-level mutable state
   should follow the same pattern.
 
@@ -288,18 +288,18 @@ DJ, ANN, ARG, and many more. Only `S101`, `RUF012`, `SIM102` are globally ignore
 rules below are all active.
 Key rules that trip agents up:
 
-| Rule | What it catches | How to fix |
-|------|----------------|-----------|
-| `SLF001` | Private member access (`_attr`) | Add `# noqa: SLF001` in tests that must poke private state |
-| `PLC0415` | `import` inside a function | Move all imports to the top of the file. Exception: `*/apps.py` has a per-file-ignore for `PLC0415` — `AppConfig.ready()` methods (e.g. `AchievementsConfig`) may import inline. |
-| `N806` | Uppercase variable in function (`User = ...`) | Use `user_model = get_user_model()` |
-| `S106` | Hardcoded password string | Per-file-ignored in tests and `conftest.py` (`[tool.ruff.lint.per-file-ignores]`) — no `noqa` needed there; outside tests, fix it |
-| `PLR2004` | Magic value comparison | Per-file-ignored in tests and `conftest.py` — write plain numeric assertions; outside tests, name the constant or add `# noqa: PLR2004` |
-| `E501` | Line > 120 chars | Shorten comments/docstrings; use `# noqa: E501` only as last resort |
-| `ARG001`/`ARG002`/`ARG003` | Unused function/method/classmethod argument | If genuinely removable (e.g. unused `*args, **kwargs` on a Django CBV method whose URL has no captured groups), delete it. If the name/position is mandated by a framework contract you don't control (Django signal receivers — dispatched by keyword, so the param name literally can't change; `ModelAdmin`/`ModelForm` overrides; polymorphic interfaces like `AchievementRule.evaluate`), add `# noqa: ARG00x` rather than renaming. For a pytest fixture used only for its side effect (never referenced in the test body), prefer `@pytest.mark.usefixtures("fixture_name")` over accepting-and-ignoring the parameter — it removes the violation and the dead parameter together. Never rename a pytest fixture parameter to silence this — fixtures are injected by exact parameter name. |
-| `ANN001`/`ANN201`/etc. | Missing type annotation | See "Type annotations (ANN)" below — this codebase has real gotchas around *when* an annotation-only import can go under `TYPE_CHECKING`. |
-| `ANN401` | Explicit `Any` in a signature | Legitimate for genuinely dynamic boundaries (Django management command `**options`, from argparse) — add `# noqa: ANN401` rather than mistyping as `object` and fighting mypy. |
-| `FBT001`/`FBT002` | Boolean positional argument | Fires the moment a previously-untyped bool param gets annotated. If the name/position is framework-mandated (`ModelForm.save(commit=...)`, factory_boy `post_generation` hooks, signal receivers' `created`), add `# noqa: FBT001`/`FBT002` — don't reorder to keyword-only unless you also control every call site. |
+| Rule                       | What it catches                               | How to fix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SLF001`                   | Private member access (`_attr`)               | Add `# noqa: SLF001` in tests that must poke private state                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `PLC0415`                  | `import` inside a function                    | Move all imports to the top of the file. Exception: `*/apps.py` has a per-file-ignore for `PLC0415` — `AppConfig.ready()` methods (e.g. `AchievementsConfig`) may import inline.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `N806`                     | Uppercase variable in function (`User = ...`) | Use `user_model = get_user_model()`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `S106`                     | Hardcoded password string                     | Per-file-ignored in tests and `conftest.py` (`[tool.ruff.lint.per-file-ignores]`) — no `noqa` needed there; outside tests, fix it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `PLR2004`                  | Magic value comparison                        | Per-file-ignored in tests and `conftest.py` — write plain numeric assertions; outside tests, name the constant or add `# noqa: PLR2004`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `E501`                     | Line > 120 chars                              | Shorten comments/docstrings; use `# noqa: E501` only as last resort                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `ARG001`/`ARG002`/`ARG003` | Unused function/method/classmethod argument   | If genuinely removable (e.g. unused `*args, **kwargs` on a Django CBV method whose URL has no captured groups), delete it. If the name/position is mandated by a framework contract you don't control (Django signal receivers — dispatched by keyword, so the param name literally can't change; `ModelAdmin`/`ModelForm` overrides; polymorphic interfaces like `AchievementRule.evaluate`), add `# noqa: ARG00x` rather than renaming. For a pytest fixture used only for its side effect (never referenced in the test body), prefer `@pytest.mark.usefixtures("fixture_name")` over accepting-and-ignoring the parameter — it removes the violation and the dead parameter together. Never rename a pytest fixture parameter to silence this — fixtures are injected by exact parameter name. |
+| `ANN001`/`ANN201`/etc.     | Missing type annotation                       | See "Type annotations (ANN)" below — this codebase has real gotchas around _when_ an annotation-only import can go under `TYPE_CHECKING`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `ANN401`                   | Explicit `Any` in a signature                 | Legitimate for genuinely dynamic boundaries (Django management command `**options`, from argparse) — add `# noqa: ANN401` rather than mistyping as `object` and fighting mypy.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `FBT001`/`FBT002`          | Boolean positional argument                   | Fires the moment a previously-untyped bool param gets annotated. If the name/position is framework-mandated (`ModelForm.save(commit=...)`, factory_boy `post_generation` hooks, signal receivers' `created`), add `# noqa: FBT001`/`FBT002` — don't reorder to keyword-only unless you also control every call site.                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 `ruff format` enforces 120-char line width and import sorting (`force-single-line = true`).
 Everything ruff and djLint don't format (JS, CSS, YAML, JSON, Markdown) goes through the
@@ -328,9 +328,9 @@ something reads the annotation at runtime, not just at type-check time:
   `cls.dispatch.__annotations__` at class-creation time, which forces the (otherwise
   lazy) annotation to resolve immediately. Only `suchar_overflow/users/mixins.py`
   overrides `dispatch()` in this codebase — regular `get`/`post`/etc. method overrides
-  are *not* affected and can use `TYPE_CHECKING` freely.
+  are _not_ affected and can use `TYPE_CHECKING` freely.
 - **Every django-ninja `@router.get/post/...` endpoint function**, in every parameter
-  *and* the return type. Ninja calls `inspect.signature()`/`get_type_hints()` on the
+  _and_ the return type. Ninja calls `inspect.signature()`/`get_type_hints()` on the
   whole function at request-handling time; a `NameError` on a TYPE_CHECKING-only name
   only surfaces when the endpoint is actually hit (ruff and mypy won't catch it — write
   or run a test that hits the endpoint).
@@ -338,11 +338,13 @@ something reads the annotation at runtime, not just at type-check time:
 When `request.user` / `request.auser()` is accessed on a view/endpoint that's guarded by
 `AsyncLoginRequiredMixin` or ninja's `auth=django_auth`, django-stubs still types it as
 `User | AnonymousUser`. Narrow it explicitly rather than suppressing the error:
+
 ```python
 user = await request.auser()
 # AsyncLoginRequiredMixin already rejects anonymous requests.
 assert isinstance(user, User)
 ```
+
 (`assert` is fine here — `S101` is globally ignored, and production does not run with
 `python -O`, so this is a real runtime guard, not just a mypy hint.)
 
@@ -358,12 +360,14 @@ A setting like `COMPRESS_ENABLED = not DEBUG` in `base.py` evaluates immediately
 using `base.py`'s own `DEBUG`, **not** the child file's overridden value.
 
 Rules:
+
 - `base.py` always has the safest/most conservative default.
 - Environment-specific overrides live entirely in `local.py`, `test.py`, or `production.py`.
 - Never use expressions that reference sibling settings in `base.py` defaults
   (e.g. `X = not DEBUG`) if child files need a different value.
 
 Current safe defaults in `base.py`:
+
 - `COMPRESS_ENABLED = False` — production.py sets `True`
 - `COMPRESS_OFFLINE = False` — production.py sets `True`
 
@@ -403,9 +407,9 @@ SSE-delivery flag, and `toast_sent_suchar:{suchar.pk}`
 "already fired" latch (`cache.add`, 30-day TTL) so un-voting and re-voting a suchar
 back through 0 → 1 does not keep re-toasting its author.
 `suchary/api.py:vote_suchar` sets `toast_pending` when a suchar's **community**
-funny-vote count (`community_funny` — a third `Count(... FILTER ...)` on the *same*
+funny-vote count (`community_funny` — a third `Count(... FILTER ...)` on the _same_
 `suchar.votes.aggregate(...)`, so no extra query; `~Q(user_id=suchar.author_id)`
-excludes the author's own vote) is `>= 1` *and* `mark_suchar_toast_sent`
+excludes the author's own vote) is `>= 1` _and_ `mark_suchar_toast_sent`
 returns `True`. Excluding the author means a self-vote first no longer permanently
 eats the toast — the next genuine community vote still fires it. The count test
 is `>= 1`, **not** `== 1` (the literal "0 → 1 transition"): `community_funny` is
@@ -432,7 +436,7 @@ above) every 2 seconds and yielding `data: new\n\n` when set; it only ends on
 The loop also carries a **second, deliberately minimal** signal (issue #292, umbrella
 #279): if `toast_pending:{user.pk}` (`toast_cache_key`) is set it additionally yields
 `data: toast\n\n` on the same default event. This is the first-funny-vote 🥁 toast —
-the loop still only *reads* both keys (never clears them); the browser
+the loop still only _reads_ both keys (never clears them); the browser
 (`project.js`) branches on `event.data` (`new` → `GET /api/achievements/unseen`;
 `toast` → `GET /api/achievements/toast`) and each fetch clears its own key. Two
 guards keep the toast single-surface: `handleFirstFunnyToast` bails if
@@ -493,9 +497,9 @@ they need (see `achievements/tests/test_stream.py`).
 how the frontend awards `FRONTEND_EVENT`-metric achievements for client-only actions,
 gated by an allowlist of slugs in `VALID_FRONTEND_SLUGS`), and `GET
 /achievements/toast` — pops `toast_pending:{pk}` with one atomic `cache.delete`
-(its bool return *is* the "was one pending?" check) and returns the translated
+(its bool return _is_ the "was one pending?" check) and returns the translated
 first-funny-vote 🥁 toast (`ToastResponseSchema`: `{"toast": {"title", "body"}}` or
-`{"toast": null}`); the text is `gettext`-ed here so it lands in the *author's*
+`{"toast": null}`); the text is `gettext`-ed here so it lands in the _author's_
 language, not the voter's (issue #292).
 
 `static/js/features/hidden_achievements.js` sets `window.__hiddenAchievementsReady =
@@ -511,7 +515,7 @@ Issue #282, umbrella #278 (group A "delight" easter eggs). This module is the
 shared groundwork; the child issues (#283+) each add one easter egg on top.
 "Wire nothing global themselves" means a child adds **no new helper to
 `window.easterEggs`** and no new global data blob — it consumes the surface
-below. A child whose *trigger* must listen on every page (e.g. `konami.js`, #283)
+below. A child whose _trigger_ must listen on every page (e.g. `konami.js`, #283)
 still gets its own `<script>` in `base.html`'s global `{% compress js %}` block,
 right after `easter_eggs.js`; that is expected, not a violation (same-block
 scripts concatenate to one bundle, so `BASE_JS_BUNDLES` stays `1`). It exposes
@@ -560,7 +564,7 @@ init-complete signal — the E2E test waits on it before pressing keys.
   `SVG_NS`, `keyBuffer`, …) private — a top-level `const` collision with a future
   group-A egg (#284+) sharing the same global `{% compress js %}` block is a
   bundle-wide `SyntaxError`, not a localised bug. The guarded CJS export tail
-  lives *inside* the IIFE (closures still see `module`).
+  lives _inside_ the IIFE (closures still see `module`).
 - **The key matcher is a fixed-length sliding window, not a rolling index.** A
   hand-rolled state machine desyncs on the repeated `↑ ↑` prefix: an odd run of
   `ArrowUp` before the real code (`↑ ↑ ↑ ↓ …`) leaves the index pointing at the
@@ -623,7 +627,7 @@ E2E test waits on it before typing.
   drops form-field targets (`INPUT`/`TEXTAREA`/`SELECT`/`isContentEditable`) and
   `ctrl/alt/meta` chords, exactly like konami.
 - **`prefers-reduced-motion` (or jsdom, no `matchMedia`) → the toast only** — no
-  overlay is appended and no `<style>` is injected. This is *different* from
+  overlay is appended and no `<style>` is injected. This is _different_ from
   `konami.js`, which still renders a motion-free static scatter; #284's issue
   says "sam toast".
 - **Dust motes are plain `<div>`s** built in JS with styles set
@@ -666,7 +670,7 @@ inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
   handler itself. It replays on every fresh burst of 7 (deliberately not
   one-shot, like konami / badumtss).
 - **"Chain" semantics, a deliberate deviation from the issue's literal "wszystkie
-  7 w oknie 3 s".** Each click within `CHAIN_MS` (3 s) of the *previous* one bumps
+  7 w oknie 3 s".** Each click within `CHAIN_MS` (3 s) of the _previous_ one bumps
   `count`; a longer gap restarts the chain. A strict single 3 s window is
   unreproducible here: 7 clicks means 7 full page loads, which do not fit one 3 s
   window on a CI runner. The rolling per-gap window does (one home-page load is
@@ -683,10 +687,10 @@ inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
   in depth — the JS gate (`easterEggs.reducedJuice()`, jsdom-default true) already
   skips the whole branch.
 - **The meta-suchar pool is a hand-authored `<script id="ee-logo-suchary"
-  type="application/json">` data island in `base.html`, for authenticated users
+type="application/json">` data island in `base.html`, for authenticated users
   only — NOT inside `{% compress js %}`** (its translated text must not be
   minified into the bundle; a no-`src` `<script>` inside the block would also
-  lose its `id` to `JsCompressor`). It is *not* the `json_script` filter —
+  lose its `id` to `JsCompressor`). It is _not_ the `json_script` filter —
   `base.html` has no view to build a context list — so each line is a `{% trans %}`
   string piped through `|escapejs` (a non-executable `type="application/json"`
   block is not subject to CSP `script-src`, so no nonce, matching the existing
@@ -729,7 +733,7 @@ console output.
   where it sits right after `logo_spin.js` (so `BASE_JS_BUNDLES` stays `1`).
 - **"No spam" = once per browser session.** The latch is
   `sessionStorage['ee_console_shown']`, with an in-memory `shownThisPage`
-  fallback set *before* the `sessionStorage.setItem` so a storage failure
+  fallback set _before_ the `sessionStorage.setItem` so a storage failure
   (private mode / blocked cookies) still dedupes within the page. It **replays**
   in a new session (new tab / browser) — it is not a permanent one-shot.
 - **Auth-gated** on `document.body.dataset.userIsAuthenticated === 'true'`, like
@@ -748,7 +752,7 @@ console output.
 
 ### Tumbleweed easter egg (`features/tumbleweed.js`)
 
-Issue #288, umbrella #278 — the group-A child triggered by *absence* of input.
+Issue #288, umbrella #278 — the group-A child triggered by _absence_ of input.
 On `/suchary` (any sub-page) for a logged-in user, 120 s with no `scroll` /
 `mousemove` / `keydown` rolls a tumbleweed SVG across the lower screen edge with
 the caption "cisza… aż tak sucho?", then it clears itself after ~4.4 s. It
@@ -772,14 +776,14 @@ stays `1`).
   timer) → `armIdleTimer()`, which clears-and-resets the pending timer.
   `initTumbleweed` **only attaches and arms when `location.pathname` is `/suchary`
   or starts with `/suchary/`** (exact-or-slash, so a `/suchary-archiwum/` sibling
-  route would never count) *and* the body is authenticated — the app does full
+  route would never count) _and_ the body is authenticated — the app does full
   page reloads, so there is no per-navigation re-check to do; `onIdle` re-checks
   the path anyway before firing.
 - **`onIdle` bails while the tab is backgrounded** (`document.visibilityState`
   `'hidden'`): CSS animations are frozen there, so a roll would burn the 5 min
   cooldown on something nobody sees (same reasoning as `project.js`'s
   first-funny-toast visibility guard). It re-arms and re-checks on the next idle
-  window. `lastFireAt()` also rejects a *future* stored timestamp — a system
+  window. `lastFireAt()` also rejects a _future_ stored timestamp — a system
   clock wound back by NTP/DST would otherwise make `Date.now() - last` negative
   and wedge the cooldown on for hours.
 - **Cooldown is a `sessionStorage` timestamp (`ee_tumbleweed_last`), 5 minutes**,
@@ -791,7 +795,7 @@ stays `1`).
 - **`prefers-reduced-motion` (or jsdom, no `matchMedia`) → the caption as a
   `window.showToast(CAPTION, '🌾', 'info')`, and nothing else** — no overlay, no
   `<style>` injected. This differs from `konami.js` (which still renders a
-  motion-free static scatter): here the caption *is* the payload, so a toast
+  motion-free static scatter): here the caption _is_ the payload, so a toast
   carries it. A user-approved widening of #288's bare "pominięcie animacji" (the
   issue says only "skip the animation").
 - **The tumbleweed SVG is authored in JS (`createElementNS`)** — a stroked ring
@@ -807,7 +811,7 @@ stays `1`).
   `page.clock.install()` before `goto`, then `page.clock.fast_forward(121_000)`
   to skip the 120 s idle without the suite waiting two real minutes (issue #288 →
   #281). The `_IDLE_JUMP_MS = 121_000` value is load-bearing: `fast_forward`
-  fires *every* timer due in the window, so the jump must land **past** the
+  fires _every_ timer due in the window, so the jump must land **past** the
   120 s idle threshold but **before** `fire + OVERLAY_LIFETIME_MS` (~124.4 s) or
   the same call also runs the removal timer and the overlay is gone before the
   assertion. The removal itself is covered by a second `fast_forward(10_000)`.
@@ -897,7 +901,7 @@ inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
 Issue #290, umbrella #278 — the sixth and last group-A child on the #282
 foundation, and (with konami.js / theme_spam.js) one of the three that award
 a real hidden achievement rather than pure delight. Scrolling to the bottom
-of the *last* page of `/suchary` (any sub-page) for a logged-in user shows a
+of the _last_ page of `/suchary` (any sub-page) for a logged-in user shows a
 "Dotarłeś do dna. Sucharów. Gratulacje." toast and awards the hidden
 `frontend-ee-archeolog` achievement (`frontend-ee-archeolog` in
 `VALID_FRONTEND_SLUGS`, seeded by migration
@@ -937,7 +941,7 @@ after `theme_spam.js` (so `BASE_JS_BUNDLES` stays `1`).
   `tumbleweed.js`'s `lastFireAt()` / `theme_spam.js`'s click-window check,
   kept on `Date.now()` (not `performance.now()`) for consistency with those.
 - **`isNearBottom()` reads `Math.max` of `document.documentElement
-  .scrollHeight` and `document.body.scrollHeight`**, not just the former —
+.scrollHeight` and `document.body.scrollHeight`**, not just the former —
   belt-and-suspenders in the same spirit as `tumbleweed.js`'s
   `isDocumentHidden()` checking both `visibilityState` and `hidden`, even
   though a standards-mode document (Django always renders a doctype) makes
@@ -956,7 +960,7 @@ after `theme_spam.js` (so `BASE_JS_BUNDLES` stays `1`).
 
 ### "Publika Rozgrzana" / combo easter egg (`features/publika_rozgrzana.js`)
 
-Issue #296, umbrella **#279** (jokes woven into mechanics — *not* #278, though
+Issue #296, umbrella **#279** (jokes woven into mechanics — _not_ #278, though
 it reuses the #282 foundation and the `frontend-ee-` slug prefix). Casting 10
 "funny" votes in a row (no "dry" vote between, no un-vote) within 60 s on
 `/suchary` (any sub-page) for a logged-in user grows a small floating
@@ -983,7 +987,7 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
   Registering bubble here would make the read depend on load order and, if it
   ever lost the race, silently invert every funny vote into an un-vote. Never
   `preventDefault` — the vote must still go through. A Vitest test wires the
-  real `voting.js` *first*, then this module, and dispatches a real `click` to
+  real `voting.js` _first_, then this module, and dispatches a real `click` to
   guard the ordering.
 - **The chain lives in `sessionStorage`** (`ee_publika_combo`, JSON
   `{count, firstAt}`), **not memory** — a deliberate deviation from #296's
@@ -995,12 +999,12 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
   wall and CLAUDE.md documents that deviation too.
 - **The 60 s window is measured from the chain's `firstAt`, and the reset is
   authoritative + LAZY**: `readChain()` returns `null` for a chain that is
-  absent, malformed, `>= 60 s` old, *or* has a `firstAt` in the future (system
+  absent, malformed, `>= 60 s` old, _or_ has a `firstAt` in the future (system
   clock wound back — NTP/DST, same guard shape as `theme_spam.js` /
   `tumbleweed.js`), so the next funny click after expiry just starts a fresh
   chain at `count = 1`. A visual-only `setTimeout` additionally hides the
   meter for a user who simply stopped clicking; on a fresh page load a live
-  chain re-arms that timer to its *remaining* window, not a fresh 60 s (cf.
+  chain re-arms that timer to its _remaining_ window, not a fresh 60 s (cf.
   `tumbleweed.js`'s `cooldownRemaining()`).
 - **Reset conditions**: any `.btn-vote[data-vote-type="dry"]` click (either
   direction), and UN-voting a funny (a funny click on an already-`.active`
@@ -1013,13 +1017,13 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
   from the project's theme-aware custom properties (`variables.css`) with
   literal fallbacks — **no Bootstrap classes**, unlike the surrounding
   `suchar_list.html` markup. The 10th funny vote runs `resetCombo()` (which
-  removes the meter) *before* `firePublikaRozgrzana()`, so the meter is gone
+  removes the meter) _before_ `firePublikaRozgrzana()`, so the meter is gone
   by the time the toast shows — the E2E asserts the count mid-run, not after.
 - **`prefers-reduced-motion` (or jsdom, no `matchMedia`) → the meter and its
   count still render; only the per-increment pulse is skipped** and the
   `<style id="ee-publika-style">` (`@keyframes` for the pulse) is not
   injected. Different from `konami.js` (motion-free static scatter) and
-  `tumbleweed.js` (caption-only toast): here the meter *is* the payload and it
+  `tumbleweed.js` (caption-only toast): here the meter _is_ the payload and it
   is not itself an animation.
 - Its `click` handler is on `document` (capture) and the chain / expiry timer
   are module-level + `sessionStorage` state, so — per "JS tests (Vitest)"
@@ -1048,9 +1052,10 @@ page load renders in the service zone and sets the cookie; later requests use it
 No profile field — cookie only.
 
 **The rule: the active (current) zone may only change input parsing and display.**
-- *Follows the visitor's zone:* `SucharForm.published_at` (a naive value is read in
+
+- _Follows the visitor's zone:_ `SucharForm.published_at` (a naive value is read in
   the current zone) and template `|date` output. Nothing else.
-- *Always the service zone, explicitly:* every day/hour/period computation —
+- _Always the service zone, explicitly:_ every day/hour/period computation —
   `NightOwlRule`, `StreakLoginRule`, `compute_period_range`, `due_*_run_at`, the
   `localdate()` defaults in `award_best_suchar` / `award_periodic`, the leaderboard
   context (cached for **all** visitors — whoever warms it must not set its zone) and
@@ -1065,10 +1070,10 @@ No profile field — cookie only.
 - Python-side `.date()` / `.replace(hour=0)` on `timezone.now()` is the **UTC** date
   (wrong between 22:00/23:00 and 24:00 UTC) — use `localdate(..., service_tz)`.
 - The scheduler is `BackgroundScheduler(timezone=settings.TIME_ZONE)`, so the
-  contest crons fire at 00:05 *service-local*; `due_*_run_at` convert `now` to the
+  contest crons fire at 00:05 _service-local_; `due_*_run_at` convert `now` to the
   service zone before reconstructing the fire time. 00:05 never falls in a DST
   gap/overlap (the switch is at 02:00/03:00). A `SchedulerRun` marker written by the
-  pre-#405 UTC cron (1st, 00:05Z) is *after* the new local fire time, so no spurious
+  pre-#405 UTC cron (1st, 00:05Z) is _after_ the new local fire time, so no spurious
   catch-up.
 - Tests: build naive wall-clock strings / "local hours" from `timezone.localtime()`,
   not `timezone.now()`. Boundary tests (`achievements/tests/test_timezone.py`) use
@@ -1094,7 +1099,7 @@ No profile field — cookie only.
   `{{ form.published_at.value|date }}` in the template: on an invalid-POST re-render
   `value()` is the raw posted string and `|date` turns it into `""`, which made
   `suchar_form.js` untick and disable the schedule — the next save published the
-  suchar immediately. A re-render echoes the *posted* `published_at_tz`, not the
+  suchar immediately. A re-render echoes the _posted_ `published_at_tz`, not the
   active zone. The add form renders the input **empty** (no model-default "now"),
   so the JS treats any future value as scheduled (`> now`, no 5-minute buffer — the
   buffer hid the schedule of a suchar due within it on its edit form).
@@ -1119,7 +1124,7 @@ jobstore is in-memory (no DB persistence across restarts), `award_best_suchar`
 records its own last-run marker in the `SchedulerRun` model
 (`achievements/models.py`), visible read-only in the admin — one row per job id.
 
-Because the jobstore only knows about *future* fire times, a process restart alone
+Because the jobstore only knows about _future_ fire times, a process restart alone
 does not catch up a cron fire that was due while the process was down (see #169).
 `AchievementsConfig._catch_up_missed_monthly_run()` and
 `_catch_up_missed_yearly_run()` cover this, one per job: on every scheduler start
@@ -1146,7 +1151,7 @@ wrote a `SchedulerRun` marker (it calls `award_winners` directly, not
 retroactively award the entire previous calendar year to whoever led it, the moment
 the process started. Migration `0015_seed_yearly_scheduler_run` seeds a
 `SchedulerRun(job_id="award-best-suchar-year")` row at migrate time specifically to
-suppress that one-time retroactive award — the first *real* automatic yearly award
+suppress that one-time retroactive award — the first _real_ automatic yearly award
 lands at the next actual Jan 1 cron fire. This seeded row is baseline data present
 in every test (like the migration-seeded `Achievement` rows — see Test patterns
 below), which is why several `achievements/tests/test_apps.py` /
@@ -1170,14 +1175,14 @@ table, so **no seed migration** is needed here (unlike `0015_seed_yearly_schedul
 `PUBLICATION_CATCHUP_OVERLAP` (15 min — 3x the form's skew allowance) overlaps each run
 with the previous one: `SucharForm.clean_published_at` accepts a `published_at` up to
 5 min in the past, and a transaction can commit just after `now` is sampled — either
-(additively) can leave a just-published suchar's `published_at` *before* the last
+(additively) can leave a just-published suchar's `published_at` _before_ the last
 `ran_at`, and a bare `published_at__gt=last_ran_at` would then drop it forever (nothing
 re-checks a suchar once its `published_at` passes). The per-suchar `check_achievements`
 call is wrapped in `try/except` + `logger.exception`: a single poison record must not
 abort the loop before the marker is rewritten, or every subsequent run re-hits
 it and stalls.
 **Cadence is every minute (#402), not hourly.** At the original hourly `:05` an author
-whose *first* suchar was scheduled got "First Suchar" (and its SSE toast) up to ~1h
+whose _first_ suchar was scheduled got "First Suchar" (and its SSE toast) up to ~1h
 after the suchar went live, which read as "never awarded". A one-off `date` job per
 suchar at its `published_at` was rejected: views can't reach the scheduler (a local in
 `_start_scheduler`), editing `published_at` would need reschedule/remove, and the
@@ -1188,7 +1193,7 @@ overlap, which the idempotent engine makes cheap. Don't narrow the queryset with
 scheduled suchar can move its `published_at` up to 5 min into the past without any
 `SUCHAR_POSTED` event, and this job is the only thing that then catches it. Because
 of the per-minute cadence, `LOGGING` sets the `apscheduler.executors` logger to
-`WARNING` (in `base.py` *and* `production.py`, which rebuilds `loggers`) — otherwise
+`WARNING` (in `base.py` _and_ `production.py`, which rebuilds `loggers`) — otherwise
 its INFO "Running job … / executed successfully" pair adds ~2880 lines a day; job
 errors and missed-run warnings still log.
 Idempotent — the engine skips owned achievements (so the window overlap and any
@@ -1213,12 +1218,12 @@ be blocked in browsers that enforce CSP.
 `chart.umd.min.js` and `flatpickr.min.js` under `static/js/` are hand-vendored, not
 managed by any package manager — `.github/dependabot.yml` only tracks `uv`, `docker`,
 `docker-compose`, and `github-actions`, so neither Dependabot nor any bot notices when
-a newer release ships (see issue #177). Adding a `package.json` + npm *to manage or
-bundle these vendored runtime assets* was considered and rejected — it would require
+a newer release ships (see issue #177). Adding a `package.json` + npm _to manage or
+bundle these vendored runtime assets_ was considered and rejected — it would require
 introducing a JS build step the project deliberately doesn't have (see Content
 Security Policy above), for two files that don't need one. (This is narrower than it
 used to read: a `package.json` does now exist, but only for the **dev-only Vitest
-test runner** — see *JS tests (Vitest)* above. That runner never touches served
+test runner** — see _JS tests (Vitest)_ above. That runner never touches served
 assets, so it is not the build step this paragraph rejects.)
 
 Instead: **check manually, roughly each time you touch this area or do a periodic
@@ -1242,8 +1247,8 @@ curl -sSfL -o suchar_overflow/static/js/flatpickr.min.js \
 ```
 
 **Then strip any trailing `//# sourceMappingURL=...` line** from every vendored
-file you just pulled (`.js` *and* `.css`) — the jsdelivr `dist/` builds end with
-one, but the `.map` file is deliberately *not* vendored (see below), and
+file you just pulled (`.js` _and_ `.css`) — the jsdelivr `dist/` builds end with
+one, but the `.map` file is deliberately _not_ vendored (see below), and
 production's `CompressedManifestStaticFilesStorage`
 (`config/settings/production.py`) hard-fails `collectstatic` when a
 `sourceMappingURL` points at a missing file (issue #249) — `set -o errexit` in
@@ -1291,7 +1296,7 @@ in nothing production serves (issue #251). `collectstatic` ships the `.txt` next
 the bundle at `/static/js/flatpickr.LICENSE.txt`. Chart.js needs no such file — its
 banner is `/*!`, which `rjsmin` preserves. Grab the text from the matching tag:
 `curl -sSfL https://raw.githubusercontent.com/flatpickr/flatpickr/v<version>/LICENSE.md`
-— but paste it *below* the file's existing header (the `flatpickr v<version>` marker
+— but paste it _below_ the file's existing header (the `flatpickr v<version>` marker
 line plus the short explanatory block above the `---` rule), don't `curl` straight over
 the file: that header is local, not upstream, and the version-marker test reads its
 first line.
@@ -1323,19 +1328,18 @@ runs (handled automatically in `compose/production/django/start`).
 directive is copied into `/static/CACHE/css/output.<hash>.css` verbatim. Two problems:
 
 - **It defeats the compressor.** Instead of the single minified bundle the
-  `{% compress %}` block exists to produce, the browser gets that bundle *plus* ~22
+  `{% compress %}` block exists to produce, the browser gets that bundle _plus_ ~22
   extra render-blocking requests it can only discover sequentially (it must fetch and
   parse the bundle before it sees the `@import`s). That is the #204 regression — the
   compressor stops doing the one thing it was switched on for.
 - **Whether those copied `@import`s even resolve in production is incidental.**
   `production.py` sets `STORAGES["staticfiles"]` to a
   `CompressedManifestStaticFilesStorage`, and `compose/production/django/start` runs
-  `collectstatic` *before* `compress --force`; Django's `HashedFilesMixin` rewrites
+  `collectstatic` _before_ `compress --force`; Django's `HashedFilesMixin` rewrites
   `@import 'x.css'` → `@import url("x.<hash>.css")`, which `CssAbsoluteFilter` then
-  *does* absolutise — so today's production bundle's imports happen to point at real
+  _does_ absolutise — so today's production bundle's imports happen to point at real
   files. Switch to any non-manifest `STORAGES`, or set `COMPRESS_ENABLED = True` in any
-  other settings profile, and all ~22 turn into `/static/CACHE/css/<module>.css` → HTTP
-  404. Invisible in dev/test because compression is off there.
+  other settings profile, and all ~22 turn into `/static/CACHE/css/<module>.css` → HTTP 404. Invisible in dev/test because compression is off there.
 
 `manage.py compress --force` is **not** a gate for this — it reports success on the
 broken state too (confirmed on `main` during the #237 review). Exactly two unit tests
@@ -1356,7 +1360,7 @@ render. Stylesheet composition therefore lives in the templates:
   blocks in #250 (`stats/leaderboard.html` and `users/base_dashboard.html`
   respectively; `base_dashboard.html` covers `user_detail`/`user_form`/
   `password_change_form`, since its sidebar uses `.dashboard-card`/`.sticky-sidebar`).
-  Both load *after* the global bundle, so their equal-specificity `!important` rules
+  Both load _after_ the global bundle, so their equal-specificity `!important` rules
   (`.rank-*` vs `utilities.css`, `.sticky-sidebar` vs `layout.css`) still win on order.
   `.stats-text-sm` was shared by the leaderboard partial and `user_detail.html`, so it
   moved to `project.css` (still last in the global bundle) rather than either
@@ -1375,7 +1379,7 @@ Page-specific `<script>` blocks (issue #205) follow that same "own block,
 under `COMPRESS_OFFLINE = True` (production; dev/test never notice):
 
 - **`{{ block.super }}` inside your own `{% compress %}` block → `OfflineGenerationError`
-  on *every* request.** Offline generation renders the block without the real parent
+  on _every_ request.** Offline generation renders the block without the real parent
   context, so the runtime hash misses the offline manifest. Keep `{{ block.super }}`
   above the new block. (Verified as a negative control while implementing #205.)
 - **Never put `json_script` output inside a `{% compress js %}` block.** `JsCompressor`
@@ -1402,14 +1406,14 @@ the broken state, the `OfflineGenerationError` only fires at render time.
 
 `AchievementEngine.check_achievements(user, event_type, instance=None)` looks up
 `Achievement` rows by `event_type`, skips `PERIODIC` category, skips already-owned.
-The engine only ever *awards* — it never revokes an achievement whose metric later
+The engine only ever _awards_ — it never revokes an achievement whose metric later
 drops back below the threshold.
 
 **The three suchar-authoring rules gate on `published_at`.** `SucharCountRule`
 (`COUNT_SUCHAR`), `StreakLoginRule` (`STREAK_LOGIN`) and `NightOwlRule` (`NIGHT_OWL`)
 all filter `Suchar.objects.filter(... published_at__lte=timezone.now())` (`__lte`, per
 #388 / the rest of the codebase), and `NightOwlRule`'s instance guard also requires
-`instance.published_at <= now`. Without this, creating a *scheduled* (future
+`instance.published_at <= now`. Without this, creating a _scheduled_ (future
 `published_at`) suchar fires the engine via `post_save(created=True)` and awards a
 `COUNT_SUCHAR`/streak/night-owl tier that shows on the author's public profile before
 the suchar itself is visible (#389). Nothing fires the engine when a scheduled suchar's
@@ -1427,7 +1431,7 @@ The same #389 leak in the tag-autocomplete endpoint (`suchary/api.py:list_tags`,
 only tags with `Exists(Suchar.objects.filter(tags=OuterRef("pk"),
 published_at__lte=now))` (`Exists`, not `.filter(...).distinct()` — no join fan-out,
 cf. #241/#196), ordered by `name` for a stable 10-row slice. Trade-off: a user editing
-their own scheduled suchar loses autocomplete for a tag that exists *only* on that
+their own scheduled suchar loses autocomplete for a tag that exists _only_ on that
 suchar. Tag reuse-by-name is unaffected — `SucharForm._save_tags` resolves tags by
 slug via its own `Tag.objects.filter(slug__in=...)` + `bulk_create`, independent of
 the suggestion endpoint. `tests/e2e/test_tag_autocomplete.py` fixtures therefore
@@ -1444,7 +1448,7 @@ Two triggers feed it for votes (see `suchar_overflow/achievements/signals.py`,
   flip silently reintroduces #247 (the first funny/dry vote counted one vote late,
   because the flip's `save()` fires no signal).
 - **`vote_changed`** (a plain `django.dispatch.Signal` defined in
-  `suchar_overflow/suchary/signals.py`, sent *only* from `vote_suchar` in
+  `suchar_overflow/suchary/signals.py`, sent _only_ from `vote_suchar` in
   `suchary/api.py`, received in `achievements/signals.py`). Covers the toggle and
   removal paths — an existing `Vote` saved with `created=False`, or `delete()`d — where
   no `post_save(created=True)` fires. It re-runs the engine for voter and author on the
@@ -1456,8 +1460,8 @@ Two triggers feed it for votes (see `suchar_overflow/achievements/signals.py`,
   `UserAchievement.objects.create()` for a user being deleted. A bare model-level
   `Vote.save()` (outside the endpoint) still does not re-check.
 
-Rules split into `AchievementRule.compute_value(user, instance)` (the *threshold-
-independent* metric value, or `None` when the rule can't be met at all — note that
+Rules split into `AchievementRule.compute_value(user, instance)` (the _threshold-
+independent_ metric value, or `None` when the rule can't be met at all — note that
 `None` is not `0`, which would still satisfy `threshold=0`) and `evaluate()`, which
 only compares that value with a threshold. `check_achievements` calls `compute_value`
 **once per metric** and reuses the result for every candidate tier of that metric
@@ -1468,26 +1472,27 @@ rules: implement `compute_value`, not `evaluate` (the engine never calls an over
 `AchievementRule` subclass tree (`_all_subclasses()`, issue #246), so an intermediate
 base class grouping shared code between concrete rules is fine — give that base
 `metric = None` (the engine skips it) and only the concrete rules a real metric. If two
-concrete rules ever declare the *same* metric, `register_rules()` raises
+concrete rules ever declare the _same_ metric, `register_rules()` raises
 `ImproperlyConfigured` naming both classes (issue #266) instead of letting the second
 silently overwrite the first in `_rules`; the check runs inside the one-shot
 `if cls._rules:` idempotency guard, so it fires on the first `register_rules()` call.
 
 Metric → what it evaluates:
-- `COUNT_SUCHAR` → *published* suchary authored by user (scheduled ones don't count
+
+- `COUNT_SUCHAR` → _published_ suchary authored by user (scheduled ones don't count
   until they go live — #389)
 - `COUNT_VOTE_FUNNY` → funny votes **cast by** user (voter perspective)
 - `COUNT_VOTE_DRY` → dry votes **cast by** user (voter perspective — same
-  `user.suchar_votes` accessor as `COUNT_VOTE_FUNNY`, *not* votes received)
+  `user.suchar_votes` accessor as `COUNT_VOTE_FUNNY`, _not_ votes received)
 - `COUNT_VOTE_CAST` → all votes cast by user
 - `SUM_SCORE` → net score of votes received on user's suchary (author perspective)
 - `POLARIZER` → custom rule: the highest `funny_count` (which, by the `funny ==
-  dry` filter, equals `dry_count` — i.e. half the votes on that suchar, not
+dry` filter, equals `dry_count` — i.e. half the votes on that suchar, not
   `funny + dry`) among the user's perfectly-split suchary, compared against the
   threshold — equivalent to the old `funny_count__gte=threshold` + `.exists()`,
   but threshold-free so it runs once
-- `STREAK_LOGIN` → consecutive days with at least one *published* suchar posted
-- `NIGHT_OWL` → *published* suchar created between 00:00–04:00 local time
+- `STREAK_LOGIN` → consecutive days with at least one _published_ suchar posted
+- `NIGHT_OWL` → _published_ suchar created between 00:00–04:00 local time
 - `FRONTEND_EVENT` → not evaluated by a rule in `engine.py`; awarded directly by
   `POST /api/achievements/frontend-event` for client-only actions (e.g. UI interactions
   with no server-side signal)
@@ -1509,6 +1514,7 @@ uv sync                  # install (run inside container or with venv active)
 ```
 
 After adding dependencies, rebuild the Docker image before running tests in the container:
+
 ```bash
 just build
 ```
@@ -1530,7 +1536,7 @@ from the template-level `i18n` used elsewhere).
   for that form, so a multi-line `{# … #}` is emitted into the page verbatim (it bit
   `base.html`'s `EE_AUDIO` block — #310, from #282, fixed with #284). Use
   `{% comment %} … {% endcomment %}` for anything multi-line. Don't put a literal
-  `{% comment %}` / `{% endcomment %}` / `{# #}` token *inside* a `{% comment %}`
+  `{% comment %}` / `{% endcomment %}` / `{# #}` token _inside_ a `{% comment %}`
   block either — djlint miscounts the nesting and de-indents the rest of the file.
 - Every `{% static %}` path must exist. Production's manifest storage raises on a
   missing one at render time, and because the 500 page also extends `base.html`,
@@ -1616,7 +1622,7 @@ that's expected, not a regression.
 
 - Branch from `main`; target `main` for PRs. Name branches `<type>/<slug>`,
   where `<type>` is `feat`, `fix`, `docs`, or `release`.
-- Commit messages: imperative mood, explain *why* not *what*.
+- Commit messages: imperative mood, explain _why_ not _what_.
 - Never force-push `main`.
 - Run `pre-commit run --all-files` and `just test` before proposing a commit.
 - Always branch from the current `main`, never from another unmerged branch. If
@@ -1654,7 +1660,7 @@ unrelated bug), you may propose opening a new issue with `gh issue create`,
 but always ask for explicit confirmation first — never create an issue
 unprompted.
 
-Splitting the *current* issue is a different case and needs no confirmation. If
+Splitting the _current_ issue is a different case and needs no confirmation. If
 part of the issue's own scope is better done in its own PR (the diff is too large
 for one review, or one part is independent in risk/mechanics from the rest), you
 may create a new issue for the carved-out part yourself — referencing the parent

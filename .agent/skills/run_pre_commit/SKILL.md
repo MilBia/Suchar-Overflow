@@ -11,6 +11,7 @@ the local `.venv`, not inside the Docker container — run
 after auto-fixes. This file only adds the `.agent`-specific fallback procedure below.
 
 ## Step 1: Check for a local virtual environment (`.venv`)
+
 Verify a local `.venv` directory exists in the project root with the `pre-commit`
 executable (e.g., `.venv/bin/pre-commit`), then run:
 
@@ -19,6 +20,7 @@ executable (e.g., `.venv/bin/pre-commit`), then run:
 ```
 
 ## Step 2: Fallback — recreate the local `.venv`
+
 `pre-commit` is never installed inside the Docker `django` image (it lives in the
 `local-tools` uv dependency group, deliberately excluded from the container — see
 issue #215). If the local `.venv` does NOT exist or is broken, do NOT get stuck or
@@ -37,6 +39,7 @@ and `[project.dependencies]`, which fails on a host without PostgreSQL headers
 ```
 
 ## Summary of Rules
+
 - **Local `.venv` only:** `pre-commit` does not exist inside the Docker container — there is no Docker fallback.
 - **Do not prompt the user:** Automatically recreate the `.venv` with `uv sync --only-group local-tools` if it is missing or broken.
 - **Fix issues:** If `pre-commit` fails because of lint/format errors, automatically fix the files and re-run (twice, per CLAUDE.md).

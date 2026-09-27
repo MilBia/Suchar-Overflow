@@ -5,8 +5,9 @@ and code style rules. This file only adds `.agent/`-specific reminders that aren
 already spelled out there.
 
 ## General Guidelines
+
 - **Environment**: ALWAYS use the local `.venv` for pre-commit, but run the
-  *application* and *tests* in Docker (see CLAUDE.md "Running commands").
+  _application_ and _tests_ in Docker (see CLAUDE.md "Running commands").
 - **Docker**: The source of truth for the running application is Docker Compose
   (`docker-compose.local.yml`). Commands run outside a `just` recipe need the
   explicit `-f docker-compose.local.yml` flag — `just` sets `COMPOSE_FILE` for you,
@@ -15,9 +16,10 @@ already spelled out there.
   resolving all errors (see CLAUDE.md "Running pre-commit").
 
 ## Execution Rules
+
 1. **Running Server**:
    - Use `just up` (or `docker compose -f docker-compose.local.yml up -d
-     --remove-orphans`) to start.
+--remove-orphans`) to start.
    - Use `just logs` (or `docker compose -f docker-compose.local.yml logs -f`) to
      monitor.
    - Do NOT run `python manage.py runserver` locally; use Docker.
@@ -35,6 +37,7 @@ already spelled out there.
    - See CLAUDE.md "Code style — ruff rules in force".
 
 ## Common commands map
+
 - Start: `just up`
 - Stop: `just down`
 - Build: `just build`
