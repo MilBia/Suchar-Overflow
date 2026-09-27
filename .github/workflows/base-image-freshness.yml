@@ -1,0 +1,72 @@
+name: Base image freshness
+
+# Detects a frozen floating `python:<tag>` base image (#445, after #431/#437):
+# docker-library can stop rebuilding a Debian variant, and Dependabot never
+# proposes a bump for the tag (it has no patch component). The check needs the
+# network (docker pull + endoflife.date), so it lives here and not in
+# `just test`; its pure logic is unit-tested in tests/test_base_image_freshness.py.
+#
+# Residual blind spot: GitHub disables scheduled workflows after ~60 days
+# without repository activity — re-enable this one in the Actions tab if so.
+
+on:
+  schedule:
+    - cron: '17 6 * * 1' # Mondays 06:17 UTC
+  workflow_dispatch:
+  # workflow_dispatch only works once this file is on main, so a PR touching
+  # the check runs it too — report-only, no issue writes.
+  pull_request:
+    branches: ['main']
+    paths:
+      - '.github/workflows/base-image-freshness.yml'
+      - 'scripts/check_base_image_freshness.py'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # Only this job may open / comment on the "frozen image" issue (#354).
+    permissions:
+      contents: read
+      issues: write
+    env:
+      ISSUE_TITLE: 'Obraz bazowy python wygląda na zamrożony (#445)'
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v7
+
+      - name: Check the base image
+        id: check
+        # 0 fresh, 1 stale, 2 the check could not run — both non-zero fail the
+        # job; the report step below records which one it was.
+        run: |
+          set +e
+          python3 scripts/check_base_image_freshness.py --report report.md
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+          exit "$code"
+
+      - name: Open or update the frozen-image issue
+        if: failure() && steps.check.outcome == 'failure' && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CODE: ${{ steps.check.outputs.code }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ "$CODE" = "2" ]; then
+            header="Sprawdzenie świeżości obrazu bazowego nie powiodło się."
+          else
+            header="Tygodniowe sprawdzenie wykryło nieaktualny obraz bazowy."
+          fi
+          { echo "$header"; echo; cat report.md; echo; echo "Run: $RUN_URL"; } > body.md
+          existing=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" \
+            --json number,title --limit 50 \
+            | jq -r --arg t "$ISSUE_TITLE" '[.[] | select(.title == $t)][0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file body.md
+          else
+            gh issue create --title "$ISSUE_TITLE" --body-file body.md
+          fi
