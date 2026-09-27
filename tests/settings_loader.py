@@ -1,4 +1,13 @@
-"""Import a throwaway copy of ``config/settings/base.py`` under a fake environment.
+"""Load settings modules under a controlled environment, for settings tests.
+
+Two loaders, for the two layers:
+
+* ``load_base_settings`` — a throwaway copy of ``config/settings/base.py``
+  (described below), for the env conventions of #453.
+* ``load_production_settings`` — ``config.settings.production`` reloaded with the
+  variables its own import needs stubbed (#353, #402, #430, #447, ...). One shared
+  copy instead of a ``_REQUIRED_ENV`` + ``_load_production_settings`` pair in every
+  test module.
 
 ``base.py`` reads its environment at import time, so testing the env conventions
 (#453) needs a fresh import per case. Reloading the live ``config.settings.base``
@@ -10,6 +19,7 @@ module while ``environ.Env.ENVIRON`` is swapped for a plain dict. Neither the
 live settings nor the process environment are touched.
 """
 
+import importlib
 import importlib.util
 import shutil
 from pathlib import Path
@@ -24,6 +34,15 @@ import pytest  # noqa: TC002
 from config.settings import base
 
 BASE_SETTINGS_FILE = Path(base.__file__)
+
+# The minimum production.py's own import needs. base.py's variables (DATABASE_URL,
+# REDIS_URL) are not here on purpose: reloading production.py does not re-execute
+# the already-imported base.py, so they would never be read.
+PRODUCTION_REQUIRED_ENV = {
+    "DJANGO_SECRET_KEY": "dummy-secret-key-for-tests",
+    "DJANGO_ADMIN_URL": "admin/",
+    "DJANGO_ALLOWED_HOSTS": "example.com",
+}
 
 # The minimum base.py needs to import at all.
 MINIMAL_ENV = {
@@ -60,3 +79,25 @@ def load_base_settings(
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def load_production_settings(monkeypatch: pytest.MonkeyPatch, **overrides: str) -> ModuleType:
+    """Reload ``config.settings.production`` with ``PRODUCTION_REQUIRED_ENV`` + ``overrides``.
+
+    A ``CONN_MAX_AGE`` in the host env is removed first so it can't mask the
+    default under test. production.py mutates the shared
+    ``base.DATABASES["default"]`` dict in place (``CONN_MAX_AGE``);
+    ``monkeypatch.setitem`` records the current value and restores it on
+    teardown, so the reload doesn't leak into the live test settings.
+
+    A reload that raises (e.g. ``ImproperlyConfigured``) leaves the module
+    half-initialised in ``sys.modules``. That is harmless: nothing else in the
+    suite imports it, and the next call re-executes the whole module.
+    """
+    monkeypatch.delenv("CONN_MAX_AGE", raising=False)
+    for key, value in {**PRODUCTION_REQUIRED_ENV, **overrides}.items():
+        monkeypatch.setenv(key, value)
+    default_db = base.DATABASES["default"]
+    monkeypatch.setitem(default_db, "CONN_MAX_AGE", default_db["CONN_MAX_AGE"])
+    module = importlib.import_module("config.settings.production")
+    return importlib.reload(module)

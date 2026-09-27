@@ -4,40 +4,18 @@
 INFO "Running job" / "executed successfully" pair would add ~2880 log lines a
 day. ``base.py`` raises the ``apscheduler.executors`` logger to ``WARNING``;
 ``production.py`` rebuilds ``LOGGING["loggers"]`` and must merge base's entry
-rather than drop it. Production is imported directly with stubbed env, the same
-way as ``tests/test_hsts_settings.py``.
+rather than drop it. Production is reloaded with stubbed env via
+``tests.settings_loader.load_production_settings``.
 """
 
-import importlib
 import logging
-
-# Real import (not TYPE_CHECKING-guarded): kept plain to match every other test
-# module; ModuleType and pytest are only referenced in annotations here.
-from types import ModuleType  # noqa: TC003
 from typing import Any
 
 import pytest
 from django.utils import log
 
 from config.settings import base
-
-_REQUIRED_ENV = {
-    "DJANGO_SECRET_KEY": "dummy-secret-key-for-tests",
-    "DJANGO_ADMIN_URL": "admin/",
-    "DJANGO_ALLOWED_HOSTS": "example.com",
-    "DATABASE_URL": "postgres://user:pass@localhost:5432/db",
-    "REDIS_URL": "redis://localhost:6379/0",
-}
-
-
-def _load_production_settings(monkeypatch: pytest.MonkeyPatch) -> ModuleType:
-    for key, value in _REQUIRED_ENV.items():
-        monkeypatch.setenv(key, value)
-    # production.py mutates base.DATABASES["default"] in place (CONN_MAX_AGE);
-    # restore it on teardown so the reload doesn't leak into live settings.
-    monkeypatch.setitem(base.DATABASES["default"], "CONN_MAX_AGE", 0)
-    module = importlib.import_module("config.settings.production")
-    return importlib.reload(module)
+from tests.settings_loader import load_production_settings
 
 
 def test_base_quiets_apscheduler_executors() -> None:
@@ -49,7 +27,7 @@ def test_base_quiets_apscheduler_executors() -> None:
 def test_production_keeps_apscheduler_quiet_and_its_own_loggers(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    loggers = _load_production_settings(monkeypatch).LOGGING["loggers"]
+    loggers = load_production_settings(monkeypatch).LOGGING["loggers"]
     assert loggers["apscheduler.executors"]["level"] == "WARNING"
     assert loggers["django.request"]["level"] == "ERROR"
     assert "django.security.DisallowedHost" in loggers
@@ -73,7 +51,7 @@ def test_production_emails_and_prints_each_django_error_once(
     monkeypatch: pytest.MonkeyPatch,
     logger_name: str,
 ) -> None:
-    logging_config = _load_production_settings(monkeypatch).LOGGING
+    logging_config = load_production_settings(monkeypatch).LOGGING
     loggers = logging_config["loggers"]
     reached: list[str] = []
     # Walk the propagation chain the way logging does: this logger, its dotted

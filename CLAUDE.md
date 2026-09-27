@@ -32,8 +32,9 @@ docker compose -f docker-compose.local.yml run --rm django python -m pytest ...
 
 Credentials are in `.envs/.local/.postgres`. The compose service is named `django`.
 
-`DATABASE_URL` is not in `.envs/.local/*`. `/entrypoint` exports it from `POSTGRES_*`,
-and when it is absent (`docker compose exec` skips the ENTRYPOINT) `base.py` builds the
+`DATABASE_URL` is not in `.envs/.local/*`. `/entrypoint` exports it from `POSTGRES_*`
+(unconditionally — it overwrites a `DATABASE_URL` passed with `run -e`, so pair that with
+`--entrypoint ""`), and when it is absent (`docker compose exec` skips the ENTRYPOINT) `base.py` builds the
 same URL-encoded DSN from `POSTGRES_*` itself (#453). So a plain
 `docker compose -f docker-compose.local.yml exec django python manage.py …` works in a
 running container; `just exec <cmd>` (e.g. `just exec python manage.py showmigrations`),
@@ -364,13 +365,22 @@ prefixed `DJANGO_` (`DJANGO_ADMINS`, `DJANGO_EMAIL_*`, `DJANGO_STATIC_ROOT`, …
 `REDIS_URL`, `DATABASE_URL` / `POSTGRES_*`. `SECRET_KEY` (outside `test.py`) and
 `REDIS_URL` have no default in code — local values are in `.envs/.local/.django`, so a
 settings import outside compose (e.g. a hand-built `docker run` or build step) must set
-them. `DATABASE_URL` wins when present, even empty (the production image's build-time
-`compilemessages` relies on that); only when it is absent does `base.py` read
-`POSTGRES_*`. `base.py` also loads `.envs/.secrets` (gitignored) when it exists; the OS
-environment wins over it. `MAILERS` lives in `base.py` only; legacy `EMAIL_*` names are
-read as a fallback for one release (CHANGELOG) — drop that fallback afterwards.
+them. In settings, `DATABASE_URL` wins when present, even empty (the production image's
+build-time `compilemessages` relies on that); only when it is absent does `base.py` read
+`POSTGRES_*`. A process started through `/entrypoint` always gets the entrypoint's
+`POSTGRES_*` DSN, though (see "Running commands"). `base.py` also loads `.envs/.secrets`
+(gitignored) when it exists; the OS environment wins over it, and `.env` (with
+`DJANGO_READ_DOT_ENV_FILE`) over it too (`read_env` only `setdefault`s). It is local-only:
+`.dockerignore` excludes `.envs/` and production compose doesn't mount it, so production
+secrets go in `.envs/.production/.django`. `ADMINS` strips whitespace and drops blank
+entries (a `" "` left by a trailing comma made every `mail_admins` send raise, silently).
+`MAILERS` lives in `base.py` only; legacy `EMAIL_*` names are read as a fallback for one
+release (CHANGELOG) — drop that fallback afterwards. An empty `DJANGO_EMAIL_*`/`EMAIL_*`
+counts as unset there, unlike `DATABASE_URL`'s presence rule — keep the two apart.
 Tests for this load a fresh copy of `base.py` from `tmp_path`
-(`tests/test_env_settings.py`) instead of reloading the live module.
+(`tests/test_env_settings.py`) instead of reloading the live module. Tests of
+`production.py` go through `load_production_settings()` in `tests/settings_loader.py`
+(stubbed env + `importlib.reload`) rather than a per-file copy of that helper.
 
 **Critical**: Python module-level code in `base.py` runs at import time.
 A setting like `COMPRESS_ENABLED = not DEBUG` in `base.py` evaluates immediately
