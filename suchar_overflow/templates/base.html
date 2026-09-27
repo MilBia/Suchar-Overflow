@@ -189,7 +189,8 @@
            href="{% url 'home' %}"
            aria-label="Suchar Overflow">{% include "svgs/logo.svg" %}</a>
 
-        <button class="navbar-toggler"
+        <button type="button"
+                class="navbar-toggler"
                 id="navbar-toggler"
                 aria-label="{% trans 'Przełącz nawigację' %}">
           <span class="toggler-icon"></span>
@@ -270,7 +271,8 @@
               </div>
             </form>
 
-            <button id="theme-toggle"
+            <button type="button"
+                    id="theme-toggle"
                     class="btn btn-icon"
                     aria-label="{% trans 'Przełącz motyw' %}">
               {% include "svgs/icon-moon.svg" %}
@@ -278,7 +280,8 @@
             </button>
             {% if request.user.is_authenticated %}
               <div class="bell-wrapper" id="bell-wrapper">
-                <button class="btn btn-icon bell-btn"
+                <button type="button"
+                        class="btn btn-icon bell-btn"
                         id="bell-btn"
                         aria-label="{% trans 'Powiadomienia' %}"
                         aria-haspopup="true"
@@ -328,7 +331,7 @@
                 {% include "svgs/icon-user.svg" %}
                 {{ request.user.display_name }}
               </a>
-              <button class="btn btn-secondary btn-sm" id="logout-button">{% trans "Log Out" %}</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="logout-button">{% trans "Log Out" %}</button>
             {% else %}
               <a class="btn btn-outline btn-sm" href="{% url 'login' %}">{% trans "Log In" %}</a>
               <a class="btn btn-primary btn-sm" href="{% url 'users:signup' %}">{% trans "Sign Up" %}</a>
