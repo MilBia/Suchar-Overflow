@@ -2,7 +2,7 @@
 # uv from its own pinned image, Python from the official one — see the note in
 # compose/local/django/Dockerfile (#431: astral's python3.14-bookworm tag froze at
 # 3.14.2). Both stages then share the same interpreter the bytecode is built for.
-FROM ghcr.io/astral-sh/uv:0.9.30 AS uv
+FROM ghcr.io/astral-sh/uv:0.12.19 AS uv
 
 FROM python:3.14-slim-bookworm AS python-build-stage
 COPY --from=uv /uv /uvx /bin/

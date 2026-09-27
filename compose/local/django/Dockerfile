@@ -4,7 +4,7 @@
 # faster than it collected them — worker RSS grew without bound under load.
 # `python:3.14-slim-bookworm` tracks the latest 3.14.x on the same Debian;
 # tests/test_python_runtime.py fails if a stale cached base slips back in.
-FROM ghcr.io/astral-sh/uv:0.9.30 AS uv
+FROM ghcr.io/astral-sh/uv:0.12.19 AS uv
 
 # define an alias for the specific python version used in this file.
 FROM python:3.14-slim-bookworm AS python
