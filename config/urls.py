@@ -3,13 +3,19 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include
 from django.urls import path
-from django.views import defaults as default_views
 from django.views.generic import TemplateView
 
+from suchar_overflow.views import bad_request
+from suchar_overflow.views import page_not_found
+from suchar_overflow.views import permission_denied
 from suchar_overflow.views import server_error
 
 from .api import api
 
+# Release the DB connections of the executor thread Django runs them in (#447).
+handler400 = bad_request
+handler403 = permission_denied
+handler404 = page_not_found
 # Always answers, even when 500.html itself raises — see server_error (#442).
 handler500 = server_error
 
@@ -47,17 +53,17 @@ if settings.DEBUG:
     urlpatterns += [
         path(
             "400/",
-            default_views.bad_request,
+            bad_request,
             kwargs={"exception": Exception("Bad Request!")},
         ),
         path(
             "403/",
-            default_views.permission_denied,
+            permission_denied,
             kwargs={"exception": Exception("Permission Denied")},
         ),
         path(
             "404/",
-            default_views.page_not_found,
+            page_not_found,
             kwargs={"exception": Exception("Page not Found")},
         ),
         path("500/", server_error),

@@ -149,8 +149,8 @@ ADMIN_URL = env("DJANGO_ADMIN_URL")
 # Extends base.py's LOGGING (formatter "verbose", handler "console") rather
 # than redefining it from scratch — deepcopy so mutating nested dicts below
 # doesn't leak back into base.LOGGING. The only tangible addition here is
-# sending an email to the site admins on every HTTP 500 error when
-# DEBUG=False.
+# sending an email to the site admins on every django.* error (HTTP 500s
+# included) when DEBUG=False.
 logging_config: dict[str, Any] = copy.deepcopy(LOGGING)
 logging_config["filters"] = {
     "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
@@ -158,19 +158,28 @@ logging_config["filters"] = {
 logging_config["handlers"]["mail_admins"] = {
     "level": "ERROR",
     "filters": ["require_debug_false"],
-    "class": "django.utils.log.AdminEmailHandler",
+    # Releases the DB connection the report's request.user read opens in
+    # log_response's executor thread (#447).
+    "class": "suchar_overflow.log.AdminEmailHandler",
 }
 # Merge into (not replace) base's loggers — it quiets apscheduler.executors (#402).
+# mail_admins sits on "django" itself, so every django.* error (django.request,
+# django.security.*) sends exactly one email; base.py cleared the stock one
+# Django's DEFAULT_LOGGING attached there (#447).
 logging_config["loggers"] = {
     **logging_config.get("loggers", {}),
-    "django.request": {
+    "django": {
         "handlers": ["mail_admins"],
+        "level": "INFO",
+    },
+    "django.request": {
         "level": "ERROR",
         "propagate": True,
     },
+    # No handler of its own: propagation reaches root's console and django's
+    # mail_admins, so each rejected Host is printed and emailed once.
     "django.security.DisallowedHost": {
         "level": "ERROR",
-        "handlers": ["console", "mail_admins"],
         "propagate": True,
     },
 }

@@ -338,6 +338,14 @@ LOGGING = {
         # INFO "Running job" / "executed successfully" pair would add ~2880
         # lines a day. Job errors and missed-run warnings still get through.
         "apscheduler.executors": {"level": "WARNING"},
+        # Replaces the handlers Django's DEFAULT_LOGGING puts on "django"
+        # (disable_existing_loggers=False keeps them otherwise, #447): a stock
+        # AdminEmailHandler, which production's mail_admins duplicated, and a
+        # console handler repeating what reaches root's. Side effect: dictConfig
+        # resets django.* children, so DEFAULT_LOGGING's django.server (runserver's
+        # request log) loses its own handler and propagates to root instead; this
+        # project serves through uvicorn, which never logs there.
+        "django": {"handlers": [], "level": "INFO"},
     },
 }
 

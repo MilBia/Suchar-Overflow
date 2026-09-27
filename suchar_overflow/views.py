@@ -10,6 +10,8 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext
 from django.views import defaults
 
+from suchar_overflow.db import releases_db_connections
+
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
@@ -36,6 +38,15 @@ def fallback_500_html() -> str:
     )
 
 
+# handler400/403/404 (#447). Under ASGI Django calls the error handlers in an
+# executor thread that request_finished never cleans up, and 403/404 pages read
+# request.user through context processors — see suchar_overflow.db.
+bad_request = releases_db_connections(defaults.bad_request)
+permission_denied = releases_db_connections(defaults.permission_denied)
+page_not_found = releases_db_connections(defaults.page_not_found)
+
+
+@releases_db_connections
 def server_error(request: HttpRequest) -> HttpResponse:
     """``handler500`` that always returns a response (#442).
 
@@ -45,6 +56,8 @@ def server_error(request: HttpRequest) -> HttpResponse:
     leaves ``ASGIHandler.handle`` without sending ``request_finished``, so
     ``close_old_connections`` never runs and the request's Postgres connection
     stays open until cyclic GC happens to collect it — an idle worker never does.
+    Like the other handlers it also releases connections of the executor thread
+    Django calls it in (#447).
     """
     try:
         return defaults.server_error(request)

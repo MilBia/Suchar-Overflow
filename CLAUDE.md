@@ -81,28 +81,33 @@ also fails on a pre-3.14.5 interpreter or a Debian release that doesn't match th
 tag. The fix is `just build --pull` (`just prod-build --pull` for production),
 because a plain build reuses the cached base.
 
-No test notices when an official tag itself **freezes** (docker-library stops
-rebuilding a Debian variant, as astral did) — it needs the network, so it doesn't
-belong in `just test`, and Dependabot never proposes a Python bump for the floating
-`3.14-slim-trixie` tag (minor/major are ignored and the tag has no patch part), so its
-`docker-python` group PRs are in practice uv bumps only. Use those uv-bump PRs — or a
-periodic dependency review — as the reminder to check it by hand:
+A frozen official tag (docker-library stops rebuilding a Debian variant, as astral
+did) is caught by `.github/workflows/base-image-freshness.yml` (#445). Every Monday,
+and on `workflow_dispatch`, it runs `scripts/check_base_image_freshness.py`, which
+pulls the tag the production Dockerfile names and compares its `Created` and
+`PYTHON_VERSION` with endoflife.date's `latest` for the cycle. The tag counts as stale
+when the image is more than 42 days old, or when it lags a 3.14.x that has been out
+for more than 7 days. Exit 1 means stale; exit 2 means the check itself couldn't run,
+which is never a silent pass; the pull and the API call are retried once first, so a
+single network blip doesn't alert. On failure the workflow opens one issue titled
+"Obraz bazowy python wygląda na zamrożony (#445)", or comments on it if it is already
+open. A manual run with the `force_stale` input (limit 0 days) exercises that path on
+a healthy image and marks the issue text as a drill. A PR that touches the script or
+the workflow runs the check report-only. It needs the network, so it is not in `just
+test`; only its pure logic is (`tests/test_base_image_freshness.py`). Dependabot never
+proposes a Python bump for the floating `3.14-slim-trixie` tag (minor/major are
+ignored and the tag has no patch part), so its `docker-python` group PRs are in
+practice uv bumps only. Residual blind spot: GitHub disables scheduled workflows after
+~60 days without repository activity; re-enable it in the Actions tab after a quiet
+spell. To check by hand, run `./scripts/check_base_image_freshness.py` on the host
+(needs Docker). When it reports a frozen tag, switch every stage to the next Debian
+codename at once. When the next Debian becomes stable, move then rather than waiting
+for the freeze.
 
-```bash
-docker pull -q python:3.14-slim-trixie
-docker image inspect python:3.14-slim-trixie \
-  --format '{{.Created}}{{println}}{{range .Config.Env}}{{println .}}{{end}}' \
-  | grep -E '^20|PYTHON_VERSION'
-curl -s https://endoflife.date/api/python/3.14.json   # "latest": newest 3.14.x
-```
-
-An image `Created` more than a few weeks back, or a `PYTHON_VERSION` behind a 3.14.x
-that has been out for over a week, means the tag stopped moving: switch every stage
-to the next Debian codename at once. When the next Debian becomes stable, move then
-rather than waiting for the freeze. Locally, django-debug-toolbar with
-`SHOW_TEMPLATE_CONTEXT = True` still pushes a worker to a ~1.3 GB high-water mark
-under a request flood: about 9 MB per stored request, with the freed memory held by
-malloc. It is bounded and kept on purpose; don't read it as a leak.
+Locally, django-debug-toolbar with `SHOW_TEMPLATE_CONTEXT = True` still pushes a
+worker to a ~1.3 GB high-water mark under a request flood: about 9 MB per stored
+request, with the freed memory held by malloc. It is bounded and kept on purpose;
+don't read it as a leak.
 
 `just test-e2e` passes `--override-ini="addopts=..."`, which fully replaces `addopts`
 (defined in `pyproject.toml`) instead of extending it, so `--reuse-db` must be repeated
@@ -1530,6 +1535,24 @@ from the template-level `i18n` used elsewhere).
   and the request's connection stays open in its dead per-request thread until
   cyclic GC finds it; an idle worker never does. Measured: 50 → 50 after 5 s idle.
   `tests/test_handler500_db_connection.py` drives `ASGIHandler` directly to guard it.
+- `handler400`/`403`/`404` are `suchar_overflow.views` wrappers of Django's defaults,
+  and every handler goes through `suchar_overflow.db.releases_db_connections`
+  (#447). Under ASGI, Django calls the error handlers, and `log_response` for every
+  response >= 400, via `sync_to_async(thread_sensitive=False)`. They run in a
+  loop-executor thread (`asyncio_N`) that `request_finished` never cleans up. The
+  403/404 pages read `request.user` through context processors, and the admin email
+  report reads it too. The connection that read opens was never closed. Nothing
+  health-checked it either, so after a Postgres restart every error page served from
+  that thread was a 500. The wrapper calls `close_if_unusable_or_obsolete()` on
+  entry and exit, and skips atomic blocks. Production's `mail_admins` is
+  `suchar_overflow.log.AdminEmailHandler`, whose `emit` is wrapped the same way. It
+  sits on the `django` logger. `base.py` clears the handlers Django's
+  `DEFAULT_LOGGING` leaves there (`disable_existing_loggers=False` keeps them). That
+  stock `AdminEmailHandler` had doubled every admin email and bypassed the wrapper.
+  Keep the `"django": {"handlers": []}` entry in base. A new `handler*`, or an error
+  path that runs in the executor, needs the wrapper.
+  `tests/test_error_handler_db_connections.py` (`ASGIHandler` + the thread name
+  that opened each connection) and `tests/test_logging_settings.py` guard this.
 - Never use `innerHTML` with untrusted data. Use `createElement`/`textContent` or
   `appendChild` for dynamic DOM construction.
 
