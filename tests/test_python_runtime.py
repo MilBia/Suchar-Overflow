@@ -21,7 +21,8 @@ _FIRST_FIXED = (3, 14, 5)
 
 
 def test_python_is_not_an_incremental_gc_release() -> None:
-    # pyproject pins requires-python to 3.14.x, the only line that shipped it.
+    # pyproject pins requires-python to 3.14.x. (3.15 prereleases had it too and
+    # got the same revert, but no 3.15 interpreter can run this project.)
     assert sys.version_info[:3] >= _FIRST_FIXED, (
         f"Python {sys.version.split()[0]} has the incremental GC reverted in "
         "3.14.5 (#431); rebuild the image with a fresh base: `just build --pull`"

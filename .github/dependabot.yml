@@ -23,9 +23,13 @@ updates:
     # Every weekday
     schedule:
       interval: 'daily'
-    # Ignore minor version updates (3.10 -> 3.11) but update patch versions
+    # Keep Python on 3.14.x: ignore its minor/major bumps (3.14 -> 3.15) but take
+    # patches. Scoped to `python` on purpose (#431): the pinned
+    # ghcr.io/astral-sh/uv stage is 0.x, where every uv release is a "minor", so a
+    # '*' ignore would freeze it for good — the same silent staleness as the
+    # astral python3.14-bookworm tag this replaced.
     ignore:
-      - dependency-name: '*'
+      - dependency-name: 'python'
         update-types:
           - 'version-update:semver-major'
           - 'version-update:semver-minor'
