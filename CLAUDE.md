@@ -1472,6 +1472,17 @@ from the template-level `i18n` used elsewhere).
   `{% comment %} … {% endcomment %}` for anything multi-line. Don't put a literal
   `{% comment %}` / `{% endcomment %}` / `{# #}` token *inside* a `{% comment %}`
   block either — djlint miscounts the nesting and de-indents the rest of the file.
+- Every `{% static %}` path must exist. Production's manifest storage raises on a
+  missing one at render time, and because the 500 page also extends `base.html`,
+  a stale reference there turns every page into a 500 (#436: `og:image` pointed
+  at a deleted `favicon.ico`). Dev/test storage never checks.
+  `tests/test_manifest_static_storage.py` renders the pages after a real
+  `collectstatic` into `ManifestStaticFilesStorage`. `og:image` gets its origin
+  in `base.html`, so an `og_image` block override supplies only the path. The
+  default is `images/og-image.png`, a 1200×630 card, because link previews don't
+  render SVG. Regenerate it with `just gen-og-image` (#440): it runs Chromium in
+  the container so the self-hosted fonts render, and its output is not
+  byte-deterministic, so re-run only on a design change.
 - Never use `innerHTML` with untrusted data. Use `createElement`/`textContent` or
   `appendChild` for dynamic DOM construction.
 
