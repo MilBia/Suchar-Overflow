@@ -55,7 +55,7 @@ cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowa
 | **Framework**                 | Django 6.1                                            |
 | **REST API**                  | Django Ninja                                          |
 | **Baza danych**               | PostgreSQL 18                                         |
-| **Cache**                     | Redis 7 (django-redis)                                |
+| **Cache**                     | Redis 8 (django-redis)                                |
 | **Harmonogram zadań**         | APScheduler (wbudowany w Django)                      |
 | **Serwer WSGI**               | Gunicorn                                              |
 | **Reverse Proxy**             | Traefik 3 (produkcja)                                 |
@@ -104,6 +104,10 @@ just build
 ```bash
 docker compose -f docker-compose.local.yml up -d --remove-orphans
 ```
+
+Postgres, Redis i Mailpit mają healthchecki, a `django` startuje dopiero, gdy są
+`healthy` — stan widać w `docker compose -f docker-compose.local.yml ps`. Redis zapisuje
+migawkę na wolumen (`--save 60 1`), więc jego dane przetrwają restart kontenera.
 
 Lub:
 
@@ -249,7 +253,7 @@ just prod-down
 
 ### Backup bazy danych
 
-Kontener PostgreSQL zawiera wbudowane skrypty do backupu:
+Kontener PostgreSQL zawiera wbudowane skrypty do backupu (źródło: `compose/base/postgres/maintenance/`):
 
 ```bash
 # Utworzenie backupu
@@ -350,8 +354,9 @@ just messages
 ```
 Suchar-Overflow/
 ├── compose/                  # Konfiguracja Docker
-│   ├── local/                #   └─ development (Django)
-│   └── production/           #   └─ produkcja (Django, Nginx, Traefik, Postgres)
+│   ├── base/                 #   └─ wspólne dla obu środowisk (entrypoint Django, obraz Postgresa + skrypty backupu)
+│   ├── local/                #   └─ development (Dockerfile i start Django)
+│   └── production/           #   └─ produkcja (Dockerfile i start Django, Nginx, Traefik)
 ├── config/                   # Konfiguracja Django
 │   ├── settings/             #   └─ base.py, local.py, production.py, test.py, e2e.py
 │   ├── urls.py               #   └─ główny routing

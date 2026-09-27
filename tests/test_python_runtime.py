@@ -10,7 +10,8 @@ on 3.14.7 with the same load).
 
 The image stayed on 3.14.2 because astral's `uv:python3.14-bookworm-slim` tag
 stopped being rebuilt; the Dockerfiles now take Python from the official
-`python:3.14-slim-<debian>` image instead (trixie since #437). The runtime tests
+`docker.io/python:3.14-slim-<debian>` image instead (trixie since #437; the
+registry is spelled out since #456, for podman). The runtime tests
 run in the local/CI image only, so they catch a stale cached base image or a
 switch back to a frozen tag there. The production image is not covered and
 needs `just prod-build --pull`.
@@ -31,7 +32,9 @@ DOCKERFILES = (
 )
 _OS_RELEASE = Path("/etc/os-release")
 
-_PYTHON_FROM_RE = re.compile(r"^FROM\s+(python:\S+)", re.MULTILINE)
+# Strict on the registry (#456): a short `FROM python:` is not counted, so the
+# three-stage assertion below fails if one comes back.
+_PYTHON_FROM_RE = re.compile(r"^FROM\s+(docker\.io/python:\S+)", re.MULTILINE)
 
 
 def _python_base_images() -> list[str]:
@@ -82,7 +85,7 @@ def test_image_runs_the_debian_release_its_dockerfile_names() -> None:
         pytest.skip("not running in the Debian-based Django image")
     codename = os_release.get("VERSION_CODENAME")
     assert codename, "/etc/os-release has no VERSION_CODENAME"
-    # Drop a digest pin (`python:3.14-slim-trixie@sha256:...`) before taking the
+    # Drop a digest pin (`docker.io/python:3.14-slim-trixie@sha256:...`) before taking the
     # tag's trailing `-<codename>`.
     tag = _python_base_images()[0].split("@", 1)[0]
     expected = tag.rsplit("-", 1)[-1]

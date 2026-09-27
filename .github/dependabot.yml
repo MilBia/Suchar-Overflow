@@ -16,7 +16,7 @@ updates:
 
     # Enable version updates for Docker
     - package-ecosystem: 'docker'
-      # Look for a `Dockerfile` in the `compose/local/django` directory
+      # The Python-based Django images (local + production)
       directories:
           - 'compose/local/django/'
           - 'compose/production/django/'
@@ -41,7 +41,7 @@ updates:
     - package-ecosystem: 'docker'
       # Look for a `Dockerfile` in the listed directories
       directories:
-          - 'compose/production/postgres/'
+          - 'compose/base/postgres/'
           - 'compose/production/traefik/'
           - 'compose/production/nginx/'
       # Every weekday

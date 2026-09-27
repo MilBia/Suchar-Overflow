@@ -1,6 +1,7 @@
 volumes:
     suchar_overflow_local_postgres_data: {}
     suchar_overflow_local_postgres_data_backups: {}
+    suchar_overflow_local_redis_data: {}
 
 services:
     django: &django
@@ -10,9 +11,12 @@ services:
         image: suchar_overflow_local_django
         container_name: suchar_overflow_local_django
         depends_on:
-            - postgres
-            - mailpit
-            - redis
+            postgres:
+                condition: service_healthy
+            mailpit:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
         volumes:
             - /app/.venv
             - .:/app:z
@@ -26,21 +30,42 @@ services:
     postgres:
         build:
             context: .
-            dockerfile: ./compose/production/postgres/Dockerfile
-        image: suchar_overflow_production_postgres
+            dockerfile: ./compose/base/postgres/Dockerfile
+        image: suchar_overflow_local_postgres
         container_name: suchar_overflow_local_postgres
         volumes:
             - suchar_overflow_local_postgres_data:/var/lib/postgresql/18/docker
             - suchar_overflow_local_postgres_data_backups:/backups
         env_file:
             - ./.envs/.local/.postgres
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}']
+            interval: 5s
+            timeout: 3s
+            retries: 5
+            start_period: 30s
 
     mailpit:
         image: docker.io/axllent/mailpit:v1.31.2
         container_name: suchar_overflow_local_mailpit
         ports:
             - '8025:8025'
+        healthcheck:
+            test: ['CMD', '/mailpit', 'readyz']
+            interval: 5s
+            timeout: 3s
+            retries: 5
 
     redis:
         image: docker.io/redis:8.10
         container_name: suchar_overflow_local_redis
+        # RDB snapshot every 60 s when at least one key changed: the RQ queue (#460)
+        # will live here, so it must survive a container restart.
+        command: --save 60 1 --loglevel warning
+        volumes:
+            - suchar_overflow_local_redis_data:/data
+        healthcheck:
+            test: ['CMD', 'redis-cli', 'ping']
+            interval: 5s
+            timeout: 3s
+            retries: 5

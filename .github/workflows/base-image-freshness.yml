@@ -1,6 +1,6 @@
 name: Base image freshness
 
-# Detects a frozen floating `python:<tag>` base image (#445, after #431/#437):
+# Detects a frozen floating `docker.io/python:<tag>` base image (#445, after #431/#437):
 # docker-library can stop rebuilding a Debian variant, and Dependabot never
 # proposes a bump for the tag (it has no patch component). The check needs the
 # network (docker pull + endoflife.date), so it lives here and not in
@@ -25,6 +25,8 @@ on:
         paths:
             - '.github/workflows/base-image-freshness.yml'
             - 'scripts/check_base_image_freshness.py'
+            # The script reads its `FROM docker.io/python:` tag from here.
+            - 'compose/production/django/Dockerfile'
 
 permissions:
     contents: read
