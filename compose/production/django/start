@@ -8,7 +8,13 @@ python /app/manage.py migrate --noinput
 python /app/manage.py collectstatic --noinput
 python /app/manage.py compress --force
 
+# --no-control-socket: since 25.1 gunicorn opens a control socket under
+# $XDG_RUNTIME_DIR or $HOME/.gunicorn by default, and the system user `django`
+# has no usable directory there (#456).
+# Worker count comes from WEB_CONCURRENCY (gunicorn reads it; default 1) — see
+# .envs/.production/.django.example before raising it.
 exec gunicorn config.asgi:application \
   -k uvicorn.workers.UvicornWorker \
   --bind 0.0.0.0:5000 \
+  --no-control-socket \
   --chdir /app

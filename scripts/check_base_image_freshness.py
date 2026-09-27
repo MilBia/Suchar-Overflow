@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Detect a frozen `python:<tag>` base image (#445).
+"""Detect a frozen `docker.io/python:<tag>` base image (#445).
 
 #431: astral's `uv:python3.14-bookworm-slim` tag silently stopped being rebuilt
 and pinned the images to a leaking CPython 3.14.2. The Dockerfiles now take
-Python from the official floating `python:3.14-slim-<debian>` tag (#437), which
+Python from the official floating `docker.io/python:3.14-slim-<debian>` tag
+(#437; the registry is spelled out since #456, for podman), which
 docker-library could freeze the same way when it drops a Debian variant, and
 Dependabot never proposes a bump for it. This script is the automated form of
 the manual check CLAUDE.md used to describe; the `base-image-freshness`
@@ -58,7 +59,10 @@ EXIT_FRESH = 0
 EXIT_STALE = 1
 EXIT_ERROR = 2
 
-_PYTHON_FROM_RE = re.compile(r"^FROM\s+python:(\S+)", re.MULTILINE)
+# Strict on the registry: a short `FROM python:` no longer counts, so it fails
+# the check instead of slipping back in (#456).
+_PYTHON_IMAGE = "docker.io/python"
+_PYTHON_FROM_RE = re.compile(r"^FROM\s+docker\.io/python:(\S+)", re.MULTILINE)
 _CYCLE_RE = re.compile(r"^(\d+\.\d+)")
 
 
@@ -73,10 +77,10 @@ class Verdict:
 
 
 def image_tag(dockerfile_text: str) -> str:
-    """Return the single `python:` tag all FROM lines use, `@sha256` pin stripped."""
+    """Return the single `docker.io/python:` tag all FROM lines use, `@sha256` pin stripped."""
     tags = {tag.split("@", 1)[0] for tag in _PYTHON_FROM_RE.findall(dockerfile_text)}
     if len(tags) != 1:
-        msg = f"expected exactly one python: base tag, found {sorted(tags)}"
+        msg = f"expected exactly one {_PYTHON_IMAGE}: base tag, found {sorted(tags)}"
         raise CheckError(msg)
     return tags.pop()
 
@@ -219,7 +223,7 @@ def build_report(  # noqa: PLR0913
             "",
             (
                 "Co zrobić: sprawdź, czy docker-library nadal buduje ten wariant "
-                "Debiana. Jeśli nie, przenieś wszystkie trzy etapy `FROM python:` "
+                "Debiana. Jeśli nie, przenieś wszystkie trzy etapy `FROM docker.io/python:` "
                 "na kolejny codename naraz (jak w #437), a potem "
                 "`just build --pull` i `just prod-build --pull`. Opis w "
                 "CLAUDE.md (#431/#437/#445)."
@@ -253,7 +257,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         tag = image_tag(DOCKERFILE.read_text(encoding="utf-8"))
-        image = f"python:{tag}"
+        image = f"{_PYTHON_IMAGE}:{tag}"
         created, python_version = with_retry(inspect_image, image)
         latest, latest_release_date = with_retry(fetch_latest, release_cycle(tag))
         verdict = evaluate(

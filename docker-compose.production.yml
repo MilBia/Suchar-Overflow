@@ -3,6 +3,7 @@ volumes:
     production_postgres_data_backups: {}
     production_traefik: {}
     production_django_media: {}
+    production_redis_data: {}
 
 services:
     django: &django
@@ -14,8 +15,10 @@ services:
         volumes:
             - production_django_media:/app/suchar_overflow/media
         depends_on:
-            - postgres
-            - redis
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
         env_file:
             - ./.envs/.production/.django
             - ./.envs/.production/.postgres
@@ -25,7 +28,7 @@ services:
     postgres:
         build:
             context: .
-            dockerfile: ./compose/production/postgres/Dockerfile
+            dockerfile: ./compose/base/postgres/Dockerfile
         image: suchar_overflow_production_postgres
         volumes:
             - production_postgres_data:/var/lib/postgresql/18/docker
@@ -33,6 +36,14 @@ services:
         env_file:
             - ./.envs/.production/.postgres
         restart: unless-stopped
+        healthcheck:
+            # -h 127.0.0.1: on a fresh volume the image's temporary initdb server listens on
+            # the Unix socket only, so a socket probe could report healthy before the real one.
+            test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -d $${POSTGRES_DB} -U $${POSTGRES_USER}']
+            interval: 5s
+            timeout: 3s
+            retries: 5
+            start_period: 30s
 
     traefik:
         build:
@@ -51,6 +62,11 @@ services:
     redis:
         image: docker.io/redis:8.10
         restart: unless-stopped
+        # RDB snapshot every 60 s when at least one key changed: the RQ queue (#460)
+        # will live here, so it must survive a container restart.
+        command: --save 60 1 --loglevel warning
+        volumes:
+            - production_redis_data:/data
         healthcheck:
             test: ['CMD', 'redis-cli', 'ping']
             interval: 5s

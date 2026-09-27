@@ -97,12 +97,12 @@ def test_versions_compare_numerically() -> None:
 
 
 def test_image_tag_strips_digest_pin() -> None:
-    text = "FROM python:3.14-slim-trixie@sha256:abc AS build\nFROM python:3.14-slim-trixie AS run\n"
+    text = "FROM docker.io/python:3.14-slim-trixie@sha256:abc AS build\nFROM docker.io/python:3.14-slim-trixie AS run\n"
     assert freshness.image_tag(text) == "3.14-slim-trixie"
 
 
 def test_image_tag_rejects_mismatched_stages() -> None:
-    text = "FROM python:3.14-slim-trixie\nFROM python:3.14-slim-bookworm\n"
+    text = "FROM docker.io/python:3.14-slim-trixie\nFROM docker.io/python:3.14-slim-bookworm\n"
     with pytest.raises(freshness.CheckError):
         freshness.image_tag(text)
 
@@ -110,6 +110,13 @@ def test_image_tag_rejects_mismatched_stages() -> None:
 def test_image_tag_rejects_missing_python_stage() -> None:
     with pytest.raises(freshness.CheckError):
         freshness.image_tag("FROM debian:trixie\n")
+
+
+def test_image_tag_rejects_short_image_name() -> None:
+    # #456: podman does not default a short name to Docker Hub, so the
+    # Dockerfiles spell out `docker.io/`; a short `python:` must not count.
+    with pytest.raises(freshness.CheckError):
+        freshness.image_tag("FROM python:3.14-slim-trixie AS build\nFROM python:3.14-slim-trixie AS run\n")
 
 
 def test_repo_dockerfile_tag() -> None:
@@ -147,6 +154,25 @@ def _fresh_image(_image: str) -> tuple[datetime, str]:
 
 def _latest(_cycle: str) -> tuple[str, datetime]:
     return "3.14.7", datetime(2026, 8, 5, tzinfo=UTC)
+
+
+def test_main_checks_the_fully_qualified_image(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    pulled: list[str] = []
+
+    def record(image: str) -> tuple[datetime, str]:
+        pulled.append(image)
+        return _fresh_image(image)
+
+    monkeypatch.setattr(freshness, "inspect_image", record)
+    monkeypatch.setattr(freshness, "fetch_latest", _latest)
+    report = tmp_path / "report.md"
+    assert freshness.main(["--report", str(report)]) == freshness.EXIT_FRESH
+    tag = freshness.image_tag(freshness.DOCKERFILE.read_text(encoding="utf-8"))
+    assert pulled == [f"docker.io/python:{tag}"]
+    assert f"`docker.io/python:{tag}`" in report.read_text(encoding="utf-8")
 
 
 def test_unexpected_error_is_not_a_pass_either(
