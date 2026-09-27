@@ -392,9 +392,9 @@
                role="{% if 'error' in message.tags %}alert{% else %}status{% endif %}">
             <div class="toast-header">
               <strong class="me-auto">
-                {% if 'error' in message.tags %}
+                {% if "error" in message.tags %}
                   {% trans "Error" %}
-                {% elif 'success' in message.tags %}
+                {% elif "success" in message.tags %}
                   {% trans "Success" %}
                 {% else %}
                   {% trans "Notification" %}

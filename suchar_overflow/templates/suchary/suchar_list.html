@@ -16,7 +16,7 @@
         <form method="get"
               class="d-flex align-items-center gap-2 justify-content-lg-end search-toolbar">
           {% for key, value in request.GET.items %}
-            {% if key != 'q' and key != 'sort' %}<input type="hidden" name="{{ key }}" value="{{ value }}" />{% endif %}
+            {% if key != "q" and key != "sort" %}<input type="hidden" name="{{ key }}" value="{{ value }}" />{% endif %}
           {% endfor %}
 
           <!-- Search Input Group with attached button -->
@@ -44,7 +44,7 @@
                     aria-expanded="false"
                     aria-label="{% trans 'Sortuj' %}">
               <span class="selected-label">
-                {% if request.GET.sort == 'top' %}
+                {% if request.GET.sort == "top" %}
                   {% trans "Top" %}
                 {% else %}
                   {% trans "Newest" %}
