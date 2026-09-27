@@ -83,13 +83,16 @@ because a plain build reuses the cached base.
 
 No test notices when an official tag itself **freezes** (docker-library stops
 rebuilding a Debian variant, as astral did) — it needs the network, so it doesn't
-belong in `just test`. Check it by hand on each Dependabot `docker-python` PR or
-periodic dependency review:
+belong in `just test`, and Dependabot never proposes a Python bump for the floating
+`3.14-slim-trixie` tag (minor/major are ignored and the tag has no patch part), so its
+`docker-python` group PRs are in practice uv bumps only. Use those uv-bump PRs — or a
+periodic dependency review — as the reminder to check it by hand:
 
 ```bash
 docker pull -q python:3.14-slim-trixie
 docker image inspect python:3.14-slim-trixie \
-  --format '{{.Created}} {{range .Config.Env}}{{println .}}{{end}}' | grep -E '^20|PYTHON_VERSION'
+  --format '{{.Created}}{{println}}{{range .Config.Env}}{{println .}}{{end}}' \
+  | grep -E '^20|PYTHON_VERSION'
 curl -s https://endoflife.date/api/python/3.14.json   # "latest": newest 3.14.x
 ```
 

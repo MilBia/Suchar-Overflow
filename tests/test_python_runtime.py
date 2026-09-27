@@ -32,7 +32,6 @@ DOCKERFILES = (
 _OS_RELEASE = Path("/etc/os-release")
 
 _PYTHON_FROM_RE = re.compile(r"^FROM\s+(python:\S+)", re.MULTILINE)
-_CODENAME_RE = re.compile(r"^VERSION_CODENAME=(\S+)$", re.MULTILINE)
 
 
 def _python_base_images() -> list[str]:
@@ -62,16 +61,32 @@ def test_all_django_image_stages_share_one_python_base() -> None:
     assert len(set(images)) == 1, f"Python base images differ: {images}"
 
 
+def _os_release() -> dict[str, str]:
+    if not _OS_RELEASE.exists():
+        return {}
+    fields: dict[str, str] = {}
+    for line in _OS_RELEASE.read_text(encoding="utf-8").splitlines():
+        key, sep, value = line.partition("=")
+        if sep:
+            fields[key] = value.strip('"')
+    return fields
+
+
 def test_image_runs_the_debian_release_its_dockerfile_names() -> None:
     # A plain `just build` reuses a cached base, so switching the tag's Debian
     # release (bookworm -> trixie in #437) does not reach an existing image
-    # until `just build --pull`. Only meaningful inside the Django image.
-    if not _OS_RELEASE.exists():
+    # until `just build --pull`. Only meaningful inside the Django image; any
+    # other Linux host has an os-release too, just not a Debian one.
+    os_release = _os_release()
+    if os_release.get("ID") != "debian":
         pytest.skip("not running in the Debian-based Django image")
-    codename_match = _CODENAME_RE.search(_OS_RELEASE.read_text(encoding="utf-8"))
-    assert codename_match, "/etc/os-release has no VERSION_CODENAME"
-    expected = _python_base_images()[0].rsplit("-", 1)[-1]
-    assert codename_match.group(1) == expected, (
-        f"image runs Debian {codename_match.group(1)}, Dockerfile names "
-        f"{expected}; rebuild with a fresh base: `just build --pull`"
+    codename = os_release.get("VERSION_CODENAME")
+    assert codename, "/etc/os-release has no VERSION_CODENAME"
+    # Drop a digest pin (`python:3.14-slim-trixie@sha256:...`) before taking the
+    # tag's trailing `-<codename>`.
+    tag = _python_base_images()[0].split("@", 1)[0]
+    expected = tag.rsplit("-", 1)[-1]
+    assert codename == expected, (
+        f"image runs Debian {codename}, Dockerfile names {expected}; "
+        "rebuild with a fresh base: `just build --pull`"
     )
