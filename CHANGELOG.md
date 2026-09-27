@@ -2,6 +2,23 @@
 
 Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 
+## [Unreleased]
+
+### Zmiany w konfiguracji (wymagają aktualizacji `.envs/.production/.django`)
+
+- Zmienne poczty mają teraz prefiks `DJANGO_`: `DJANGO_EMAIL_HOST`, `DJANGO_EMAIL_PORT`,
+  `DJANGO_EMAIL_HOST_USER`, `DJANGO_EMAIL_HOST_PASSWORD`, `DJANGO_EMAIL_USE_TLS`,
+  `DJANGO_EMAIL_USE_SSL`, `DJANGO_EMAIL_TIMEOUT`. Stare nazwy bez prefiksu (`EMAIL_HOST` itd.)
+  są jeszcze czytane jako fallback **tylko w tym wydaniu** — w następnym zostaną usunięte, więc
+  zmień nazwy już teraz. Gdy ustawione są obie, wygrywa nazwa z `DJANGO_`.
+- `REDIS_URL` jest wymagane — ustawienia i entrypoint nie mają już wartości domyślnej.
+- Adresaci raportów o błędach (`ADMINS`, `MANAGERS`) pochodzą z `DJANGO_ADMINS` (lista po
+  przecinku, `Imię <mail>` lub sam adres); domyślnie pusta.
+- Nowe, opcjonalne: `DJANGO_STATIC_ROOT` (nadpisuje `STATIC_ROOT`) oraz plik `.envs/.secrets`
+  (spoza gita), ładowany przez ustawienia, gdy istnieje.
+- Ustawienia same składają `DATABASE_URL` z `POSTGRES_*`, gdy nie jest ustawione, więc
+  `docker compose exec django python manage.py …` działa bez `/entrypoint`.
+
 ## [1.0.2] — 2026-05-28
 
 ### Poprawki

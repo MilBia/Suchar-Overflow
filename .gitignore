@@ -277,6 +277,9 @@ suchar_overflow/media/
 .envs/*
 !.envs/.local/
 !.envs/.production/
+# Out-of-git secrets, read by config/settings/base.py when present (#453).
+# Already covered by .envs/* above; listed so the intent survives a re-include.
+.envs/.secrets
 
 # Superpowers subagent-driven-development scratch workspace
 .superpowers/

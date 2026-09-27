@@ -1,8 +1,10 @@
 """Base settings to build other settings files upon."""
 
 from pathlib import Path
+from urllib.parse import quote
 
 import environ
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
@@ -14,6 +16,12 @@ READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(BASE_DIR / ".env"))
+# Secrets kept out of git (e.g. third-party API keys), loaded only when the file
+# exists. Like .env above, a variable already in the OS environment wins.
+# .gitignore and .dockerignore both exclude it (#453).
+SECRETS_ENV_FILE = BASE_DIR / ".envs" / ".secrets"
+if SECRETS_ENV_FILE.is_file():
+    env.read_env(str(SECRETS_ENV_FILE))
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -93,7 +101,37 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {"default": env.db("DATABASE_URL")}
+
+
+def _postgres_url() -> str:
+    """Assemble the DSN from the POSTGRES_* variables the postgres container uses.
+
+    Only called when DATABASE_URL is absent, so a DATABASE_URL-only environment
+    (CI's mypy job) never needs POSTGRES_*. User, password and database name are
+    percent-encoded the same way compose/production/django/entrypoint does (#356);
+    a missing variable raises ImproperlyConfigured naming it. POSTGRES_USER
+    defaults to the postgres image's own default, as in the entrypoint.
+    """
+    try:
+        user = quote(env("POSTGRES_USER", default="postgres"), safe="")
+        password = quote(env("POSTGRES_PASSWORD"), safe="")
+        name = quote(env("POSTGRES_DB"), safe="")
+        host = env("POSTGRES_HOST")
+        port = env("POSTGRES_PORT")
+    except ImproperlyConfigured as exc:
+        msg = f"{exc}, or set DATABASE_URL instead of POSTGRES_*"
+        raise ImproperlyConfigured(msg) from exc
+    return f"postgres://{user}:{password}@{host}:{port}/{name}"
+
+
+# Presence, not truthiness: the production image compiles messages at build time
+# with DATABASE_URL="" and no POSTGRES_* at all.
+if "DATABASE_URL" in env.ENVIRON:
+    DATABASES = {"default": env.db("DATABASE_URL")}
+else:
+    # Lets `docker compose exec django python manage.py ...` work without going
+    # through /entrypoint, which is what exported DATABASE_URL before (#404, #453).
+    DATABASES = {"default": env.db_url_config(_postgres_url())}
 # 0 = close after each request. Django's docs: "When using ASGI, persistent
 # connections should be disabled" — each request runs in its own thread, so a
 # kept-alive connection outlives it and piles up until Postgres refuses (#430).
@@ -204,7 +242,7 @@ MIDDLEWARE = [
 # STATIC
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = str(BASE_DIR / "staticfiles")
+STATIC_ROOT = env("DJANGO_STATIC_ROOT", default=str(BASE_DIR / "staticfiles"))
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
@@ -285,9 +323,24 @@ X_FRAME_OPTIONS = "DENY"
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/topics/email/#mailers
 # Django 6.x replaces the flat EMAIL_* settings (deprecated, removed in 7.0)
-# with a DATABASES/CACHES-style MAILERS mapping. Conservative default here:
-# SMTP to localhost:25, matching the pre-migration behaviour. Environment
-# overrides live in local.py / production.py.
+# with a DATABASES/CACHES-style MAILERS mapping. Every option comes from a
+# DJANGO_EMAIL_<X> variable; the defaults are the conservative SMTP-to-
+# localhost:25, no-auth behaviour. Local points it at mailpit through
+# .envs/.local/.django, production through .envs/.production/.django.
+# The pre-#453 names (EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, ...) are still read
+# as a fallback for one release — see CHANGELOG.md. The helper is lowercase on
+# purpose: an uppercase EMAIL_* module attribute next to MAILERS makes Django
+# raise ImproperlyConfigured.
+
+
+def _email_env(option: str, default: str) -> str:
+    """Raw value of DJANGO_EMAIL_<option>, else legacy EMAIL_<option>, else default."""
+    for name in (f"DJANGO_EMAIL_{option}", f"EMAIL_{option}"):
+        if name in env.ENVIRON:
+            return env.ENVIRON[name]
+    return default
+
+
 MAILERS = {
     "default": {
         "BACKEND": env(
@@ -295,9 +348,15 @@ MAILERS = {
             default="django.core.mail.backends.smtp.EmailBackend",
         ),
         "OPTIONS": {
-            "host": "localhost",
-            "port": 25,
-            "timeout": 5,
+            "host": _email_env("HOST", "localhost"),
+            "port": int(_email_env("PORT", "25")),
+            "username": _email_env("HOST_USER", ""),
+            "password": _email_env("HOST_PASSWORD", ""),
+            # STARTTLS (port 587) vs. implicit TLS / SMTPS (port 465) — set at
+            # most one. Django's SMTP backend rejects both being True.
+            "use_tls": env.parse_value(_email_env("USE_TLS", "False"), bool),
+            "use_ssl": env.parse_value(_email_env("USE_SSL", "False"), bool),
+            "timeout": int(_email_env("TIMEOUT", "5")),
         },
     },
 }
@@ -307,7 +366,11 @@ MAILERS = {
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = ["miłosz-białczak@example.com"]
+# Comma-separated addresses, each either "mail@example.com" or
+# "Name <mail@example.com>" (no comma inside a name — it is the separator).
+# Django 6.x takes a plain list of address strings here; (name, address) pairs
+# are deprecated.
+ADMINS = env.list("DJANGO_ADMINS", default=[])
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
@@ -348,7 +411,8 @@ LOGGING = {
     },
 }
 
-REDIS_URL = env("REDIS_URL", default="redis://redis:6379/0")
+# No default: set in .envs/.local/.django and .envs/.production/.django (#453).
+REDIS_URL = env("REDIS_URL")
 REDIS_SSL = REDIS_URL.startswith("rediss://")
 
 CACHES = {

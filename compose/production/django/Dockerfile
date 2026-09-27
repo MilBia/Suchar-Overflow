@@ -87,7 +87,11 @@ USER django
 
 # --ignore=.venv: compilemessages walks every `locale` dir under cwd, including
 # the installed packages' own (already compiled) catalogs in /app/.venv.
+# Settings import needs DATABASE_URL present (even empty, so base.py doesn't
+# fall back to POSTGRES_*) and REDIS_URL set (no default since #453); neither is
+# connected to here.
 RUN DATABASE_URL="" \
+  REDIS_URL="" \
   DJANGO_SETTINGS_MODULE="config.settings.test" \
   python manage.py compilemessages --ignore=.venv
 

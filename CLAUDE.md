@@ -25,24 +25,21 @@ just test-e2e                    # run Playwright E2E tests only
 just test-all                    # unit tests then E2E sequentially
 just test suchar_overflow/achievements/tests/test_engine.py  # targeted
 
-# Direct docker compose equivalent (when DATABASE_URL must be explicit)
+# Direct docker compose equivalent
 # Note: justfile and CI use `run --rm` (fresh container), not `exec` (existing one).
-docker compose -f docker-compose.local.yml run --rm django bash -c \
-  "export DATABASE_URL=postgres://USER:PASS@postgres:5432/suchar_overflow && \
-   cd /app && python -m pytest ..."
+docker compose -f docker-compose.local.yml run --rm django python -m pytest ...
 ```
 
 Credentials are in `.envs/.local/.postgres`. The compose service is named `django`.
 
-`DATABASE_URL` is not in `.envs/.local/*` — `/entrypoint` assembles it from
-`POSTGRES_*`, and `docker compose exec` skips the ENTRYPOINT. The local image appends
-`compose/local/django/bashrc.sh` to `/etc/bash.bashrc`, so an _interactive_
-`docker compose exec django bash` has it set (#404); a non-interactive
-`exec django python manage.py …` / `bash -c …` still does not. For that use
-`just exec <cmd>` (any command, e.g. `just exec python manage.py showmigrations`),
-`just shell` (`shell_plus`) or `just bash` (interactive shell, takes no args) — all
-three go through `/entrypoint` in the running container and need `just up` — or
-`just manage` (`run --rm`, no TTY required, the one to use from scripts).
+`DATABASE_URL` is not in `.envs/.local/*`. `/entrypoint` exports it from `POSTGRES_*`,
+and when it is absent (`docker compose exec` skips the ENTRYPOINT) `base.py` builds the
+same URL-encoded DSN from `POSTGRES_*` itself (#453). So a plain
+`docker compose -f docker-compose.local.yml exec django python manage.py …` works in a
+running container; `just exec <cmd>` (e.g. `just exec python manage.py showmigrations`),
+`just shell` (`shell_plus`) and `just bash` are shortcuts for it and need `just up`.
+`just manage` (`run --rm`, no TTY required) is the one to use from scripts. The #404
+workaround (a `/etc/bash.bashrc` snippet sourcing the entrypoint) is gone.
 
 The dev server (`compose/local/django/start`, copied into the image — edit it, then
 `just build`) runs `uvicorn --reload --timeout-graceful-shutdown 3`. Keep the bound:
@@ -361,6 +358,19 @@ Settings layer: `base.py` → `local.py` / `test.py` / `production.py`, with `te
 `e2e.py` as a further override (`e2e.py` extends `test.py` and adds `ALLOWED_HOSTS`,
 `CSRF_TRUSTED_ORIGINS`, `CSRF_COOKIE_HTTPONLY = False`, and `DJANGO_ALLOW_ASYNC_UNSAFE`
 for Playwright).
+
+**Environment variables** (#453): environment-dependent settings come from env vars
+prefixed `DJANGO_` (`DJANGO_ADMINS`, `DJANGO_EMAIL_*`, `DJANGO_STATIC_ROOT`, …), plus
+`REDIS_URL`, `DATABASE_URL` / `POSTGRES_*`. `SECRET_KEY` (outside `test.py`) and
+`REDIS_URL` have no default in code — local values are in `.envs/.local/.django`, so a
+settings import outside compose (e.g. a hand-built `docker run` or build step) must set
+them. `DATABASE_URL` wins when present, even empty (the production image's build-time
+`compilemessages` relies on that); only when it is absent does `base.py` read
+`POSTGRES_*`. `base.py` also loads `.envs/.secrets` (gitignored) when it exists; the OS
+environment wins over it. `MAILERS` lives in `base.py` only; legacy `EMAIL_*` names are
+read as a fallback for one release (CHANGELOG) — drop that fallback afterwards.
+Tests for this load a fresh copy of `base.py` from `tmp_path`
+(`tests/test_env_settings.py`) instead of reloading the live module.
 
 **Critical**: Python module-level code in `base.py` runs at import time.
 A setting like `COMPRESS_ENABLED = not DEBUG` in `base.py` evaluates immediately
