@@ -1478,7 +1478,11 @@ from the template-level `i18n` used elsewhere).
   at a deleted `favicon.ico`). Dev/test storage never checks.
   `tests/test_manifest_static_storage.py` renders the pages after a real
   `collectstatic` into `ManifestStaticFilesStorage`. `og:image` gets its origin
-  in `base.html`, so an `og_image` block override supplies only the path.
+  in `base.html`, so an `og_image` block override supplies only the path. The
+  default is `images/og-image.png`, a 1200×630 card, because link previews don't
+  render SVG. Regenerate it with `just gen-og-image` (#440): it runs Chromium in
+  the container so the self-hosted fonts render, and its output is not
+  byte-deterministic, so re-run only on a design change.
 - Never use `innerHTML` with untrusted data. Use `createElement`/`textContent` or
   `appendChild` for dynamic DOM construction.
 

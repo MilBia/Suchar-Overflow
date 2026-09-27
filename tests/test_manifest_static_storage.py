@@ -19,6 +19,7 @@ and skipping the gzip/brotli pass keeps `collectstatic` fast.
 """
 
 import re
+import struct
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -113,7 +114,7 @@ def test_500_page_renders_under_manifest_storage() -> None:
     og_image = OG_IMAGE_RE.search(html)
     assert og_image is not None
     # No request, so no origin to prepend — a bare hashed path, not "://…".
-    assert og_image.group(1).startswith("/static/images/favicons/favicon.")
+    assert og_image.group(1).startswith("/static/images/og-image.")
 
 
 @pytest.mark.django_db
@@ -124,6 +125,24 @@ def test_og_image_is_an_absolute_hashed_url(client: Client) -> None:
     og_image = OG_IMAGE_RE.search(html)
     assert og_image is not None
     url = og_image.group(1)
-    assert url.startswith("http://testserver/static/images/favicons/favicon."), url
-    # The manifest storage inserted its content hash: favicon.<hash>.svg.
-    assert re.search(r"/favicon\.[0-9a-f]{12}\.svg$", url), url
+    assert url.startswith("http://testserver/static/images/og-image."), url
+    # The manifest storage inserted its content hash: og-image.<hash>.png.
+    assert re.search(r"/og-image\.[0-9a-f]{12}\.png$", url), url
+
+
+def test_og_image_size_matches_its_meta_tags() -> None:
+    """base.html declares og:image:width/height; keep them true to the PNG (#440).
+
+    Read straight from the PNG's IHDR chunk: 8-byte signature, then the chunk
+    length and type, then big-endian width and height.
+    """
+    png = finders.find("images/og-image.png")
+    assert png is not None
+    header = Path(png).read_bytes()[:24]
+    assert header[:8] == b"\x89PNG\r\n\x1a\n"
+    width, height = struct.unpack(">II", header[16:24])
+
+    base = (TEMPLATES_DIR / "base.html").read_text(encoding="utf-8")
+    assert f'<meta property="og:image:width" content="{width}" />' in base
+    assert f'<meta property="og:image:height" content="{height}" />' in base
+    assert (width, height) == (1200, 630)
