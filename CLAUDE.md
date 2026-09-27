@@ -419,6 +419,23 @@ fakes `EventSource`; a restore fires no `load`, so it uses
 `go_back(wait_until="commit")`. It is parametrized: the second run suppresses
 `visibilitychange`, so the `pageshow` fallback is exercised too.
 
+**No pinned Postgres connection (#434).** The request's sync work (`auser()`, the
+session lookup) opens a connection in its per-request `ThreadSensitiveContext`
+thread. Only `request_finished` releases it, when the stream ends, so each open
+tab held one idle connection (measured 1/5/10 for 1/5/10 streams). The loop reads
+only the cache, so `event_stream()` calls `_release_db_connections()` as its
+**first** step, via thread-sensitive `sync_to_async` in that same thread. It is
+not called in the view body. The middleware response phase runs after the view
+returns, and a session save there reopens the connection: with
+`SESSION_SAVE_EVERY_REQUEST` a view-level close still left 5/10 connections, while
+the generator close left 0. `achievements/tests/test_stream.py` guards both placements twice. The
+`test_open_stream_releases_db_connection*` tests go through `AsyncClient`, which has
+no per-request thread, so everything shares one executor thread. For that reason
+`test_open_streams_release_db_connections_under_asgi_handler` drives
+`get_asgi_application()` directly. It records every connection opened while the
+streams are served via `connection_created` and does not count `pg_stat_activity`,
+because other connections to the test DB would skew that count.
+
 Because the generator never completes on its own, the general test advice
 "consume with `b"".join(response.streaming_content)`" (see Test patterns above)
 **does not apply to this endpoint** — it would hang. Tests instead iterate
