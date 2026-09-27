@@ -437,11 +437,7 @@ def test_heatmap_excludes_scheduled_suchar(client: Client) -> None:
 
     client.force_login(user)
     response = client.get(detail_url("heatmap388"))
-    total = sum(
-        day["count"]
-        for week in response.context["heatmap_weeks"]
-        for day in week["days"]
-    )
+    total = sum(day["count"] for week in response.context["heatmap_weeks"] for day in week["days"])
     assert total == 0
 
 
@@ -820,8 +816,7 @@ def _achievement_queries(ctx: CaptureQueriesContext) -> list[str]:
     return [
         q["sql"]
         for q in ctx.captured_queries
-        if "achievements_achievement" in q["sql"]
-        or "achievements_userachievement" in q["sql"]
+        if "achievements_achievement" in q["sql"] or "achievements_userachievement" in q["sql"]
     ]
 
 
@@ -895,9 +890,7 @@ def test_build_context_fetches_badges_in_one_query() -> None:
     with CaptureQueriesContext(connection) as ctx:
         context = UserDetailView()._build_context(owner, is_owner=False)  # noqa: SLF001
 
-    badge_queries = [
-        q["sql"] for q in ctx.captured_queries if "achievements_" in q["sql"]
-    ]
+    badge_queries = [q["sql"] for q in ctx.captured_queries if "achievements_" in q["sql"]]
     assert len(badge_queries) == 1
     assert len(context["user_achievements"]) == 3
 
@@ -1060,9 +1053,7 @@ def test_profile_day_queries_compare_the_bare_published_at_column(
         client.get(detail_url("heatmap_sql"))
 
     day_queries = [
-        q["sql"]
-        for q in ctx.captured_queries
-        if "DATE_TRUNC" in q["sql"] and '"suchary_suchar"' in q["sql"]
+        q["sql"] for q in ctx.captured_queries if "DATE_TRUNC" in q["sql"] and '"suchary_suchar"' in q["sql"]
     ]
     assert day_queries, "expected the heatmap/activity aggregation queries"
     for sql in day_queries:
@@ -1274,9 +1265,6 @@ def test_activity_chart_fills_empty_days_with_zeros() -> None:
         context = UserDetailView()._build_context(user, is_owner=False)  # noqa: SLF001
 
     today = frozen_now.date()
-    expected = [
-        (today - datetime.timedelta(days=offset)).isoformat()
-        for offset in range(30, -1, -1)
-    ]
+    expected = [(today - datetime.timedelta(days=offset)).isoformat() for offset in range(30, -1, -1)]
     assert context["activity_labels"] == expected
     assert context["activity_values"] == [0] * 31

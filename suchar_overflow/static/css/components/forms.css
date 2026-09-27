@@ -1,11 +1,11 @@
 /* Forms */
 .form-control,
-input[type="text"],
-input[type="password"],
-input[type="email"],
-input[type="url"],
-input[type="search"],
-input[type="number"],
+input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='url'],
+input[type='search'],
+input[type='number'],
 textarea,
 select {
     display: block;
@@ -20,7 +20,9 @@ select {
     border-radius: var(--radius-md);
     appearance: none;
     margin-bottom: var(--space-md);
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 }
 
 .form-control:focus {
@@ -59,7 +61,7 @@ label {
     width: 100%;
 }
 
-.input-group>.form-control {
+.input-group > .form-control {
     position: relative;
     flex: 1 1 auto;
     width: 1%;
@@ -75,7 +77,7 @@ label {
 }
 
 /* Fix rounding for unified look */
-.input-group>.form-control:first-child {
+.input-group > .form-control:first-child {
     border-top-left-radius: var(--radius-md);
     border-bottom-left-radius: var(--radius-md);
     border-top-right-radius: 0;
@@ -84,7 +86,7 @@ label {
     /* Remove right border to merge with button */
 }
 
-.input-group>.btn:last-child {
+.input-group > .btn:last-child {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     border-top-right-radius: var(--radius-md);
@@ -98,7 +100,7 @@ label {
 }
 
 /* Ensure focus ring covers the join */
-.input-group>.form-control:focus {
+.input-group > .form-control:focus {
     z-index: 3;
 }
 

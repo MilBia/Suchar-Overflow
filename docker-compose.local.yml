@@ -1,47 +1,46 @@
 volumes:
-  suchar_overflow_local_postgres_data: {}
-  suchar_overflow_local_postgres_data_backups: {}
-
+    suchar_overflow_local_postgres_data: {}
+    suchar_overflow_local_postgres_data_backups: {}
 
 services:
-  django: &django
-    build:
-      context: .
-      dockerfile: ./compose/local/django/Dockerfile
-    image: suchar_overflow_local_django
-    container_name: suchar_overflow_local_django
-    depends_on:
-      - postgres
-      - mailpit
-      - redis
-    volumes:
-      - /app/.venv
-      - .:/app:z
-    env_file:
-      - ./.envs/.local/.django
-      - ./.envs/.local/.postgres
-    ports:
-      - '8000:8000'
-    command: /start
+    django: &django
+        build:
+            context: .
+            dockerfile: ./compose/local/django/Dockerfile
+        image: suchar_overflow_local_django
+        container_name: suchar_overflow_local_django
+        depends_on:
+            - postgres
+            - mailpit
+            - redis
+        volumes:
+            - /app/.venv
+            - .:/app:z
+        env_file:
+            - ./.envs/.local/.django
+            - ./.envs/.local/.postgres
+        ports:
+            - '8000:8000'
+        command: /start
 
-  postgres:
-    build:
-      context: .
-      dockerfile: ./compose/production/postgres/Dockerfile
-    image: suchar_overflow_production_postgres
-    container_name: suchar_overflow_local_postgres
-    volumes:
-      - suchar_overflow_local_postgres_data:/var/lib/postgresql/18/docker
-      - suchar_overflow_local_postgres_data_backups:/backups
-    env_file:
-      - ./.envs/.local/.postgres
+    postgres:
+        build:
+            context: .
+            dockerfile: ./compose/production/postgres/Dockerfile
+        image: suchar_overflow_production_postgres
+        container_name: suchar_overflow_local_postgres
+        volumes:
+            - suchar_overflow_local_postgres_data:/var/lib/postgresql/18/docker
+            - suchar_overflow_local_postgres_data_backups:/backups
+        env_file:
+            - ./.envs/.local/.postgres
 
-  mailpit:
-    image: docker.io/axllent/mailpit:v1.31.2
-    container_name: suchar_overflow_local_mailpit
-    ports:
-      - "8025:8025"
+    mailpit:
+        image: docker.io/axllent/mailpit:v1.31.2
+        container_name: suchar_overflow_local_mailpit
+        ports:
+            - '8025:8025'
 
-  redis:
-    image: docker.io/redis:8.10
-    container_name: suchar_overflow_local_redis
+    redis:
+        image: docker.io/redis:8.10
+        container_name: suchar_overflow_local_redis

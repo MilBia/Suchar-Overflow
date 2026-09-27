@@ -1,6 +1,6 @@
 /* Leaderboard: activity chart + sliding tab/timeframe indicators */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Everything below is scoped to this handler rather than the (shared,
     // page-global) script scope a classic `defer` script otherwise leaks into:
     // a second `const debounce`/`RESIZE_DEBOUNCE_MS` in any other script on the
@@ -29,13 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!animate) slider.style.transition = 'none';
         const containerRect = container.getBoundingClientRect();
         const btnRect = btn.getBoundingClientRect();
-        slider.style.left = (btnRect.left - containerRect.left) + 'px';
-        slider.style.top = (btnRect.top - containerRect.top) + 'px';
+        slider.style.left = btnRect.left - containerRect.left + 'px';
+        slider.style.top = btnRect.top - containerRect.top + 'px';
         slider.style.width = btnRect.width + 'px';
         slider.style.height = btnRect.height + 'px';
-        if (!animate) requestAnimationFrame(() => {
-            slider.style.transition = '';
-        });
+        if (!animate)
+            requestAnimationFrame(() => {
+                slider.style.transition = '';
+            });
     }
 
     // Repositioning callbacks collected by the blocks below, all run by the
@@ -56,42 +57,44 @@ document.addEventListener('DOMContentLoaded', function() {
             type: 'line',
             data: {
                 labels: datasets[activeTimeframe].labels,
-                datasets: [{
-                    label: newJokesLabel,
-                    data: datasets[activeTimeframe].values,
-                    borderColor: '#3b82f6', // Primary Blue
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    borderWidth: 2,
-                    pointRadius: 3
-                }]
+                datasets: [
+                    {
+                        label: newJokesLabel,
+                        data: datasets[activeTimeframe].values,
+                        borderColor: '#3b82f6', // Primary Blue
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 2,
+                        pointRadius: 3,
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false
-                    }
+                        display: false,
+                    },
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1
+                            stepSize: 1,
                         },
                         border: {
-                            dash: [2, 4]
-                        }
+                            dash: [2, 4],
+                        },
                     },
                     x: {
                         grid: {
-                            display: false
-                        }
-                    }
-                }
-            }
+                            display: false,
+                        },
+                    },
+                },
+            },
         });
 
         // Sliding timeframe selector indicator
@@ -108,11 +111,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Bind timeframe buttons
-            timeframeSelector.querySelectorAll('button').forEach(button => {
-                button.addEventListener('click', function() {
+            timeframeSelector.querySelectorAll('button').forEach((button) => {
+                button.addEventListener('click', function () {
                     const timeframe = this.getAttribute('data-timeframe');
 
-                    timeframeSelector.querySelectorAll('button').forEach(btn => {
+                    timeframeSelector.querySelectorAll('button').forEach((btn) => {
                         btn.classList.remove('active');
                     });
                     this.classList.add('active');
@@ -141,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const tabColorMap = {
             'overall-tab': 'overall',
             'funny-tab': 'funny',
-            'dry-tab': 'dry'
+            'dry-tab': 'dry',
         };
         const slider = document.createElement('span');
         slider.className = 'leaderboard-tab-slider';
@@ -161,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // `tab:activated` (dispatched by project.js `activateTab`) covers both
         // the click and the arrow-key paths — a plain `click` listener would
         // leave the slider stranded during keyboard tab navigation.
-        tabList.querySelectorAll('[data-toggle="tab"]').forEach(btn => {
+        tabList.querySelectorAll('[data-toggle="tab"]').forEach((btn) => {
             btn.addEventListener('tab:activated', () => positionTabSlider(btn, true));
         });
 
@@ -176,8 +179,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // One shared, debounced listener for every indicator registered above.
     if (resizeHandlers.length > 0) {
-        window.addEventListener('resize', debounce(() => {
-            resizeHandlers.forEach(reposition => reposition());
-        }, RESIZE_DEBOUNCE_MS));
+        window.addEventListener(
+            'resize',
+            debounce(() => {
+                resizeHandlers.forEach((reposition) => reposition());
+            }, RESIZE_DEBOUNCE_MS),
+        );
     }
 });

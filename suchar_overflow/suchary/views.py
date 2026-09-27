@@ -90,8 +90,7 @@ class SucharListView(View):
         q = request.GET.get("q")
         if q:
             qs = qs.filter(
-                Q(text__icontains=q)
-                | Q(pk__in=Tag.objects.filter(name__icontains=q).values("suchary__pk")),
+                Q(text__icontains=q) | Q(pk__in=Tag.objects.filter(name__icontains=q).values("suchary__pk")),
             )
 
         tag = request.GET.get("tag")

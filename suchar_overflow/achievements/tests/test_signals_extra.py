@@ -69,10 +69,7 @@ def test_suchar_update_does_not_award_achievement() -> None:
     count_before = UserAchievement.objects.filter(user=user, achievement=ach).count()
     suchar.text = "updated"
     suchar.save()
-    assert (
-        UserAchievement.objects.filter(user=user, achievement=ach).count()
-        == count_before
-    )
+    assert UserAchievement.objects.filter(user=user, achievement=ach).count() == count_before
 
 
 # ---------------------------------------------------------------------------
@@ -105,10 +102,7 @@ def test_vote_update_does_not_trigger_achievement_check() -> None:
     vote.is_dry = True
     vote.save()
 
-    assert (
-        UserAchievement.objects.filter(user=voter, achievement=ach_cast).count()
-        == count_before
-    )
+    assert UserAchievement.objects.filter(user=voter, achievement=ach_cast).count() == count_before
 
 
 # ---------------------------------------------------------------------------
@@ -172,6 +166,4 @@ def test_author_voting_own_suchar_awards_voter_not_duplicate_author() -> None:
     Vote.objects.create(suchar=suchar, user=author, is_funny=True)
 
     # Voter achievement awarded exactly once
-    assert (
-        UserAchievement.objects.filter(user=author, achievement=ach_cast).count() == 1
-    )
+    assert UserAchievement.objects.filter(user=author, achievement=ach_cast).count() == 1

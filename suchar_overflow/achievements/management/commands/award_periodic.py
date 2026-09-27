@@ -70,8 +70,7 @@ class Command(BaseCommand):
         if len(authors) > 1:
             usernames = ", ".join(author.username for author in authors)
             self.stdout.write(
-                f"Tie detected: {len(authors)} authors tied with "
-                f"{vote_count} votes: {usernames}.",
+                f"Tie detected: {len(authors)} authors tied with {vote_count} votes: {usernames}.",
             )
         else:
             self.stdout.write(

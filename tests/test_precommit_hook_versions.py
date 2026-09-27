@@ -4,10 +4,12 @@ pre-commit runs on the host from `.pre-commit-config.yaml` revs, while the
 container (and anyone running `ruff`/`djlint` directly) uses the versions
 pinned in the `dev` dependency group. When the two drift, the same file is
 formatted differently depending on where the tool ran. django-upgrade's
---target-version is checked against the Django minor the same way. Parsed as
-text so no YAML dependency is needed.
+--target-version is checked against the Django minor the same way, and the
+prettier hook pin against package.json. Parsed as text so no YAML dependency
+is needed.
 """
 
+import json
 import re
 import tomllib
 from pathlib import Path
@@ -52,8 +54,7 @@ def test_precommit_hook_rev_matches_pyproject_pin(package: str) -> None:
         pytest.skip(".pre-commit-config.yaml not present (image without bind mount)")
     config = _PRECOMMIT.read_text(encoding="utf-8")
     assert _hook_rev(config, HOOK_REPOS[package]) == _dev_pin(package), (
-        f"{package}: bump the hook rev in .pre-commit-config.yaml and the pin in "
-        "pyproject.toml together"
+        f"{package}: bump the hook rev in .pre-commit-config.yaml and the pin in pyproject.toml together"
     )
 
 
@@ -75,3 +76,19 @@ def test_django_upgrade_targets_the_pinned_django_minor() -> None:
     match = re.search(r"['\"]--target-version['\"],\s*['\"]([\d.]+)['\"]", config)
     assert match, "no django-upgrade --target-version in .pre-commit-config.yaml"
     assert match.group(1) == _django_minor()
+
+
+def test_prettier_hook_pin_matches_package_json() -> None:
+    # The hook installs prettier itself (additional_dependencies); the same
+    # exact version in package.json is what lets Dependabot's npm ecosystem
+    # notice a new release, so a bump has to move both pins together.
+    package_json = _ROOT / "package.json"
+    if not _PRECOMMIT.exists() or not package_json.exists():
+        pytest.skip("pre-commit config or package.json not present (image without bind mount)")
+    config = _PRECOMMIT.read_text(encoding="utf-8")
+    match = re.search(r"additional_dependencies:\s*\[\s*['\"]prettier@([^'\"]+)['\"]", config)
+    assert match, "no prettier@<version> in the prettier hook's additional_dependencies"
+    dev_deps = json.loads(package_json.read_text(encoding="utf-8"))["devDependencies"]
+    assert dev_deps.get("prettier") == match.group(1), (
+        "prettier: bump the hook's additional_dependencies and package.json devDependencies together"
+    )

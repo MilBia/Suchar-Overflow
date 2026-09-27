@@ -54,11 +54,7 @@ class ActivationToken(models.Model):
         verbose_name_plural = _("Activation Tokens")
 
     def __str__(self) -> str:
-        user_name = (
-            self.user.username
-            if "user" in self._state.fields_cache
-            else f"User #{self.user_id}"
-        )
+        user_name = self.user.username if "user" in self._state.fields_cache else f"User #{self.user_id}"
         return f"ActivationToken({user_name})"
 
     def is_valid(self) -> bool:
@@ -94,9 +90,5 @@ class EmailChangeRequest(models.Model):
         verbose_name_plural = _("Email Change Requests")
 
     def __str__(self) -> str:
-        user_name = (
-            self.user.username
-            if "user" in self._state.fields_cache
-            else f"User #{self.user_id}"
-        )
+        user_name = self.user.username if "user" in self._state.fields_cache else f"User #{self.user_id}"
         return f"{user_name}: {self.old_email} -> {self.new_email} ({self.status})"

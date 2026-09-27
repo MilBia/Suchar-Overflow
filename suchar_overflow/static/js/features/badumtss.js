@@ -56,11 +56,11 @@
     // CSP `style-src` allows 'unsafe-inline' (see config/settings/base.py),
     // which covers both this block and the per-particle inline `style=` below.
     const DRIFT_KEYFRAMES =
-        '@keyframes ee-badumtss-drift{'
-        + '0%{transform:translate(0,-8vh) scale(0.5);opacity:0}'
-        + '15%{opacity:0.75}'
-        + '100%{transform:translate(var(--ee-dx,0),108vh) scale(1);opacity:0}'
-        + '}';
+        '@keyframes ee-badumtss-drift{' +
+        '0%{transform:translate(0,-8vh) scale(0.5);opacity:0}' +
+        '15%{opacity:0.75}' +
+        '100%{transform:translate(var(--ee-dx,0),108vh) scale(1);opacity:0}' +
+        '}';
 
     // ── Module-level mutable state (reset between Vitest tests via _resetForTests) ─
     // A bounded string of the last few typed characters. Comparing its tail with
@@ -148,8 +148,7 @@
         mote.style.boxShadow = '0 0 3px rgba(120, 104, 82, 0.7)';
         mote.style.setProperty('--ee-dx', `${rand(-10, 10).toFixed(1)}vw`);
         mote.style.animationName = 'ee-badumtss-drift';
-        mote.style.animationDuration =
-            `${rand(MOTE_MIN_DURATION_S, MOTE_MAX_DURATION_S).toFixed(2)}s`;
+        mote.style.animationDuration = `${rand(MOTE_MIN_DURATION_S, MOTE_MAX_DURATION_S).toFixed(2)}s`;
         mote.style.animationTimingFunction = 'ease-in';
         mote.style.animationDelay = `${rand(0, MOTE_MAX_DELAY_S).toFixed(2)}s`;
         mote.style.animationFillMode = 'both';
@@ -203,11 +202,11 @@
 
         const target = e.target;
         if (
-            target
-            && (target.tagName === 'INPUT'
-                || target.tagName === 'TEXTAREA'
-                || target.tagName === 'SELECT'
-                || target.isContentEditable)
+            target &&
+            (target.tagName === 'INPUT' ||
+                target.tagName === 'TEXTAREA' ||
+                target.tagName === 'SELECT' ||
+                target.isContentEditable)
         ) {
             return;
         }

@@ -227,7 +227,4 @@ async def test_achievement_list_empty_shows_placeholder_copy(
 
     assert response.status_code == HTTPStatus.OK
     assert list(response.context["achievements"]) == []
-    assert (
-        gettext("Gablota z trofeami dopiero schnie. Zajrzyj po kilku żartach.")
-        in response.content.decode()
-    )
+    assert gettext("Gablota z trofeami dopiero schnie. Zajrzyj po kilku żartach.") in response.content.decode()

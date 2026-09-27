@@ -393,10 +393,9 @@ def test_save_tags_logs_when_a_name_collision_drops_a_tag(
 
     assert tag_slugs(suchar) == {"python"}
     assert Tag.objects.filter(slug=dropped_slug).count() == 0
-    assert any(
-        dropped_slug in record.message and record.levelno == logging.WARNING
-        for record in caplog.records
-    ), caplog.records
+    assert any(dropped_slug in record.message and record.levelno == logging.WARNING for record in caplog.records), (
+        caplog.records
+    )
 
 
 # ---------------------------------------------------------------------------

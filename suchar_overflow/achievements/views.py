@@ -124,9 +124,7 @@ class AchievementListView(AsyncLoginRequiredMixin):
             ).values_list("achievement_id", flat=True)
         }
 
-        all_achs = [
-            a async for a in Achievement.objects.all().order_by("theme", "tier", "id")
-        ]
+        all_achs = [a async for a in Achievement.objects.all().order_by("theme", "tier", "id")]
         visible_achs = []
         grouped: dict[tuple[str, str], list[Achievement]] = {}
 

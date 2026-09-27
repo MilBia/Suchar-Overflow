@@ -45,6 +45,7 @@ just test -v -s
 ```
 
 ## Core Rules
+
 1. **Always use Docker:** Final verification and general test execution MUST happen inside the Docker environment.
 2. **Always filter by marker:** unit tests exclude `e2e`, E2E runs select only `e2e` — see CLAUDE.md.
 3. **Avoid local execution:** Do not run `pytest` locally (e.g., via `.venv`) unless it is a very specific, isolated unit test that requires zero database interaction (and even then, prefer Docker to avoid confusion).

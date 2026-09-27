@@ -24,8 +24,7 @@ class SucharForm(forms.ModelForm):
         required=False,
         label="Tagi",
         help_text=_(
-            "Wpisz tagi oddzielone spacjami lub przecinkami"
-            " (np. suchar, it, programowanie).",
+            "Wpisz tagi oddzielone spacjami lub przecinkami (np. suchar, it, programowanie).",
         ),
         widget=forms.TextInput(
             attrs={"placeholder": "suchar, it, programowanie", "class": "form-control"},
@@ -132,8 +131,7 @@ class SucharForm(forms.ModelForm):
         if published_at < timezone.now() - timedelta(minutes=5):
             raise forms.ValidationError(
                 _(
-                    "Data publikacji nie może być w przeszłości "
-                    "(wehikuł czasu wciąż w naprawie).",
+                    "Data publikacji nie może być w przeszłości (wehikuł czasu wciąż w naprawie).",
                 ),
             )
         return published_at
@@ -141,9 +139,7 @@ class SucharForm(forms.ModelForm):
     def clean_tags_input(self) -> str:
         tags_input = self.cleaned_data.get("tags_input", "")
         normalized = tags_input.replace(",", " ")
-        tag_names = [
-            t.strip().lstrip("#") for t in normalized.split() if t.strip().lstrip("#")
-        ]
+        tag_names = [t.strip().lstrip("#") for t in normalized.split() if t.strip().lstrip("#")]
         too_long = [t for t in tag_names if len(t) > 50]  # noqa: PLR2004
         if too_long:
             raise forms.ValidationError(
@@ -192,9 +188,7 @@ class SucharForm(forms.ModelForm):
         tags_input = self.cleaned_data.get("tags_input", "")
         # Replace commas with spaces to handle both separators
         tags_input = tags_input.replace(",", " ")
-        tag_names = [
-            t.strip().lstrip("#") for t in tags_input.split() if t.strip().lstrip("#")
-        ]
+        tag_names = [t.strip().lstrip("#") for t in tags_input.split() if t.strip().lstrip("#")]
 
         # Deduplicate by slug, keeping the first spelling the user typed.
         names_by_slug: dict[str, str] = {}
@@ -212,11 +206,7 @@ class SucharForm(forms.ModelForm):
         # of 1-2 queries per tag from a get_or_create loop.
         slugs = list(names_by_slug)
         tags_by_slug = {tag.slug: tag for tag in Tag.objects.filter(slug__in=slugs)}
-        missing = [
-            Tag(slug=slug, name=name)
-            for slug, name in names_by_slug.items()
-            if slug not in tags_by_slug
-        ]
+        missing = [Tag(slug=slug, name=name) for slug, name in names_by_slug.items() if slug not in tags_by_slug]
         if missing:
             # ignore_conflicts absorbs a race with a concurrent request creating
             # the same tag — and, because Tag.name is unique too, the rarer case
@@ -227,9 +217,7 @@ class SucharForm(forms.ModelForm):
             Tag.objects.bulk_create(missing, ignore_conflicts=True)
             tags_by_slug = {tag.slug: tag for tag in Tag.objects.filter(slug__in=slugs)}
 
-        resolved = [
-            tags_by_slug[slug] for slug in names_by_slug if slug in tags_by_slug
-        ]
+        resolved = [tags_by_slug[slug] for slug in names_by_slug if slug in tags_by_slug]
         dropped = [slug for slug in names_by_slug if slug not in tags_by_slug]
         if dropped:
             # Reachable only via the name-collision path described above: a
@@ -238,8 +226,7 @@ class SucharForm(forms.ModelForm):
             # Not fatal (the suchar still saves), but the user silently loses a
             # tag they typed — worth a log line rather than nothing.
             logger.warning(
-                "SucharForm._save_tags dropped tag(s) %s (name already taken "
-                "under a different slug)",
+                "SucharForm._save_tags dropped tag(s) %s (name already taken under a different slug)",
                 dropped,
             )
 

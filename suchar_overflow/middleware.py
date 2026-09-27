@@ -43,8 +43,7 @@ def zone_from_request(request: HttpRequest) -> zoneinfo.ZoneInfo | None:
 
 @sync_and_async_middleware
 def user_timezone_middleware(
-    get_response: Callable[[HttpRequest], HttpResponseBase]
-    | Callable[[HttpRequest], Awaitable[HttpResponseBase]],
+    get_response: Callable[[HttpRequest], HttpResponseBase] | Callable[[HttpRequest], Awaitable[HttpResponseBase]],
 ) -> Callable[..., object]:
     """Activate the visitor's browser time zone for the request (#410).
 

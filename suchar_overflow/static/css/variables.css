@@ -54,7 +54,7 @@
     --bs-success: hsl(var(--hue-success), 80%, 45%);
 
     /* Vote Colors (Funny/Dry) */
-    --color-funny: #E58E26;
+    --color-funny: #e58e26;
     --color-dry: #0ea5e9;
 
     /* Achievement Tier Colors - indices match Achievement.Tier (1..5) and the
@@ -165,5 +165,5 @@
     --heatmap-level-1: hsla(var(--hue-warning), 70%, 50%, 0.2);
     --heatmap-level-2: hsla(var(--hue-warning), 70%, 50%, 0.4);
     --heatmap-level-3: hsla(var(--hue-warning), 70%, 50%, 0.7);
-    --heatmap-level-4: hsla(var(--hue-warning), 70%, 50%, 1.0);
+    --heatmap-level-4: hsla(var(--hue-warning), 70%, 50%, 1);
 }

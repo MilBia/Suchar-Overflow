@@ -125,9 +125,7 @@ def _read_log(page: Page) -> list[dict[str, Any]]:
 def _wait_for_restore(page: Page) -> dict[str, Any]:
     """Return the persisted-``pageshow`` entry once the restore has logged it."""
     for _ in range(50):
-        restores = [
-            e for e in _read_log(page) if e["ev"] == "pageshow" and e["persisted"]
-        ]
+        restores = [e for e in _read_log(page) if e["ev"] == "pageshow" and e["persisted"]]
         if restores:
             return restores[-1]
         page.wait_for_timeout(100)
@@ -163,11 +161,7 @@ def test_bfcached_page_releases_and_restores_its_stream(
 
     # Only the restored document's own entries: a normally unloaded page is
     # discarded without close(), which the fake can't observe.
-    log = [
-        e
-        for e in _read_log(page)
-        if e["doc"] == restore["doc"] and e["ev"] in {"open", "close", "pagehide"}
-    ]
+    log = [e for e in _read_log(page) if e["doc"] == restore["doc"] and e["ev"] in {"open", "close", "pagehide"}]
     # The first load's stream is closed while the page leaves for the bfcache,
     # then a fresh one opens on restore — never twice (the `!es` guard).
     assert [e["ev"] for e in log] == ["open", "pagehide", "close", "open"]

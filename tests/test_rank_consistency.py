@@ -56,10 +56,7 @@ def test_tied_authors_see_the_same_rank_on_profile_and_leaderboard(
     ).context["global_rank"]
 
     leaderboard_ranks = {
-        author.username: author.rank
-        for author in client.get(reverse("stats:leaderboard")).context[
-            "top_authors_funny"
-        ]
+        author.username: author.rank for author in client.get(reverse("stats:leaderboard")).context["top_authors_funny"]
     }
 
     # leader sits alone on 5 votes (rank 1); tie_a/tie_b share 3 votes, one

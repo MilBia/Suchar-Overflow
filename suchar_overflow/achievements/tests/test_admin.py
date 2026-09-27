@@ -599,9 +599,7 @@ class TestSubTierTranslationCopy:
         silver = self._localized("ladder-base-silver")
         assert silver["name_en"] == "Base EN (Silver)"
         assert silver["description_en"] == "Description EN"
-        assert (
-            silver["name_pl"] == f"Baza PL ({_pl_tier_label(Achievement.Tier.SILVER)})"
-        )
+        assert silver["name_pl"] == f"Baza PL ({_pl_tier_label(Achievement.Tier.SILVER)})"
         assert silver["description_pl"] == "Opis PL"
 
     def test_base_row_untouched_language_stays_empty_on_sub_tiers(self) -> None:
@@ -637,9 +635,7 @@ class TestSubTierTranslationCopy:
         silver = self._localized("only-pl-silver")
         assert not silver["name_en"]
         assert not silver["description_en"]
-        assert (
-            silver["name_pl"] == f"Only PL ({_pl_tier_label(Achievement.Tier.SILVER)})"
-        )
+        assert silver["name_pl"] == f"Only PL ({_pl_tier_label(Achievement.Tier.SILVER)})"
 
     def test_helper_builds_localized_kwargs_for_all_languages(self) -> None:
         base = Achievement()
@@ -723,9 +719,7 @@ class TestSubTierTranslationCopy:
         assert silver["name_en"] == "Base EN (Silver)"
         assert silver["description_en"] == "Description EN"
         assert silver["theme_en"] == "ThemeEN"
-        assert (
-            silver["name_pl"] == f"Baza PL ({_pl_tier_label(Achievement.Tier.SILVER)})"
-        )
+        assert silver["name_pl"] == f"Baza PL ({_pl_tier_label(Achievement.Tier.SILVER)})"
         assert silver["theme_pl"] == "MotywPL"
 
     def test_ladder_generation_rolls_back_the_base_row_on_a_sub_tier_failure(

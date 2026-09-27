@@ -2,196 +2,195 @@ name: CI
 
 # Enable Buildkit and let compose use it to speed up image building
 env:
-  DOCKER_BUILDKIT: 1
-  COMPOSE_DOCKER_CLI_BUILD: 1
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    DOCKER_BUILDKIT: 1
+    COMPOSE_DOCKER_CLI_BUILD: 1
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
-  pull_request:
-    branches: ['main']
+    pull_request:
+        branches: ['main']
 
-  push:
-    branches: ['main']
+    push:
+        branches: ['main']
 
 concurrency:
-  group: ${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+    group: ${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
 
 # No job here writes to the repo — the only side effect is
 # actions/upload-artifact, which needs no repo scope. Drop GITHUB_TOKEN to
 # read-only.
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  linter:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code Repository
-        uses: actions/checkout@v7
+    linter:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code Repository
+              uses: actions/checkout@v7
 
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version-file: '.python-version'
-      # Consider using pre-commit.ci for open source project
-      # Third-party actions are pinned to a commit SHA (version in the trailing
-      # comment) so a re-tagged or hijacked release can't silently change CI.
-      - name: Run pre-commit
-        uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+            - name: Set up Python
+              uses: actions/setup-python@v7
+              with:
+                  python-version-file: '.python-version'
+            # Consider using pre-commit.ci for open source project
+            # Third-party actions are pinned to a commit SHA (version in the trailing
+            # comment) so a re-tagged or hijacked release can't silently change CI.
+            - name: Run pre-commit
+              uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
 
-  # Vitest + jsdom unit tests for static/js/ logic. Runs on the host with Node,
-  # not in the Django image — the runner has no Django/DB dependency. Separate
-  # job so it runs in parallel with `pytest` and never bloats the backend image.
-  js-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code Repository
-        uses: actions/checkout@v7
+    # Vitest + jsdom unit tests for static/js/ logic. Runs on the host with Node,
+    # not in the Django image — the runner has no Django/DB dependency. Separate
+    # job so it runs in parallel with `pytest` and never bloats the backend image.
+    js-tests:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code Repository
+              uses: actions/checkout@v7
 
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+            - name: Set up Node
+              uses: actions/setup-node@v7
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'npm'
 
-      - name: Install JS dev dependencies
-        run: npm ci
+            - name: Install JS dev dependencies
+              run: npm ci
 
-      - name: Run Vitest
-        run: npm test
+            - name: Run Vitest
+              run: npm test
 
-  # mypy needs only the built image, not a migrated or tested database, so it
-  # runs as its own job in parallel with `pytest` rather than tailing both test
-  # suites inside it (it was serialized at the end of `pytest` only for log
-  # ordering — see #216, #360; still blocking since #146). It only *consumes* the
-  # gha build cache `pytest` writes — a parallel `cache-to` to the same scope on
-  # the same SHA just races and double-uploads layers.
-  mypy:
-    runs-on: ubuntu-latest
+    # mypy needs only the built image, not a migrated or tested database, so it
+    # runs as its own job in parallel with `pytest` rather than tailing both test
+    # suites inside it (it was serialized at the end of `pytest` only for log
+    # ordering — see #216, #360; still blocking since #146). It only *consumes* the
+    # gha build cache `pytest` writes — a parallel `cache-to` to the same scope on
+    # the same SHA just races and double-uploads layers.
+    mypy:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Code Repository
-        uses: actions/checkout@v7
+        steps:
+            - name: Checkout Code Repository
+              uses: actions/checkout@v7
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4.4.0
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4.4.0
 
-      - name: Build and cache local backend
-        id: bake_build
-        uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f # v7.4.0
-        continue-on-error: true
-        timeout-minutes: 12
-        with:
-          push: false
-          load: true
-          files: docker-compose.local.yml
-          targets: django
-          set: |
-            django.cache-from=type=gha,scope=django-cached-tests
+            - name: Build and cache local backend
+              id: bake_build
+              uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f # v7.4.0
+              continue-on-error: true
+              timeout-minutes: 12
+              with:
+                  push: false
+                  load: true
+                  files: docker-compose.local.yml
+                  targets: django
+                  set: |
+                      django.cache-from=type=gha,scope=django-cached-tests
 
-      - name: Build backend (fallback — no cache)
-        if: steps.bake_build.outcome == 'failure'
-        run: docker compose -f docker-compose.local.yml build django
+            - name: Build backend (fallback — no cache)
+              if: steps.bake_build.outcome == 'failure'
+              run: docker compose -f docker-compose.local.yml build django
 
-      # --no-deps + empty entrypoint + a dummy DATABASE_URL: mypy / django-stubs
-      # only loads settings, it never opens a DB or Redis connection, so there is
-      # no reason to build & start postgres/redis/mailpit or wait on them (~50s).
-      # Nothing runs in the background, so there is nothing to tear down.
-      - name: Run mypy
-        run: >-
-          docker compose -f docker-compose.local.yml run --rm --no-deps
-          --entrypoint "" -e DATABASE_URL=sqlite:///:memory:
-          django python -m mypy .
+            # --no-deps + empty entrypoint + a dummy DATABASE_URL: mypy / django-stubs
+            # only loads settings, it never opens a DB or Redis connection, so there is
+            # no reason to build & start postgres/redis/mailpit or wait on them (~50s).
+            # Nothing runs in the background, so there is nothing to tear down.
+            - name: Run mypy
+              run: >-
+                  docker compose -f docker-compose.local.yml run --rm --no-deps
+                  --entrypoint "" -e DATABASE_URL=sqlite:///:memory:
+                  django python -m mypy .
 
-  # With no caching at all the entire ci process takes 3m to complete!
-  pytest:
-    runs-on: ubuntu-latest
+    # With no caching at all the entire ci process takes 3m to complete!
+    pytest:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Code Repository
-        uses: actions/checkout@v7
+        steps:
+            - name: Checkout Code Repository
+              uses: actions/checkout@v7
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4.4.0
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003 # v4.4.0
 
-      - name: Build and cache local backend
-        id: bake_build
-        uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f # v7.4.0
-        continue-on-error: true
-        timeout-minutes: 12
-        with:
-          push: false
-          load: true
-          files: docker-compose.local.yml
-          targets: django
-          set: |
-            django.cache-from=type=gha,scope=django-cached-tests
-            django.cache-to=type=gha,scope=django-cached-tests,mode=max
+            - name: Build and cache local backend
+              id: bake_build
+              uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f # v7.4.0
+              continue-on-error: true
+              timeout-minutes: 12
+              with:
+                  push: false
+                  load: true
+                  files: docker-compose.local.yml
+                  targets: django
+                  set: |
+                      django.cache-from=type=gha,scope=django-cached-tests
+                      django.cache-to=type=gha,scope=django-cached-tests,mode=max
 
-      - name: Build backend (fallback — no cache)
-        if: steps.bake_build.outcome == 'failure'
-        run: docker compose -f docker-compose.local.yml build django
+            - name: Build backend (fallback — no cache)
+              if: steps.bake_build.outcome == 'failure'
+              run: docker compose -f docker-compose.local.yml build django
 
+            - name: Check DB Migrations
+              run: docker compose -f docker-compose.local.yml run --rm django python manage.py makemigrations --check
 
-      - name: Check DB Migrations
-        run: docker compose -f docker-compose.local.yml run --rm django python manage.py makemigrations --check
+            # Diagnostic, not a prerequisite: pytest-django and the E2E run each build
+            # their own `test_suchar_overflow`, so nothing downstream reads the
+            # `suchar_overflow` DB this migrates. Kept deliberately as an early, clean
+            # failure signal — a broken migration surfaces here instead of buried in
+            # pytest-django's test-DB setup output (#359).
+            - name: Run DB Migrations
+              run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
 
-      # Diagnostic, not a prerequisite: pytest-django and the E2E run each build
-      # their own `test_suchar_overflow`, so nothing downstream reads the
-      # `suchar_overflow` DB this migrates. Kept deliberately as an early, clean
-      # failure signal — a broken migration surfaces here instead of buried in
-      # pytest-django's test-DB setup output (#359).
-      - name: Run DB Migrations
-        run: docker compose -f docker-compose.local.yml run --rm django python manage.py migrate
+            # compilemessages runs msgfmt --check-format and exits non-zero on any
+            # broken catalog (e.g. a mismatched %(name)s placeholder), which otherwise
+            # only surfaced in the production image build (#407). The .mo files land in
+            # the bind-mounted workspace, so both test suites below also render with
+            # real catalogs, as production and local dev (compose/local/django/start) do.
+            - name: Compile translations
+              run: docker compose -f docker-compose.local.yml run --rm django python manage.py compilemessages --ignore=.venv --ignore=node_modules
 
-      # compilemessages runs msgfmt --check-format and exits non-zero on any
-      # broken catalog (e.g. a mismatched %(name)s placeholder), which otherwise
-      # only surfaced in the production image build (#407). The .mo files land in
-      # the bind-mounted workspace, so both test suites below also render with
-      # real catalogs, as production and local dev (compose/local/django/start) do.
-      - name: Compile translations
-        run: docker compose -f docker-compose.local.yml run --rm django python manage.py compilemessages --ignore=.venv --ignore=node_modules
+            - name: Run Django Tests
+              id: django_tests
+              run: docker compose -f docker-compose.local.yml run --rm django coverage run -m pytest -vv -m "not e2e" --junitxml=root_junit.xml
 
-      - name: Run Django Tests
-        id: django_tests
-        run: docker compose -f docker-compose.local.yml run --rm django coverage run -m pytest -vv -m "not e2e" --junitxml=root_junit.xml
+            # Coverage config (pyproject.toml) enforces a fail_under threshold, so a
+            # coverage regression fails the build here even if all tests pass.
+            # Guarded on django_tests actually having run (not skipped by an earlier
+            # failure) — coverage data is written even when a test fails above.
+            - name: Coverage report
+              if: always() && steps.django_tests.outcome != 'skipped'
+              run: docker compose -f docker-compose.local.yml run --rm django coverage report
 
-      # Coverage config (pyproject.toml) enforces a fail_under threshold, so a
-      # coverage regression fails the build here even if all tests pass.
-      # Guarded on django_tests actually having run (not skipped by an earlier
-      # failure) — coverage data is written even when a test fails above.
-      - name: Coverage report
-        if: always() && steps.django_tests.outcome != 'skipped'
-        run: docker compose -f docker-compose.local.yml run --rm django coverage report
+            - name: Coverage XML
+              if: always() && steps.django_tests.outcome != 'skipped'
+              run: docker compose -f docker-compose.local.yml run --rm django coverage xml
 
-      - name: Coverage XML
-        if: always() && steps.django_tests.outcome != 'skipped'
-        run: docker compose -f docker-compose.local.yml run --rm django coverage xml
+            - name: Run E2E Tests
+              run: |
+                  docker compose -f docker-compose.local.yml run --rm django pytest -vv \
+                    --override-ini="addopts=--ds=config.settings.e2e --reuse-db --import-mode=importlib" \
+                    -m e2e \
+                    tests/e2e/ \
+                    --junitxml=e2e_junit.xml
 
-      - name: Run E2E Tests
-        run: |
-          docker compose -f docker-compose.local.yml run --rm django pytest -vv \
-            --override-ini="addopts=--ds=config.settings.e2e --reuse-db --import-mode=importlib" \
-            -m e2e \
-            tests/e2e/ \
-            --junitxml=e2e_junit.xml
+            - name: Upload Test Report
+              uses: actions/upload-artifact@v7
+              if: always() # always run even if the previous step failed
+              with:
+                  name: junit-test-results
+                  path: |
+                      root_junit.xml
+                      e2e_junit.xml
 
-      - name: Upload Test Report
-        uses: actions/upload-artifact@v7
-        if: always() # always run even if the previous step failed
-        with:
-          name: junit-test-results
-          path: |
-            root_junit.xml
-            e2e_junit.xml
+            - name: Upload Coverage Report
+              uses: actions/upload-artifact@v7
+              if: always()
+              with:
+                  name: coverage-report
+                  path: coverage.xml
 
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: coverage-report
-          path: coverage.xml
-
-      - name: Tear down the Stack
-        run: docker compose -f docker-compose.local.yml down
+            - name: Tear down the Stack
+              run: docker compose -f docker-compose.local.yml down

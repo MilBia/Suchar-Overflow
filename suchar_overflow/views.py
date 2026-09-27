@@ -27,8 +27,7 @@ def fallback_500_html() -> str:
     title = escape(gettext("500 — coś chrupnęło"))
     joke = escape(
         gettext(
-            "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — "
-            "odśwież za chwilę.",
+            "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — odśwież za chwilę.",
         ),
     )
     return (

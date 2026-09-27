@@ -18,9 +18,7 @@ import pytest
 if TYPE_CHECKING:
     from types import ModuleType
 
-_SCRIPT = (
-    Path(__file__).resolve().parent.parent / "scripts" / "check_base_image_freshness.py"
-)
+_SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "check_base_image_freshness.py"
 
 
 def _load() -> ModuleType:
@@ -99,10 +97,7 @@ def test_versions_compare_numerically() -> None:
 
 
 def test_image_tag_strips_digest_pin() -> None:
-    text = (
-        "FROM python:3.14-slim-trixie@sha256:abc AS build\n"
-        "FROM python:3.14-slim-trixie AS run\n"
-    )
+    text = "FROM python:3.14-slim-trixie@sha256:abc AS build\nFROM python:3.14-slim-trixie AS run\n"
     assert freshness.image_tag(text) == "3.14-slim-trixie"
 
 

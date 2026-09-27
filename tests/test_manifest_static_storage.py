@@ -61,9 +61,7 @@ def manifest_storage(settings: SettingsWrapper, tmp_path: Path) -> None:
     settings.STORAGES = {
         **settings.STORAGES,
         "staticfiles": {
-            "BACKEND": (
-                "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
-            ),
+            "BACKEND": ("django.contrib.staticfiles.storage.ManifestStaticFilesStorage"),
         },
     }
     call_command("collectstatic", "--noinput", verbosity=0)

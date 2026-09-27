@@ -4,26 +4,26 @@
 {% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE }}" data-theme="{{ THEME }}">
 
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>
-      {% block title %}
-        Suchar Overflow
-      {% endblock title %}
-    </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description"
-          content="{% block description %}{% trans 'Joke aggregator with critically low humidity levels.' %}{% endblock description %}" />
-    <meta name="author" content="Miłosz Białczak" />
-    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <title>
+            {% block title %}
+                Suchar Overflow
+            {% endblock title %}
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description"
+              content="{% block description %}{% trans 'Joke aggregator with critically low humidity levels.' %}{% endblock description %}" />
+        <meta name="author" content="Miłosz Białczak" />
+        <meta name="csrf-token" content="{{ csrf_token }}" />
 
-    <!-- Open Graph -->
-    <meta property="og:title"
-          content="{% block og_title %}Suchar Overflow{% endblock og_title %}" />
-    <meta property="og:description"
-          content="{% block og_description %}{% trans 'Joke aggregator with critically low humidity levels.' %}{% endblock og_description %}" />
-    {% comment %}
+        <!-- Open Graph -->
+        <meta property="og:title"
+              content="{% block og_title %}Suchar Overflow{% endblock og_title %}" />
+        <meta property="og:description"
+              content="{% block og_description %}{% trans 'Joke aggregator with critically low humidity levels.' %}{% endblock og_description %}" />
+        {% comment %}
       og:image must be an absolute URL (Open Graph spec), so the origin is
       prepended here and an og_image override supplies only the path. The
       500 page renders without a request (#286): the origin is then omitted
@@ -33,19 +33,19 @@
       The 1200x630 PNG is regenerated with `just gen-og-image` (#440); the
       width/height/alt tags describe it, so a child that overrides og_image
       overrides og_image_meta too.
-    {% endcomment %}
-    <meta property="og:image"
-          content="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% endif %}{% block og_image %}{% static 'images/og-image.png' %}{% endblock og_image %}" />
-    {% block og_image_meta %}
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content="Suchar Overflow" />
-    {% endblock og_image_meta %}
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-    <link rel="icon" href="{% static 'images/favicons/favicon.svg' %}" />
-    {% block css %}
-      {% comment %}
+        {% endcomment %}
+        <meta property="og:image"
+              content="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% endif %}{% block og_image %}{% static 'images/og-image.png' %}{% endblock og_image %}" />
+        {% block og_image_meta %}
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta property="og:image:alt" content="Suchar Overflow" />
+        {% endblock og_image_meta %}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+        <link rel="icon" href="{% static 'images/favicons/favicon.svg' %}" />
+        {% block css %}
+            {% comment %}
       Canonical global stylesheet order: fonts → core → components →
       project.css. This block IS the cascade order — a rule in a file listed
       lower wins over an equally specific rule listed higher, and several
@@ -71,63 +71,63 @@
       that child block must NOT wrap {{ block.super }}, which already expands
       to this bundle's finished link tag pointing at CACHE/css/output.HASH.css:
       feeding an already-compressed output back through the compressor is wrong.
-      {% endcomment %}
-      {% compress css %}
-        <link href="{% static 'css/fonts.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/variables.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/reset.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/typography.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/layout.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/utilities.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/buttons.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/navbar.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/cards.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/forms.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/modals.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/toasts.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/list_group.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/pagination.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/dropdowns.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/voting.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/heatmap.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/achievement-badge.css' %}"
-              rel="stylesheet" />
-        <link href="{% static 'css/components/suchar-card.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/footer.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/components/error-page.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/project.css' %}" rel="stylesheet" />
-      {% endcompress %}
-    {% endblock css %}
-    {% block javascript %}
-      {% compress js %}
-        <script defer src="{% static 'js/timezone.js' %}"></script>
-        <script defer src="{% static 'js/project.js' %}"></script>
-        <script defer src="{% static 'js/features/easter_eggs.js' %}"></script>
-        <script defer src="{% static 'js/features/konami.js' %}"></script>
-        <script defer src="{% static 'js/features/badumtss.js' %}"></script>
-        <script defer src="{% static 'js/features/logo_spin.js' %}"></script>
-        <script defer src="{% static 'js/features/console_egg.js' %}"></script>
-        <script defer src="{% static 'js/features/tumbleweed.js' %}"></script>
-        <script defer src="{% static 'js/features/theme_spam.js' %}"></script>
-        <script defer src="{% static 'js/features/archeolog.js' %}"></script>
-        <script defer src="{% static 'js/features/publika_rozgrzana.js' %}"></script>
-      {% endcompress %}
-    {% endblock javascript %}
-    {% if request.user.is_authenticated %}
-      {% comment %}
+            {% endcomment %}
+            {% compress css %}
+                <link href="{% static 'css/fonts.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/variables.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/reset.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/typography.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/layout.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/utilities.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/buttons.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/navbar.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/cards.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/forms.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/modals.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/toasts.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/list_group.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/pagination.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/dropdowns.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/voting.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/heatmap.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/achievement-badge.css' %}"
+                      rel="stylesheet" />
+                <link href="{% static 'css/components/suchar-card.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/footer.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/components/error-page.css' %}" rel="stylesheet" />
+                <link href="{% static 'css/project.css' %}" rel="stylesheet" />
+            {% endcompress %}
+        {% endblock css %}
+        {% block javascript %}
+            {% compress js %}
+                <script defer src="{% static 'js/timezone.js' %}"></script>
+                <script defer src="{% static 'js/project.js' %}"></script>
+                <script defer src="{% static 'js/features/easter_eggs.js' %}"></script>
+                <script defer src="{% static 'js/features/konami.js' %}"></script>
+                <script defer src="{% static 'js/features/badumtss.js' %}"></script>
+                <script defer src="{% static 'js/features/logo_spin.js' %}"></script>
+                <script defer src="{% static 'js/features/console_egg.js' %}"></script>
+                <script defer src="{% static 'js/features/tumbleweed.js' %}"></script>
+                <script defer src="{% static 'js/features/theme_spam.js' %}"></script>
+                <script defer src="{% static 'js/features/archeolog.js' %}"></script>
+                <script defer src="{% static 'js/features/publika_rozgrzana.js' %}"></script>
+            {% endcompress %}
+        {% endblock javascript %}
+        {% if request.user.is_authenticated %}
+            {% comment %}
         Easter-egg sound URLs for easter_eggs.js (#282): a classic script cannot
         resolve the static tag itself, and production hashes the filenames.
         Nonce'd so CSP script-src allows the inline block. Uses the comment tag,
         not a multi-line hash comment: Django parses that form on a single line
         only and would otherwise emit this text straight into the head (#310).
-      {% endcomment %}
-      <script nonce="{{ csp_nonce }}">
-        window.EE_AUDIO = {
-          rimshot: "{% static 'audio/rimshot.wav' %}",
-          dust: "{% static 'audio/dust.wav' %}",
-        };
-      </script>
-      {% comment %}
+            {% endcomment %}
+            <script nonce="{{ csp_nonce }}">
+                window.EE_AUDIO = {
+                    rimshot: "{% static 'audio/rimshot.wav' %}",
+                    dust: "{% static 'audio/dust.wav' %}",
+                };
+            </script>
+            {% comment %}
         Meta-suchar pool for the logo-spin easter egg (#285). A plain JSON data
         island: deliberately kept OUT of the compress-js block (its translated
         text must not be minified into the bundle) and not built with the
@@ -136,309 +136,311 @@
         script context; the strings are static, so that is hygiene rather than a
         real injection vector. features/logo_spin.js reads and JSON-parses this
         by id at trigger time.
-      {% endcomment %}
-      {% trans "Wilgotność względna tego suchara: 3 procent. Zalecane nawadnianie." as ee_logo_s1 %}
-      {% trans "Ten serwis działa na sucharach z drugiej ręki — pełny recykling." as ee_logo_s2 %}
-      {% trans "Wykryto suchar klasy premium. Tryb nawilżania niedostępny." as ee_logo_s3 %}
-      {% trans "Suchość powietrza: 40 procent. Suchość tego żartu przekracza skalę." as ee_logo_s4 %}
-      {% trans "Regulamin: minimum jeden suchar dziennie, najlepiej przed kawą." as ee_logo_s5 %}
-      {% trans "Logo się kręci, suchary schną dalej. Tak działa ekosystem." as ee_logo_s6 %}
-      <script id="ee-logo-suchary" type="application/json">
-        ["{{ ee_logo_s1|escapejs }}", "{{ ee_logo_s2|escapejs }}", "{{ ee_logo_s3|escapejs }}", "{{ ee_logo_s4|escapejs }}", "{{ ee_logo_s5|escapejs }}", "{{ ee_logo_s6|escapejs }}"]
-      </script>
-    {% endif %}
-    <script nonce="{{ csp_nonce }}">
-      (function() {
-        var stored = localStorage.getItem('theme');
-        var theme = stored ||
-          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        // Server already rendered data-theme from the cookie; only override on first visit
-        // (no cookie → server defaults to "light") or if localStorage differs.
-        if (document.documentElement.getAttribute('data-theme') !== theme) {
-          document.documentElement.setAttribute('data-theme', theme);
-        }
-        // Write cookie so the next server-rendered page arrives with the correct theme.
-        document.cookie = 'theme=' + theme + '; path=/; max-age=31536000; SameSite=Lax';
-        window.__initialTheme = theme;
-      })();
-    </script>
-    <style>
-      /* Hide the theme toggle button content until JS determines correct icon,
-         OR use CSS based on data-theme to toggle visibility of two icons if present.
-         Let's try the CSS approach for instant switch. */
-      .theme-icon-sun,
-      .theme-icon-moon {
-        display: none;
-      }
+            {% endcomment %}
+            {% trans "Wilgotność względna tego suchara: 3 procent. Zalecane nawadnianie." as ee_logo_s1 %}
+            {% trans "Ten serwis działa na sucharach z drugiej ręki — pełny recykling." as ee_logo_s2 %}
+            {% trans "Wykryto suchar klasy premium. Tryb nawilżania niedostępny." as ee_logo_s3 %}
+            {% trans "Suchość powietrza: 40 procent. Suchość tego żartu przekracza skalę." as ee_logo_s4 %}
+            {% trans "Regulamin: minimum jeden suchar dziennie, najlepiej przed kawą." as ee_logo_s5 %}
+            {% trans "Logo się kręci, suchary schną dalej. Tak działa ekosystem." as ee_logo_s6 %}
+            <script id="ee-logo-suchary" type="application/json">
+                ["{{ ee_logo_s1|escapejs }}", "{{ ee_logo_s2|escapejs }}", "{{ ee_logo_s3|escapejs }}", "{{ ee_logo_s4|escapejs }}", "{{ ee_logo_s5|escapejs }}", "{{ ee_logo_s6|escapejs }}"]
+            </script>
+        {% endif %}
+        <script nonce="{{ csp_nonce }}">
+            (function() {
+                var stored = localStorage.getItem('theme');
+                var theme = stored ||
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                // Server already rendered data-theme from the cookie; only override on first visit
+                // (no cookie → server defaults to "light") or if localStorage differs.
+                if (document.documentElement.getAttribute('data-theme') !== theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+                // Write cookie so the next server-rendered page arrives with the correct theme.
+                document.cookie = 'theme=' + theme + '; path=/; max-age=31536000; SameSite=Lax';
+                window.__initialTheme = theme;
+            })();
+        </script>
+        <style>
+            /* Hide the theme toggle button content until JS determines correct icon,
+               OR use CSS based on data-theme to toggle visibility of two icons if present.
+               Let's try the CSS approach for instant switch. */
+            .theme-icon-sun,
+            .theme-icon-moon {
+                display: none;
+            }
 
-      [data-theme="dark"] .theme-icon-sun {
-        display: inline-block;
-      }
+            [data-theme="dark"] .theme-icon-sun {
+                display: inline-block;
+            }
 
-      [data-theme="light"] .theme-icon-moon {
-        display: inline-block;
-      }
-    </style>
-  </head>
+            [data-theme="light"] .theme-icon-moon {
+                display: inline-block;
+            }
+        </style>
+    </head>
 
-  <body data-user-is-authenticated="{% if request.user.is_authenticated %}true{% else %}false{% endif %}">
-    <!-- Navbar -->
-    <nav class="navbar">
-      <div class="container-fluid navbar-container">
-        <a class="navbar-brand d-flex align-items-center gap-2"
-           href="{% url 'home' %}"
-           aria-label="Suchar Overflow">{% include "svgs/logo.svg" %}</a>
-
-        <button type="button"
-                class="navbar-toggler"
-                id="navbar-toggler"
-                aria-label="{% trans 'Przełącz nawigację' %}">
-          <span class="toggler-icon"></span>
-          <span class="toggler-icon"></span>
-          <span class="toggler-icon"></span>
-        </button>
-
-        <div class="navbar-menu" id="navbar-menu">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link{% if request.resolver_match.namespace == 'suchary' %} active{% endif %}"
-                 href="{% url 'suchary:list' %}">{% trans "Jokes" %}</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link{% if request.resolver_match.namespace == 'stats' %} active{% endif %}"
-                 href="{% url 'stats:leaderboard' %}">{% trans "Leaderboard" %}</a>
-            </li>
-            {% if request.user.is_authenticated %}
-              <li class="nav-item">
-                <a class="nav-link{% if request.resolver_match.namespace == 'achievements' %} active{% endif %}"
-                   href="{% url 'achievements:list' %}">{% trans "Achievements" %}</a>
-              </li>
-            {% endif %}
-          </ul>
-          <div class="navbar-actions">
-            {% if request.user.is_authenticated %}
-              <a class="btn btn-primary btn-sm navbar-post-btn"
-                 href="{% url 'suchary:add' %}">
-                {% include "svgs/icon-plus.svg" %}
-                <span>{% trans "Post" %}</span>
-              </a>
-            {% endif %}
-            <!-- Language Switcher -->
-            <form action="{% url 'set_language' %}"
-                  method="post"
-                  class="d-inline-flex me-2">
-              {% csrf_token %}
-              <input name="next" type="hidden" value="{{ redirect_to }}" />
-
-              <div class="custom-dropdown language-dropdown" id="languageDropdown">
-                <input type="hidden" name="language" value="{{ LANGUAGE_CODE }}" />
+    <body data-user-is-authenticated="{% if request.user.is_authenticated %}true{% else %}false{% endif %}">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="container-fluid navbar-container">
+                <a class="navbar-brand d-flex align-items-center gap-2"
+                   href="{% url 'home' %}"
+                   aria-label="Suchar Overflow">{% include "svgs/logo.svg" %}</a>
 
                 <button type="button"
-                        class="dropdown-trigger"
-                        aria-haspopup="listbox"
-                        aria-expanded="false"
-                        aria-label="{% trans 'Wybierz język' %}">
-                  <span class="selected-label">{{ LANGUAGE_CODE|upper }}</span>
-                  <span class="chevron-icon">{% include "svgs/icon-chevron-down.svg" %}</span>
+                        class="navbar-toggler"
+                        id="navbar-toggler"
+                        aria-label="{% trans 'Przełącz nawigację' %}">
+                    <span class="toggler-icon"></span>
+                    <span class="toggler-icon"></span>
+                    <span class="toggler-icon"></span>
                 </button>
 
-                <div class="dropdown-menu">
-                  <div class="language-search-wrapper">
-                    <input type="text"
-                           class="language-search"
-                           placeholder="{% trans 'Search…' %}"
-                           aria-label="{% trans 'Szukaj języka' %}"
-                           autocomplete="off" />
-                  </div>
-                  <div class="language-list"
-                       role="listbox"
-                       aria-label="{% trans 'Wybierz język' %}">
-                    {% get_current_language as LANGUAGE_CODE %}
-                    {% get_available_languages as LANGUAGES %}
-                    {% get_language_info_list for LANGUAGES as languages %}
-                    {% for language in languages %}
-                      <div class="dropdown-item {% if language.code == LANGUAGE_CODE %}selected{% endif %}"
-                           role="option"
-                           aria-selected="{% if language.code == LANGUAGE_CODE %}true{% else %}false{% endif %}"
-                           data-value="{{ language.code }}">
-                        <span class="lang-name">{{ language.name_local }}</span>
-                        <span class="lang-code">{{ language.code|upper }}</span>
-                        <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
-                      </div>
-                    {% endfor %}
-                  </div>
-                </div>
-              </div>
-            </form>
+                <div class="navbar-menu" id="navbar-menu">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link{% if request.resolver_match.namespace == 'suchary' %} active{% endif %}"
+                               href="{% url 'suchary:list' %}">{% trans "Jokes" %}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link{% if request.resolver_match.namespace == 'stats' %} active{% endif %}"
+                               href="{% url 'stats:leaderboard' %}">{% trans "Leaderboard" %}</a>
+                        </li>
+                        {% if request.user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link{% if request.resolver_match.namespace == 'achievements' %} active{% endif %}"
+                                   href="{% url 'achievements:list' %}">{% trans "Achievements" %}</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <div class="navbar-actions">
+                        {% if request.user.is_authenticated %}
+                            <a class="btn btn-primary btn-sm navbar-post-btn"
+                               href="{% url 'suchary:add' %}">
+                                {% include "svgs/icon-plus.svg" %}
+                                <span>{% trans "Post" %}</span>
+                            </a>
+                        {% endif %}
+                        <!-- Language Switcher -->
+                        <form action="{% url 'set_language' %}"
+                              method="post"
+                              class="d-inline-flex me-2">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ redirect_to }}" />
 
-            <button type="button"
-                    id="theme-toggle"
-                    class="btn btn-icon"
-                    aria-label="{% trans 'Przełącz motyw' %}">
-              {% include "svgs/icon-moon.svg" %}
-              {% include "svgs/icon-sun.svg" %}
-            </button>
-            {% if request.user.is_authenticated %}
-              <div class="bell-wrapper" id="bell-wrapper">
-                <button type="button"
-                        class="btn btn-icon bell-btn"
-                        id="bell-btn"
-                        aria-label="{% trans 'Powiadomienia' %}"
-                        aria-haspopup="true"
-                        aria-expanded="false">{% include "svgs/icon-bell.svg" %}</button>
-                {% if unseen_achievements_count > 0 %}
-                  <span class="bell-badge" id="bell-badge">{{ unseen_achievements_count }}</span>
-                {% endif %}
-                <div class="bell-dropdown"
-                     id="bell-dropdown"
-                     hidden
-                     data-new-achievements-text="{% trans 'New achievements' %}"
-                     data-no-achievements-text="{% trans 'No new achievements' %}">
-                  {% if unseen_achievements_preview %}
-                    <div class="bell-header">{% trans "New achievements" %}</div>
-                    {% for ua in unseen_achievements_preview %}
-                      <a class="bell-item" href="{% url 'achievements:mine' %}">
-                        <div class="bell-item-icon" aria-hidden="true">
-                          {% if ua.achievement.icon_content %}
-                            {% comment %}
+                            <div class="custom-dropdown language-dropdown" id="languageDropdown">
+                                <input type="hidden" name="language" value="{{ LANGUAGE_CODE }}" />
+
+                                <button type="button"
+                                        class="dropdown-trigger"
+                                        aria-haspopup="listbox"
+                                        aria-expanded="false"
+                                        aria-label="{% trans 'Wybierz język' %}">
+                                    <span class="selected-label">{{ LANGUAGE_CODE|upper }}</span>
+                                    <span class="chevron-icon">{% include "svgs/icon-chevron-down.svg" %}</span>
+                                </button>
+
+                                <div class="dropdown-menu">
+                                    <div class="language-search-wrapper">
+                                        <input type="text"
+                                               class="language-search"
+                                               placeholder="{% trans 'Search…' %}"
+                                               aria-label="{% trans 'Szukaj języka' %}"
+                                               autocomplete="off" />
+                                    </div>
+                                    <div class="language-list"
+                                         role="listbox"
+                                         aria-label="{% trans 'Wybierz język' %}">
+                                        {% get_current_language as LANGUAGE_CODE %}
+                                        {% get_available_languages as LANGUAGES %}
+                                        {% get_language_info_list for LANGUAGES as languages %}
+                                        {% for language in languages %}
+                                            <div class="dropdown-item {% if language.code == LANGUAGE_CODE %}selected{% endif %}"
+                                                 role="option"
+                                                 aria-selected="{% if language.code == LANGUAGE_CODE %}true{% else %}false{% endif %}"
+                                                 data-value="{{ language.code }}">
+                                                <span class="lang-name">{{ language.name_local }}</span>
+                                                <span class="lang-code">{{ language.code|upper }}</span>
+                                                <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <button type="button"
+                                id="theme-toggle"
+                                class="btn btn-icon"
+                                aria-label="{% trans 'Przełącz motyw' %}">
+                            {% include "svgs/icon-moon.svg" %}
+                            {% include "svgs/icon-sun.svg" %}
+                        </button>
+                        {% if request.user.is_authenticated %}
+                            <div class="bell-wrapper" id="bell-wrapper">
+                                <button type="button"
+                                        class="btn btn-icon bell-btn"
+                                        id="bell-btn"
+                                        aria-label="{% trans 'Powiadomienia' %}"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">{% include "svgs/icon-bell.svg" %}</button>
+                                {% if unseen_achievements_count > 0 %}
+                                    <span class="bell-badge" id="bell-badge">{{ unseen_achievements_count }}</span>
+                                {% endif %}
+                                <div class="bell-dropdown"
+                                     id="bell-dropdown"
+                                     hidden
+                                     data-new-achievements-text="{% trans 'New achievements' %}"
+                                     data-no-achievements-text="{% trans 'No new achievements' %}">
+                                    {% if unseen_achievements_preview %}
+                                        <div class="bell-header">{% trans "New achievements" %}</div>
+                                        {% for ua in unseen_achievements_preview %}
+                                            <a class="bell-item" href="{% url 'achievements:mine' %}">
+                                                <div class="bell-item-icon" aria-hidden="true">
+                                                    {% if ua.achievement.icon_content %}
+                                                        {% comment %}
                               Unescaped on purpose (#335, #379): icon_content is
                               trusted — data migrations and superusers only, the
                               admin hides the field from other staff — and the SVG
                               must stay raw to keep currentColor working. Guarded by
                               TestAchievementAdminIconContentPermission in
                               suchar_overflow/achievements/tests/test_admin.py.
-                            {% endcomment %}
-                            {{ ua.achievement.icon_content|safe }}
-                          {% else %}
-                            🏆
-                          {% endif %}
-                        </div>
-                        <div class="bell-item-text">
-                          <span class="bell-item-name">{{ ua.achievement.name }}</span>
-                        </div>
-                      </a>
-                    {% endfor %}
-                  {% else %}
-                    <div class="bell-empty">{% trans "No new achievements" %}</div>
-                  {% endif %}
-                  <div class="bell-footer">
-                    <a href="{% url 'achievements:mine' %}">{% trans "View all my achievements" %}</a>
-                  </div>
+                                                        {% endcomment %}
+                                                        {{ ua.achievement.icon_content|safe }}
+                                                    {% else %}
+                                                        🏆
+                                                    {% endif %}
+                                                </div>
+                                                <div class="bell-item-text">
+                                                    <span class="bell-item-name">{{ ua.achievement.name }}</span>
+                                                </div>
+                                            </a>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="bell-empty">{% trans "No new achievements" %}</div>
+                                    {% endif %}
+                                    <div class="bell-footer">
+                                        <a href="{% url 'achievements:mine' %}">{% trans "View all my achievements" %}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <a class="nav-link user-link d-flex align-items-center gap-2"
+                               href="{% url 'users:detail' request.user.username %}">
+                                {% include "svgs/icon-user.svg" %}
+                                {{ request.user.display_name }}
+                            </a>
+                            <button type="button"
+                                    class="btn btn-secondary btn-sm"
+                                    id="logout-button">{% trans "Log Out" %}</button>
+                        {% else %}
+                            <a class="btn btn-outline btn-sm" href="{% url 'login' %}">{% trans "Log In" %}</a>
+                            <a class="btn btn-primary btn-sm" href="{% url 'users:signup' %}">{% trans "Sign Up" %}</a>
+                        {% endif %}
+                    </div>
                 </div>
-              </div>
-              <a class="nav-link user-link d-flex align-items-center gap-2"
-                 href="{% url 'users:detail' request.user.username %}">
-                {% include "svgs/icon-user.svg" %}
-                {{ request.user.display_name }}
-              </a>
-              <button type="button" class="btn btn-secondary btn-sm" id="logout-button">{% trans "Log Out" %}</button>
-            {% else %}
-              <a class="btn btn-outline btn-sm" href="{% url 'login' %}">{% trans "Log In" %}</a>
-              <a class="btn btn-primary btn-sm" href="{% url 'users:signup' %}">{% trans "Sign Up" %}</a>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </nav>
-    <!-- Main Content -->
-    <main class="main-wrapper">
-      <div class="container mt-content">
-        {% block content %}
-          <p>{% trans "Default content." %}</p>
-        {% endblock content %}
-      </div>
-    </main>
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="container-fluid text-center">
-        <p class="text-muted mb-0">
-          © {% now "Y" %} Suchar Overflow.
-          <span class="d-block d-sm-inline mt-1 mt-sm-0">{% trans "All rights reserved (but jokes stolen)." %}</span>
-        </p>
-        <p class="text-muted mt-1 mb-0 footer-feedback">
-          <a href="{% url 'about' %}" class="footer-feedback-link">
-            {% include "svgs/icon-info.svg" %}
-            {% trans "About" %}
-          </a>
-          {% if FEEDBACK_URL %}
-            <span class="footer-feedback-sep">·</span>
-            <a href="{{ FEEDBACK_URL }}"
-               target="_blank"
-               rel="noopener noreferrer"
-               class="footer-feedback-link">
-              {% include "svgs/icon-bug.svg" %}
-              {% trans "Report a Bug" %}
-            </a>
-          {% endif %}
-        </p>
-        {% if APP_VERSION %}<p class="text-muted mt-1 mb-0 footer-version">v{{ APP_VERSION }}</p>{% endif %}
-      </div>
-    </footer>
+            </div>
+        </nav>
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <div class="container mt-content">
+                {% block content %}
+                    <p>{% trans "Default content." %}</p>
+                {% endblock content %}
+            </div>
+        </main>
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container-fluid text-center">
+                <p class="text-muted mb-0">
+                    © {% now "Y" %} Suchar Overflow.
+                    <span class="d-block d-sm-inline mt-1 mt-sm-0">{% trans "All rights reserved (but jokes stolen)." %}</span>
+                </p>
+                <p class="text-muted mt-1 mb-0 footer-feedback">
+                    <a href="{% url 'about' %}" class="footer-feedback-link">
+                        {% include "svgs/icon-info.svg" %}
+                        {% trans "About" %}
+                    </a>
+                    {% if FEEDBACK_URL %}
+                        <span class="footer-feedback-sep">·</span>
+                        <a href="{{ FEEDBACK_URL }}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="footer-feedback-link">
+                            {% include "svgs/icon-bug.svg" %}
+                            {% trans "Report a Bug" %}
+                        </a>
+                    {% endif %}
+                </p>
+                {% if APP_VERSION %}<p class="text-muted mt-1 mb-0 footer-version">v{{ APP_VERSION }}</p>{% endif %}
+            </div>
+        </footer>
 
-    <!-- Toasts Container -->
-    {% comment %}
+        <!-- Toasts Container -->
+        {% comment %}
     Achievement notifications never go through django.contrib.messages —
     they're a separate cache/SSE-driven flow (see achievements/api.py and
     achievements/views.py:achievement_stream). If that ever changes, an
     achievement-tagged message would double-surface here and in the bell
     dropdown; give it a distinct tag/level to filter it out below.
-    {% endcomment %}
-    <div class="toast-container"
-         id="toast-container"
-         aria-live="polite"
-         aria-atomic="false"
-         data-close-text="{% trans 'Zamknij' %}"
-         data-default-title="{% trans 'Powiadomienie' %}">
-      {% if messages %}
-        {% for message in messages %}
-          <div class="toast toast-{{ message.tags }}"
-               role="{% if 'error' in message.tags %}alert{% else %}status{% endif %}">
-            <div class="toast-header">
-              <strong class="me-auto">
-                {% if "error" in message.tags %}
-                  {% trans "Error" %}
-                {% elif "success" in message.tags %}
-                  {% trans "Success" %}
-                {% else %}
-                  {% trans "Notification" %}
-                {% endif %}
-              </strong>
-              <button type="button" class="btn-close" aria-label="{% trans 'Zamknij' %}"></button>
+        {% endcomment %}
+        <div class="toast-container"
+             id="toast-container"
+             aria-live="polite"
+             aria-atomic="false"
+             data-close-text="{% trans 'Zamknij' %}"
+             data-default-title="{% trans 'Powiadomienie' %}">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="toast toast-{{ message.tags }}"
+                         role="{% if 'error' in message.tags %}alert{% else %}status{% endif %}">
+                        <div class="toast-header">
+                            <strong class="me-auto">
+                                {% if "error" in message.tags %}
+                                    {% trans "Error" %}
+                                {% elif "success" in message.tags %}
+                                    {% trans "Success" %}
+                                {% else %}
+                                    {% trans "Notification" %}
+                                {% endif %}
+                            </strong>
+                            <button type="button" class="btn-close" aria-label="{% trans 'Zamknij' %}"></button>
+                        </div>
+                        <div class="toast-body">{{ message }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Logout Modal -->
+        <div class="modal-overlay" id="logoutModal" hidden>
+            <div class="modal"
+                 role="dialog"
+                 aria-modal="true"
+                 aria-labelledby="logoutModalTitle"
+                 tabindex="-1">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalTitle">{% trans "Confirm Logout" %}</h5>
+                    <button type="button"
+                            class="btn-close modal-close"
+                            aria-label="{% trans 'Zamknij' %}"></button>
+                </div>
+                <div class="modal-body">{% trans "Are you sure you want to log out?" %}</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close">{% trans "Cancel" %}</button>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
+                    </form>
+                </div>
             </div>
-            <div class="toast-body">{{ message }}</div>
-          </div>
-        {% endfor %}
-      {% endif %}
-    </div>
-
-    <!-- Logout Modal -->
-    <div class="modal-overlay" id="logoutModal" hidden>
-      <div class="modal"
-           role="dialog"
-           aria-modal="true"
-           aria-labelledby="logoutModalTitle"
-           tabindex="-1">
-        <div class="modal-header">
-          <h5 class="modal-title" id="logoutModalTitle">{% trans "Confirm Logout" %}</h5>
-          <button type="button"
-                  class="btn-close modal-close"
-                  aria-label="{% trans 'Zamknij' %}"></button>
         </div>
-        <div class="modal-body">{% trans "Are you sure you want to log out?" %}</div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary modal-close">{% trans "Cancel" %}</button>
-          <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">{% trans "Log Out" %}</button>
-          </form>
-        </div>
-      </div>
-    </div>
 
-    {% block modal %}
-    {% endblock modal %}
-    {% block inline_javascript %}
-    {% endblock inline_javascript %}
-  </body>
+        {% block modal %}
+        {% endblock modal %}
+        {% block inline_javascript %}
+        {% endblock inline_javascript %}
+    </body>
 
 </html>

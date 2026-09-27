@@ -250,14 +250,10 @@ def award_publication_achievements(
     try:
         now = reference_time or timezone.now()
         last_ran_at = (
-            SchedulerRun.objects.filter(job_id=PUBLICATION_ACHIEVEMENTS_JOB_ID)
-            .values_list("ran_at", flat=True)
-            .first()
+            SchedulerRun.objects.filter(job_id=PUBLICATION_ACHIEVEMENTS_JOB_ID).values_list("ran_at", flat=True).first()
         )
         since = (
-            last_ran_at - PUBLICATION_CATCHUP_OVERLAP
-            if last_ran_at is not None
-            else now - PUBLICATION_CATCHUP_FLOOR
+            last_ran_at - PUBLICATION_CATCHUP_OVERLAP if last_ran_at is not None else now - PUBLICATION_CATCHUP_FLOOR
         )
         newly_published = (
             Suchar.objects.filter(published_at__gt=since, published_at__lte=now)
@@ -276,8 +272,7 @@ def award_publication_achievements(
                 )
             except Exception:
                 logger.exception(
-                    "Failed to check publication achievements for suchar #%s; "
-                    "skipping it and continuing",
+                    "Failed to check publication achievements for suchar #%s; skipping it and continuing",
                     suchar.pk,
                 )
         SchedulerRun.objects.update_or_create(

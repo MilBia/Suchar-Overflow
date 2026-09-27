@@ -277,10 +277,7 @@ async def test_open_streams_release_db_connections_under_asgi_handler(
     tasks: list[asyncio.Task[None]] = []
     connection_created.connect(record, weak=False)
     try:
-        tasks.extend(
-            asyncio.create_task(_run_stream(app, cookie, event, disconnect))
-            for event in first_chunks
-        )
+        tasks.extend(asyncio.create_task(_run_stream(app, cookie, event, disconnect)) for event in first_chunks)
         await asyncio.wait_for(
             asyncio.gather(*(event.wait() for event in first_chunks)),
             timeout=10,

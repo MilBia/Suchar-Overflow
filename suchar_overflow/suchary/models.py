@@ -46,11 +46,7 @@ class Suchar(models.Model):
     )
 
     def __str__(self) -> str:
-        author_name = (
-            self.author.username
-            if "author" in self._state.fields_cache
-            else f"User #{self.author_id}"
-        )
+        author_name = self.author.username if "author" in self._state.fields_cache else f"User #{self.author_id}"
         return f"Suchar by {author_name} at {self.published_at}"
 
     @property
@@ -72,12 +68,5 @@ class Vote(models.Model):
         unique_together = ("suchar", "user")
 
     def __str__(self) -> str:
-        user_name = (
-            self.user.username
-            if "user" in self._state.fields_cache
-            else f"User #{self.user_id}"
-        )
-        return (
-            f"{user_name} voted on Suchar #{self.suchar_id} "
-            f"(Funny: {self.is_funny}, Dry: {self.is_dry})"
-        )
+        user_name = self.user.username if "user" in self._state.fields_cache else f"User #{self.user_id}"
+        return f"{user_name} voted on Suchar #{self.suchar_id} (Funny: {self.is_funny}, Dry: {self.is_dry})"

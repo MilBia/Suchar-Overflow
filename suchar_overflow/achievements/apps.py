@@ -76,11 +76,7 @@ class AchievementsConfig(AppConfig):
         from suchar_overflow.achievements.tasks import due_monthly_run_at
 
         job_id = "award-best-suchar-month"
-        last_run = (
-            SchedulerRun.objects.filter(job_id=job_id)
-            .values_list("ran_at", flat=True)
-            .first()
-        )
+        last_run = SchedulerRun.objects.filter(job_id=job_id).values_list("ran_at", flat=True).first()
         due_at = due_monthly_run_at(timezone.now(), last_run)
         if due_at is not None:
             logger.info(
@@ -104,11 +100,7 @@ class AchievementsConfig(AppConfig):
         from suchar_overflow.achievements.tasks import due_yearly_run_at
 
         job_id = "award-best-suchar-year"
-        last_run = (
-            SchedulerRun.objects.filter(job_id=job_id)
-            .values_list("ran_at", flat=True)
-            .first()
-        )
+        last_run = SchedulerRun.objects.filter(job_id=job_id).values_list("ran_at", flat=True).first()
         due_at = due_yearly_run_at(timezone.now(), last_run)
         if due_at is not None:
             logger.info(
@@ -148,22 +140,19 @@ class AchievementsConfig(AppConfig):
             AchievementsConfig._catch_up_missed_monthly_run()
         except Exception:
             logger.exception(
-                "Failed to catch up missed monthly scheduler run; "
-                "continuing to start the scheduler",
+                "Failed to catch up missed monthly scheduler run; continuing to start the scheduler",
             )
         try:
             AchievementsConfig._catch_up_missed_yearly_run()
         except Exception:
             logger.exception(
-                "Failed to catch up missed yearly scheduler run; "
-                "continuing to start the scheduler",
+                "Failed to catch up missed yearly scheduler run; continuing to start the scheduler",
             )
         try:
             AchievementsConfig._catch_up_missed_publication_run()
         except Exception:
             logger.exception(
-                "Failed to catch up missed publication-achievement run; "
-                "continuing to start the scheduler",
+                "Failed to catch up missed publication-achievement run; continuing to start the scheduler",
             )
 
         # In-memory jobstore (apscheduler's default): jobs re-register on

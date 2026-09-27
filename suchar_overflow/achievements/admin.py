@@ -60,9 +60,7 @@ def parse_tier_thresholds(raw: str) -> list[int]:
             blank_entry_msg = "Lista progów zawiera pusty fragment — sprawdź przecinki."
             raise ValueError(blank_entry_msg)
         if not stripped.isdigit():
-            invalid_entry_msg = (
-                f"'{stripped}' nie jest poprawną liczbą całkowitą — sprawdź progi."
-            )
+            invalid_entry_msg = f"'{stripped}' nie jest poprawną liczbą całkowitą — sprawdź progi."
             raise ValueError(invalid_entry_msg)
         thresholds.append(int(stripped))
     return thresholds
@@ -109,10 +107,7 @@ class AchievementAdminForm(forms.ModelForm):
     )
     tier_thresholds = forms.CharField(
         required=False,
-        help_text=(
-            "Opcjonalne. Podaj progi np. '5,10,25,50,100'. "
-            "Pierwszy próg to baza, a 4 kolejne powstaną same."
-        ),
+        help_text=("Opcjonalne. Podaj progi np. '5,10,25,50,100'. Pierwszy próg to baza, a 4 kolejne powstaną same."),
     )
 
     class Meta:
@@ -147,8 +142,7 @@ class AchievementAdminForm(forms.ModelForm):
         if self.instance.pk:
             self.add_error(
                 "generate_tiers",
-                "Automatyczne generowanie tierów jest dostępne wyłącznie "
-                "podczas tworzenia nowego osiągnięcia.",
+                "Automatyczne generowanie tierów jest dostępne wyłącznie podczas tworzenia nowego osiągnięcia.",
             )
             return cleaned_data
 
@@ -171,8 +165,7 @@ class AchievementAdminForm(forms.ModelForm):
         ):
             self.add_error(
                 "tier_thresholds",
-                "Progi muszą rosnąć ściśle od najmniejszego do największego, "
-                "bez powtórzeń.",
+                "Progi muszą rosnąć ściśle od najmniejszego do największego, bez powtórzeń.",
             )
         return cleaned_data
 

@@ -51,11 +51,11 @@
     // CSP `style-src` allows 'unsafe-inline' (see config/settings/base.py), which
     // covers both this block and the per-particle inline `style=` below.
     const RAIN_KEYFRAMES =
-        '@keyframes ee-konami-fall{'
-        + '0%{transform:translate(0,-12vh) rotate(0);opacity:0}'
-        + '8%{opacity:1}'
-        + '100%{transform:translate(var(--ee-dx,0),112vh) rotate(var(--ee-spin,360deg));opacity:1}'
-        + '}';
+        '@keyframes ee-konami-fall{' +
+        '0%{transform:translate(0,-12vh) rotate(0);opacity:0}' +
+        '8%{opacity:1}' +
+        '100%{transform:translate(var(--ee-dx,0),112vh) rotate(var(--ee-spin,360deg));opacity:1}' +
+        '}';
 
     // ── Module-level mutable state (reset between Vitest tests via _resetForTests) ─
     // A fixed-length sliding window of the last SEQUENCE.length keys. A rolling
@@ -176,11 +176,7 @@
 
     function showKonamiToast() {
         if (typeof window.showToast !== 'function') return;
-        window.showToast(
-            'Góra, góra, dół, dół… nieźle! 😉',
-            'Kod Konami',
-            'success',
-        );
+        window.showToast('Góra, góra, dół, dół… nieźle! 😉', 'Kod Konami', 'success');
     }
 
     function triggerKonami() {
@@ -205,28 +201,23 @@
 
         const target = e.target;
         if (
-            target
-            && (target.tagName === 'INPUT'
-                || target.tagName === 'TEXTAREA'
-                || target.tagName === 'SELECT'
-                || target.isContentEditable)
+            target &&
+            (target.tagName === 'INPUT' ||
+                target.tagName === 'TEXTAREA' ||
+                target.tagName === 'SELECT' ||
+                target.isContentEditable)
         ) {
             return;
         }
 
-        const key = typeof e.key === 'string' && e.key.length === 1
-            ? e.key.toLowerCase()
-            : e.key;
+        const key = typeof e.key === 'string' && e.key.length === 1 ? e.key.toLowerCase() : e.key;
 
         keyBuffer.push(key);
         if (keyBuffer.length > SEQUENCE.length) {
             keyBuffer.shift();
         }
 
-        if (
-            keyBuffer.length === SEQUENCE.length
-            && keyBuffer.every((k, i) => k === SEQUENCE[i])
-        ) {
+        if (keyBuffer.length === SEQUENCE.length && keyBuffer.every((k, i) => k === SEQUENCE[i])) {
             keyBuffer = [];
             triggerKonami();
         }

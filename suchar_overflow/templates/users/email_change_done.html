@@ -3,36 +3,36 @@
 {% load i18n %}
 
 {% block title %}
-  {% translate "Email Sent" %}
+    {% translate "Email Sent" %}
 {% endblock title %}
 
 {% block content %}
-  <div class="row justify-content-center text-center">
-    <div class="col-md-6">
-      <div class="card shadow-sm border-0 p-5">
-        <div class="mb-4 text-primary d-flex justify-content-center">
-          <style>
-            .icon-wrapper svg {
-              width: 5rem;
-              height: 5rem;
-            }
-          </style>
-          <div class="icon-wrapper">{% include "svgs/icon-mail.svg" %}</div>
-        </div>
+    <div class="row justify-content-center text-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-5">
+                <div class="mb-4 text-primary d-flex justify-content-center">
+                    <style>
+                        .icon-wrapper svg {
+                            width: 5rem;
+                            height: 5rem;
+                        }
+                    </style>
+                    <div class="icon-wrapper">{% include "svgs/icon-mail.svg" %}</div>
+                </div>
 
-        <h1 class="h2 mb-3">{% trans "Check both inboxes!" %}</h1>
-        <p class="text-muted mb-4">
-          {% blocktrans %}We sent a message to your <strong>NEW</strong> address with an activation link.
+                <h1 class="h2 mb-3">{% trans "Check both inboxes!" %}</h1>
+                <p class="text-muted mb-4">
+                    {% blocktrans %}We sent a message to your <strong>NEW</strong> address with an activation link.
           <br />
           But we also sent a warning to your <strong>OLD</strong> address, so you know it's really you.{% endblocktrans %}
-        </p>
-        <p class="small text-muted">
-          {% trans "If you don't click the link, nothing will change. Your account will remain as dry as our jokes." %}
-        </p>
+                </p>
+                <p class="small text-muted">
+                    {% trans "If you don't click the link, nothing will change. Your account will remain as dry as our jokes." %}
+                </p>
 
-        <a href="{% url 'users:detail' request.user.username %}"
-           class="btn btn-primary mt-3">{% trans "Back to profile" %}</a>
-      </div>
+                <a href="{% url 'users:detail' request.user.username %}"
+                   class="btn btn-primary mt-3">{% trans "Back to profile" %}</a>
+            </div>
+        </div>
     </div>
-  </div>
 {% endblock content %}

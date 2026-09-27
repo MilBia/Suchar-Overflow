@@ -143,9 +143,7 @@ def test_award_periodic_month_tie_awards_all_tied_authors() -> None:
 
 @pytest.mark.django_db
 @pytest.mark.usefixtures("periodic_achievements")
-def test_award_periodic_month_missing_main_achievement_reports_error_even_with_tie() -> (  # noqa: E501
-    None
-):
+def test_award_periodic_month_missing_main_achievement_reports_error_even_with_tie() -> None:
     """If the main best-suchar-month Achievement row is missing but the
     hidden tie achievement exists, the command must still report the
     missing achievement rather than silently treating award_winners'

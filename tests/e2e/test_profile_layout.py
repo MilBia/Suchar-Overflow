@@ -36,10 +36,7 @@ User = get_user_model()
 # migration-seeded achievements are flushed by transaction=True, so the test
 # brings its own (cf. frontend_achievements in test_hidden_achievements.py).
 _BADGE_COUNT = 8
-_BADGE_SVG = (
-    '<svg viewBox="0 0 16 16" width="16" height="16">'
-    '<circle cx="8" cy="8" r="7" fill="currentColor"/></svg>'
-)
+_BADGE_SVG = '<svg viewBox="0 0 16 16" width="16" height="16"><circle cx="8" cy="8" r="7" fill="currentColor"/></svg>'
 
 # The narrowest the stats column may get while it sits beside the feed.
 _MIN_STATS_WIDTH = 260
@@ -145,10 +142,7 @@ def test_profile_stats_column_is_not_squeezed(
 
     widths: dict[str, Any] = page.evaluate(_WIDTHS_JS)
     # Either beside the feed with a usable width, or stacked at full width.
-    assert (
-        widths["stats"] >= _MIN_STATS_WIDTH
-        or abs(widths["stats"] - widths["layout"]) < 1
-    ), widths
+    assert widths["stats"] >= _MIN_STATS_WIDTH or abs(widths["stats"] - widths["layout"]) < 1, widths
     assert widths["pageOverflow"] <= 0, widths
     assert page.evaluate(_OVERFLOW_JS) == []
     badges = page.locator(".profile-stats .achievement-container")

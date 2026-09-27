@@ -3,49 +3,49 @@
 {% load static i18n compress %}
 
 {% block title %}
-  {% trans "My Achievements" %} | Suchar Overflow
+    {% trans "My Achievements" %} | Suchar Overflow
 {% endblock title %}
 
 {% block css %}
-  {{ block.super }}
-  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-  {% compress css %}
-    <link href="{% static 'css/achievement-page.css' %}" rel="stylesheet" />
-  {% endcompress %}
+    {{ block.super }}
+    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+    {% compress css %}
+        <link href="{% static 'css/achievement-page.css' %}" rel="stylesheet" />
+    {% endcompress %}
 {% endblock css %}
 
 {% block javascript %}
-  {{ block.super }}
-  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-  {% if request.user.is_authenticated %}
-    {% compress js %}
-      <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
-    {% endcompress %}
-  {% endif %}
+    {{ block.super }}
+    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+    {% if request.user.is_authenticated %}
+        {% compress js %}
+            <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
+        {% endcompress %}
+    {% endif %}
 {% endblock javascript %}
 
 {% block content %}
-  <div class="achievements-container fade-in-up">
-    <header class="achievements-header text-center pb-4 mb-5 border-bottom border-secondary">
-      <h1 class="achievements-title gradient-text fw-bold">{% trans "Hall of Fame" %}</h1>
-      <p class="achievements-subtitle text-muted fs-5">
-        {% trans "Your badges, medals, and shameful secrets from Suchar Overflow." %}
-      </p>
-    </header>
+    <div class="achievements-container fade-in-up">
+        <header class="achievements-header text-center pb-4 mb-5 border-bottom border-secondary">
+            <h1 class="achievements-title gradient-text fw-bold">{% trans "Hall of Fame" %}</h1>
+            <p class="achievements-subtitle text-muted fs-5">
+                {% trans "Your badges, medals, and shameful secrets from Suchar Overflow." %}
+            </p>
+        </header>
 
-    {% if achievements %}
-      <div class="achievements-grid">
-        {% for ach in achievements %}
-          {% if ach.id in user_achievements %}
-            {% include "achievements/_card.html" with achievement=ach locked=False %}
-          {% else %}
-            {% include "achievements/_card.html" with achievement=ach locked=True is_secret=ach.is_secret %}
-          {% endif %}
-        {% endfor %}
-      </div>
-    {% else %}
-      {% trans "Gablota z trofeami dopiero schnie. Zajrzyj po kilku żartach." as empty_copy %}
-      <p class="text-center text-muted py-5">{{ empty_copy }}</p>
-    {% endif %}
-  </div>
+        {% if achievements %}
+            <div class="achievements-grid">
+                {% for ach in achievements %}
+                    {% if ach.id in user_achievements %}
+                        {% include "achievements/_card.html" with achievement=ach locked=False %}
+                    {% else %}
+                        {% include "achievements/_card.html" with achievement=ach locked=True is_secret=ach.is_secret %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            {% trans "Gablota z trofeami dopiero schnie. Zajrzyj po kilku żartach." as empty_copy %}
+            <p class="text-center text-muted py-5">{{ empty_copy }}</p>
+        {% endif %}
+    </div>
 {% endblock content %}

@@ -1,37 +1,37 @@
 {% load i18n %}
 
 <div class="col-lg-6">
-  <div class="card shadow-lg border-0 h-100">
-    {% include "stats/_leaderboard_card_header.html" %}
-    <div class="list-group list-group-flush">
-      {% for suchar in suchary %}
-        <div class="list-group-item p-3 border-0 border-bottom">
-          <div class="d-flex w-100 justify-content-between">
-            <h6 class="mb-1 text-muted small">
-              <span class="fw-bold text-dark rank-{{ suchar.rank }}">#{{ suchar.rank }}</span> by {{ suchar.author.display_name }}
-            </h6>
-            <small class="text-muted">{{ suchar.published_at|date:"d M" }}</small>
-          </div>
-          <p class="mb-2 fst-italic">{{ suchar.text|truncatechars:100|linebreaksbr }}</p>
-          <div class="d-flex justify-content-between align-items-center">
-            <a href="{% url 'suchary:list' %}?tag={{ suchar.tags.all.0.slug|default:'general' }}"
-               class="badge bg-light text-secondary border text-decoration-none">#{{ suchar.tags.all.0.name|default:"general" }}</a>
-            <div class="d-flex align-items-center gap-2">
-              {% if badge_mode == "overall" %}
-                <span class="badge bg-success bg-opacity-10 text-success border border-success">{{ suchar.score }} {% trans "Votes" %}</span>
-                <span class="badge bg-warning text-dark">{{ suchar.funny_count }} F</span>
-                <span class="badge bg-info text-white">{{ suchar.dry_count }} D</span>
-              {% elif badge_mode == "funny" %}
-                <span class="badge bg-warning text-dark">{{ suchar.funny_count }} F</span>
-              {% elif badge_mode == "dry" %}
-                <span class="badge bg-info text-white">{{ suchar.dry_count }} D</span>
-              {% endif %}
-            </div>
-          </div>
+    <div class="card shadow-lg border-0 h-100">
+        {% include "stats/_leaderboard_card_header.html" %}
+        <div class="list-group list-group-flush">
+            {% for suchar in suchary %}
+                <div class="list-group-item p-3 border-0 border-bottom">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 text-muted small">
+                            <span class="fw-bold text-dark rank-{{ suchar.rank }}">#{{ suchar.rank }}</span> by {{ suchar.author.display_name }}
+                        </h6>
+                        <small class="text-muted">{{ suchar.published_at|date:"d M" }}</small>
+                    </div>
+                    <p class="mb-2 fst-italic">{{ suchar.text|truncatechars:100|linebreaksbr }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'suchary:list' %}?tag={{ suchar.tags.all.0.slug|default:'general' }}"
+                           class="badge bg-light text-secondary border text-decoration-none">#{{ suchar.tags.all.0.name|default:"general" }}</a>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if badge_mode == "overall" %}
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success">{{ suchar.score }} {% trans "Votes" %}</span>
+                                <span class="badge bg-warning text-dark">{{ suchar.funny_count }} F</span>
+                                <span class="badge bg-info text-white">{{ suchar.dry_count }} D</span>
+                            {% elif badge_mode == "funny" %}
+                                <span class="badge bg-warning text-dark">{{ suchar.funny_count }} F</span>
+                            {% elif badge_mode == "dry" %}
+                                <span class="badge bg-info text-white">{{ suchar.dry_count }} D</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="p-4 text-center text-muted">{% trans "Na tablicy jeszcze pusto." %}</div>
+            {% endfor %}
         </div>
-      {% empty %}
-        <div class="p-4 text-center text-muted">{% trans "Na tablicy jeszcze pusto." %}</div>
-      {% endfor %}
     </div>
-  </div>
 </div>

@@ -1,9 +1,11 @@
 /* Project specific Javascript goes here. */
 
 function getCsrfToken() {
-    return document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+    return (
+        document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
         document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
-        '';
+        ''
+    );
 }
 window.getCsrfToken = getCsrfToken;
 
@@ -57,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Toasts
     const toasts = document.querySelectorAll('.toast');
-    toasts.forEach(toast => {
+    toasts.forEach((toast) => {
         const dismiss = () => {
             toast.classList.add('hiding');
             const remove = () => toast.remove();
@@ -93,13 +95,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const modalControllers = new Map();
 
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    document.querySelectorAll('.modal-overlay').forEach((overlay) => {
         const dialog = overlay.querySelector('.modal') || overlay;
         let lastFocused = null;
 
         const getFocusable = () =>
-            [...overlay.querySelectorAll(MODAL_FOCUSABLE_SELECTOR)]
-                .filter(el => el.offsetParent !== null);
+            [...overlay.querySelectorAll(MODAL_FOCUSABLE_SELECTOR)].filter((el) => el.offsetParent !== null);
 
         const openModal = () => {
             lastFocused = document.activeElement;
@@ -124,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Close buttons
-        overlay.querySelectorAll('.modal-close').forEach(btn => {
+        overlay.querySelectorAll('.modal-close').forEach((btn) => {
             btn.addEventListener('click', closeModal);
         });
 
@@ -147,8 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // `dialog` (tabindex="-1") is a valid resting spot — focus lands
             // there when the card has no focusables or the user clicked its
             // padding. Shift+Tab from it must wrap, not fall through to the page.
-            if (e.shiftKey && (document.activeElement === first
-                || document.activeElement === dialog)) {
+            if (e.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
                 e.preventDefault();
                 last.focus();
             } else if (!e.shiftKey && document.activeElement === last) {
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return items;
     };
     const getVisibleDropdownItems = (dropdown) =>
-        getDropdownItems(dropdown).filter(item => !item.classList.contains('hidden'));
+        getDropdownItems(dropdown).filter((item) => !item.classList.contains('hidden'));
 
     // Single source of truth for a dropdown's open state so the trigger's
     // aria-expanded never desyncs from the `.show` class — it is toggled from
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const dropdowns = document.querySelectorAll('.custom-dropdown');
 
-    dropdowns.forEach(dropdown => {
+    dropdowns.forEach((dropdown) => {
         const trigger = dropdown.querySelector('.dropdown-trigger');
         const menu = dropdown.querySelector('.dropdown-menu');
         const input = dropdown.querySelector('input[type="hidden"]');
@@ -219,12 +219,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (searchInput) {
                 searchInput.addEventListener('input', () => {
                     const q = searchInput.value.toLowerCase();
-                    getDropdownItems(dropdown).forEach(item => {
+                    getDropdownItems(dropdown).forEach((item) => {
                         const text = item.textContent.toLowerCase();
                         item.classList.toggle('hidden', q.length > 0 && !text.includes(q));
                     });
                 });
-                searchInput.addEventListener('click', e => e.stopPropagation());
+                searchInput.addEventListener('click', (e) => e.stopPropagation());
                 // The search field swallows keydown so the outside handlers
                 // don't see typing — but it must still route the widget keys
                 // itself, or a keyboard user gets stuck in the field (no Escape
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             trigger.addEventListener('click', (e) => {
                 e.stopPropagation();
                 // Close others
-                document.querySelectorAll('.custom-dropdown').forEach(d => {
+                document.querySelectorAll('.custom-dropdown').forEach((d) => {
                     if (d !== dropdown) setDropdownOpen(d, false);
                 });
                 const willOpen = !dropdown.classList.contains('show');
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Select
-            options.forEach(option => {
+            options.forEach((option) => {
                 option.setAttribute('tabindex', '0');
 
                 option.addEventListener('click', (e) => {
@@ -338,13 +338,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Outside Click — also clear language search on close
     document.addEventListener('click', (e) => {
-        dropdowns.forEach(dropdown => {
+        dropdowns.forEach((dropdown) => {
             if (!dropdown.contains(e.target)) {
                 setDropdownOpen(dropdown, false);
                 const searchInput = dropdown.querySelector('.language-search');
                 if (searchInput) {
                     searchInput.value = '';
-                    getDropdownItems(dropdown).forEach(item => item.classList.remove('hidden'));
+                    getDropdownItems(dropdown).forEach((item) => item.classList.remove('hidden'));
                 }
             }
         });
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const parentList = btn.closest('[role="tablist"]');
         if (parentList) {
-            parentList.querySelectorAll('[data-toggle="tab"]').forEach(b => {
+            parentList.querySelectorAll('[data-toggle="tab"]').forEach((b) => {
                 b.classList.remove('active');
                 b.setAttribute('aria-selected', 'false');
                 b.setAttribute('tabindex', '-1');
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const contentContainer = targetPane.parentElement;
         if (contentContainer) {
-            contentContainer.querySelectorAll('.tab-pane').forEach(pane => {
+            contentContainer.querySelectorAll('.tab-pane').forEach((pane) => {
                 pane.classList.remove('show', 'active');
             });
         }
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.dispatchEvent(new CustomEvent('tab:activated', { bubbles: true }));
     }
 
-    document.querySelectorAll('[data-toggle="tab"]').forEach(btn => {
+    document.querySelectorAll('[data-toggle="tab"]').forEach((btn) => {
         btn.addEventListener('click', () => activateTab(btn));
 
         btn.addEventListener('keydown', (e) => {
@@ -460,8 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRect = target.getBoundingClientRect();
         const tooltipRect = tooltip.getBoundingClientRect();
         tooltip.style.top = `${targetRect.top + window.scrollY - tooltipRect.height - 8}px`;
-        tooltip.style.left =
-            `${targetRect.left + window.scrollX + (targetRect.width - tooltipRect.width) / 2}px`;
+        tooltip.style.left = `${targetRect.left + window.scrollX + (targetRect.width - tooltipRect.width) / 2}px`;
         tooltip.classList.add('show');
 
         target.setAttribute('aria-describedby', tooltip.id);
@@ -487,8 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Keep it up if the pointer left but the element still holds
             // keyboard focus (WCAG 2.1 SC 1.4.13 — hover and focus are
             // independent triggers).
-            if (activeTooltipTarget === target
-                && document.activeElement !== target) {
+            if (activeTooltipTarget === target && document.activeElement !== target) {
                 hideTooltip();
             }
         };
@@ -539,8 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
         strong.className = 'me-auto';
         // Translated fallbacks travel on #toast-container's data- attributes
         // (rendered by base.html) — a classic script can't call {% trans %}.
-        strong.textContent =
-            titleText || container.dataset.defaultTitle || 'Powiadomienie';
+        strong.textContent = titleText || container.dataset.defaultTitle || 'Powiadomienie';
 
         const closeBtn = document.createElement('button');
         closeBtn.type = 'button';
@@ -600,7 +597,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     fetch('/api/achievements/mark-seen', {
                         method: 'POST',
                         headers: { 'X-CSRFToken': getCsrfToken() },
-                    }).then(() => badge.remove()).catch(() => {});
+                    })
+                        .then(() => badge.remove())
+                        .catch(() => {});
                 }
             }
         });
@@ -807,7 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!dropdown) return;
 
         const footer = dropdown.querySelector('.bell-footer');
-        [...dropdown.children].forEach(child => {
+        [...dropdown.children].forEach((child) => {
             if (child !== footer) child.remove();
         });
 
@@ -819,7 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
             header.textContent = dropdown.dataset.newAchievementsText;
             dropdown.insertBefore(header, footer);
 
-            achievements.forEach(ach => {
+            achievements.forEach((ach) => {
                 const item = document.createElement('a');
                 item.className = 'bell-item';
                 item.href = mineUrl;

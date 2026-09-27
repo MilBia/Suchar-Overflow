@@ -20,9 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             form: document.querySelector('.suchar-form-wrapper form'),
             dateError: document.getElementById('dateError'),
             charCounter: document.getElementById('charCounter'),
-            submitBtn: document.querySelector(
-                '.suchar-form-wrapper button[type="submit"]',
-            )
+            submitBtn: document.querySelector('.suchar-form-wrapper button[type="submit"]'),
         },
 
         init() {
@@ -60,7 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 charCounter.classList.remove('is-warning', 'is-error');
                 if (len >= MAX) {
                     charCounter.classList.add('is-error');
-                } else if (len >= 1700) {  // noqa: PLR2004
+                } else if (len >= 1700) {
+                    // noqa: PLR2004
                     charCounter.classList.add('is-warning');
                 }
             };
@@ -92,8 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initialize Flatpickr
             const fp = flatpickr(publishedAtInput, {
                 enableTime: true,
-                dateFormat: "Y-m-d H:i",
-                minDate: "today",
+                dateFormat: 'Y-m-d H:i',
+                minDate: 'today',
                 time_24hr: true,
                 disableMobile: true, // Force custom UI
                 // Never above the field: the "Schedule" toggle sits right
@@ -102,35 +101,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 // covering the toggle, so the first click to untick it hit
                 // the calendar instead (#424).
                 position: 'below',
-                onOpen: [(selectedDates, dateStr, instance) => {
-                    // onOpen fires before flatpickr positions the calendar,
-                    // so wait a frame, then scroll just enough to show it
-                    // when "below" runs past the bottom of the viewport.
-                    // Measured from the inline `top` flatpickr sets (page
-                    // coordinates), not getBoundingClientRect(): the opening
-                    // fpFadeInDown animation still has it translated 20 px
-                    // up, so scrollIntoView() stopped 20 px short.
-                    requestAnimationFrame(() => {
-                        const cal = instance.calendarContainer;
-                        const bottom = parseFloat(cal.style.top)
-                            + cal.getBoundingClientRect().height;
-                        const overflow = Math.ceil(
-                            bottom - (window.scrollY + window.innerHeight),
-                        );
-                        if (overflow > 0) {
-                            // Never scroll the toggle itself under the sticky
-                            // navbar: on a short viewport (landscape phone,
-                            // laptop with devtools open) a calendar cut off at
-                            // the bottom beats a toggle the first click can't
-                            // reach — which is the very bug this fixes.
-                            const nav = document.querySelector('.navbar');
-                            const navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
-                            const room = scheduleCheck.getBoundingClientRect().top
-                                - navBottom - 8;
-                            window.scrollBy(0, Math.min(overflow, Math.max(0, room)));
-                        }
-                    });
-                }],
+                onOpen: [
+                    (selectedDates, dateStr, instance) => {
+                        // onOpen fires before flatpickr positions the calendar,
+                        // so wait a frame, then scroll just enough to show it
+                        // when "below" runs past the bottom of the viewport.
+                        // Measured from the inline `top` flatpickr sets (page
+                        // coordinates), not getBoundingClientRect(): the opening
+                        // fpFadeInDown animation still has it translated 20 px
+                        // up, so scrollIntoView() stopped 20 px short.
+                        requestAnimationFrame(() => {
+                            const cal = instance.calendarContainer;
+                            const bottom = parseFloat(cal.style.top) + cal.getBoundingClientRect().height;
+                            const overflow = Math.ceil(bottom - (window.scrollY + window.innerHeight));
+                            if (overflow > 0) {
+                                // Never scroll the toggle itself under the sticky
+                                // navbar: on a short viewport (landscape phone,
+                                // laptop with devtools open) a calendar cut off at
+                                // the bottom beats a toggle the first click can't
+                                // reach — which is the very bug this fixes.
+                                const nav = document.querySelector('.navbar');
+                                const navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
+                                const room = scheduleCheck.getBoundingClientRect().top - navBottom - 8;
+                                window.scrollBy(0, Math.min(overflow, Math.max(0, room)));
+                            }
+                        });
+                    },
+                ],
             });
 
             // flatpickr only listens for Escape on its own input and
@@ -225,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tags = await fetchTags(term);
                 if (tags && tags.length > 0) {
                     suggestionsBox.replaceChildren();
-                    tags.forEach(tag => {
+                    tags.forEach((tag) => {
                         const item = document.createElement('div');
                         // Use project standard class
                         item.className = 'dropdown-item';
@@ -239,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Show dropdown logic
                     if (tagsDropdown) tagsDropdown.classList.add('show');
                     else suggestionsBox.style.display = 'block'; // Fallback
-
                 } else {
                     if (tagsDropdown) tagsDropdown.classList.remove('show');
                     else suggestionsBox.style.display = 'none';
@@ -252,8 +248,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update Preview
                 previewTags.replaceChildren();
                 if (val.trim()) {
-                    const tags = val.split(/[ ,]+/).filter(tag => tag.replace(/^#+/, '').trim() !== '');
-                    tags.forEach(tag => {
+                    const tags = val.split(/[ ,]+/).filter((tag) => tag.replace(/^#+/, '').trim() !== '');
+                    tags.forEach((tag) => {
                         const badge = document.createElement('span');
                         badge.className = 'badge text-secondary border me-1 bg-light';
                         badge.textContent = '#' + tag.replace(/^#+/, '').trim();
@@ -267,8 +263,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lastCommaIndex = textBeforeCursor.lastIndexOf(',');
                 const currentTerm = textBeforeCursor.slice(lastCommaIndex + 1).trim();
 
-                if (currentTerm.length > 0) { // Changed to > 0 to allow single char search if supported, otherwise > 1
-                    if (currentTerm.length > 1) debouncedSearch(currentTerm); // Stick to > 1 for perf
+                if (currentTerm.length > 0) {
+                    // Changed to > 0 to allow single char search if supported, otherwise > 1
+                    if (currentTerm.length > 1)
+                        debouncedSearch(currentTerm); // Stick to > 1 for perf
                     else {
                         if (tagsDropdown) tagsDropdown.classList.remove('show');
                     }
@@ -319,8 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     status.className = 'visually-hidden';
                     status.setAttribute('role', 'status');
                     submitBtn.insertAdjacentElement('afterend', status);
-                    status.textContent =
-                        submitBtn.dataset.loadingText || 'Publikuję suchar…';
+                    status.textContent = submitBtn.dataset.loadingText || 'Publikuję suchar…';
                     submitBtn.disabled = true;
                 }
             });
@@ -334,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     publishedAtInput.classList.remove('is-invalid');
                 });
             }
-        }
+        },
     };
 
     SucharForm.init();

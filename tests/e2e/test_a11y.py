@@ -169,8 +169,7 @@ def test_tooltip_survives_pointer_leaving_while_focused(
     page.keyboard.press("Escape")
     expect(page.locator(".custom-tooltip-box")).to_have_count(0)
     assert page.evaluate(
-        "document.activeElement === document.querySelector"
-        "(\".btn-vote[data-anonymous='true']\")",
+        "document.activeElement === document.querySelector(\".btn-vote[data-anonymous='true']\")",
     )
 
 
@@ -300,8 +299,7 @@ def test_shift_tab_from_the_modal_card_does_not_escape(
         "document.getElementById('logoutModal').contains(document.activeElement)",
     ), "Shift+Tab from the modal card leaked focus to the page behind it"
     assert page.evaluate(
-        "document.activeElement === "
-        "document.querySelector(\"#logoutModal button[type='submit']\")",
+        "document.activeElement === document.querySelector(\"#logoutModal button[type='submit']\")",
     )
 
 

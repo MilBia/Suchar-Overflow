@@ -42,20 +42,22 @@
 }
 
 /* Dark Mode Overrides */
-[data-theme="dark"] .flatpickr-calendar {
+[data-theme='dark'] .flatpickr-calendar {
     /* Use a solid, lighter dark background for better contrast than pure black/glass */
     background: #2b3035;
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: #e0e0e0;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.5),
+        0 2px 4px -1px rgba(0, 0, 0, 0.3);
 }
 
 /* Arrow styling */
-[data-theme="dark"] .flatpickr-calendar:after {
+[data-theme='dark'] .flatpickr-calendar:after {
     border-bottom-color: #2b3035;
 }
 
-[data-theme="dark"] .flatpickr-calendar:before {
+[data-theme='dark'] .flatpickr-calendar:before {
     border-bottom-color: rgba(255, 255, 255, 0.15);
 }
 
@@ -103,25 +105,25 @@
     border-radius: 0;
 }
 
-[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
-[data-theme="dark"] .flatpickr-current-month input.cur-year {
+[data-theme='dark'] .flatpickr-current-month .flatpickr-monthDropdown-months,
+[data-theme='dark'] .flatpickr-current-month input.cur-year {
     color: #fff;
     font-weight: 600;
 }
 
-[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months:hover,
-[data-theme="dark"] .flatpickr-current-month input.cur-year:hover {
+[data-theme='dark'] .flatpickr-current-month .flatpickr-monthDropdown-months:hover,
+[data-theme='dark'] .flatpickr-current-month input.cur-year:hover {
     background: rgba(255, 255, 255, 0.1);
 }
 
 /* Arrows */
-[data-theme="dark"] .flatpickr-months .flatpickr-prev-month,
-[data-theme="dark"] .flatpickr-months .flatpickr-next-month {
+[data-theme='dark'] .flatpickr-months .flatpickr-prev-month,
+[data-theme='dark'] .flatpickr-months .flatpickr-next-month {
     fill: #e0e0e0;
 }
 
-[data-theme="dark"] .flatpickr-months .flatpickr-prev-month:hover svg,
-[data-theme="dark"] .flatpickr-months .flatpickr-next-month:hover svg {
+[data-theme='dark'] .flatpickr-months .flatpickr-prev-month:hover svg,
+[data-theme='dark'] .flatpickr-months .flatpickr-next-month:hover svg {
     fill: var(--color-primary, #0d6efd);
 }
 
@@ -130,21 +132,21 @@
     background: transparent;
 }
 
-[data-theme="dark"] .flatpickr-weekday {
+[data-theme='dark'] .flatpickr-weekday {
     color: #adb5bd;
     /* Bootstrap gray-500 */
     font-weight: 500;
 }
 
 /* Days */
-[data-theme="dark"] .flatpickr-day {
+[data-theme='dark'] .flatpickr-day {
     color: #e0e0e0;
 }
 
-[data-theme="dark"] .flatpickr-day:hover,
-[data-theme="dark"] .flatpickr-day:focus,
-[data-theme="dark"] .flatpickr-day.prevMonthDay:hover,
-[data-theme="dark"] .flatpickr-day.nextMonthDay:hover {
+[data-theme='dark'] .flatpickr-day:hover,
+[data-theme='dark'] .flatpickr-day:focus,
+[data-theme='dark'] .flatpickr-day.prevMonthDay:hover,
+[data-theme='dark'] .flatpickr-day.nextMonthDay:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: transparent;
     color: #fff;
@@ -175,29 +177,29 @@
 }
 
 /* Muted/Other Month Days */
-[data-theme="dark"] .flatpickr-day.prevMonthDay,
-[data-theme="dark"] .flatpickr-day.nextMonthDay,
-[data-theme="dark"] .flatpickr-day.flatpickr-disabled {
+[data-theme='dark'] .flatpickr-day.prevMonthDay,
+[data-theme='dark'] .flatpickr-day.nextMonthDay,
+[data-theme='dark'] .flatpickr-day.flatpickr-disabled {
     color: #6c757d;
 }
 
 /* Time Picker */
-[data-theme="dark"] .flatpickr-time {
+[data-theme='dark'] .flatpickr-time {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-[data-theme="dark"] .flatpickr-time input {
+[data-theme='dark'] .flatpickr-time input {
     color: #e0e0e0;
 }
 
-[data-theme="dark"] .flatpickr-time .flatpickr-am-pm {
+[data-theme='dark'] .flatpickr-time .flatpickr-am-pm {
     color: #e0e0e0;
 }
 
-[data-theme="dark"] .flatpickr-time input:hover,
-[data-theme="dark"] .flatpickr-time .flatpickr-am-pm:hover,
-[data-theme="dark"] .flatpickr-time input:focus,
-[data-theme="dark"] .flatpickr-time .flatpickr-am-pm:focus {
+[data-theme='dark'] .flatpickr-time input:hover,
+[data-theme='dark'] .flatpickr-time .flatpickr-am-pm:hover,
+[data-theme='dark'] .flatpickr-time input:focus,
+[data-theme='dark'] .flatpickr-time .flatpickr-am-pm:focus {
     background: rgba(255, 255, 255, 0.1);
 }
 
@@ -264,7 +266,9 @@ textarea#id_text {
 }
 
 @keyframes btn-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Character counter */

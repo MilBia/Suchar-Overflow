@@ -84,9 +84,9 @@
     // props on the meter. The nested media query is defence in depth: the JS
     // reduced-motion gate already skips adding the class.
     const PULSE_CSS =
-        '@keyframes ee-publika-pulse{0%{transform:scale(1)}45%{transform:scale(1.18)}100%{transform:scale(1)}}'
-        + '.ee-publika-pulse{animation:ee-publika-pulse 320ms ease-out}'
-        + '@media (prefers-reduced-motion: reduce){.ee-publika-pulse{animation:none}}';
+        '@keyframes ee-publika-pulse{0%{transform:scale(1)}45%{transform:scale(1.18)}100%{transform:scale(1)}}' +
+        '.ee-publika-pulse{animation:ee-publika-pulse 320ms ease-out}' +
+        '@media (prefers-reduced-motion: reduce){.ee-publika-pulse{animation:none}}';
 
     // ── Module-level mutable state (reset between Vitest tests via _resetForTests) ─
     let clickHandler = null;
@@ -142,11 +142,11 @@
             return null;
         }
         if (
-            !chain
-            || !Number.isFinite(chain.firstAt)
-            || !Number.isInteger(chain.count)
-            || chain.count <= 0
-            || chain.count >= THRESHOLD
+            !chain ||
+            !Number.isFinite(chain.firstAt) ||
+            !Number.isInteger(chain.count) ||
+            chain.count <= 0 ||
+            chain.count >= THRESHOLD
         ) {
             return null;
         }
@@ -278,11 +278,14 @@
 
     function armExpiryTimer(ms) {
         clearExpiryTimer();
-        expiryTimer = setTimeout(() => {
-            expiryTimer = null;
-            clearChain();
-            removeMeter();
-        }, Math.max(0, ms));
+        expiryTimer = setTimeout(
+            () => {
+                expiryTimer = null;
+                clearChain();
+                removeMeter();
+            },
+            Math.max(0, ms),
+        );
     }
 
     function resetCombo() {
@@ -321,9 +324,7 @@
     }
 
     function handleVoteClick(e) {
-        const btn = e.target && e.target.closest
-            ? e.target.closest('.btn-vote')
-            : null;
+        const btn = e.target && e.target.closest ? e.target.closest('.btn-vote') : null;
         if (!btn) return;
 
         const voteType = btn.dataset ? btn.dataset.voteType : null;
@@ -339,9 +340,7 @@
         // A funny vote is being ADDED — extend, or start, the chain.
         const now = Date.now();
         const existing = readChain(); // null if absent or already expired
-        const chain = existing
-            ? { count: existing.count + 1, firstAt: existing.firstAt }
-            : { count: 1, firstAt: now };
+        const chain = existing ? { count: existing.count + 1, firstAt: existing.firstAt } : { count: 1, firstAt: now };
 
         if (chain.count >= THRESHOLD) {
             resetCombo();

@@ -7,11 +7,11 @@
     transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-[data-theme="dark"] .btn-vote {
+[data-theme='dark'] .btn-vote {
     color: var(--text-muted);
 }
 
-[data-theme="dark"] .btn-vote svg {
+[data-theme='dark'] .btn-vote svg {
     fill: currentColor;
 }
 
@@ -26,7 +26,7 @@
 /* ---- Funny (orange) ---- */
 
 /* Inactive hover: light tint preview */
-.btn-vote[data-vote-type="funny"]:not(.active):hover {
+.btn-vote[data-vote-type='funny']:not(.active):hover {
     color: var(--color-funny);
     background-color: color-mix(in srgb, var(--color-funny) 12%, transparent);
     border-color: var(--color-funny);
@@ -35,16 +35,18 @@
 }
 
 /* Active: solid fill — you've voted (WCAG 1.4.1: ring + bold) */
-.btn-vote[data-vote-type="funny"].active {
+.btn-vote[data-vote-type='funny'].active {
     color: #fff;
     background-color: var(--color-funny);
     border-color: var(--color-funny);
     font-weight: 700;
-    box-shadow: 0 0 0 3px var(--color-funny), 0 2px 4px color-mix(in srgb, var(--color-funny) 40%, transparent);
+    box-shadow:
+        0 0 0 3px var(--color-funny),
+        0 2px 4px color-mix(in srgb, var(--color-funny) 40%, transparent);
 }
 
 /* Active + hover: dimmed → "click to undo" signal */
-.btn-vote[data-vote-type="funny"].active:hover {
+.btn-vote[data-vote-type='funny'].active:hover {
     background-color: color-mix(in srgb, var(--color-funny) 60%, transparent);
     border-color: color-mix(in srgb, var(--color-funny) 60%, transparent);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-funny) 35%, transparent);
@@ -52,7 +54,7 @@
 
 /* ---- Dry (cyan) ---- */
 
-.btn-vote[data-vote-type="dry"]:not(.active):hover {
+.btn-vote[data-vote-type='dry']:not(.active):hover {
     color: var(--color-dry);
     background-color: color-mix(in srgb, var(--color-dry) 12%, transparent);
     border-color: var(--color-dry);
@@ -60,15 +62,17 @@
     z-index: 10;
 }
 
-.btn-vote[data-vote-type="dry"].active {
+.btn-vote[data-vote-type='dry'].active {
     color: #fff;
     background-color: var(--color-dry);
     border-color: var(--color-dry);
     font-weight: 700;
-    box-shadow: 0 0 0 3px var(--color-dry), 0 2px 4px color-mix(in srgb, var(--color-dry) 40%, transparent);
+    box-shadow:
+        0 0 0 3px var(--color-dry),
+        0 2px 4px color-mix(in srgb, var(--color-dry) 40%, transparent);
 }
 
-.btn-vote[data-vote-type="dry"].active:hover {
+.btn-vote[data-vote-type='dry'].active:hover {
     background-color: color-mix(in srgb, var(--color-dry) 60%, transparent);
     border-color: color-mix(in srgb, var(--color-dry) 60%, transparent);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-dry) 35%, transparent);
@@ -84,8 +88,13 @@
 /* ---- Loading state ---- */
 
 @keyframes vote-pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0.35; }
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 0.35;
+    }
 }
 
 .voting-controls.loading .btn-vote {
@@ -95,7 +104,7 @@
 
 /* ---- Dark mode inactive ---- */
 
-[data-theme="dark"] .btn-vote:not(.active) {
+[data-theme='dark'] .btn-vote:not(.active) {
     background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }

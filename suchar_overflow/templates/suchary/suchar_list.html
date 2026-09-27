@@ -3,253 +3,253 @@
 {% load static i18n compress %}
 
 {% block title %}
-  Suchary
+    Suchary
 {% endblock title %}
 {% block content %}
-  <div class="container py-4">
-    <div class="row align-items-center mb-5 gy-4">
-      <div class="col-lg-4">
-        <h1 class="fw-bold text-primary mb-0">{% trans "Jokes" %}</h1>
-        <p class="text-muted mb-0">{% trans "The dryest jokes on the internet." %}</p>
-      </div>
-      <div class="col-lg-8">
-        <form method="get"
-              class="d-flex align-items-center gap-2 justify-content-lg-end search-toolbar">
-          {% for key, value in request.GET.items %}
-            {% if key != "q" and key != "sort" %}<input type="hidden" name="{{ key }}" value="{{ value }}" />{% endif %}
-          {% endfor %}
-
-          <!-- Search Input Group with attached button -->
-          <div class="input-group flex-nowrap align-items-stretch search-input-group">
-            <input type="text"
-                   name="q"
-                   class="form-control mb-0 rounded-end-0 border-end-0"
-                   placeholder="{% trans 'Search...' %}"
-                   aria-label="{% trans 'Szukaj' %}"
-                   value="{{ request.GET.q|default:'' }}" />
-            <button class="btn btn-secondary border-start-0 ps-2 rounded-start-0 d-flex align-items-center"
-                    type="submit"
-                    aria-label="{% trans 'Szukaj' %}">{% include "svgs/icon-search.svg" %}</button>
-          </div>
-
-          <!-- Custom Sort Dropdown -->
-          <div class="custom-dropdown" id="sortDropdown">
-            <input type="hidden"
-                   name="sort"
-                   value="{{ request.GET.sort|default:'newest' }}" />
-            <button type="button"
-                    class="dropdown-trigger"
-                    aria-haspopup="listbox"
-                    aria-expanded="false"
-                    aria-label="{% trans 'Sortuj' %}">
-              <span class="selected-label">
-                {% if request.GET.sort == "top" %}
-                  {% trans "Top" %}
-                {% else %}
-                  {% trans "Newest" %}
-                {% endif %}
-              </span>
-              <span class="chevron-icon">{% include "svgs/icon-chevron-down.svg" %}</span>
-            </button>
-            <div class="dropdown-menu"
-                 role="listbox"
-                 aria-label="{% trans 'Sortuj' %}">
-              <div class="dropdown-item {% if not request.GET.sort or request.GET.sort == 'newest' %}selected{% endif %}"
-                   role="option"
-                   aria-selected="{% if not request.GET.sort or request.GET.sort == 'newest' %}true{% else %}false{% endif %}"
-                   data-value="newest">
-                <span>{% trans "Newest" %}</span>
-                <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
-              </div>
-              <div class="dropdown-item {% if request.GET.sort == 'top' %}selected{% endif %}"
-                   role="option"
-                   aria-selected="{% if request.GET.sort == 'top' %}true{% else %}false{% endif %}"
-                   data-value="top">
-                <span>{% trans "Top" %}</span>
-                <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
-              </div>
+    <div class="container py-4">
+        <div class="row align-items-center mb-5 gy-4">
+            <div class="col-lg-4">
+                <h1 class="fw-bold text-primary mb-0">{% trans "Jokes" %}</h1>
+                <p class="text-muted mb-0">{% trans "The dryest jokes on the internet." %}</p>
             </div>
-          </div>
+            <div class="col-lg-8">
+                <form method="get"
+                      class="d-flex align-items-center gap-2 justify-content-lg-end search-toolbar">
+                    {% for key, value in request.GET.items %}
+                        {% if key != "q" and key != "sort" %}<input type="hidden" name="{{ key }}" value="{{ value }}" />{% endif %}
+                    {% endfor %}
 
-          <!-- Add Button -->
-          <a href="{% url 'suchary:add' %}"
-             class="btn btn-primary d-flex align-items-center text-nowrap">
-            {% include "svgs/icon-plus.svg" %}
-            {% trans "Add" %}
-          </a>
-        </form>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        {% if request.GET.tag or request.GET.q or request.GET.author %}
-          <div class="d-flex flex-wrap align-items-center gap-2 mb-4 p-3 bg-light rounded border">
-            <span class="text-muted small">{% trans "Active filters:" %}</span>
+                    <!-- Search Input Group with attached button -->
+                    <div class="input-group flex-nowrap align-items-stretch search-input-group">
+                        <input type="text"
+                               name="q"
+                               class="form-control mb-0 rounded-end-0 border-end-0"
+                               placeholder="{% trans 'Search...' %}"
+                               aria-label="{% trans 'Szukaj' %}"
+                               value="{{ request.GET.q|default:'' }}" />
+                        <button class="btn btn-secondary border-start-0 ps-2 rounded-start-0 d-flex align-items-center"
+                                type="submit"
+                                aria-label="{% trans 'Szukaj' %}">{% include "svgs/icon-search.svg" %}</button>
+                    </div>
 
-            {% if request.GET.tag %}
-              <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
-                <span>#{{ request.GET.tag }}</span>
-                <a href="{% querystring tag=None page=None %}"
-                   class="text-muted text-decoration-none fw-bold">×</a>
-              </div>
-            {% endif %}
+                    <!-- Custom Sort Dropdown -->
+                    <div class="custom-dropdown" id="sortDropdown">
+                        <input type="hidden"
+                               name="sort"
+                               value="{{ request.GET.sort|default:'newest' }}" />
+                        <button type="button"
+                                class="dropdown-trigger"
+                                aria-haspopup="listbox"
+                                aria-expanded="false"
+                                aria-label="{% trans 'Sortuj' %}">
+                            <span class="selected-label">
+                                {% if request.GET.sort == "top" %}
+                                    {% trans "Top" %}
+                                {% else %}
+                                    {% trans "Newest" %}
+                                {% endif %}
+                            </span>
+                            <span class="chevron-icon">{% include "svgs/icon-chevron-down.svg" %}</span>
+                        </button>
+                        <div class="dropdown-menu"
+                             role="listbox"
+                             aria-label="{% trans 'Sortuj' %}">
+                            <div class="dropdown-item {% if not request.GET.sort or request.GET.sort == 'newest' %}selected{% endif %}"
+                                 role="option"
+                                 aria-selected="{% if not request.GET.sort or request.GET.sort == 'newest' %}true{% else %}false{% endif %}"
+                                 data-value="newest">
+                                <span>{% trans "Newest" %}</span>
+                                <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
+                            </div>
+                            <div class="dropdown-item {% if request.GET.sort == 'top' %}selected{% endif %}"
+                                 role="option"
+                                 aria-selected="{% if request.GET.sort == 'top' %}true{% else %}false{% endif %}"
+                                 data-value="top">
+                                <span>{% trans "Top" %}</span>
+                                <span class="check-icon">{% include "svgs/icon-check.svg" %}</span>
+                            </div>
+                        </div>
+                    </div>
 
-            {% if request.GET.q %}
-              <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
-                <span>{% trans "Search:" %} "{{ request.GET.q }}"</span>
-                <a href="{% querystring q=None page=None %}"
-                   class="text-muted text-decoration-none fw-bold">×</a>
-              </div>
-            {% endif %}
+                    <!-- Add Button -->
+                    <a href="{% url 'suchary:add' %}"
+                       class="btn btn-primary d-flex align-items-center text-nowrap">
+                        {% include "svgs/icon-plus.svg" %}
+                        {% trans "Add" %}
+                    </a>
+                </form>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {% if request.GET.tag or request.GET.q or request.GET.author %}
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-4 p-3 bg-light rounded border">
+                        <span class="text-muted small">{% trans "Active filters:" %}</span>
 
-            {% if request.GET.author %}
-              <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
-                <span>{% trans "Author:" %} {{ request.GET.author }}</span>
-                <a href="{% querystring author=None page=None %}"
-                   class="text-muted text-decoration-none fw-bold">×</a>
-              </div>
-            {% endif %}
+                        {% if request.GET.tag %}
+                            <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
+                                <span>#{{ request.GET.tag }}</span>
+                                <a href="{% querystring tag=None page=None %}"
+                                   class="text-muted text-decoration-none fw-bold">×</a>
+                            </div>
+                        {% endif %}
 
-            <a href="?"
-               class="btn btn-link btn-sm text-decoration-none ms-auto py-0 text-muted hover-primary">{% trans "Clear all" %}</a>
-          </div>
-        {% endif %}
-        {% comment %}
+                        {% if request.GET.q %}
+                            <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
+                                <span>{% trans "Search:" %} "{{ request.GET.q }}"</span>
+                                <a href="{% querystring q=None page=None %}"
+                                   class="text-muted text-decoration-none fw-bold">×</a>
+                            </div>
+                        {% endif %}
+
+                        {% if request.GET.author %}
+                            <div class="badge bg-white text-dark border d-flex align-items-center gap-2 py-2 px-3">
+                                <span>{% trans "Author:" %} {{ request.GET.author }}</span>
+                                <a href="{% querystring author=None page=None %}"
+                                   class="text-muted text-decoration-none fw-bold">×</a>
+                            </div>
+                        {% endif %}
+
+                        <a href="?"
+                           class="btn btn-link btn-sm text-decoration-none ms-auto py-0 text-muted hover-primary">{% trans "Clear all" %}</a>
+                    </div>
+                {% endif %}
+                {% comment %}
           #373: no "Scheduled" badge / Edit button on any card in this list —
           SucharListView filters on `published_at__lte=timezone.now()`, so
           `is_published` is always true on this page. The owner's scheduled
           suchary live on their profile instead, in user_detail.html's
           `scheduled_suchary` card (owner-gated in UserDetailView).
-        {% endcomment %}
-        {% for suchar in suchary %}
-          {# #295: `data-overdried` drives the craquelure overlay (suchar-card.css); #}
-          {# voting.js adds it in place when a vote latches `is_overdried`. #}
-          <div class="card suchar-card"
-               {% if suchar.is_overdried %}data-overdried title="{% trans 'Overdried' %}"{% endif %}>
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="d-flex align-items-center">
-                  <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
-                  <div>
-                    <h6 class="mb-0 fw-bold">
-                      <a href="{% querystring author=suchar.author.username page=None %}">{{ suchar.author.display_name }}</a>
-                    </h6>
-                    <small class="suchar-meta">{{ suchar.published_at|date:"d M Y, H:i" }}</small>
-                  </div>
-                </div>
-              </div>
-              <p class="mb-4">{{ suchar.text|linebreaksbr }}</p>
-              {% if suchar.tags.all %}
-                <div class="mb-3">
-                  {% for tag in suchar.tags.all %}
-                    <a href="{% querystring tag=tag.slug page=None %}"
-                       class="badge text-secondary border me-1 text-decoration-none bg-light">#{{ tag.name }}</a>
-                  {% endfor %}
-                </div>
-              {% endif %}
-              <div class="voting-controls d-flex align-items-center justify-content-end gap-3"
-                   data-busy-text="{% trans 'Zliczam głos…' %}"
-                   data-error-text="{% trans 'Głos ugrzązł w suszy. Spróbuj ponownie.' %}">
-                {% csrf_token %}
-                <!-- Funny Button -->
-                <button type="button"
-                        data-suchar-id="{{ suchar.pk }}"
-                        data-vote-type="funny"
-                        class="btn btn-vote btn-sm d-flex align-items-center gap-2 {% if suchar.user_is_funny %}active{% endif %}"
-                        aria-pressed="{% if suchar.user_is_funny %}true{% else %}false{% endif %}"
-                        {% if not user.is_authenticated %}data-anonymous="true" data-tooltip="{% trans 'Zaloguj się, aby głosować' %}"{% endif %}
-                        title="{% trans 'Funny' %}">
-                  {% include "svgs/icon-vote-up.svg" %}
-                  <span class="vote-count fw-bold">{{ suchar.funny_count }}</span>
-                  <span class="ms-1 d-none d-sm-inline">{% trans "Funny" %}</span>
-                </button>
+                {% endcomment %}
+                {% for suchar in suchary %}
+                    {# #295: `data-overdried` drives the craquelure overlay (suchar-card.css); #}
+                    {# voting.js adds it in place when a vote latches `is_overdried`. #}
+                    <div class="card suchar-card"
+                         {% if suchar.is_overdried %}data-overdried title="{% trans 'Overdried' %}"{% endif %}>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm flex-shrink-0 me-3">{% include "svgs/icon-user.svg" %}</div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">
+                                            <a href="{% querystring author=suchar.author.username page=None %}">{{ suchar.author.display_name }}</a>
+                                        </h6>
+                                        <small class="suchar-meta">{{ suchar.published_at|date:"d M Y, H:i" }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mb-4">{{ suchar.text|linebreaksbr }}</p>
+                            {% if suchar.tags.all %}
+                                <div class="mb-3">
+                                    {% for tag in suchar.tags.all %}
+                                        <a href="{% querystring tag=tag.slug page=None %}"
+                                           class="badge text-secondary border me-1 text-decoration-none bg-light">#{{ tag.name }}</a>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="voting-controls d-flex align-items-center justify-content-end gap-3"
+                                 data-busy-text="{% trans 'Zliczam głos…' %}"
+                                 data-error-text="{% trans 'Głos ugrzązł w suszy. Spróbuj ponownie.' %}">
+                                {% csrf_token %}
+                                <!-- Funny Button -->
+                                <button type="button"
+                                        data-suchar-id="{{ suchar.pk }}"
+                                        data-vote-type="funny"
+                                        class="btn btn-vote btn-sm d-flex align-items-center gap-2 {% if suchar.user_is_funny %}active{% endif %}"
+                                        aria-pressed="{% if suchar.user_is_funny %}true{% else %}false{% endif %}"
+                                        {% if not user.is_authenticated %}data-anonymous="true" data-tooltip="{% trans 'Zaloguj się, aby głosować' %}"{% endif %}
+                                        title="{% trans 'Funny' %}">
+                                    {% include "svgs/icon-vote-up.svg" %}
+                                    <span class="vote-count fw-bold">{{ suchar.funny_count }}</span>
+                                    <span class="ms-1 d-none d-sm-inline">{% trans "Funny" %}</span>
+                                </button>
 
-                <!-- Dry Button -->
-                <button type="button"
-                        data-suchar-id="{{ suchar.pk }}"
-                        data-vote-type="dry"
-                        class="btn btn-vote btn-sm d-flex align-items-center gap-2 {% if suchar.user_is_dry %}active{% endif %}"
-                        aria-pressed="{% if suchar.user_is_dry %}true{% else %}false{% endif %}"
-                        {% if not user.is_authenticated %}data-anonymous="true" data-tooltip="{% trans 'Zaloguj się, aby głosować' %}"{% endif %}
-                        title="{% trans 'Dry' %}">
-                  {% include "svgs/icon-vote-down.svg" %}
-                  <span class="vote-count fw-bold">{{ suchar.dry_count }}</span>
-                  <span class="ms-1 d-none d-sm-inline">{% trans "Dry" %}</span>
-                </button>
-              </div>
+                                <!-- Dry Button -->
+                                <button type="button"
+                                        data-suchar-id="{{ suchar.pk }}"
+                                        data-vote-type="dry"
+                                        class="btn btn-vote btn-sm d-flex align-items-center gap-2 {% if suchar.user_is_dry %}active{% endif %}"
+                                        aria-pressed="{% if suchar.user_is_dry %}true{% else %}false{% endif %}"
+                                        {% if not user.is_authenticated %}data-anonymous="true" data-tooltip="{% trans 'Zaloguj się, aby głosować' %}"{% endif %}
+                                        title="{% trans 'Dry' %}">
+                                    {% include "svgs/icon-vote-down.svg" %}
+                                    <span class="vote-count fw-bold">{{ suchar.dry_count }}</span>
+                                    <span class="ms-1 d-none d-sm-inline">{% trans "Dry" %}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-5">
+                        <div class="mb-3 text-muted">{% include "svgs/icon-cracker-stack.svg" %}</div>
+                        {% if request.GET.q or request.GET.tag or request.GET.author %}
+                            <h3>{% trans "Zero trafień. Kompletna susza." %}</h3>
+                            <p class="text-muted">{% trans "Poluzuj frazę albo dodaj suchar, którego brakuje." %}</p>
+                        {% else %}
+                            <h3>{% trans "So dry here..." %}</h3>
+                            <p class="text-muted">{% trans "Be the hero we need and add the first joke." %}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
             </div>
-          </div>
-        {% empty %}
-          <div class="text-center py-5">
-            <div class="mb-3 text-muted">{% include "svgs/icon-cracker-stack.svg" %}</div>
-            {% if request.GET.q or request.GET.tag or request.GET.author %}
-              <h3>{% trans "Zero trafień. Kompletna susza." %}</h3>
-              <p class="text-muted">{% trans "Poluzuj frazę albo dodaj suchar, którego brakuje." %}</p>
-            {% else %}
-              <h3>{% trans "So dry here..." %}</h3>
-              <p class="text-muted">{% trans "Be the hero we need and add the first joke." %}</p>
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
+        </div>
     </div>
-  </div>
-  {% if is_paginated %}
-    <div class="row mt-4">
-      <div class="col-12">
-        <nav aria-label="Page navigation">
-          <ul class="pagination justify-content-center">
-            {% if page_obj.has_previous %}
-              <li class="page-item">
-                <a class="page-link"
-                   href="{% querystring page=page_obj.previous_page_number %}">{% trans "Previous" %}</a>
-              </li>
-            {% else %}
-              <li class="page-item disabled">
-                <span class="page-link">{% trans "Previous" %}</span>
-              </li>
-            {% endif %}
-            {% for i in page_range %}
-              {% if i == paginator.ELLIPSIS %}
-                <li class="page-item disabled">
-                  <span class="page-link" aria-hidden="true">{{ i }}</span>
-                </li>
-              {% elif page_obj.number == i %}
-                <li class="page-item active">
-                  <span class="page-link" aria-current="page">{{ i }}</span>
-                </li>
-              {% else %}
-                <li class="page-item">
-                  <a class="page-link" href="{% querystring page=i %}">{{ i }}</a>
-                </li>
-              {% endif %}
-            {% endfor %}
-            {% if page_obj.has_next %}
-              <li class="page-item">
-                <a class="page-link"
-                   href="{% querystring page=page_obj.next_page_number %}">{% trans "Next" %}</a>
-              </li>
-            {% else %}
-              <li class="page-item disabled">
-                <span class="page-link">{% trans "Next" %}</span>
-              </li>
-            {% endif %}
-          </ul>
-        </nav>
-      </div>
-    </div>
-  {% endif %}
+    {% if is_paginated %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="{% querystring page=page_obj.previous_page_number %}">{% trans "Previous" %}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">{% trans "Previous" %}</span>
+                            </li>
+                        {% endif %}
+                        {% for i in page_range %}
+                            {% if i == paginator.ELLIPSIS %}
+                                <li class="page-item disabled">
+                                    <span class="page-link" aria-hidden="true">{{ i }}</span>
+                                </li>
+                            {% elif page_obj.number == i %}
+                                <li class="page-item active">
+                                    <span class="page-link" aria-current="page">{{ i }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{% querystring page=i %}">{{ i }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="{% querystring page=page_obj.next_page_number %}">{% trans "Next" %}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">{% trans "Next" %}</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    {% endif %}
 {% endblock content %}
 
 {% block javascript %}
-  {{ block.super }}
-  {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-  {% if request.user.is_authenticated %}
+    {{ block.super }}
+    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
+    {% if request.user.is_authenticated %}
+        {% compress js %}
+            <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
+        {% endcompress %}
+    {% endif %}
     {% compress js %}
-      <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
+        <script defer src="{% static 'js/features/voting.js' %}"></script>
     {% endcompress %}
-  {% endif %}
-  {% compress js %}
-    <script defer src="{% static 'js/features/voting.js' %}"></script>
-  {% endcompress %}
 {% endblock javascript %}

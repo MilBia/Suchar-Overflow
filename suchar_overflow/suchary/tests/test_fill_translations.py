@@ -5,21 +5,11 @@ from unittest.mock import MagicMock
 import pytest
 
 from suchar_overflow.suchary.management.commands.fill_translations import Command
-from suchar_overflow.suchary.management.commands.fill_translations import (
-    _has_format_specifier_corruption,
-)
-from suchar_overflow.suchary.management.commands.fill_translations import (
-    _has_markdown_html_corruption,
-)
-from suchar_overflow.suchary.management.commands.fill_translations import (
-    _has_multiple_alternatives,
-)
-from suchar_overflow.suchary.management.commands.fill_translations import (
-    _is_translategemma,
-)
-from suchar_overflow.suchary.management.commands.fill_translations import (
-    _looks_like_hallucination,
-)
+from suchar_overflow.suchary.management.commands.fill_translations import _has_format_specifier_corruption
+from suchar_overflow.suchary.management.commands.fill_translations import _has_markdown_html_corruption
+from suchar_overflow.suchary.management.commands.fill_translations import _has_multiple_alternatives
+from suchar_overflow.suchary.management.commands.fill_translations import _is_translategemma
+from suchar_overflow.suchary.management.commands.fill_translations import _looks_like_hallucination
 
 # ---------------------------------------------------------------------------
 # _is_translategemma

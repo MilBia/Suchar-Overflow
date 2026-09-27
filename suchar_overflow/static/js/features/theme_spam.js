@@ -64,9 +64,9 @@
     // JS reduced-motion gate already skips this branch, but if the class is
     // ever added anyway the animation still collapses to nothing.
     const SPIN_CSS =
-        '@keyframes ee-toggle-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}'
-        + '.ee-toggle-spin{animation:ee-toggle-spin 600ms ease-in-out}'
-        + '@media (prefers-reduced-motion: reduce){.ee-toggle-spin{animation:none}}';
+        '@keyframes ee-toggle-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}' +
+        '.ee-toggle-spin{animation:ee-toggle-spin 600ms ease-in-out}' +
+        '@media (prefers-reduced-motion: reduce){.ee-toggle-spin{animation:none}}';
 
     // ── Module-level mutable state (reset between Vitest tests via _resetForTests) ─
     // A sliding window of the last THRESHOLD click timestamps. Stale entries

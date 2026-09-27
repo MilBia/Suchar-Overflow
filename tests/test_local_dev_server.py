@@ -10,9 +10,7 @@ joining the old worker and new requests hang until the container is restarted.
 import re
 from pathlib import Path
 
-START_SCRIPT = (
-    Path(__file__).resolve().parent.parent / "compose" / "local" / "django" / "start"
-)
+START_SCRIPT = Path(__file__).resolve().parent.parent / "compose" / "local" / "django" / "start"
 
 _TIMEOUT_RE = re.compile(r"--timeout-graceful-shutdown[ =](\d+)")
 

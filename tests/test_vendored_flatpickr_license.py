@@ -19,9 +19,7 @@ BUNDLE = STATIC_DIR / "js" / "flatpickr.min.js"
 LICENSE_FILE = STATIC_DIR / "js" / "flatpickr.LICENSE.txt"
 
 _VERSION_RE = re.compile(r"flatpickr v(\d+\.\d+\.\d+)")
-_PERMISSION_NOTICE = (
-    "The above copyright notice and this permission notice shall be included in all"
-)
+_PERMISSION_NOTICE = "The above copyright notice and this permission notice shall be included in all"
 
 
 def test_license_file_sits_next_to_the_bundle() -> None:

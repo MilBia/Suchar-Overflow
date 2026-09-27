@@ -71,15 +71,15 @@
     // `style-src` allows 'unsafe-inline' (see config/settings/base.py), which
     // covers both this block and the per-element inline `style=` below.
     const ROLL_KEYFRAMES =
-        '@keyframes ee-tumbleweed-roll{'
-        + 'from{transform:translateX(calc(100vw + 120px))}'
-        + 'to{transform:translateX(-160px)}'
-        + '}'
-        + '@keyframes ee-tumbleweed-spin{'
+        '@keyframes ee-tumbleweed-roll{' +
+        'from{transform:translateX(calc(100vw + 120px))}' +
+        'to{transform:translateX(-160px)}' +
+        '}' +
+        '@keyframes ee-tumbleweed-spin{' +
         // Negative = counter-clockwise on screen (CSS y points down): the way a
         // ball actually rolls when it travels right-to-left along the ground.
-        + 'from{transform:rotate(0)}to{transform:rotate(-1080deg)}'
-        + '}';
+        'from{transform:rotate(0)}to{transform:rotate(-1080deg)}' +
+        '}';
 
     // ── Module-level mutable state (reset between Vitest tests via _resetForTests) ─
     let idleTimer = null;
@@ -126,9 +126,7 @@
             // Reject a non-positive or *future* timestamp: if the system clock
             // was wound back (NTP / DST) after we stored it, `Date.now() - last`
             // would go negative and wedge the cooldown on for hours.
-            return Number.isFinite(last) && last > 0 && last <= Date.now()
-                ? last
-                : 0;
+            return Number.isFinite(last) && last > 0 && last <= Date.now() ? last : 0;
         } catch {
             return 0;
         }
