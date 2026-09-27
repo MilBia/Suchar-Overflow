@@ -13,6 +13,11 @@ on:
   schedule:
     - cron: '17 6 * * 1' # Mondays 06:17 UTC
   workflow_dispatch:
+    inputs:
+      force_stale:
+        description: 'Wymuś alarm (limit wieku 0 dni), żeby przećwiczyć zakładanie/komentowanie issue'
+        type: boolean
+        default: false
   # workflow_dispatch only works once this file is on main, so a PR touching
   # the check runs it too — report-only, no issue writes.
   pull_request:
@@ -33,6 +38,8 @@ jobs:
       issues: write
     env:
       ISSUE_TITLE: 'Obraz bazowy python wygląda na zamrożony (#445)'
+      # Only set on a manual run; empty (false) for schedule and pull_request.
+      FORCE_STALE: ${{ inputs.force_stale }}
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v7
@@ -43,7 +50,9 @@ jobs:
         # job; the report step below records which one it was.
         run: |
           set +e
-          python3 scripts/check_base_image_freshness.py --report report.md
+          extra=()
+          if [ "$FORCE_STALE" = "true" ]; then extra=(--max-age-days 0); fi
+          python3 scripts/check_base_image_freshness.py --report report.md "${extra[@]}"
           code=$?
           echo "code=$code" >> "$GITHUB_OUTPUT"
           cat report.md >> "$GITHUB_STEP_SUMMARY" || true
@@ -61,6 +70,9 @@ jobs:
             header="Tygodniowe sprawdzenie wykryło nieaktualny obraz bazowy."
           else
             header="Sprawdzenie świeżości obrazu bazowego nie powiodło się."
+          fi
+          if [ "$FORCE_STALE" = "true" ]; then
+            header="Ćwiczenie: ręczny run z force_stale (limit wieku 0 dni), nie prawdziwy alarm. $header"
           fi
           report=$(cat report.md 2>/dev/null || echo "(brak raportu, szczegóły w logu runu)")
           { echo "$header"; echo; echo "$report"; echo; echo "Run: $RUN_URL"; } > body.md

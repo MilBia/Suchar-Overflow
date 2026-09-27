@@ -69,27 +69,26 @@ def test_base_drops_djangos_default_django_handlers() -> None:
     "logger_name",
     ["django.request", "django.security.DisallowedHost", "django.security.csrf"],
 )
-def test_production_emails_each_django_error_once(
+def test_production_emails_and_prints_each_django_error_once(
     monkeypatch: pytest.MonkeyPatch,
     logger_name: str,
 ) -> None:
     logging_config = _load_production_settings(monkeypatch).LOGGING
     loggers = logging_config["loggers"]
-    mail_handlers: list[str] = []
+    reached: list[str] = []
     # Walk the propagation chain the way logging does: this logger, its dotted
     # ancestors, then root, stopping at the first one with propagate=False.
     parts = logger_name.split(".")
     chain = [".".join(parts[:i]) for i in range(len(parts), 0, -1)]
     for name in chain:
         entry = loggers.get(name, {})
-        mail_handlers += [h for h in entry.get("handlers", []) if h == "mail_admins"]
+        reached += entry.get("handlers", [])
         if not entry.get("propagate", True):
             break
     else:
-        mail_handlers += [
-            h for h in logging_config["root"]["handlers"] if h == "mail_admins"
-        ]
-    assert mail_handlers == ["mail_admins"]
+        reached += logging_config["root"]["handlers"]
+    # One email and one console line per error, not two of either.
+    assert sorted(reached) == ["console", "mail_admins"]
     # Through the subclass that releases its DB connection (#447).
     assert (
         logging_config["handlers"]["mail_admins"]["class"]

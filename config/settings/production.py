@@ -176,9 +176,10 @@ logging_config["loggers"] = {
         "level": "ERROR",
         "propagate": True,
     },
+    # No handler of its own: propagation reaches root's console and django's
+    # mail_admins, so each rejected Host is printed and emailed once.
     "django.security.DisallowedHost": {
         "level": "ERROR",
-        "handlers": ["console"],
         "propagate": True,
     },
 }

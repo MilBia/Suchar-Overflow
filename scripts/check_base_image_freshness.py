@@ -22,12 +22,17 @@ import json
 import re
 import subprocess
 import sys
+import time
 import urllib.request
 from dataclasses import dataclass
 from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCKERFILE = REPO_ROOT / "compose" / "production" / "django" / "Dockerfile"
@@ -40,6 +45,11 @@ MAX_IMAGE_AGE = timedelta(days=42)
 # A new 3.14.x usually lands in the official image within a day or two; a week
 # of grace keeps the check quiet during a normal rollout.
 RELEASE_GRACE = timedelta(days=7)
+
+# One retry after a pause: a transient pull / API blip must not open or comment
+# on the issue every now and then (exit 2 is still "could not check").
+ATTEMPTS = 2
+RETRY_DELAY = timedelta(seconds=15)
 
 EOL_API = "https://endoflife.date/api/python/{cycle}.json"
 HTTP_TIMEOUT = 30
@@ -167,6 +177,18 @@ def fetch_latest(cycle: str) -> tuple[str, datetime]:
         raise CheckError(msg) from exc
 
 
+def with_retry[T](func: Callable[[str], T], arg: str) -> T:
+    """Call ``func(arg)``, retrying once on ``CheckError`` after ``RETRY_DELAY``."""
+    for attempt in range(1, ATTEMPTS + 1):
+        try:
+            return func(arg)
+        except CheckError:
+            if attempt == ATTEMPTS:
+                raise
+            time.sleep(RETRY_DELAY.total_seconds())
+    raise AssertionError  # pragma: no cover  (the loop always returns or raises)
+
+
 def build_report(  # noqa: PLR0913
     *,
     image: str,
@@ -209,6 +231,15 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="also write the markdown report to this file",
     )
+    parser.add_argument(
+        "--max-age-days",
+        type=int,
+        default=MAX_IMAGE_AGE.days,
+        help=(
+            "image age limit in days; 0 forces a 'stale' verdict, which the "
+            "workflow's force_stale input uses to exercise the issue path"
+        ),
+    )
     args = parser.parse_args(argv)
 
     def emit(text: str) -> None:
@@ -219,14 +250,15 @@ def main(argv: list[str] | None = None) -> int:
     try:
         tag = image_tag(DOCKERFILE.read_text(encoding="utf-8"))
         image = f"python:{tag}"
-        created, python_version = inspect_image(image)
-        latest, latest_release_date = fetch_latest(release_cycle(tag))
+        created, python_version = with_retry(inspect_image, image)
+        latest, latest_release_date = with_retry(fetch_latest, release_cycle(tag))
         verdict = evaluate(
             created=created,
             python_version=python_version,
             latest=latest,
             latest_release_date=latest_release_date,
             now=datetime.now(tz=UTC),
+            max_age=timedelta(days=args.max_age_days),
         )
         report = build_report(
             image=image,
@@ -236,7 +268,7 @@ def main(argv: list[str] | None = None) -> int:
             latest_release_date=latest_release_date,
             verdict=verdict,
         )
-    # Anything unexpected (an API field renamed, a version like "3.14.8rc1") is
+    # Anything unexpected (a bug here, an error type the helpers don't wrap) is
     # "could not check" too: an uncaught traceback would exit 1, i.e. "stale",
     # and leave the workflow without a report for the issue.
     except Exception as exc:  # noqa: BLE001

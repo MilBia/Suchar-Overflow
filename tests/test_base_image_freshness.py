@@ -36,6 +36,12 @@ def _load() -> ModuleType:
 
 freshness = _load()
 
+
+@pytest.fixture(autouse=True)
+def _no_retry_delay(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(freshness, "RETRY_DELAY", timedelta(0))
+
+
 NOW = datetime(2026, 9, 27, 12, tzinfo=UTC)
 
 
@@ -111,8 +117,9 @@ def test_image_tag_rejects_missing_python_stage() -> None:
 
 def test_repo_dockerfile_tag() -> None:
     text = freshness.DOCKERFILE.read_text(encoding="utf-8")
-    assert freshness.image_tag(text) == "3.14-slim-trixie"
-    assert freshness.release_cycle("3.14-slim-trixie") == "3.14"
+    # The codename is test_python_runtime.py's business; a Debian move (#437)
+    # shouldn't have to touch this test as well.
+    assert freshness.release_cycle(freshness.image_tag(text)) == "3.14"
 
 
 def test_parse_timestamp_handles_docker_nanoseconds() -> None:
@@ -137,24 +144,85 @@ def test_check_failure_is_not_a_pass(
     assert "Nie udało się" in report.read_text(encoding="utf-8")
 
 
+def _fresh_image(_image: str) -> tuple[datetime, str]:
+    return datetime(2026, 9, 19, tzinfo=UTC), "3.14.7"
+
+
+def _latest(_cycle: str) -> tuple[str, datetime]:
+    return "3.14.7", datetime(2026, 8, 5, tzinfo=UTC)
+
+
 def test_unexpected_error_is_not_a_pass_either(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    # Not a CheckError: an uncaught one would exit 1 ("stale") with no report.
+    # Not a CheckError: without main()'s catch-all it would escape as a
+    # traceback, exit 1 ("stale") and leave no report for the issue step.
+    def broken_fetch(_cycle: str) -> tuple[str, datetime]:
+        msg = "unexpected"
+        raise RuntimeError(msg)
+
+    monkeypatch.setattr(freshness, "inspect_image", _fresh_image)
+    monkeypatch.setattr(freshness, "fetch_latest", broken_fetch)
+    report = tmp_path / "report.md"
+    assert freshness.main(["--report", str(report)]) == freshness.EXIT_ERROR
+    text = report.read_text(encoding="utf-8")
+    assert "Nie udało się" in text
+    assert "RuntimeError" in text
+
+
+def test_unparsable_python_version_is_not_a_pass(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    # evaluate() raises CheckError for a pre-release it can't compare; it must
+    # run inside main()'s try, not after it.
     monkeypatch.setattr(
         freshness,
         "inspect_image",
         lambda _image: (datetime(2026, 9, 19, tzinfo=UTC), "3.14.8rc1"),
     )
-    monkeypatch.setattr(
-        freshness,
-        "fetch_latest",
-        lambda _cycle: ("3.14.7", datetime(2026, 8, 5, tzinfo=UTC)),
-    )
+    monkeypatch.setattr(freshness, "fetch_latest", _latest)
     report = tmp_path / "report.md"
     assert freshness.main(["--report", str(report)]) == freshness.EXIT_ERROR
     assert "Nie udało się" in report.read_text(encoding="utf-8")
+
+
+def test_transient_failure_is_retried_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+
+    def flaky_fetch(cycle: str) -> tuple[str, datetime]:
+        calls.append(cycle)
+        if len(calls) == 1:
+            msg = "blip"
+            raise freshness.CheckError(msg)
+        return _latest(cycle)
+
+    monkeypatch.setattr(freshness, "inspect_image", _fresh_image)
+    monkeypatch.setattr(freshness, "fetch_latest", flaky_fetch)
+    assert freshness.main([]) == freshness.EXIT_FRESH
+    assert calls == ["3.14", "3.14"]
+
+
+def test_persistent_failure_gives_up_after_the_retry() -> None:
+    calls: list[str] = []
+
+    def broken(arg: str) -> str:
+        calls.append(arg)
+        msg = "down"
+        raise freshness.CheckError(msg)
+
+    with pytest.raises(freshness.CheckError):
+        freshness.with_retry(broken, "x")
+    assert len(calls) == freshness.ATTEMPTS
+
+
+def test_max_age_zero_forces_a_stale_verdict(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The workflow's force_stale input: exercises the issue path on a fresh image.
+    monkeypatch.setattr(freshness, "inspect_image", _fresh_image)
+    monkeypatch.setattr(freshness, "fetch_latest", _latest)
+    assert freshness.main([]) == freshness.EXIT_FRESH
+    assert freshness.main(["--max-age-days", "0"]) == freshness.EXIT_STALE
 
 
 def test_stale_result_exits_one(monkeypatch: pytest.MonkeyPatch) -> None:
