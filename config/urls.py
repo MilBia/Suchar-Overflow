@@ -68,10 +68,10 @@ if settings.DEBUG:
         ),
         path("500/", server_error),
     ]
+    # Guarded by INSTALLED_APPS, not just DEBUG: django-debug-toolbar is a dev-only
+    # dependency, and importing debug_toolbar.toolbar loads its models, which needs
+    # the app registered. debug_toolbar_urls() itself is a no-op without DEBUG.
     if "debug_toolbar" in settings.INSTALLED_APPS:
-        import debug_toolbar
+        from debug_toolbar.toolbar import debug_toolbar_urls
 
-        urlpatterns = [
-            path("__debug__/", include(debug_toolbar.urls)),
-            *urlpatterns,
-        ]
+        urlpatterns += debug_toolbar_urls()

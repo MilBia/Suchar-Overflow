@@ -204,7 +204,8 @@ until you push a commit to that PR with the matching `rev`
 - All tests use `@pytest.mark.django_db`.
 - pytest config: `--ds=config.settings.test --reuse-db --import-mode=importlib`
 - `--reuse-db` keeps the DB between runs; pass `--create-db` to rebuild from scratch.
-- The test settings (`config/settings/test.py`) use `locmem` cache (no Redis needed)
+- The test settings (`config/settings/test.py`) use `locmem` cache (no Redis needed;
+  local and production use Redis — see Settings architecture)
   and `COMPRESS_ENABLED = False` (no compressor).
 - **Email sending**: views call `send_activation_email` / `send_email_change_emails`
   via `sync_to_async`. These functions call `django.core.mail.send_mail` directly.
@@ -409,6 +410,18 @@ Current safe defaults in `base.py`:
 
 - `COMPRESS_ENABLED = False` — production.py sets `True`
 - `COMPRESS_OFFLINE = False` — production.py sets `True`
+
+`CACHES` is defined once, in `base.py` (#454): django-redis on `REDIS_URL`, with
+`IGNORE_EXCEPTIONS` (a Redis outage degrades to cache misses, not 500s) and
+`ssl_cert_reqs: None` for a `rediss://` URL. `local.py` and `production.py` inherit
+it, so the dev server shares the Redis container's cache (the SSE/toast flags behave
+as in production and survive a dev-server restart); only `test.py` (and so `e2e.py`,
+whose `live_server` runs in the same process) swaps in LocMem. `local.py` also lists
+the template loaders explicitly (`APP_DIRS = False`, no `cached.Loader`): Django
+resets the cached loader through `runserver`'s autoreload signal, which uvicorn never
+sends, and uvicorn's `--reload` ignores `*.html`, so an edited template otherwise
+kept rendering the old version until a restart. `tests/test_cache_settings.py`
+guards both.
 
 `CONN_MAX_AGE` is `0` in `base.py` and is the default in `production.py` (#430). Under ASGI
 every request runs its sync code in its own `ThreadSensitiveContext` thread, so a
