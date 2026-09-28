@@ -25,9 +25,13 @@ SETTINGS_DIR = Path(base.__file__).resolve().parent
 
 
 def _assigned_names(path: Path) -> set[str]:
-    """Top-level names a settings module assigns, including ``X[...] = ...`` targets."""
+    """Names a settings module assigns anywhere, including ``X[...] = ...`` targets.
+
+    ``ast.walk`` rather than the module body, so an assignment nested in an ``if``
+    / ``try`` block (e.g. an env-conditional ``CACHES = ...``) is caught too.
+    """
     names: set[str] = set()
-    for node in ast.parse(path.read_text(encoding="utf-8")).body:
+    for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
         if isinstance(node, ast.Assign):
             targets = node.targets
         elif isinstance(node, (ast.AugAssign, ast.AnnAssign)):
@@ -67,6 +71,21 @@ def test_base_caches_use_redis_and_ignore_exceptions(
 @pytest.mark.parametrize("module", ["local.py", "production.py"])
 def test_local_and_production_do_not_redefine_caches(module: str) -> None:
     assert "CACHES" not in _assigned_names(SETTINGS_DIR / module)
+
+
+def test_assigned_names_sees_nested_assignments(tmp_path: Path) -> None:
+    module = tmp_path / "settings_stub.py"
+    module.write_text(
+        "import os\n"
+        "if os.environ.get('X'):\n"
+        "    CACHES = {}\n"
+        "try:\n"
+        "    DEBUG = True\n"
+        "except ImportError:\n"
+        "    TEMPLATES[0]['APP_DIRS'] = False\n",
+        encoding="utf-8",
+    )
+    assert {"CACHES", "DEBUG", "TEMPLATES"} <= _assigned_names(module)
 
 
 def test_production_inherits_base_caches(monkeypatch: pytest.MonkeyPatch) -> None:
