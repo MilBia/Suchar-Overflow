@@ -22,7 +22,7 @@ if READ_DOT_ENV_FILE:
 # then .env (when DJANGO_READ_DOT_ENV_FILE), then this file.
 # .gitignore and .dockerignore both exclude it (#453), so the production image
 # never contains it; production compose passes it as an optional env_file instead,
-# where .envs/.production/.django wins over it the same way.
+# where .envs/.production/.django and .postgres win over it the same way.
 SECRETS_ENV_FILE = BASE_DIR / ".envs" / ".secrets"
 if SECRETS_ENV_FILE.is_file():
     env.read_env(str(SECRETS_ENV_FILE))

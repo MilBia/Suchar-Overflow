@@ -384,8 +384,10 @@ build-time `compilemessages` relies on that); only when it is absent does `base.
 (gitignored) when it exists; the OS environment wins over it, and `.env` (with
 `DJANGO_READ_DOT_ENV_FILE`) over it too (`read_env` only `setdefault`s). `.dockerignore`
 excludes `.envs/`, so the production image never contains it; production compose passes it
-as an optional `env_file` (`required: false`) listed **first**, so `.envs/.production/.django`
-overrides it — the same precedence as `base.py`'s. `ADMINS` strips whitespace and drops blank
+as an optional `env_file` (`required: false`) listed **first**, so `.envs/.production/.django` and
+`.postgres` override it — the same precedence as `base.py`'s. Local compose deliberately
+has no such entry: the bind mount already exposes the file to `base.py`, and a value compose
+put in the environment would shadow a later edit of it until the container is recreated. `ADMINS` strips whitespace and drops blank
 entries (a `" "` left by a trailing comma made every `mail_admins` send raise, silently).
 `MAILERS` lives in `base.py` only; legacy `EMAIL_*` names are read as a fallback for one
 release (CHANGELOG) — drop that fallback afterwards. An empty `DJANGO_EMAIL_*`/`EMAIL_*`

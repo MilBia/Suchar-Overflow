@@ -111,8 +111,9 @@ def test_redis_persists_to_a_named_volume(compose_file: Path) -> None:
 
 def test_production_django_reads_optional_secrets_first() -> None:
     # .envs/.secrets is optional, and a later env_file overrides an earlier one, so
-    # it comes first: .envs/.production/.django wins over it, as the OS environment
-    # does over the file in base.py.
+    # it comes first: .envs/.production/.django and .postgres win over it, as the OS
+    # environment does over the file in base.py.
     env_files = _load(_ROOT / "docker-compose.production.yml")["services"]["django"]["env_file"]
     assert env_files[0] == {"path": "./.envs/.secrets", "required": False}
     assert "./.envs/.production/.django" in env_files[1:]
+    assert "./.envs/.production/.postgres" in env_files[1:]
