@@ -20,6 +20,11 @@ services:
             redis:
                 condition: service_healthy
         env_file:
+            # Optional out-of-git secrets (e.g. third-party API keys). Listed first
+            # because a later env_file overrides an earlier one: .envs/.production/*
+            # wins, matching base.py, where the environment wins over this file.
+            - path: ./.envs/.secrets
+              required: false
             - ./.envs/.production/.django
             - ./.envs/.production/.postgres
         command: /start

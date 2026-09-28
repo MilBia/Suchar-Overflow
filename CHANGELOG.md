@@ -16,9 +16,8 @@ Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 - Adresaci raportów o błędach (`ADMINS`, `MANAGERS`) pochodzą z `DJANGO_ADMINS` (lista po
   przecinku, `Imię <mail>` lub sam adres); domyślnie pusta.
 - Nowe, opcjonalne: `DJANGO_STATIC_ROOT` (nadpisuje `STATIC_ROOT`) oraz plik `.envs/.secrets`
-  (spoza gita), ładowany przez ustawienia, gdy istnieje. To mechanizm lokalny: `.dockerignore`
-  wyklucza `.envs/`, a produkcyjny compose go nie montuje — w produkcji sekrety idą do
-  `.envs/.production/.django`.
+  (spoza gita), ładowany przez ustawienia, gdy istnieje. W produkcji compose przekazuje go jako
+  opcjonalny `env_file`; wartości z `.envs/.production/.django` mają przed nim pierwszeństwo.
 - Ustawienia same składają `DATABASE_URL` z `POSTGRES_*`, gdy nie jest ustawione, więc
   `docker compose exec django python manage.py …` działa bez `/entrypoint`.
 

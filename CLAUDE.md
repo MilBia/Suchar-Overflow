@@ -381,9 +381,10 @@ build-time `compilemessages` relies on that); only when it is absent does `base.
 `POSTGRES_*`. A process started through `/entrypoint` always gets the entrypoint's
 `POSTGRES_*` DSN, though (see "Running commands"). `base.py` also loads `.envs/.secrets`
 (gitignored) when it exists; the OS environment wins over it, and `.env` (with
-`DJANGO_READ_DOT_ENV_FILE`) over it too (`read_env` only `setdefault`s). It is local-only:
-`.dockerignore` excludes `.envs/` and production compose doesn't mount it, so production
-secrets go in `.envs/.production/.django`. `ADMINS` strips whitespace and drops blank
+`DJANGO_READ_DOT_ENV_FILE`) over it too (`read_env` only `setdefault`s). `.dockerignore`
+excludes `.envs/`, so the production image never contains it; production compose passes it
+as an optional `env_file` (`required: false`) listed **first**, so `.envs/.production/.django`
+overrides it — the same precedence as `base.py`'s. `ADMINS` strips whitespace and drops blank
 entries (a `" "` left by a trailing comma made every `mail_admins` send raise, silently).
 `MAILERS` lives in `base.py` only; legacy `EMAIL_*` names are read as a fallback for one
 release (CHANGELOG) — drop that fallback afterwards. An empty `DJANGO_EMAIL_*`/`EMAIL_*`

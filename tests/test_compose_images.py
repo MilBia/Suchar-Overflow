@@ -5,6 +5,7 @@
 - The stateful services report their health, and django waits for it
   (`condition: service_healthy`) instead of only for the containers to start.
 - Redis persists to a volume, since the RQ queue (#460) will live in it.
+- Production passes the optional `.envs/.secrets` before its own env files.
 
 Only the files are read here; that the stack actually comes up healthy is
 checked by hand (`just up` + `docker compose ps`).
@@ -106,3 +107,12 @@ def test_redis_persists_to_a_named_volume(compose_file: Path) -> None:
     assert target == "/data"
     assert volume in config["volumes"]
     assert redis["healthcheck"]["test"] == ["CMD", "redis-cli", "ping"]
+
+
+def test_production_django_reads_optional_secrets_first() -> None:
+    # .envs/.secrets is optional, and a later env_file overrides an earlier one, so
+    # it comes first: .envs/.production/.django wins over it, as the OS environment
+    # does over the file in base.py.
+    env_files = _load(_ROOT / "docker-compose.production.yml")["services"]["django"]["env_file"]
+    assert env_files[0] == {"path": "./.envs/.secrets", "required": False}
+    assert "./.envs/.production/.django" in env_files[1:]

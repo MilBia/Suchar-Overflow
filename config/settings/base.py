@@ -20,9 +20,9 @@ if READ_DOT_ENV_FILE:
 # exists. Like .env above, a variable already in the OS environment wins.
 # read_env() only setdefault()s, so the first source to set a name wins: OS env,
 # then .env (when DJANGO_READ_DOT_ENV_FILE), then this file.
-# .gitignore and .dockerignore both exclude it (#453), so it is a local-only
-# mechanism: the production image never contains it and production compose does
-# not mount it — production secrets go in .envs/.production/.django.
+# .gitignore and .dockerignore both exclude it (#453), so the production image
+# never contains it; production compose passes it as an optional env_file instead,
+# where .envs/.production/.django wins over it the same way.
 SECRETS_ENV_FILE = BASE_DIR / ".envs" / ".secrets"
 if SECRETS_ENV_FILE.is_file():
     env.read_env(str(SECRETS_ENV_FILE))
