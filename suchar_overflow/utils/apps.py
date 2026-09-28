@@ -10,4 +10,7 @@ class UtilsConfig(AppConfig):
     """
 
     name = "suchar_overflow.utils"
+    # A bare "utils" label is generic enough to clash with a third-party app, and
+    # renaming a label becomes a migration problem once the app has models.
+    label = "suchar_utils"
     verbose_name = _("Narzędzia")
