@@ -430,6 +430,13 @@ LOGGING = {
 REDIS_URL = env("REDIS_URL")
 REDIS_SSL = REDIS_URL.startswith("rediss://")
 
+# CACHES
+# ------------------------------------------------------------------------------
+# Defined only here (#454): local and production both use this Redis cache, so the
+# shared-cache behaviour (the SSE `achievements_pending` flag, the toast latch) is
+# the same in dev as in production and survives a dev-server restart. Only test.py
+# swaps in LocMem. tests/test_cache_settings.py guards the layering.
+# https://docs.djangoproject.com/en/dev/ref/settings/#caches
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -437,6 +444,10 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "CONNECTION_POOL_KWARGS": {"ssl_cert_reqs": None} if REDIS_SSL else {},
+            # Mimicking memcache behavior: a Redis outage degrades to cache misses
+            # instead of 500s.
+            # https://github.com/jazzband/django-redis#memcached-exceptions-behavior
+            "IGNORE_EXCEPTIONS": True,
         },
     },
 }
