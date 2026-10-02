@@ -29,7 +29,8 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def host_header() -> str:
-    first = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")[0].strip().lstrip(".")
+    hosts = (host.strip().lstrip(".") for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(","))
+    first = next((host for host in hosts if host), "")
     return "localhost" if first in {"", "*"} else first
 
 

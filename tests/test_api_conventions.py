@@ -24,6 +24,9 @@ if TYPE_CHECKING:
     from pytest_django.fixtures import Settings as SettingsWrapper
 
 
+# Ninja's own routes; anything else (a new router, e.g. users) must be listed below.
+_NINJA_INTERNAL_NAMES = {"openapi-json", "openapi-view", "api-root"}
+
 _OPERATIONS = [
     ("suchary_list_tags", "/api/suchary/tags"),
     ("suchary_vote_suchar", "/api/suchary/1/vote"),
@@ -46,17 +49,24 @@ def test_table_lists_every_operation() -> None:
     declared = {
         pattern.name
         for pattern in config_api.api.urls[0]
-        if isinstance(pattern, URLPattern) and pattern.name and pattern.name.startswith(("suchary_", "achievements_"))
+        if isinstance(pattern, URLPattern) and pattern.name and pattern.name not in _NINJA_INTERNAL_NAMES
     }
     assert declared == {name for name, _ in _OPERATIONS}
 
 
-def test_permission_denied_becomes_a_403_with_a_message() -> None:
+@pytest.mark.parametrize(
+    ("language", "message"),
+    [
+        ("pl", "Brak uprawnień do wykonania tej operacji."),
+        ("en", "You do not have permission to perform this operation."),
+    ],
+)
+def test_permission_denied_becomes_a_403_with_a_message(language: str, message: str) -> None:
     request = RequestFactory().get("/api/anything")
-    with translation.override("pl"):
+    with translation.override(language):
         response = config_api.api.on_exception(request, PermissionDenied())
     assert response.status_code == HTTPStatus.FORBIDDEN
-    assert json.loads(response.content) == {"message": "Brak uprawnień do wykonania tej operacji."}
+    assert json.loads(response.content) == {"message": message}
 
 
 def _rebuild_api_urls() -> None:
