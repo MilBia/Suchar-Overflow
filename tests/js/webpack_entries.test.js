@@ -23,7 +23,7 @@ function build() {
         ...prodConfig,
         output: { ...prodConfig.output, path: outDir },
         // The stats file belongs to the real build; keep this one out of the repo root.
-        plugins: prodConfig.plugins.filter((plugin) => plugin.constructor.name !== 'BundleTracker'),
+        plugins: prodConfig.plugins.filter((plugin) => plugin.constructor.name !== 'BundleTrackerPlugin'),
         devtool: false,
         cache: false,
         // Concatenated modules are listed as one `a.js + N modules` entry; keep them separate to count them.

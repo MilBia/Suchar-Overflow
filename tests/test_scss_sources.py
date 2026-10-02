@@ -1,8 +1,7 @@
 """The global stylesheet is composed in ``webpack/src/scss/project.scss`` (#467).
 
-It replaces ``tests/test_compressed_css.py`` (#204), which guarded the ``{% compress css %}``
-block. The same two properties matter now, and both are checked on the source so the test needs
-no build:
+It replaces the #204 test of the old per-template stylesheet block. The same two properties matter
+now, and both are checked on the source so the test needs no build:
 
 - **Position is the cascade order.** ``utilities`` and ``components/forms`` carry comments that
   depend on it, so the ``@use`` list must keep fonts → core → components → site.
@@ -81,7 +80,7 @@ def test_page_sheets_stay_out_of_the_global_bundle() -> None:
 
 
 def test_cascade_markers_appear_in_order_in_the_sources() -> None:
-    # Same markers the compressor-era test used, found by walking the @use list.
+    # The markers the old bundle test used, found by walking the @use list.
     markers = ["@font-face", "--hue-primary:", ".ms-auto", ".invalid-feedback", ".theme-transition"]
     text = "".join(
         next(_SCSS.glob(f"{Path(name).parent}/_{Path(name).name}.scss")).read_text(encoding="utf-8")

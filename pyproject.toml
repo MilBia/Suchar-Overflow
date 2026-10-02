@@ -223,9 +223,6 @@ dependencies = [
     "psycopg[c]==3.3.6",
     "python-slugify==8.0.4",
     "django-ninja==1.7.1",
-    "django-compressor==4.6.0",
-    "rcssmin==1.2.2",
-    "rjsmin==1.2.5",
     "redis==8.1.0",
     # fill_translations.py imports httpx directly for the translategemma path;
     # declare it explicitly instead of relying on openai's transitive dependency.

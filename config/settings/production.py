@@ -77,8 +77,8 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
 # STATIC & MEDIA
 # ------------------------
 # nginx serves /static/ and /media/ from volumes (#463); Django only writes them:
-# `collectstatic` fills STATIC_ROOT (with the manifest, #436) and `compress --force`
-# adds CACHE/ next to it. There is no static-serving middleware in the chain.
+# `collectstatic` fills STATIC_ROOT (the webpack bundles built into the image, the fonts, images
+# and audio, and the manifest, #436). There is no static-serving middleware in the chain.
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -155,9 +155,3 @@ logging_config["loggers"] = {
     },
 }
 LOGGING = logging_config
-
-
-# COMPRESSOR
-# ------------------------------------------------------------------------------
-COMPRESS_ENABLED = True
-COMPRESS_OFFLINE = True

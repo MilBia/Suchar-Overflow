@@ -228,7 +228,7 @@ def test_page_renders_its_scripts_deferred_once_after_project(  # noqa: PLR0913,
     tags = re.findall(r"<script\b[^>]*\bsrc=\"[^\"]+\"[^>]*>", html)
     srcs = [re.search(r'src="([^"]+)"', tag).group(1) for tag in tags]  # type: ignore[union-attr]
 
-    # Nothing but webpack bundles: no classic /static/js script and no compressor output is left.
+    # Nothing but webpack bundles: no classic /static/js script is left.
     assert srcs
     assert all(src.startswith("/static/webpack_bundles/js/") for src in srcs), srcs
     # Every script keeps `defer` (the block lives in <head>), and no chunk is repeated: the shared runtime
