@@ -5,9 +5,9 @@
 Django 6.1 web app (joke aggregator). Backend: Python 3.14, PostgreSQL, Redis.
 Frontend: Django templates (DjangoTemplates backend), vanilla JS, CSS custom properties.
 Package manager: `uv`. Local dev and CI both run inside Docker Compose.
-Compose services: `django`, `postgres`, `redis`, `mailpit` (catches outgoing dev email at
+Compose services: `django`, `worker` and `cron` (RQ, same image — see Background jobs), `postgres`, `redis`, `mailpit` (catches outgoing dev email at
 `localhost:8025`).
-`compose/base/` holds what both stacks share (`django/entrypoint`, the `postgres/` image and
+`compose/base/` holds what both stacks share (`django/entrypoint`, `healthcheck`, `worker`, `cron`, the `postgres/` image and
 its `maintenance/` backup scripts); `compose/local/` and `compose/production/` hold only their
 own Django `Dockerfile`/`start` plus Traefik/nginx (#456). Every `FROM` and pulled `image:`
 names its registry (`docker.io/…`, `ghcr.io/…`), because podman doesn't assume Docker Hub;
@@ -48,7 +48,8 @@ same URL-encoded DSN from `POSTGRES_*` itself (#453). So a plain
 `docker compose -f docker-compose.local.yml exec django python manage.py …` works in a
 running container; `just exec <cmd>` (e.g. `just exec python manage.py showmigrations`),
 `just shell` (`shell_plus`) and `just bash` are shortcuts for it and need `just up`.
-`just manage` (`run --rm`, no TTY required) is the one to use from scripts. The #404
+`just manage` (`run --rm`, no TTY required) is the one to use from scripts. Queue state:
+`just exec python manage.py rqstats` (needs `just up`); `just logs worker cron` follows the RQ services. The #404
 workaround (a `/etc/bash.bashrc` snippet sourcing the entrypoint) is gone.
 
 The dev server (`compose/local/django/start`, copied into the image — edit it, then
@@ -99,7 +100,7 @@ reloads. Drop `--clear` if that starts to matter once the site is live. Locally 
 or 503 (details only in the log). The database check is `SELECT 1` wrapped in
 `releases_db_connections`; the cache check is `PING` on the **raw** `django_redis`
 connection, never `cache.get` — `IGNORE_EXCEPTIONS` would swallow an outage and always
-report ok. Checks live in `HEALTH_CHECKS` (the RQ queue joins in #460).
+report ok. Checks live in `HEALTH_CHECKS` (`database`, `cache`, and `queue` since #460).
 `SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]` in production. The `django` container's
 healthcheck is `compose/base/django/healthcheck` (stdlib Python — the image has no
 `curl`; `/healthcheck <port>`): it sends `Host` = first `DJANGO_ALLOWED_HOSTS` entry
@@ -112,7 +113,13 @@ Traefik and nginx `depends_on: django: service_healthy`. Tests use LocMem, so
 **API conventions (#458).** `config/api.py`'s `SucharOverflowAPI` names every operation
 `<router tag>_<function>` (`reverse("api:suchary_vote_suchar")`), so each `Router` must
 carry `tags=[...]` — `tests/test_api_conventions.py` lists every operation and fails when a
-new one is missing. `/api/docs` follows `API_ENABLE_DOCS` (env `DJANGO_API_ENABLE_DOCS`, bare name as a one-release fallback, default on — switch it off
+new one is missing. **Authentication (#459):** `NinjaAPI(auth=[ApiToken(), django_auth])` — a
+`Authorization: Bearer <token>` (`users.AuthToken`, one per user, issued only in the admin; only the
+SHA-256 digest is stored and the clear text shows once in an admin message; an inactive user's token is
+rejected) or the Django session (CSRF-checked). Endpoints inherit that default, so don't add
+`auth=django_auth` per route; a public one needs an explicit `auth=None` (`GET /api/suchary/tags`).
+`GET /api/users/me` returns `{"username"}`. Test with the `api_client` fixture
+(`suchar_overflow/conftest.py`, `enforce_csrf_checks=True`). `/api/docs` follows `API_ENABLE_DOCS` (env `DJANGO_API_ENABLE_DOCS`, bare name as a one-release fallback, default on — switch it off
 in production); `PermissionDenied` becomes a 403 `{"message": ...}`.
 
 Worker RSS that climbs under load and never comes back (#431) was CPython 3.14.2's
@@ -248,21 +255,21 @@ until you push a commit to that PR with the matching `rev`
 - The test settings (`config/settings/test.py`) use `locmem` cache (no Redis needed;
   local and production use Redis — see Settings architecture)
   and `COMPRESS_ENABLED = False` (no compressor).
-- **Email sending**: views call `send_activation_email` / `send_email_change_emails`
-  via `sync_to_async`. These functions call `django.core.mail.send_mail` directly.
-  In tests, mock at the send_mail level or the task function level:
-  ```python
-  with patch("suchar_overflow.users.views.send_activation_email"):
-      await client.post(...)
-  ```
+- **Email sending (#461)**: views queue `send_activation_email` and the two email-change jobs
+  (`send_email_change_verify_email` / `send_email_change_notify_email`, one job per message so a retry
+  never repeats the other send) through `enqueue_email` (`users/tasks.py`, `sync_to_async` in the async views), so a request
+  sends nothing. The autouse `rq_queue` fixture (root `conftest.py`) mocks `django_rq.get_queue`:
+  assert on `rq_queue.enqueue.call_args` (task, args, `language=`, `retry=`), then call
+  `run_enqueued_jobs(rq_queue)` (`suchar_overflow/conftest.py`) to execute the jobs and read
+  `mail.outbox`. Call a task directly, with `language=`, to test its rendering.
 - **Migration-seeded achievements**: the DB has real Achievement rows from data
   migrations (e.g. "First Suchar", "Królowa/Król Sucharów"). Tests that create
   `Suchar` or `Vote` objects will trigger the achievement engine and award these.
   When asserting `UserAchievement` state, always filter by the specific achievement
   being tested, never assert on all `UserAchievement` for a user. Similarly, a
   `SchedulerRun(job_id="award-best-suchar-year")` row is baseline data seeded by
-  migration `0015_seed_yearly_scheduler_run` (see Background scheduling below) —
-  tests exercising `_catch_up_missed_yearly_run` must delete or `update_or_create`
+  migration `0015_seed_yearly_scheduler_run` (see Background jobs below) —
+  tests exercising `award_best_suchar_year_if_due` must delete or `update_or_create`
   it first rather than assuming no marker exists.
 - **Streaming responses**: the only streaming endpoint is the SSE stream, whose
   generator never completes. Do **not** use `b"".join(response.streaming_content)`
@@ -1171,12 +1178,12 @@ No profile field — cookie only.
   / bare `localdate()` in computation code — inside a request that is the visitor's.
 - Python-side `.date()` / `.replace(hour=0)` on `timezone.now()` is the **UTC** date
   (wrong between 22:00/23:00 and 24:00 UTC) — use `localdate(..., service_tz)`.
-- The scheduler is `BackgroundScheduler(timezone=settings.TIME_ZONE)`, so the
-  contest crons fire at 00:05 _service-local_; `due_*_run_at` convert `now` to the
-  service zone before reconstructing the fire time. 00:05 never falls in a DST
-  gap/overlap (the switch is at 02:00/03:00). A `SchedulerRun` marker written by the
-  pre-#405 UTC cron (1st, 00:05Z) is _after_ the new local fire time, so no spurious
-  catch-up.
+- The contest jobs fire at 00:05 _service-local_: `rq.cron` itself runs in UTC, so
+  `achievements/cron.py` checks hourly at :05 and `award_best_suchar_*_if_due` /
+  `due_*_run_at` convert `now` to the service zone before reconstructing the fire time
+  (see Background jobs). 00:05 never falls in a DST gap/overlap (the switch is at
+  02:00/03:00). A `SchedulerRun` marker written by the pre-#405 UTC cron (1st, 00:05Z)
+  is _after_ the new local fire time, so no spurious catch-up.
 - Tests: build naive wall-clock strings / "local hours" from `timezone.localtime()`,
   not `timezone.now()`. Boundary tests (`achievements/tests/test_timezone.py`) use
   timestamps in the 22:00–24:00 UTC window — the only one where a UTC-day bug shows —
@@ -1209,98 +1216,97 @@ No profile field — cookie only.
   access is wrapped in `try/catch` (a `SecurityError` with cookies blocked would
   otherwise stop every script after it).
 
-### Background scheduling — APScheduler, not Django-RQ
+### Background jobs — RQ worker + `cron` service (#460, #461, #462)
 
-Django-RQ has been removed entirely. `AchievementsConfig.ready()`
-(`suchar_overflow/achievements/apps.py`) starts an in-process `BackgroundScheduler`
-(raw `apscheduler` 3.x, default in-memory jobstore — `django-apscheduler` was dropped,
-see issue #159: semi-abandoned, no declared Django 6.x support) on a plain thread,
-scheduling `award_best_suchar` as two cron jobs: `award-best-suchar-month` (day=1,
-00:05) and `award-best-suchar-year` (month=1, day=1, 00:05 — see #168), plus
-a third, `award-publication-achievements` (`award_publication_achievements`, every
-minute — `minute="*"`; see below, #389/#402). The
-scheduler is skipped under pytest and for management commands in `_NO_SCHEDULER`
-(`migrate`, `makemigrations`, `collectstatic`, `compress`, `check`, `shell`,
-`createsuperuser`) to avoid starting duplicate/unwanted schedulers. Since the
-jobstore is in-memory (no DB persistence across restarts), `award_best_suchar`
-records its own last-run marker in the `SchedulerRun` model
-(`achievements/models.py`), visible read-only in the admin — one row per job id.
+Work outside the request runs in two extra compose services built from the Django image
+(`worker`, `cron`; local and production): **`worker`** (`compose/base/django/worker`:
+`rqworker --with-scheduler default` — `--with-scheduler` is what makes `Retry(interval=…)`
+and `enqueue_in` fire) and **`cron`** (`compose/base/django/cron`: `achievements_catch_up`,
+then `exec manage.py rqcron suchar_overflow.achievements.cron`). **Run exactly one `cron`
+instance** — a second one enqueues every periodic job twice. Web workers start no scheduler
+(`AchievementsConfig.ready()` only wires signals), so `WEB_CONCURRENCY > 1` is safe. This
+reversed the old "Django-RQ removed, APScheduler in-process" decision of #159: APScheduler
+ran in every gunicorn worker and duplicated its jobs.
 
-Because the jobstore only knows about _future_ fire times, a process restart alone
-does not catch up a cron fire that was due while the process was down (see #169).
-`AchievementsConfig._catch_up_missed_monthly_run()` and
-`_catch_up_missed_yearly_run()` cover this, one per job: on every scheduler start
-each compares `SchedulerRun.ran_at` for its job id against the most recent due fire
-time (`due_monthly_run_at()` / `due_yearly_run_at()` in `achievements/tasks.py`) and,
-if that fire was never recorded, calls `award_best_suchar(period, reference_date=...)`
-synchronously before `scheduler.start()` — `reference_date` is the missed fire's own
-date, not "yesterday" relative to whatever day the process happens to restart
-(`award_best_suchar` defaults `reference_date` to yesterday only when the caller
-omits it, which is what the normal cron path does). Each catch-up runs in its own
-`try/except` in `_start_scheduler` so a failure in one (e.g. a transient DB error)
-never blocks the other catch-up or the recurring jobs from being registered.
-Idempotent — `award_best_suchar` itself updates `SchedulerRun.ran_at`, so later
-restarts within the same period don't re-trigger it. Only the single most recent
-missed period is caught up per job — a gap spanning multiple months/years still
-permanently loses the older ones; a brand-new deployment with no `SchedulerRun` row
-yet also triggers one harmless catch-up run for the previous complete month.
+- **Queue**: `django-rq` (+ `rq`), pinned. `RQ_QUEUES["default"]` points at `REDIS_QUEUE_URL`
+  — its **own Redis database** (`/1`; defaults to `REDIS_URL` with path `/1`), so a cache flush
+  cannot delete pending jobs; `DEFAULT_TIMEOUT = 300`. Always reach it as
+  `django_rq.get_queue(settings.RQ_QUEUE_NAME)` through the module attribute: the autouse
+  `rq_queue` fixture in the root `conftest.py` patches `django_rq.get_queue`, so unit tests need
+  no Redis and assert on `rq_queue.enqueue` (`run_enqueued_jobs(rq_queue)` in
+  `suchar_overflow/conftest.py` executes what was queued). The dashboard is at
+  `/<ADMIN_URL>django-rq/` (linked from the admin index). django-rq closes DB connections
+  before RQ forks per job (`reset_db_connections`); verified: no idle `pg_stat_activity` rows
+  after a burst of jobs that touch the DB (`award_publication_achievements`).
+- **Healthchecks**: `manage.py rq_healthcheck` (worker: every queue has a registered worker;
+  `--cron`: a `CronScheduler` heartbeat younger than `--max-age`, default 150 s) and `/healthz/`'s
+  `queue` check (PING on the queue's connection). Local `just up` after pulling this change needs
+  `docker compose up -d --renew-anon-volumes`: the anonymous `/app/.venv` volume of the old
+  `django` container still lacks `django_rq`. The worker does not autoreload — restart it after
+  editing a task. RQ's scheduler (retry intervals, `enqueue_in`) starts with the worker only if it
+  can take the `rq:scheduler-lock:default` lock; a clean restart releases it, but after a hard kill
+  the stale lock lasts ~70 s and the worker then retries only at its 10-minute maintenance tick, so
+  a retry can lag that long (the per-minute cron jobs are plain queue entries, unaffected).
+- **Failures**: `RQ_EXCEPTION_HANDLERS` → `utils/rq_handlers.py:mail_admins_on_final_failure`
+  logs to `django.rq` (a child of `django`, so production's `mail_admins` mails it) only once a
+  job has no retries left (`job.should_retry` false). `rq.worker` has its own console handler and
+  does not propagate; at INFO it logs ~4 lines per run of the per-minute sweep, `rq.cron` is
+  `WARNING`.
+- **Emails (#461)**: `users/tasks.py:enqueue_email(task, *args)` queues `send_activation_email` /
+  the email-change jobs with `Retry(max=3, interval=[10, 60, 300])`, only after the token /
+  `EmailChangeRequest` rows are saved; the job gets only a PK and plain values plus `language`
+  (the requester's), and renders inside `translation.override(language)` because the worker has
+  no request. An SMTP error no longer 500s the request.
+- **Cron time zone**: `rq.cron` evaluates cron strings in **UTC** (`rq.utils.now()`) and has no
+  zone parameter, while the contests roll over at 00:05 `Europe/Warsaw` (#405), whose UTC offset
+  changes with DST. So `achievements/cron.py` registers `award-best-suchar-month` / `-year` as
+  `"5 * * * *"` (hourly at :05 — every Warsaw offset is a whole hour) calling
+  `award_best_suchar_month_if_due` / `_year_if_due`: when the service-local fire time has passed
+  and its `SchedulerRun` marker was never written, award it with `reference_date` = the due
+  fire's own date − 1 day; otherwise do nothing. The first check after 00:05 local on the 1st is
+  therefore the fire, and the same function is the catch-up for a fire missed while `cron` was
+  down (#169). `award-publication-achievements` (#389/#402) is `"* * * * *"`. Every job carries
+  a `ttl` (50 min hourly, 2 min per-minute) so a stopped worker never builds a backlog — they
+  are idempotent and the sweep overlaps 15 min, so a dropped run is harmless.
+  `achievements/tests/test_cron.py` pins the three registrations and that the hourly check hits minute 5
+  of the Polish clock in both CET and CEST.
+- **Catch-up**: `manage.py achievements_catch_up` runs the two `*_if_due` functions and
+  `award_publication_achievements` once, each in its own `try/except`, before `rqcron` starts
+  (a transient DB error must not stop the others or the scheduler).
+- `SchedulerRun` (`achievements/models.py`) is the marker table — one row per job id, visible
+  read-only in the admin. `award_best_suchar` rewrites its own; only the most recent missed
+  period is caught up per job, a brand-new deployment with no row triggers one harmless catch-up
+  for the previous complete month.
 
-The yearly job doesn't get that same free pass: unlike the monthly job (which was
-already live before catch-up existed), the yearly job and its catch-up shipped
-together (#168), and `award_periodic` — the pre-existing manual command — never
-wrote a `SchedulerRun` marker (it calls `award_winners` directly, not
-`award_best_suchar`). Without a marker, the first deploy's catch-up would
-retroactively award the entire previous calendar year to whoever led it, the moment
-the process started. Migration `0015_seed_yearly_scheduler_run` seeds a
-`SchedulerRun(job_id="award-best-suchar-year")` row at migrate time specifically to
-suppress that one-time retroactive award — the first _real_ automatic yearly award
-lands at the next actual Jan 1 cron fire. This seeded row is baseline data present
-in every test (like the migration-seeded `Achievement` rows — see Test patterns
-below), which is why several `achievements/tests/test_apps.py` /
-`achievements/tests/test_models.py` tests delete or `update_or_create` it before
-asserting on `SchedulerRun` state.
+The yearly job doesn't get that free pass: it shipped together with its catch-up (#168), and
+`award_periodic` — the manual command — never wrote a `SchedulerRun` marker (it calls
+`award_winners` directly). Without a marker the first deploy would retroactively award the
+whole previous calendar year at once. Migration `0015_seed_yearly_scheduler_run` seeds a
+`SchedulerRun(job_id="award-best-suchar-year")` row to suppress that one-time award; it is
+baseline data in every test (like the migration-seeded `Achievement` rows — see Test patterns),
+so tests delete or `update_or_create` it before asserting on `SchedulerRun` state.
 
-The third job, `award-publication-achievements` (#389), is a different shape: it is
-not a sparse cron fire whose "was the last one recorded?" needs a `due_*_run_at`
-helper, so `_catch_up_missed_publication_run()` is just a direct call to
-`award_publication_achievements()` (kept as its own method only for symmetry with the
-other catch-ups' isolated `try/except` in `_start_scheduler`). The task walks every
-suchar whose `published_at` crossed
-`(SchedulerRun.ran_at - PUBLICATION_CATCHUP_OVERLAP, now]`, re-runs the engine for its
-author (iterating suchary in `published_at, id` order and passing `instance=suchar` —
-`NightOwlRule` returns `None` without a `Suchar` instance), and rewrites its own
-`SchedulerRun` marker. A process-down gap is covered automatically (the window opens at
-the last recorded `ran_at`); on the **first** run, with no marker, only
-`PUBLICATION_CATCHUP_FLOOR` (1h) is swept — older suchary were already handled by the
-`post_save` path or an earlier process, and a fresh deploy must not re-sweep the whole
-table, so **no seed migration** is needed here (unlike `0015_seed_yearly_scheduler_run`).
-`PUBLICATION_CATCHUP_OVERLAP` (15 min — 3x the form's skew allowance) overlaps each run
-with the previous one: `SucharForm.clean_published_at` accepts a `published_at` up to
-5 min in the past, and a transaction can commit just after `now` is sampled — either
-(additively) can leave a just-published suchar's `published_at` _before_ the last
-`ran_at`, and a bare `published_at__gt=last_ran_at` would then drop it forever (nothing
-re-checks a suchar once its `published_at` passes). The per-suchar `check_achievements`
-call is wrapped in `try/except` + `logger.exception`: a single poison record must not
-abort the loop before the marker is rewritten, or every subsequent run re-hits
-it and stalls.
-**Cadence is every minute (#402), not hourly.** At the original hourly `:05` an author
-whose _first_ suchar was scheduled got "First Suchar" (and its SSE toast) up to ~1h
-after the suchar went live, which read as "never awarded". A one-off `date` job per
-suchar at its `published_at` was rejected: views can't reach the scheduler (a local in
-`_start_scheduler`), editing `published_at` would need reschedule/remove, and the
-in-memory jobstore would still need this sweep as a restart safety net. The query and
-constants are unchanged — each suchar is simply re-checked ~16 times across the 15 min
-overlap, which the idempotent engine makes cheap. Don't narrow the queryset with a
-`published_at__gt=F("created_at")`-style "only scheduled ones" filter: editing a
-scheduled suchar can move its `published_at` up to 5 min into the past without any
-`SUCHAR_POSTED` event, and this job is the only thing that then catches it. Because
-of the per-minute cadence, `LOGGING` sets the `apscheduler.executors` logger to
-`WARNING` (in `base.py` _and_ `production.py`, which rebuilds `loggers`) — otherwise
-its INFO "Running job … / executed successfully" pair adds ~2880 lines a day; job
-errors and missed-run warnings still log.
-Idempotent — the engine skips owned achievements (so the window overlap and any
-re-processing are no-ops) — and closes stale ORM connections on exit like
-`award_best_suchar` (skipped inside an atomic block).
+`award_publication_achievements` (#389) walks every suchar whose `published_at` crossed
+`(SchedulerRun.ran_at - PUBLICATION_CATCHUP_OVERLAP, now]`, re-runs the engine for its author
+(iterating suchary in `published_at, id` order and passing `instance=suchar` — `NightOwlRule`
+returns `None` without a `Suchar` instance), and rewrites its own marker. A downtime gap is
+covered automatically (the window opens at the last `ran_at`); on the **first** run, with no
+marker, only `PUBLICATION_CATCHUP_FLOOR` (1h) is swept, so **no seed migration** is needed
+(unlike `0015`). `PUBLICATION_CATCHUP_OVERLAP` (15 min — 3x the form's skew allowance) overlaps
+each run with the previous one: `SucharForm.clean_published_at` accepts a `published_at` up to
+5 min in the past and a transaction can commit just after `now` is sampled — either can leave a
+just-published suchar's `published_at` _before_ the last `ran_at`, and a bare
+`published_at__gt=last_ran_at` would drop it forever. The per-suchar `check_achievements` call
+is wrapped in `try/except` + `logger.exception`: one poison record must not abort the loop
+before the marker is rewritten. **Cadence is every minute (#402)**: hourly made an author whose
+_first_ suchar was scheduled wait up to ~1h for "First Suchar" (read as "never awarded"); a
+one-off job per suchar was rejected (views would need to reach the scheduler, edits of
+`published_at` would need reschedule/remove, and the sweep is the restart safety net anyway).
+Don't narrow the queryset with a `published_at__gt=F("created_at")`-style "only scheduled
+ones" filter: editing a scheduled suchar can move its `published_at` up to 5 min into the past
+without any `SUCHAR_POSTED` event, and this job is the only thing that then catches it.
+Idempotent — the engine skips owned achievements — and closes stale ORM connections on exit
+like `award_best_suchar` (skipped inside an atomic block).
 
 ### Content Security Policy
 
@@ -1520,7 +1526,7 @@ all filter `Suchar.objects.filter(... published_at__lte=timezone.now())` (`__lte
 `COUNT_SUCHAR`/streak/night-owl tier that shows on the author's public profile before
 the suchar itself is visible (#389). Nothing fires the engine when a scheduled suchar's
 `published_at` merely passes, so `award_publication_achievements`
-(`achievements/tasks.py`, scheduled every minute — see Background scheduling) re-runs the
+(`achievements/tasks.py`, scheduled every minute — see Background jobs) re-runs the
 engine for every suchar that crossed into visibility since its last `SchedulerRun`,
 bounding the award lag to ~1 min (#402). `EditCountRule`, `PolarizerRule`, `SumScoreRule` and
 `DryMasterRule` are deliberately **not** gated: editing is only possible before
@@ -1621,8 +1627,8 @@ After adding dependencies, rebuild the Docker image before running tests in the 
 just build
 ```
 
-Notable non-obvious dependencies already in use: `apscheduler`
-(in-process job scheduling, see Architecture notes), `django-ninja` (the `/api/`
+Notable non-obvious dependencies already in use: `django-rq` / `rq`
+(job queue and cron, see Background jobs), `django-ninja` (the `/api/`
 router), `django-modeltranslation` (model-field translation for `Achievement`, distinct
 from the template-level `i18n` used elsewhere).
 

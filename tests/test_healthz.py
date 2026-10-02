@@ -1,4 +1,4 @@
-"""``/healthz/`` (#457): status codes, no caching, no HTTPS redirect, no leaked connections.
+"""``/healthz/`` (#457, queue check #460): status codes, no caching, no HTTPS redirect, no leaked connections.
 
 The test settings use LocMem, so the raw Redis ping (``get_redis_connection``)
 is patched with a stand-in; what matters is that the view reports it.
@@ -42,7 +42,7 @@ def redis_ok() -> Iterator[MagicMock]:
 async def test_healthy_reports_both_ok(async_client: AsyncClient, redis_ok: MagicMock) -> None:
     response = await async_client.get("/healthz/")
     assert response.status_code == HTTPStatus.OK
-    assert json.loads(response.content) == {"database": "ok", "cache": "ok"}
+    assert json.loads(response.content) == {"database": "ok", "cache": "ok", "queue": "ok"}
     redis_ok.return_value.ping.assert_called_once_with()
 
 
@@ -63,7 +63,7 @@ async def test_database_down_is_503_and_not_detailed(
     with patch.object(BaseDatabaseWrapper, "ensure_connection", side_effect=RuntimeError("secret dsn")):
         response = await async_client.get("/healthz/")
     assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
-    assert json.loads(response.content) == {"database": "error", "cache": "ok"}
+    assert json.loads(response.content) == {"database": "error", "cache": "ok", "queue": "ok"}
     assert b"secret dsn" not in response.content
     assert "secret dsn" in caplog.text  # logged server-side instead
 
@@ -74,7 +74,7 @@ async def test_redis_down_is_503(async_client: AsyncClient, redis_ok: MagicMock)
     redis_ok.return_value.ping.side_effect = ConnectionError("redis is gone")
     response = await async_client.get("/healthz/")
     assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
-    assert json.loads(response.content) == {"database": "ok", "cache": "error"}
+    assert json.loads(response.content) == {"database": "ok", "cache": "error", "queue": "ok"}
 
 
 @pytest.mark.anyio
@@ -86,8 +86,17 @@ async def test_cache_check_pings_redis_not_the_swallowing_cache_api(async_client
     assert json.loads(response.content)["cache"] == "error"
 
 
+@pytest.mark.anyio
+@pytest.mark.django_db
+async def test_queue_down_is_503(async_client: AsyncClient, redis_ok: MagicMock, rq_queue: MagicMock) -> None:  # noqa: ARG001
+    rq_queue.connection.ping.side_effect = ConnectionError("queue redis is gone")
+    response = await async_client.get("/healthz/")
+    assert response.status_code == HTTPStatus.SERVICE_UNAVAILABLE
+    assert json.loads(response.content) == {"database": "ok", "cache": "ok", "queue": "error"}
+
+
 def test_health_checks_registry_names_the_response_fields() -> None:
-    assert set(views.HEALTH_CHECKS) == {"database", "cache"}
+    assert set(views.HEALTH_CHECKS) == {"database", "cache", "queue"}
 
 
 def test_production_does_not_redirect_healthz_to_https(monkeypatch: pytest.MonkeyPatch) -> None:

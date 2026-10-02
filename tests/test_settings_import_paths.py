@@ -24,7 +24,7 @@ _LOGGING_PATH_KEYS = ("class", "()")
 
 def _dotted_paths(config: Any) -> list[str]:  # noqa: ANN401
     """The dotted paths ``config`` (a settings module or ``django.conf.settings``) names."""
-    paths = list(config.MIDDLEWARE)
+    paths = [*config.MIDDLEWARE, *config.RQ_EXCEPTION_HANDLERS]
     for engine in config.TEMPLATES:
         paths += engine.get("OPTIONS", {}).get("context_processors", [])
     logging_config = config.LOGGING

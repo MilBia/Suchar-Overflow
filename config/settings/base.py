@@ -2,6 +2,8 @@
 
 from pathlib import Path
 from urllib.parse import quote
+from urllib.parse import urlsplit
+from urllib.parse import urlunsplit
 
 import environ
 from django.core.exceptions import ImproperlyConfigured
@@ -167,6 +169,7 @@ DJANGO_APPS = [
 ]
 THIRD_PARTY_APPS = [
     "compressor",
+    "django_rq",
 ]
 
 LOCAL_APPS = [
@@ -408,6 +411,10 @@ LOGGING = {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s",
         },
+        "rq_console": {
+            "format": "%(asctime)s %(levelname)s %(name)s: %(message)s",
+            "datefmt": "%H:%M:%S",
+        },
     },
     "handlers": {
         "console": {
@@ -415,13 +422,20 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
+        "rq_console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "rq_console",
+        },
     },
     "root": {"level": "INFO", "handlers": ["console"]},
     "loggers": {
-        # award-publication-achievements runs every minute (#402); apscheduler's
-        # INFO "Running job" / "executed successfully" pair would add ~2880
-        # lines a day. Job errors and missed-run warnings still get through.
-        "apscheduler.executors": {"level": "WARNING"},
+        # RQ's worker logs through its own handler by default; this gives it the
+        # project's console format (#460). The per-minute publication sweep (#402)
+        # makes "rq.worker" INFO chatty, so quiet the cron scheduler's own loop;
+        # job failures and the worker's warnings still get through.
+        "rq.worker": {"handlers": ["rq_console"], "level": "INFO", "propagate": False},
+        "rq.cron": {"level": "WARNING"},
         # Replaces the handlers Django's DEFAULT_LOGGING puts on "django"
         # (disable_existing_loggers=False keeps them otherwise, #447): a stock
         # AdminEmailHandler, which production's mail_admins duplicated, and a
@@ -458,6 +472,27 @@ CACHES = {
         },
     },
 }
+
+# RQ (#460)
+# ------------------------------------------------------------------------------
+# The queue lives in its own Redis database (/1 by default, the cache is /0), so a
+# cache flush cannot wipe pending jobs. Derived from REDIS_URL unless
+# REDIS_QUEUE_URL (env files) says otherwise.
+REDIS_QUEUE_URL = env("REDIS_QUEUE_URL", default=urlunsplit(urlsplit(REDIS_URL)._replace(path="/1")))
+RQ_QUEUE_NAME = "default"
+RQ_QUEUES = {
+    RQ_QUEUE_NAME: {
+        "URL": REDIS_QUEUE_URL,
+        # Seconds: generous for a slow SMTP server, far from the library's
+        # unbounded-ish defaults for a stuck job.
+        "DEFAULT_TIMEOUT": 300,
+        **({"SSL_CERT_REQS": None} if REDIS_QUEUE_URL.startswith("rediss://") else {}),
+    },
+}
+# The "Django RQ" section in the admin index.
+RQ_SHOW_ADMIN_LINK = True
+# A job that exhausted its retries is logged to "django.rq" (mail_admins in production, #461).
+RQ_EXCEPTION_HANDLERS = ["suchar_overflow.utils.rq_handlers.mail_admins_on_final_failure"]
 
 # CSP
 # ------------------------------------------------------------------------------

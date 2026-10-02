@@ -34,6 +34,69 @@ services:
             retries: 5
             start_period: 60s
 
+    # RQ worker (#460): same image as django, no port. It does not autoreload — run
+    # `docker compose restart worker` (or `just build`) after changing task code.
+    worker:
+        build:
+            context: .
+            dockerfile: ./compose/local/django/Dockerfile
+        image: suchar_overflow_local_django
+        container_name: suchar_overflow_local_worker
+        depends_on:
+            django:
+                condition: service_healthy
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            mailpit:
+                condition: service_healthy
+        volumes:
+            - /app/.venv
+            - .:/app:z
+        env_file:
+            - ./.envs/.local/.django
+            - ./.envs/.local/.postgres
+        command: /worker
+        # A job may run up to DEFAULT_TIMEOUT (300 s); give RQ's warm shutdown time to finish it.
+        stop_grace_period: 330s
+        healthcheck:
+            # Fails when no worker is registered on any queue in RQ_QUEUES.
+            test: ['CMD', 'python', 'manage.py', 'rq_healthcheck']
+            interval: 15s
+            timeout: 10s
+            retries: 5
+            start_period: 30s
+
+    # Periodic jobs (#462): exactly ONE instance, or every job is enqueued twice.
+    cron:
+        build:
+            context: .
+            dockerfile: ./compose/local/django/Dockerfile
+        image: suchar_overflow_local_django
+        container_name: suchar_overflow_local_cron
+        depends_on:
+            django:
+                condition: service_healthy
+            postgres:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        volumes:
+            - /app/.venv
+            - .:/app:z
+        env_file:
+            - ./.envs/.local/.django
+            - ./.envs/.local/.postgres
+        command: /cron
+        healthcheck:
+            # Fails when the CronScheduler's last heartbeat is older than 150 s.
+            test: ['CMD', 'python', 'manage.py', 'rq_healthcheck', '--cron']
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 30s
+
     postgres:
         build:
             context: .
@@ -69,7 +132,7 @@ services:
         image: docker.io/redis:8.10
         container_name: suchar_overflow_local_redis
         # RDB snapshot every 60 s when at least one key changed: the RQ queue (#460)
-        # will live here, so it must survive a container restart.
+        # lives here (database /1), so it must survive a container restart.
         command: --save 60 1 --loglevel warning
         volumes:
             - suchar_overflow_local_redis_data:/data

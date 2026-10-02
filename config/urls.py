@@ -29,6 +29,9 @@ urlpatterns = [
         TemplateView.as_view(template_name="pages/about.html"),
         name="about",
     ),
+    # RQ dashboard (#460), linked from the admin index. Before admin.site.urls: its catch-all view
+    # would answer 404 for anything under the admin prefix. django_rq wraps the views in admin_view itself.
+    path(f"{settings.ADMIN_URL}django-rq/", include("django_rq.urls")),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management

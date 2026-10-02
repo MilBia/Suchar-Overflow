@@ -133,10 +133,11 @@ class UserAchievement(models.Model):
 
 
 class SchedulerRun(models.Model):
-    """Last-run marker for an in-process apscheduler job.
+    """Last-run marker of a scheduled achievement job (see ``achievements/cron.py``).
 
-    Replaces the admin visibility django-apscheduler's DjangoJobStore used to
-    provide, now that the scheduler runs with its default in-memory jobstore.
+    The jobs run in RQ workers fed by the ``cron`` service, which keeps no state
+    of its own across restarts; these rows are what the catch-up logic compares
+    against, and give the admin a read-only view of the last run.
     """
 
     job_id = models.CharField(_("Job ID"), max_length=100, unique=True)

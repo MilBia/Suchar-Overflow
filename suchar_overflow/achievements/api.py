@@ -9,7 +9,6 @@ from django.utils.translation import gettext as _
 from ninja import Router
 from ninja import Schema
 from ninja.errors import HttpError
-from ninja.security import django_auth
 
 from suchar_overflow.users.models import User
 
@@ -63,7 +62,7 @@ class ToastResponseSchema(Schema):
     toast: ToastPayloadSchema | None = None
 
 
-@router.get("/unseen", response=list[AchievementSchema], auth=django_auth)
+@router.get("/unseen", response=list[AchievementSchema])
 def list_unseen_achievements(request: HttpRequest) -> list[dict]:
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
@@ -97,7 +96,7 @@ def list_unseen_achievements(request: HttpRequest) -> list[dict]:
     return response_data
 
 
-@router.get("/toast", response=ToastResponseSchema, auth=django_auth)
+@router.get("/toast", response=ToastResponseSchema)
 def get_pending_toast(request: HttpRequest) -> dict[str, dict[str, str] | None]:
     """Return (and clear) the pending first-funny-vote 🥁 toast, if any.
 
@@ -125,7 +124,7 @@ def get_pending_toast(request: HttpRequest) -> dict[str, dict[str, str] | None]:
     }
 
 
-@router.post("/mark-seen", auth=django_auth)
+@router.post("/mark-seen")
 def mark_achievements_seen(request: HttpRequest) -> dict[str, bool]:
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
@@ -140,7 +139,7 @@ def mark_achievements_seen(request: HttpRequest) -> dict[str, bool]:
     return {"ok": True}
 
 
-@router.get("/frontend-owned", response=list[str], auth=django_auth)
+@router.get("/frontend-owned", response=list[str])
 def list_frontend_owned(request: HttpRequest) -> list[str]:
     user = request.user
     assert isinstance(user, User)  # django_auth already rejects anonymous requests
@@ -152,7 +151,7 @@ def list_frontend_owned(request: HttpRequest) -> list[str]:
     )
 
 
-@router.post("/frontend-event", auth=django_auth)
+@router.post("/frontend-event")
 def record_frontend_event(
     request: HttpRequest,
     payload: FrontendEventSchema,

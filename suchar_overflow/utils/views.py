@@ -4,7 +4,9 @@ import logging
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
+import django_rq
 from asgiref.sync import sync_to_async
+from django.conf import settings
 from django.db import connection
 from django.http import HttpResponse
 from django.http import HttpResponseServerError
@@ -95,10 +97,21 @@ def check_cache() -> None:
     get_redis_connection("default").ping()
 
 
-# name -> check; the key is the field in the response. #460 adds the RQ queue here.
+def check_queue() -> None:
+    """``PING`` on the RQ queue's own Redis connection (#460); raises when it is unreachable.
+
+    The queue lives in a separate Redis database from the cache, but a failing
+    ping tells the same story. Whether a *worker* is alive is the worker
+    container's concern (``rq_healthcheck``), not the web container's.
+    """
+    django_rq.get_queue(settings.RQ_QUEUE_NAME).connection.ping()
+
+
+# name -> check; the key is the field in the response.
 HEALTH_CHECKS: dict[str, Callable[[], None]] = {
     "database": check_database,
     "cache": check_cache,
+    "queue": check_queue,
 }
 
 
@@ -106,7 +119,7 @@ HEALTH_CHECKS: dict[str, Callable[[], None]] = {
 async def healthz(request: HttpRequest) -> JsonResponse:  # noqa: ARG001
     """Liveness/readiness probe for the container healthcheck and uptime monitors (#457).
 
-    ``{"database": "ok"|"error", "cache": "ok"|"error"}`` with 200, or 503 when any
+    ``{"database": "ok"|"error", "cache": "ok"|"error", "queue": "ok"|"error"}`` with 200, or 503 when any
     check failed. Failures are logged here, never echoed to the (anonymous) caller.
     """
     results: dict[str, str] = {}

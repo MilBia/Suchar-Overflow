@@ -57,16 +57,17 @@ DJANGO_SECURE_SSL_REDIRECT=True
 
 # Gunicorn
 # ------------------------------------------------------------------------------
-# Number of ASGI workers (gunicorn reads WEB_CONCURRENCY; default 1). Keep 1 for
-# now: the APScheduler jobs run inside each web worker until #462 moves them to
-# RQ, so a value > 1 runs every periodic job (contest awards, publication sweep)
-# once per worker.
+# Number of ASGI workers (gunicorn reads WEB_CONCURRENCY; default 1). Safe to raise:
+# periodic jobs run in the single `cron` service (#462), not inside each web worker.
 # WEB_CONCURRENCY=1
 
 # Redis
 # ------------------------------------------------------------------------------
 # Required — settings and the entrypoint have no default for it.
 REDIS_URL=redis://redis:6379/0
+# RQ job queue (#460): a separate database from the cache, so a cache flush
+# cannot delete pending jobs. Optional — defaults to REDIS_URL with the path /1.
+REDIS_QUEUE_URL=redis://redis:6379/1
 
 
 # Feedback
