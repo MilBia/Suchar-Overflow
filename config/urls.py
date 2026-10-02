@@ -6,6 +6,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 from suchar_overflow.utils.views import bad_request
+from suchar_overflow.utils.views import healthz
 from suchar_overflow.utils.views import page_not_found
 from suchar_overflow.utils.views import permission_denied
 from suchar_overflow.utils.views import server_error
@@ -20,6 +21,8 @@ handler404 = page_not_found
 handler500 = server_error
 
 urlpatterns = [
+    # Container healthcheck / uptime monitoring (#457); exempt from the HTTPS redirect in production.
+    path("healthz/", healthz, name="healthz"),
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
         "about/",

@@ -89,6 +89,10 @@ COPY ./compose/base/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 
+COPY ./compose/base/django/healthcheck /healthcheck
+RUN sed -i 's/\r$//g' /healthcheck
+RUN chmod +x /healthcheck
+
 COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start

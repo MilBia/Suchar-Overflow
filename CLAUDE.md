@@ -65,14 +65,55 @@ in bfcache no longer hold one, #428), and `just dump-stacks` (SIGUSR1 →
 `just logs`.
 
 A hang with **no** reload in the log (#426) was an event-loop deadlock in asgiref
-< 3.12: a client disconnecting while the sync-only `WhiteNoiseMiddleware` was still
-running made `ThreadSensitiveContext.__aexit__` join its thread on the loop that
+< 3.12: a client disconnecting while a sync-only middleware (it was
+`WhiteNoiseMiddleware`) was still running made `ThreadSensitiveContext.__aexit__` join its thread on the loop that
 thread was waiting for. Its stack dump reads main thread in `__aexit__` → `shutdown`
-→ `join`, a worker in `whitenoise/middleware.py` → `run_until_future`. The
+→ `join`, a worker in the sync middleware's `run_until_future`. The
 `asgiref>=3.12.1` floor in `pyproject.toml` fixes it (production's
 `UvicornWorker` runs the same stack); `tests/test_asgiref_disconnect_deadlock.py`
-guards it — keep the floor even though asgiref is otherwise only a Django
-transitive.
+guards it with a Django-free asyncio script — keep the floor even though asgiref is
+otherwise only a Django transitive. WhiteNoise itself is gone (#463): production's
+`MIDDLEWARE` has no sync-only class, and `tests/test_static_serving.py` fails if one
+returns (so the deadlock can't reappear through a new middleware either).
+
+**Static files (#463).** Nothing in the Django process serves `/static/`. In production
+`collectstatic --noinput` + `compress --force` (`compose/production/django/start`) write
+`STATIC_ROOT` (`/app/staticfiles`, `ManifestStaticFilesStorage`) into the
+`production_django_static` volume — rw in `django`, `:ro` in `nginx`, which serves
+`/static/` next to `/media/` (Traefik's `web-static-router` and `web-media-router` both
+point at the `nginx` service). `compose/production/nginx/default.conf` gives names
+ending in `.<12 hex>.<ext>` (the manifest storage's and the compressor's hashes)
+`Cache-Control: public, max-age=31536000, immutable`, everything else one hour, turns on
+`gzip` and `gzip_static` (compressor's `GzipCompressorFileStorage` writes the `.gz` for
+`CACHE/`; the manifest storage writes none, so other files are compressed on the fly).
+The regex location is quoted — nginx reads an unquoted `{12}` as a block. `collectstatic`
+runs with `--clear` (there is no production yet, so nothing to keep): each start wipes
+the volume and rebuilds it, so it never accumulates files of past builds. The price: a
+browser holding a page from the previous build can 404 on its old hashed CSS/JS until it
+reloads. Drop `--clear` if that starts to matter once the site is live. Locally `config/asgi.py` wraps the app in
+`ASGIStaticFilesHandler` only while `DEBUG` is on (uvicorn serves no static files);
+`live_server` in E2E serves its own statics.
+
+**`/healthz/` (#457).** `suchar_overflow/utils/views.py:healthz` is an async,
+`never_cache` view answering `{"database": "ok"|"error", "cache": "ok"|"error"}` with 200
+or 503 (details only in the log). The database check is `SELECT 1` wrapped in
+`releases_db_connections`; the cache check is `PING` on the **raw** `django_redis`
+connection, never `cache.get` — `IGNORE_EXCEPTIONS` would swallow an outage and always
+report ok. Checks live in `HEALTH_CHECKS` (the RQ queue joins in #460).
+`SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]` in production. The `django` container's
+healthcheck is `compose/base/django/healthcheck` (stdlib Python — the image has no
+`curl`; `/healthcheck <port>`): it sends `Host` = first `DJANGO_ALLOWED_HOSTS` entry
+(`localhost` if unset/`*`; a bare `localhost` would raise `DisallowedHost` and mail the
+admins on every probe) plus `X-Forwarded-Proto: https`, and counts any 3xx as failure.
+Traefik and nginx `depends_on: django: service_healthy`. Tests use LocMem, so
+`get_redis_connection` is patched there; `tests/test_healthz.py` also drives
+`ASGIHandler` to prove a series of probes leaves no open connection.
+
+**API conventions (#458).** `config/api.py`'s `SucharOverflowAPI` names every operation
+`<router tag>_<function>` (`reverse("api:suchary_vote_suchar")`), so each `Router` must
+carry `tags=[...]` — `tests/test_api_conventions.py` lists every operation and fails when a
+new one is missing. `/api/docs` follows `API_ENABLE_DOCS` (env, default on — switch it off
+in production); `PermissionDenied` becomes a 403 `{"message": ...}`.
 
 Worker RSS that climbs under load and never comes back (#431) was CPython 3.14.2's
 incremental cycle collector, reverted in 3.14.5. Each ASGI request leaves its request
@@ -1310,7 +1351,7 @@ curl -sSfL -o suchar_overflow/static/js/flatpickr.min.js \
 **Then strip any trailing `//# sourceMappingURL=...` line** from every vendored
 file you just pulled (`.js` _and_ `.css`) — the jsdelivr `dist/` builds end with
 one, but the `.map` file is deliberately _not_ vendored (see below), and
-production's `CompressedManifestStaticFilesStorage`
+production's `ManifestStaticFilesStorage` (formerly WhiteNoise's compressed variant)
 (`config/settings/production.py`) hard-fails `collectstatic` when a
 `sourceMappingURL` points at a missing file (issue #249) — `set -o errexit` in
 `compose/production/django/start` then stops the container before

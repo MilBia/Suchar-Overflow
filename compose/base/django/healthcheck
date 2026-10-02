@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""Container healthcheck: GET /healthz/ on the local server (#457).
+
+Usage: healthcheck [PORT]   (default 8000)
+
+stdlib only, because the production image has no curl. Pitfalls it handles:
+
+* ALLOWED_HOSTS rejects ``Host: localhost`` with DisallowedHost, and every
+  rejection mails the admins. It sends the first DJANGO_ALLOWED_HOSTS entry
+  instead ("localhost" when that is unset or a wildcard — local dev allows all).
+* Production redirects HTTP to HTTPS; ``X-Forwarded-Proto: https`` makes
+  SECURE_PROXY_SSL_HEADER treat the request as secure (the path is also exempt).
+* A 3xx counts as unhealthy (``curl --fail`` would pass a 301), so redirects are
+  not followed.
+"""
+
+import os
+import sys
+import urllib.error
+import urllib.request
+
+OK = 200
+TIMEOUT_SECONDS = 5
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args: object, **kwargs: object) -> None:  # noqa: ARG002
+        return None
+
+
+def host_header() -> str:
+    hosts = (host.strip().lstrip(".") for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(","))
+    first = next((host for host in hosts if host), "")
+    return "localhost" if first in {"", "*"} else first
+
+
+def main() -> int:
+    port = sys.argv[1] if len(sys.argv) > 1 else "8000"
+    request = urllib.request.Request(
+        f"http://127.0.0.1:{port}/healthz/",
+        headers={"Host": host_header(), "X-Forwarded-Proto": "https"},
+    )
+    opener = urllib.request.build_opener(NoRedirect)
+    try:
+        with opener.open(request, timeout=TIMEOUT_SECONDS) as response:
+            return 0 if response.status == OK else 1
+    except (urllib.error.URLError, OSError) as exc:
+        print(f"healthcheck failed: {exc}", file=sys.stderr)  # noqa: T201
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

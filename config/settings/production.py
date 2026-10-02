@@ -27,6 +27,10 @@ DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=0)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-ssl-redirect
 SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=True)
+# The container healthcheck (compose/base/django/healthcheck) talks plain HTTP to
+# gunicorn; a redirect would fail it. Matched against the path without the leading
+# slash (#457).
+SECURE_REDIRECT_EXEMPT = [r"^healthz/$"]
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-secure
 SESSION_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-name
@@ -72,12 +76,15 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
 
 # STATIC & MEDIA
 # ------------------------
+# nginx serves /static/ and /media/ from volumes (#463); Django only writes them:
+# `collectstatic` fills STATIC_ROOT (with the manifest, #436) and `compress --force`
+# adds CACHE/ next to it. There is no static-serving middleware in the chain.
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
     },
 }
 

@@ -27,7 +27,7 @@ from .models import Tag
 from .models import Vote
 from .signals import vote_changed
 
-router = Router()
+router = Router(tags=["suchary"])
 
 
 class VoteSchema(Schema):

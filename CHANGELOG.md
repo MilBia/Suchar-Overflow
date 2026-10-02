@@ -19,6 +19,12 @@ Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
   (spoza gita), ładowany przez ustawienia, gdy istnieje. W produkcji compose przekazuje go jako
   opcjonalny `env_file`; wartości z `.envs/.production/.django` i `.postgres` mają przed nim
   pierwszeństwo.
+- Statyki serwuje nginx (wolumen `production_django_static`), a nie WhiteNoise — zależność
+  `whitenoise` została usunięta. Traefik ma nowy router `/static/` w `traefik.yml` (zmień w nim
+  `example.com` jak w routerach istniejących). Po aktualizacji wykonaj `just prod-build` i `just prod-up`.
+- Nowy, opcjonalny `API_ENABLE_DOCS` (domyślnie `True`): przełącznik `/api/docs`; na produkcji
+  zalecane `False`.
+- Nowy endpoint `/healthz/` i healthcheck kontenera `django`; Traefik i nginx czekają na `healthy`.
 - Ustawienia same składają `DATABASE_URL` z `POSTGRES_*`, gdy nie jest ustawione, więc
   `docker compose exec django python manage.py …` działa bez `/entrypoint`.
 

@@ -4,7 +4,7 @@
 `dist/` banner line `//# sourceMappingURL=chart.umd.min.js.map`, but the `.map`
 file is deliberately not vendored (see "Vendored JS libraries" in `CLAUDE.md`).
 Production's `STORAGES["staticfiles"]` is
-`whitenoise.storage.CompressedManifestStaticFilesStorage`, whose post-processing
+`django.contrib.staticfiles.storage.ManifestStaticFilesStorage`, whose post-processing
 pass resolves every `sourceMappingURL` reference in `*.js`/`*.css` and raises a
 hard error when the target is missing:
 

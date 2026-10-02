@@ -232,7 +232,6 @@ AUTH_PASSWORD_VALIDATORS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.csp.ContentSecurityPolicyMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     # Visitor's browser zone for input/display only (#410).
@@ -243,6 +242,12 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# API
+# ------------------------------------------------------------------------------
+# Serves the interactive OpenAPI docs at /api/docs (#458); the schema itself stays
+# at /api/openapi.json. Consider switching it off in production.
+API_ENABLE_DOCS = env.bool("API_ENABLE_DOCS", default=True)
 
 # STATIC
 # ------------------------------------------------------------------------------

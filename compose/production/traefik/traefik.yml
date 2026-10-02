@@ -44,7 +44,15 @@ http:
                 - web-secure
             middlewares:
                 - csrf
-            service: django-media
+            service: nginx
+            tls:
+                certResolver: letsencrypt
+
+        web-static-router:
+            rule: '(Host(`example.com`) || Host(`www.example.com`)) && PathPrefix(`/static/`)'
+            entryPoints:
+                - web-secure
+            service: nginx
             tls:
                 certResolver: letsencrypt
 
@@ -61,7 +69,7 @@ http:
                 servers:
                     - url: http://django:5000
 
-        django-media:
+        nginx:
             loadBalancer:
                 servers:
                     - url: http://nginx:80
