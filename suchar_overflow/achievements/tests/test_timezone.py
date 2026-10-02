@@ -12,15 +12,14 @@ import zoneinfo
 from unittest.mock import patch
 
 import pytest
-from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
 from django.utils import timezone
 
-from suchar_overflow.achievements.apps import AchievementsConfig
 from suchar_overflow.achievements.engine import NightOwlRule
 from suchar_overflow.achievements.engine import StreakLoginRule
 from suchar_overflow.achievements.models import SchedulerRun
 from suchar_overflow.achievements.tasks import award_best_suchar
+from suchar_overflow.achievements.tasks import award_best_suchar_month_if_due
 from suchar_overflow.achievements.tasks import compute_period_range
 from suchar_overflow.achievements.tasks import due_monthly_run_at
 from suchar_overflow.achievements.tasks import due_yearly_run_at
@@ -219,7 +218,7 @@ def test_catch_up_monthly_run_references_local_previous_day() -> None:
         patch("django.utils.timezone.now", return_value=frozen_now),
         patch("suchar_overflow.achievements.tasks.award_best_suchar") as mock_award,
     ):
-        AchievementsConfig._catch_up_missed_monthly_run()  # noqa: SLF001
+        award_best_suchar_month_if_due()
 
     mock_award.assert_called_once_with(
         "month",
@@ -245,48 +244,43 @@ def test_award_best_suchar_default_reference_date_is_local_yesterday() -> None:
     mock_range.assert_called_once_with("month", datetime.date(2024, 6, 30))
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize(
-    ("job_id", "now", "expected_fire_utc"),
+    ("fire_utc", "last_ran_utc", "expected_reference"),
     [
-        # July 1 00:05 CEST.
+        # July 1 00:05 CEST == June 30 22:05Z: due, "yesterday" is the local June 30.
         (
-            "award-best-suchar-month",
-            datetime.datetime(2024, 6, 30, 21, 0, tzinfo=UTC),
-            datetime.datetime(2024, 6, 30, 22, 5, tzinfo=UTC),
+            datetime.datetime(2024, 6, 30, 22, 5, 1, tzinfo=UTC),
+            datetime.datetime(2024, 6, 1, 0, 6, tzinfo=WARSAW),
+            datetime.date(2024, 6, 30),
         ),
-        # Nov 1 00:05 CET — the October DST switch lies in between.
+        # Nov 1 00:05 CET == Oct 31 23:05Z — the October DST switch lies in between.
         (
-            "award-best-suchar-month",
-            datetime.datetime(2024, 10, 15, 12, 0, tzinfo=UTC),
-            datetime.datetime(2024, 10, 31, 23, 5, tzinfo=UTC),
-        ),
-        # Jan 1 2025 00:05 CET.
-        (
-            "award-best-suchar-year",
-            datetime.datetime(2024, 6, 15, 12, 0, tzinfo=UTC),
-            datetime.datetime(2024, 12, 31, 23, 5, tzinfo=UTC),
+            datetime.datetime(2024, 10, 31, 23, 5, 1, tzinfo=UTC),
+            datetime.datetime(2024, 10, 1, 0, 6, tzinfo=WARSAW),
+            datetime.date(2024, 10, 31),
         ),
     ],
 )
-def test_scheduler_crons_fire_at_local_midnight(
-    job_id: str,
-    now: datetime.datetime,
-    expected_fire_utc: datetime.datetime,
+def test_monthly_award_fires_on_the_hourly_check_after_local_midnight(
+    fire_utc: datetime.datetime,
+    last_ran_utc: datetime.datetime,
+    expected_reference: datetime.date,
 ) -> None:
-    """Real APScheduler triggers (only ``start`` is stubbed): the contest crons
-    resolve on the Polish wall clock, so they fire at 00:05 local time."""
-    with (
-        patch.object(AchievementsConfig, "_catch_up_missed_monthly_run"),
-        patch.object(AchievementsConfig, "_catch_up_missed_yearly_run"),
-        patch.object(AchievementsConfig, "_catch_up_missed_publication_run"),
-        patch.object(BackgroundScheduler, "start", autospec=True) as mock_start,
-    ):
-        AchievementsConfig._start_scheduler()  # noqa: SLF001
+    """``rq.cron`` runs in UTC, so the contest jobs fire hourly at :05 and award when due.
 
-    scheduler = mock_start.call_args.args[0]
-    job = scheduler.get_job(job_id)
-    assert job is not None
-    assert job.trigger.get_next_fire_time(None, now) == expected_fire_utc
+    The first hourly check at/after 00:05 Polish time is due in both summer and winter
+    time; the one an hour earlier is not.
+    """
+    SchedulerRun.objects.update_or_create(job_id="award-best-suchar-month", defaults={"ran_at": last_ran_utc})
+    one_hour_earlier = fire_utc - datetime.timedelta(hours=1)
+    with patch("suchar_overflow.achievements.tasks.award_best_suchar") as mock_award:
+        with patch("django.utils.timezone.now", return_value=one_hour_earlier):
+            award_best_suchar_month_if_due()
+        mock_award.assert_not_called()
+        with patch("django.utils.timezone.now", return_value=fire_utc):
+            award_best_suchar_month_if_due()
+    mock_award.assert_called_once_with("month", reference_date=expected_reference)
 
 
 # ---------------------------------------------------------------------------

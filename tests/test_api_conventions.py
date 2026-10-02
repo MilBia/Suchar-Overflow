@@ -35,6 +35,7 @@ _OPERATIONS = [
     ("achievements_mark_achievements_seen", "/api/achievements/mark-seen"),
     ("achievements_list_frontend_owned", "/api/achievements/frontend-owned"),
     ("achievements_record_frontend_event", "/api/achievements/frontend-event"),
+    ("users_me", "/api/users/me"),
 ]
 
 

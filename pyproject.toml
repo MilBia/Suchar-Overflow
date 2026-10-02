@@ -236,5 +236,6 @@ dependencies = [
     "polib>=1.2.0",
     "django-modeltranslation>=0.20.3",
     "uvicorn[standard]>=0.52.3",
-    "apscheduler>=3.11.3,<4",
+    "django-rq==4.2.0",
+    "rq==2.12.0",
 ]

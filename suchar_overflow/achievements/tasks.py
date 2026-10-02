@@ -193,6 +193,10 @@ def _award_achievement(slug: str, users: set[User]) -> list[tuple[str, User, boo
     return results
 
 
+#: ``SchedulerRun`` marker ids of the contest jobs (``award_best_suchar`` writes
+#: ``award-best-suchar-<period>``).
+MONTHLY_JOB_ID = "award-best-suchar-month"
+YEARLY_JOB_ID = "award-best-suchar-year"
 #: Job id for the publication catch-up run's ``SchedulerRun`` marker.
 PUBLICATION_ACHIEVEMENTS_JOB_ID = "award-publication-achievements"
 
@@ -227,7 +231,7 @@ def award_publication_achievements(
     author a ``COUNT_SUCHAR`` / ``STREAK_LOGIN`` / ``NIGHT_OWL`` tier at
     ``post_save`` time. Nothing fires the engine when a scheduled suchar's
     ``published_at`` simply passes, so this per-minute job — and its boot-time
-    catch-up in ``AchievementsConfig._catch_up_missed_publication_run`` — walks
+    catch-up in the ``achievements_catch_up`` command — walks
     every suchar whose ``published_at`` crossed
     ``(SchedulerRun.ran_at - PUBLICATION_CATCHUP_OVERLAP, now]`` and re-checks
     its author, bounding the award lag to ~1 min (#402; hourly before that).
@@ -290,18 +294,16 @@ def award_best_suchar(period: str, reference_date: date | None = None) -> None:
     Defaults ``reference_date`` to yesterday so when called on the 1st of a
     new period the previous period is evaluated (same logic as the
     management command). Pass an explicit ``reference_date`` to evaluate a
-    different period — e.g. the catch-up path in
-    ``AchievementsConfig._catch_up_missed_monthly_run`` uses it to award a
-    period that was missed while the process was down, rather than
-    whatever period "yesterday" falls in at the time the process restarts.
+    different period — ``award_best_suchar_month_if_due`` uses it to award a
+    period whose fire was late or missed, rather than whatever period
+    "yesterday" falls in when it finally runs.
 
-    Runs in a long-lived daemon thread rather than a request cycle, so Django
-    never closes its thread-local DB connection for us — this cron job runs
-    once a month in that same thread, so without an explicit close the next
-    run would reuse a connection the DB (or a proxy in front of it) has
-    likely already dropped for being idle. Skipped inside an atomic block
-    (e.g. pytest-django's per-test transaction) since closing there would
-    kill the connection the caller's transaction depends on.
+    Runs in an RQ worker, outside any request cycle, so Django never closes
+    its thread-local DB connection for us; close it explicitly so a long-lived
+    process never reuses one the DB (or a proxy in front of it) has dropped for
+    being idle. Skipped inside an atomic block (e.g. pytest-django's per-test
+    transaction) since closing there would kill the connection the caller's
+    transaction depends on.
     """
     try:
         if reference_date is None:
@@ -322,3 +324,34 @@ def award_best_suchar(period: str, reference_date: date | None = None) -> None:
     finally:
         if not connection.in_atomic_block:
             close_old_connections()
+
+
+def award_best_suchar_month_if_due() -> None:
+    """Run the monthly ``award_best_suchar`` if the last due fire was never recorded.
+
+    Registered hourly in ``achievements/cron.py`` and also run at ``cron`` service
+    start by ``achievements_catch_up`` (#169 / #462). The question "is a fire due
+    that nobody recorded?" is exactly what a missed-run catch-up asks, so one
+    function covers both the regular fire (at 00:05 service-local on the 1st, the
+    first hourly check after it finds it due) and a fire missed while the cron
+    service was down. It is idempotent: ``award_best_suchar`` rewrites the
+    ``SchedulerRun`` marker, so every later check finds nothing due.
+
+    Passes the due fire's own date as ``reference_date`` rather than letting
+    ``award_best_suchar`` default to "yesterday" — when this runs late (or after a
+    restart) "yesterday" is relative to now, not to the period actually due.
+    """
+    last_run = SchedulerRun.objects.filter(job_id=MONTHLY_JOB_ID).values_list("ran_at", flat=True).first()
+    due_at = due_monthly_run_at(timezone.now(), last_run)
+    if due_at is not None:
+        logger.info("Scheduler run due for %s; running it now", MONTHLY_JOB_ID)
+        award_best_suchar("month", reference_date=due_at.date() - timedelta(days=1))
+
+
+def award_best_suchar_year_if_due() -> None:
+    """The yearly counterpart of ``award_best_suchar_month_if_due`` (#168)."""
+    last_run = SchedulerRun.objects.filter(job_id=YEARLY_JOB_ID).values_list("ran_at", flat=True).first()
+    due_at = due_yearly_run_at(timezone.now(), last_run)
+    if due_at is not None:
+        logger.info("Scheduler run due for %s; running it now", YEARLY_JOB_ID)
+        award_best_suchar("year", reference_date=due_at.date() - timedelta(days=1))

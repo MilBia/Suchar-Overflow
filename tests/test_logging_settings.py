@@ -1,10 +1,9 @@
-"""Regression guard for issue #402 — apscheduler's per-job INFO logging stays quiet.
+"""Regression guard for the RQ loggers (#402, #460, #462).
 
-``award-publication-achievements`` runs every minute (#402), so apscheduler's
-INFO "Running job" / "executed successfully" pair would add ~2880 log lines a
-day. ``base.py`` raises the ``apscheduler.executors`` logger to ``WARNING``;
-``production.py`` rebuilds ``LOGGING["loggers"]`` and must merge base's entry
-rather than drop it. Production is reloaded with stubbed env via
+``award-publication-achievements`` runs every minute (#402), so ``rq.cron``'s per-job
+INFO lines would flood the log; ``base.py`` raises that logger to ``WARNING`` and gives
+``rq.worker`` the project's console format. ``production.py`` rebuilds
+``LOGGING["loggers"]`` and must merge base's entries rather than drop them. Production is reloaded with stubbed env via
 ``tests.settings_loader.load_production_settings``.
 """
 
@@ -18,17 +17,20 @@ from config.settings import base
 from tests.settings_loader import load_production_settings
 
 
-def test_base_quiets_apscheduler_executors() -> None:
+def test_base_quiets_rq_cron_and_formats_rq_worker() -> None:
     # base.LOGGING is inferred as dict[str, object]; widen it to index into it.
     logging_config: dict[str, Any] = base.LOGGING
-    assert logging_config["loggers"]["apscheduler.executors"]["level"] == "WARNING"
+    assert logging_config["loggers"]["rq.cron"]["level"] == "WARNING"
+    assert logging_config["loggers"]["rq.worker"]["handlers"] == ["rq_console"]
+    assert "apscheduler.executors" not in logging_config["loggers"]
 
 
-def test_production_keeps_apscheduler_quiet_and_its_own_loggers(
+def test_production_keeps_rq_loggers_and_its_own_loggers(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     loggers = load_production_settings(monkeypatch).LOGGING["loggers"]
-    assert loggers["apscheduler.executors"]["level"] == "WARNING"
+    assert loggers["rq.cron"]["level"] == "WARNING"
+    assert loggers["rq.worker"]["handlers"] == ["rq_console"]
     assert loggers["django.request"]["level"] == "ERROR"
     assert "django.security.DisallowedHost" in loggers
 

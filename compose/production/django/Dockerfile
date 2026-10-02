@@ -68,6 +68,14 @@ COPY --chown=django:django ./compose/base/django/healthcheck /healthcheck
 RUN sed -i 's/\r$//g' /healthcheck
 RUN chmod +x /healthcheck
 
+COPY --chown=django:django ./compose/base/django/worker /worker
+RUN sed -i 's/\r$//g' /worker
+RUN chmod +x /worker
+
+COPY --chown=django:django ./compose/base/django/cron /cron
+RUN sed -i 's/\r$//g' /cron
+RUN chmod +x /cron
+
 COPY --chown=django:django ./compose/production/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start

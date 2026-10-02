@@ -1,17 +1,20 @@
 from typing import TYPE_CHECKING
 
 from django.contrib import admin
+from django.contrib import messages
 from django.contrib.auth import admin as auth_admin
 from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
 
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
+from .models import AuthToken
 from .models import EmailChangeRequest
 from .models import User
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+    from django.forms import ModelForm
     from django.http import HttpRequest
 
 
@@ -40,6 +43,44 @@ class EmailChangeRequestAdmin(admin.ModelAdmin):
     list_filter = ["status", "created_at"]
     search_fields = ["user__username", "user__email", "new_email"]
     date_hierarchy = "created_at"
+
+
+@admin.register(AuthToken)
+class AuthTokenAdmin(admin.ModelAdmin):
+    """Issue API tokens (#459). The clear text is shown once, in a message; only its hash is kept."""
+
+    list_display = ["user", "created"]
+    list_select_related = ["user"]
+    readonly_fields = ["created"]
+    fields = ["user", "created"]
+    autocomplete_fields = ["user"]
+    search_fields = ["user__username", "user__email"]
+    actions = ["regenerate"]
+
+    def get_readonly_fields(self, request: HttpRequest, obj: AuthToken | None = None) -> list[str]:
+        # The owner of an existing token is fixed; use the "regenerate" action instead.
+        return [*super().get_readonly_fields(request, obj), *(["user"] if obj else [])]
+
+    def save_model(self, request: HttpRequest, obj: AuthToken, form: ModelForm, change: bool) -> None:  # noqa: FBT001
+        if change:
+            return  # nothing editable: the hash is never shown or replaced here
+        raw_token = AuthToken.new_secret()
+        obj.token_hash = AuthToken.hash_token(raw_token)
+        super().save_model(request, obj, form, change)
+        self._announce(request, obj.user, raw_token)
+
+    @admin.action(description=_("Generate a new token for the selected users (invalidates the old one)"))
+    def regenerate(self, request: HttpRequest, queryset: QuerySet[AuthToken]) -> None:
+        for token in queryset.select_related("user"):
+            _new, raw_token = AuthToken.issue(token.user)
+            self._announce(request, token.user, raw_token)
+
+    def _announce(self, request: HttpRequest, user: User, raw_token: str) -> None:
+        self.message_user(
+            request,
+            _("Token for %(user)s (shown only once): %(token)s") % {"user": user.username, "token": raw_token},
+            messages.WARNING,
+        )
 
 
 @admin.register(User)

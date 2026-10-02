@@ -31,8 +31,8 @@ Wchodzisz na własną odpowiedzialność (i z butelką wody).
 
 Suchar Overflow to platforma do dzielenia się żartami (sucharami) – z systemem głosowania,
 rankingiem użytkowników, osiągnięciami i statystykami. Projekt wspiera dwa języki
-(polski i angielski), wysyła maile przez wbudowany Django mail backend oraz obsługuje
-cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowanego w proces Django.
+(polski i angielski), wysyła maile przez kolejkę zadań (RQ) oraz obsługuje
+cykliczne zadania (np. przyznawanie osiągnięć) w osobnej usłudze `cron`.
 
 ### Główne funkcje
 
@@ -56,7 +56,7 @@ cykliczne zadania (np. przyznawanie osiągnięć) za pomocą APScheduler wbudowa
 | **REST API**                  | Django Ninja                                          |
 | **Baza danych**               | PostgreSQL 18                                         |
 | **Cache**                     | Redis 8 (django-redis)                                |
-| **Harmonogram zadań**         | APScheduler (wbudowany w Django)                      |
+| **Kolejka i harmonogram**     | RQ (django-rq): usługi `worker` i `cron`              |
 | **Serwer ASGI**               | Gunicorn + Uvicorn                                    |
 | **Reverse Proxy**             | Traefik 3 (produkcja)                                 |
 | **Media Proxy**               | Nginx (produkcja)                                     |
@@ -159,9 +159,12 @@ just manage createsuperuser
 | Admin     | http://127.0.0.1:8000/admin/ |
 | API       | http://127.0.0.1:8000/api/   |
 
-> Maile (aktywacja konta, zmiana e-maila) są wysyłane synchronicznie przez Django mail backend.
-> Cykliczne zadania (np. przyznawanie osiągnięcia „Najlepszy suchar miesiąca") obsługuje
-> APScheduler działający jako wątek w tle wewnątrz procesu Django.
+> Maile (aktywacja konta, zmiana e-maila) trafiają do kolejki RQ i wysyła je usługa `worker`
+> (z trzema ponowieniami); błąd SMTP nie kończy się już błędem 500 w żądaniu.
+> Cykliczne zadania (np. przyznawanie osiągnięcia „Najlepszy suchar miesiąca") planuje usługa `cron`
+> — uruchamiaj dokładnie jedną jej instancję. Panel kolejki: `/admin/django-rq/`.
+> Po aktualizacji z wersji bez RQ uruchom `docker compose up -d --renew-anon-volumes`, żeby kontener
+> `django` dostał nowe zależności.
 > Mailpit przechwytuje wszystkie maile wychodzące w środowisku lokalnym.
 
 ### 6. Zatrzymaj kontenery
@@ -239,6 +242,21 @@ nginx startują dopiero, gdy jest `healthy`.
 #### Dokumentacja API
 
 `/api/docs` (Swagger) jest domyślnie włączona. Na produkcji wyłącz ją zmienną `DJANGO_API_ENABLE_DOCS=False`.
+
+#### API — uwierzytelnianie
+
+API przyjmuje dwa rodzaje uwierzytelnienia: sesję Django (jak frontend, z tokenem CSRF) albo token w nagłówku
+`Authorization: Bearer <token>` (skrypty, integracje; bez CSRF).
+
+Tokeny wystawia się wyłącznie w panelu admina (**API tokens → Add**; akcja „Generate a new token…” wymienia
+istniejący). Wartość tokenu pojawia się **raz**, w komunikacie po zapisie — w bazie leży tylko jej skrót SHA-256,
+więc nie da się jej odczytać ponownie. Token nieaktywnego użytkownika jest odrzucany.
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" https://example.com/api/users/me   # {"username": "..."}
+```
+
+Brak lub zły token to `401`. Publiczny pozostaje tylko `GET /api/suchary/tags` (autouzupełnianie tagów).
 
 ### 4. Stwórz superusera (pierwsze uruchomienie)
 

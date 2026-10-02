@@ -133,7 +133,7 @@ logging_config["handlers"]["mail_admins"] = {
     # log_response's executor thread (#447).
     "class": "suchar_overflow.utils.log.AdminEmailHandler",
 }
-# Merge into (not replace) base's loggers — it quiets apscheduler.executors (#402).
+# Merge into (not replace) base's loggers — it configures the rq loggers (#460).
 # mail_admins sits on "django" itself, so every django.* error (django.request,
 # django.security.*) sends exactly one email; base.py cleared the stock one
 # Django's DEFAULT_LOGGING attached there (#447).

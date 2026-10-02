@@ -16,7 +16,6 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from ninja import Router
 from ninja import Schema
-from ninja.security import django_auth
 
 from suchar_overflow.achievements.cache import mark_suchar_toast_sent
 from suchar_overflow.achievements.cache import set_pending_toast
@@ -54,7 +53,8 @@ class TagSchema(Schema):
     slug: str
 
 
-@router.get("/tags", response=list[TagSchema])
+# auth=None: the create form's tag autocomplete is anonymous-reachable (the API default is auth).
+@router.get("/tags", response=list[TagSchema], auth=None)
 def list_tags(request: HttpRequest, q: str | None = None) -> QuerySet[Tag]:  # noqa: ARG001
     # Only suggest tags that already appear on at least one *published* suchar.
     # A tag added to a scheduled (not-yet-published) suchar would otherwise
@@ -80,7 +80,7 @@ def list_tags(request: HttpRequest, q: str | None = None) -> QuerySet[Tag]:  # n
     return tags.order_by("name")[:10]
 
 
-@router.post("/{suchar_id}/vote", auth=django_auth, response=VoteResponse)
+@router.post("/{suchar_id}/vote", response=VoteResponse)
 def vote_suchar(
     request: HttpRequest,
     suchar_id: int,

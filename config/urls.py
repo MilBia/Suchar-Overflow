@@ -31,6 +31,8 @@ urlpatterns = [
     ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
+    # RQ dashboard (#460); admin_view-wrapped by django_rq itself, linked from the admin index.
+    path(f"{settings.ADMIN_URL}django-rq/", include("django_rq.urls")),
     # User management
     path("users/", include("suchar_overflow.users.urls", namespace="users")),
     path("stats/", include("suchar_overflow.stats.urls", namespace="stats")),

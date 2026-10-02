@@ -28,6 +28,7 @@ from .forms import EmailChangeForm
 from .forms import UserCreationForm
 from .models import ActivationToken
 from .models import EmailChangeRequest
+from .tasks import enqueue_email
 from .tasks import send_activation_email
 from .tasks import send_email_change_emails
 
@@ -466,7 +467,8 @@ class SignupView(View):
         activation = await ActivationToken.objects.acreate(user=user)
         host = request.get_host()
         protocol = "https" if request.is_secure() else "http"
-        await sync_to_async(send_activation_email)(
+        await sync_to_async(enqueue_email)(
+            send_activation_email,
             user.pk,
             host,
             str(activation.token),
@@ -552,7 +554,8 @@ class EmailChangeInitiateView(AsyncLoginRequiredMixin):
         verify_full = f"{protocol}://{host}{verify_url}"
         revoke_full = f"{protocol}://{host}{revoke_url}"
 
-        await sync_to_async(send_email_change_emails)(
+        await sync_to_async(enqueue_email)(
+            send_email_change_emails,
             user.pk,
             old_email,
             new_email,

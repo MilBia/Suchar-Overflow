@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# Exactly ONE instance of this service must run (#462): a second would enqueue every
+# periodic job twice. The catch-up runs first, then the process becomes the scheduler.
+python manage.py achievements_catch_up
+exec python manage.py rqcron suchar_overflow.achievements.cron

@@ -21,6 +21,7 @@ from django.utils.translation import gettext
 from suchar_overflow.achievements.models import Achievement
 from suchar_overflow.achievements.models import UserAchievement
 from suchar_overflow.conftest import make_user
+from suchar_overflow.conftest import run_enqueued_jobs
 from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Tag
 from suchar_overflow.suchary.models import Vote
@@ -28,6 +29,8 @@ from suchar_overflow.users.views import UserDetailView
 from suchar_overflow.users.views import user_rank_cache_key
 
 if TYPE_CHECKING:
+    from unittest.mock import MagicMock
+
     from django.test import Client
 
     # `User` below is a runtime value (get_user_model()), so mypy rejects it
@@ -714,7 +717,7 @@ def test_reception_data_is_list_of_two(client: Client) -> None:
 
 
 @pytest.mark.django_db(transaction=True)
-def test_signup_uses_http_protocol_when_not_secure(client: Client) -> None:
+def test_signup_uses_http_protocol_when_not_secure(client: Client, rq_queue: MagicMock) -> None:
     client.post(
         reverse("users:signup"),
         {
@@ -724,13 +727,14 @@ def test_signup_uses_http_protocol_when_not_secure(client: Client) -> None:
             "password2": "S3cur3P@ss!",
         },
     )
+    run_enqueued_jobs(rq_queue)
     assert len(mail.outbox) == 1
     assert "http://" in mail.outbox[0].body
     assert "https://" not in mail.outbox[0].body
 
 
 @pytest.mark.django_db(transaction=True)
-def test_signup_uses_https_protocol_when_secure(client: Client) -> None:
+def test_signup_uses_https_protocol_when_secure(client: Client, rq_queue: MagicMock) -> None:
     client.post(
         reverse("users:signup"),
         {
@@ -741,6 +745,7 @@ def test_signup_uses_https_protocol_when_secure(client: Client) -> None:
         },
         secure=True,
     )
+    run_enqueued_jobs(rq_queue)
     assert len(mail.outbox) == 1
     assert "https://" in mail.outbox[0].body
 

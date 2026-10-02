@@ -16,10 +16,15 @@ from django.utils import timezone
 from django.utils.translation import gettext
 
 from suchar_overflow.conftest import make_user
+from suchar_overflow.conftest import run_enqueued_jobs
 from suchar_overflow.users.models import ActivationToken
 from suchar_overflow.users.models import EmailChangeRequest
+from suchar_overflow.users.tasks import send_activation_email
+from suchar_overflow.users.tasks import send_email_change_emails
 
 if TYPE_CHECKING:
+    from unittest.mock import MagicMock
+
     from django.test import Client
 
 User = get_user_model()
@@ -70,7 +75,7 @@ def test_signup_creates_activation_token(client: Client) -> None:
 
 
 @pytest.mark.django_db(transaction=True)
-def test_signup_sends_activation_email(client: Client) -> None:
+def test_signup_enqueues_activation_email(client: Client, rq_queue: MagicMock) -> None:
     client.post(
         reverse("users:signup"),
         {
@@ -80,7 +85,18 @@ def test_signup_sends_activation_email(client: Client) -> None:
             "password2": "Str0ngP@ssword!",
         },
     )
-    assert len(mail.outbox) == 1
+    user = User.objects.get(username="newuser")
+    token = ActivationToken.objects.get(user=user)
+    # Queued, not sent in the request: the SMTP server is the worker's problem (#461).
+    assert mail.outbox == []
+    rq_queue.enqueue.assert_called_once()
+    task, *args = rq_queue.enqueue.call_args.args
+    assert task is send_activation_email
+    assert args == [user.pk, "testserver", str(token.token), "http"]
+    assert rq_queue.enqueue.call_args.kwargs["language"] == "pl"
+    assert rq_queue.enqueue.call_args.kwargs["retry"].max == 3
+    assert rq_queue.enqueue.call_args.kwargs["retry"].intervals == [10, 60, 300]
+    run_enqueued_jobs(rq_queue)
     assert "newuser@example.com" in mail.outbox[0].to
 
 
@@ -214,7 +230,7 @@ def test_email_change_initiate_get_renders_form(client: Client) -> None:
 
 
 @pytest.mark.django_db(transaction=True)
-def test_email_change_creates_request_and_sends_emails(client: Client) -> None:
+def test_email_change_creates_request_and_enqueues_emails(client: Client, rq_queue: MagicMock) -> None:
     user = make_user("user1", email="old@example.com")
     client.force_login(user)
 
@@ -228,6 +244,10 @@ def test_email_change_creates_request_and_sends_emails(client: Client) -> None:
         user=user,
         new_email="new@example.com",
     ).exists()
+    assert mail.outbox == []
+    rq_queue.enqueue.assert_called_once()
+    assert rq_queue.enqueue.call_args.args[0] is send_email_change_emails
+    run_enqueued_jobs(rq_queue)
     # Two emails: one to new address (verify), one to old (revoke notification).
     assert len(mail.outbox) == 2
     recipients = {msg.to[0] for msg in mail.outbox}

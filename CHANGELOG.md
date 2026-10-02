@@ -4,6 +4,19 @@ Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 
 ## [Unreleased]
 
+### Kolejka zadań (RQ) zamiast APScheduler
+
+- Nowe usługi compose `worker` (RQ) i `cron` (`rqcron`) — **`cron` zawsze w jednej instancji**. Maile
+  aktywacyjne i zmiany adresu są wysyłane przez kolejkę (3 ponowienia: 10 s, 1 min, 5 min); błąd SMTP nie
+  kończy już żądania błędem 500. Po wyczerpaniu prób admini dostają mail (`mail_admins`).
+- Zadania cykliczne nie działają już w procesach web, więc `WEB_CONCURRENCY > 1` jest bezpieczne.
+  Zależność `apscheduler` usunięta.
+- Nowa, opcjonalna zmienna `REDIS_QUEUE_URL` (domyślnie `REDIS_URL` z bazą `/1`) — kolejka ma osobną bazę
+  Redisa, więc wyczyszczenie cache jej nie kasuje. `/healthz/` zwraca też pole `queue`.
+- Po aktualizacji lokalnej: `docker compose up -d --renew-anon-volumes`.
+- Uwierzytelnianie API tokenem (`Authorization: Bearer`), `GET /api/users/me`, model `AuthToken` (migracja
+  `users.0007`); tokeny wystawia się w adminie, w bazie jest tylko ich skrót.
+
 ### Zmiany w konfiguracji (wymagają aktualizacji `.envs/.production/.django`)
 
 - Zmienne poczty mają teraz prefiks `DJANGO_`: `DJANGO_EMAIL_HOST`, `DJANGO_EMAIL_PORT`,

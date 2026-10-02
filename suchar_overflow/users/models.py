@@ -1,4 +1,6 @@
 import datetime
+import hashlib
+import secrets
 import uuid
 
 from django.contrib.auth.models import AbstractUser
@@ -35,6 +37,52 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"username": self.username})
+
+
+class AuthToken(models.Model):
+    """API bearer token (``Authorization: Bearer <token>``, #459), one per user.
+
+    Only the SHA-256 digest is stored, so a database leak (or an admin reading the
+    row) yields no usable credential; the value exists in clear text once, right after
+    ``issue()``. The token is 256 bits of randomness, so a plain unsalted digest is
+    enough (there is nothing to brute-force) and lets ``authenticate`` find the row by
+    an indexed equality lookup instead of comparing secrets in Python.
+    """
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="token",
+        verbose_name=_("User"),
+    )
+    token_hash = models.CharField(_("Token hash"), max_length=64, unique=True, editable=False)
+    created = models.DateTimeField(_("Created"), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("API token")
+        verbose_name_plural = _("API tokens")
+
+    def __str__(self) -> str:
+        user_name = self.user.username if "user" in self._state.fields_cache else f"User #{self.user_id}"
+        return f"AuthToken({user_name})"
+
+    @staticmethod
+    def hash_token(raw_token: str) -> str:
+        return hashlib.sha256(raw_token.encode()).hexdigest()
+
+    @staticmethod
+    def new_secret() -> str:
+        return secrets.token_urlsafe(32)
+
+    @classmethod
+    def issue(cls, user: User) -> tuple[AuthToken, str]:
+        """Create (or replace) ``user``'s token; returns it with the one-time clear text."""
+        raw_token = cls.new_secret()
+        token, _created = cls.objects.update_or_create(
+            user=user,
+            defaults={"token_hash": cls.hash_token(raw_token), "created": timezone.now()},
+        )
+        return token, raw_token
 
 
 class ActivationToken(models.Model):
