@@ -57,7 +57,7 @@ def _visit(page: Page, url: str, tolerate: tuple[str, ...] = ()) -> tuple[list[s
     # hidden-achievements init, on the pages that load that bundle.
     page.wait_for_function(
         "() => window.__hiddenAchievementsReady !== undefined"
-        " || !document.querySelector('script[src*=\"hidden_achievements\"]')"
+        " || !document.querySelector('script[src*=\"hidden_achievements\"]')",
     )
     violations = page.evaluate("window.__cspViolations")
     return errors, violations
