@@ -4,7 +4,7 @@
 # 3.14.2). Both stages then share the same interpreter the bytecode is built for,
 # and the same Debian release (glibc) the venv's C extensions are built against —
 # keep both FROM lines on one tag (#437, tests/test_python_runtime.py).
-FROM ghcr.io/astral-sh/uv:0.12.19 AS uv
+FROM ghcr.io/astral-sh/uv:0.12.21 AS uv
 
 FROM docker.io/python:3.14-slim-trixie AS python-build-stage
 COPY --from=uv /uv /uvx /bin/
