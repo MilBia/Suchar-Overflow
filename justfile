@@ -83,11 +83,23 @@ test *args:
 # whole repo; an explicit `just test-e2e tests/e2e/test_konami_easter_egg.py`
 # still overrides it and narrows collection to that file (#361).
 test-e2e *args:
+    @test -f webpack-stats.json || { echo "webpack-stats.json is missing: run 'just build-js' first (E2E loads the real bundles)." >&2; exit 1; }
     @docker compose run --rm django pytest \
         --override-ini="addopts=--ds=config.settings.e2e --reuse-db --import-mode=importlib" \
         -o testpaths="tests/e2e" \
         -m e2e \
         {{args}}
+
+# build-js: Build the frontend bundles (webpack, production mode) into
+# suchar_overflow/static/webpack_bundles/ and write webpack-stats.json (#466).
+# Runs on the host, like `test-js` (needs Node + a one-off `npm ci`). `just up` already
+# runs the `node` service, whose dev build is just as good for E2E; this is for a
+# checkout without it, and for CI. Don't run it while `node` is up: the dev server and this
+# build write the same directory, and the server will not re-emit files it believes it already
+# wrote — `docker compose restart node` afterwards, or stop it first.
+build-js:
+    @if command -v docker >/dev/null && [ -n "$(docker ps -q --filter name=^suchar_overflow_local_node$)" ]; then echo "The node service is running and writes the same directory: 'docker compose stop node' first (restart it afterwards)." >&2; exit 1; fi
+    @npm run build
 
 # test-all: Run unit tests then E2E tests sequentially.
 # Deliberately does NOT include `test-js` — that one runs on the host (Node), not
@@ -96,7 +108,7 @@ test-all:
     @just test
     @just test-e2e
 
-# test-js: Run the Vitest + jsdom unit tests for static/js/ logic.
+# test-js: Run the Vitest + jsdom unit tests for the ES modules in webpack/src/js/.
 # Runs on the host, NOT in a container — like `pre-commit`, this tool has no
 # Django/DB dependency and lives outside the Docker image. Needs Node + a one-off
 # `npm ci` (`--no-install` errors out loudly instead of pulling vitest from the

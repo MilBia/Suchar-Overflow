@@ -1,10 +1,14 @@
 import faulthandler
 import signal
+import socket
+
+from suchar_overflow.utils.debug import InternalIPs
 
 from .base import *  # noqa: F403
 from .base import INSTALLED_APPS
 from .base import MIDDLEWARE
 from .base import TEMPLATES
+from .base import WEBPACK_LOADER
 from .base import env
 
 # GENERAL
@@ -43,6 +47,13 @@ TEMPLATES[0]["OPTIONS"]["loaders"] = [  # type: ignore[index]
 # app in ASGIStaticFilesHandler while DEBUG is on (#463).
 
 
+# WEBPACK (#466)
+# ------------------------------------------------------------------------------
+# Re-read webpack-stats.json on every render: the `node` service rewrites it on each
+# rebuild and the loader (DEBUG on) waits while its status is "compile".
+WEBPACK_LOADER = {"DEFAULT": {**WEBPACK_LOADER["DEFAULT"], "CACHE": False}}
+
+
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#prerequisites
@@ -61,12 +72,17 @@ DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TEMPLATE_CONTEXT": True,
 }
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#internal-ips
-INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
-if env("USE_DOCKER", default="no") == "yes":
-    import socket
 
+
+# The per-request lookup of `node` only makes sense inside compose; elsewhere it would be a failing DNS query.
+INTERNAL_IPS = (
+    InternalIPs(["127.0.0.1", "10.0.2.2"]) if env("USE_DOCKER", default="no") == "yes" else ["127.0.0.1", "10.0.2.2"]
+)
+if env("USE_DOCKER", default="no") == "yes":
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS += [".".join([*ip.split(".")[:-1], "1"]) for ip in ips]
+    # The `node` service proxies :3000 to django, so the toolbar sees its address, not the host's
+    # (resolved lazily — see InternalIPs).
 
 # django-extensions
 # ------------------------------------------------------------------------------

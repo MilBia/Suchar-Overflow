@@ -1,7 +1,7 @@
 """Per-visitor time zone for input and display (#410, stage 2 of #405).
 
 ``suchar_overflow.utils.middleware.user_timezone_middleware`` activates the zone from
-the ``user_tz`` cookie (written by ``static/js/timezone.js``). It changes only
+the ``user_tz`` cookie (written by ``webpack/src/js/timezone.js``). It changes only
 how naive form input is parsed and how templates display datetimes; the
 invariance of rules/charts/contests under a foreign active zone is covered next
 to each computation (``achievements/tests/test_timezone.py`` and the stats /

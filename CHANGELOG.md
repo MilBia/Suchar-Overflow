@@ -4,6 +4,16 @@ Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 
 ## [Unreleased]
 
+### Frontend na webpack (django-compressor usunięty)
+
+- Style (SCSS) i JavaScript (moduły ES) budowane przez webpack 5 + Babel + Sass + PostCSS i podawane przez
+  `django-webpack-loader`; Chart.js i flatpickr pochodzą z npm. Źródła: `webpack/src/`.
+- Nowa usługa compose `node` (`http://localhost:3000` — dev-server z live reloadem i proxy do Django).
+  Po aktualizacji lokalnej: `just build` i `docker compose up -d --renew-anon-volumes`.
+- Zależności `django-compressor`, `rcssmin`, `rjsmin` usunięte; ze `start` produkcji znika `compress --force`
+  (bundle powstają w obrazie, w etapie `client-builder`). `just prod-build` wystarcza; nic nie trzeba robić na serwerze.
+- Testy E2E wymagają zbudowanych bundli: `just build-js` (CI robi to samo).
+
 ### Kolejka zadań (RQ) zamiast APScheduler
 
 - Nowe usługi compose `worker` (RQ) i `cron` (`rqcron`) — **`cron` zawsze w jednej instancji**. Maile

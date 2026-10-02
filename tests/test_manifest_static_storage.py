@@ -17,6 +17,7 @@ takes effect and is undone on teardown. The same
 `ManifestStaticFilesStorage` production uses (#463).
 """
 
+import json
 import re
 import struct
 from pathlib import Path
@@ -55,7 +56,7 @@ PAGES: list[tuple[str, dict[str, str]]] = [
 
 
 @pytest.fixture
-def manifest_storage(settings: SettingsWrapper, tmp_path: Path) -> None:
+def manifest_storage(settings: SettingsWrapper, tmp_path: Path, request: pytest.FixtureRequest) -> None:
     settings.STATIC_ROOT = str(tmp_path / "static")
     settings.STORAGES = {
         **settings.STORAGES,
@@ -63,7 +64,11 @@ def manifest_storage(settings: SettingsWrapper, tmp_path: Path) -> None:
             "BACKEND": ("django.contrib.staticfiles.storage.ManifestStaticFilesStorage"),
         },
     }
-    call_command("collectstatic", "--noinput", verbosity=0)
+    # A dev-server build (`node` service) leaves libraries' own `sourceMappingURL` comments in the
+    # bundles, which the manifest storage rejects; only the production build is collected, and only by
+    # the tests that ask for it.
+    ignore = [] if request.node.get_closest_marker("needs_bundles") else ["webpack_bundles"]
+    call_command("collectstatic", "--noinput", verbosity=0, ignore_patterns=ignore)
 
 
 def test_every_template_static_literal_exists() -> None:
@@ -98,6 +103,40 @@ def test_pages_render_under_manifest_storage(client: Client) -> None:
         url = reverse(url_name, kwargs=resolved)
         response = client.get(url)
         assert response.status_code == 200, (url, response.status_code)
+
+
+_STATS_FILE = Path(django_settings.BASE_DIR) / "webpack-stats.json"
+
+
+def _built_by_dev_server() -> bool:
+    if not _STATS_FILE.is_file():
+        return False
+    return any("vendors-node_modules" in name for name in json.loads(_STATS_FILE.read_text(encoding="utf-8"))["assets"])
+
+
+@pytest.mark.skipif(not _STATS_FILE.is_file(), reason="needs a webpack build: `just build-js`")
+@pytest.mark.skipif(
+    _built_by_dev_server(),
+    reason="the bundles are the dev server's: `just build-js` with `node` stopped",
+)
+@pytest.mark.needs_bundles
+@pytest.mark.usefixtures("manifest_storage")
+def test_built_bundles_survive_collectstatic() -> None:
+    """The bundles the loader names exist in STATIC_ROOT after a manifest-storage `collectstatic` (#468).
+
+    `collectstatic` post-processing resolves every `url()` in the CSS (the `/static/fonts/…` paths) and
+    every `sourceMappingURL`, and fails hard on a missing target, so reaching this line already proves
+    those. What it adds: each URL `render_bundle` will emit (the stats' `publicPath`) is a real file.
+    """
+    stats = json.loads(_STATS_FILE.read_text(encoding="utf-8"))
+    assert stats["status"] == "done"
+    static_root = Path(django_settings.STATIC_ROOT)
+    assert stats["assets"]
+    for asset in stats["assets"].values():
+        relative = asset["publicPath"].removeprefix(django_settings.STATIC_URL)
+        assert (static_root / relative).is_file(), asset["publicPath"]
+    # The licence notices for the bundled libraries ship with them (#251).
+    assert (static_root / "webpack_bundles" / "licenses.txt").is_file()
 
 
 @pytest.mark.django_db

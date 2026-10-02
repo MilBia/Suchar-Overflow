@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static i18n compress %}
+{% load static i18n webpack_loader %}
 
 {% block title %}
     {% trans "Leaderboard" %}
@@ -8,10 +8,7 @@
 
 {% block css %}
     {{ block.super }}
-    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-    {% compress css %}
-        <link href="{% static 'css/pages/leaderboard.css' %}" rel="stylesheet" />
-    {% endcompress %}
+    {% render_bundle 'leaderboard' 'css' %}
 {% endblock css %}
 
 {% block content %}
@@ -133,13 +130,7 @@
 
 {% block javascript %}
     {{ block.super }}
-    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-    {% compress js %}
-        <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
-    {% endcompress %}
-    {# json_script output must stay OUT of {% compress %} — see #205. #}
+    {# Data islands stay in the template, outside the bundles; leaderboard.js reads them by id. #}
     {{ chart_datasets|json_script:"chart-datasets-data" }}
-    {% compress js %}
-        <script defer src="{% static 'js/pages/leaderboard.js' %}"></script>
-    {% endcompress %}
+    {% render_bundle 'leaderboard' 'js' attrs='defer' %}
 {% endblock javascript %}

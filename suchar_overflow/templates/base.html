@@ -1,4 +1,4 @@
-{% load static i18n compress %}
+{% load static i18n webpack_loader %}
 
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
@@ -46,76 +46,26 @@
         <link rel="icon" href="{% static 'images/favicons/favicon.svg' %}" />
         {% block css %}
             {% comment %}
-      Canonical global stylesheet order: fonts → core → components →
-      project.css. This block IS the cascade order — a rule in a file listed
-      lower wins over an equally specific rule listed higher, and several
-      files (utilities.css, components/forms.css) document rules that depend on
-      it. Add new global modules at the right position here.
+      The global stylesheet (#467) is the `project` entry's CSS, built from
+      webpack/src/scss/project.scss: fonts → core → components → site, in that
+      cascade order (see the comment at the top of project.scss).
 
-      Page-specific sheets are NOT listed here (see #250): pages/leaderboard.css
-      lives in stats/leaderboard.html's own compress css block, and
-      pages/profile.css in users/base_dashboard.html's. Both load after this
-      bundle, so their equal-specificity !important rules (.rank-*,
-      .sticky-sidebar) still win on cascade order.
-
-      Composition deliberately lives in this template rather than in a CSS
-      `@import` chain (see #204). django-compressor concatenates every link
-      tag inside one {% compress %} block into a single output file and runs
-      CssAbsoluteFilter once per input file, absolutising each file's own
-      relative url(...) refs (e.g. fonts.css's ../fonts/*.woff2). `@import`
-      directives, by contrast, are copied into the output verbatim and then
-      resolve against /static/CACHE/css/ — where the modules do not exist —
-      so never reintroduce one for a project module. Vendored pre-minified
-      sheets are fine inside a compress block; page-specific sheets belong in
-      the child template's own {% compress css %} block, not this one — and
-      that child block must NOT wrap {{ block.super }}, which already expands
-      to this bundle's finished link tag pointing at CACHE/css/output.HASH.css:
-      feeding an already-compressed output back through the compressor is wrong.
+      Page-specific sheets are NOT part of it (see #250): each page template
+      renders its own entry's CSS after `{{ block.super }}`, so their
+      equal-specificity !important rules (.rank-*, .sticky-sidebar) still win
+      on cascade order. `{{ block.super }}` stays the first line of such an
+      override.
             {% endcomment %}
-            {% compress css %}
-                <link href="{% static 'css/fonts.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/variables.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/reset.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/typography.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/layout.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/utilities.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/buttons.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/navbar.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/cards.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/forms.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/modals.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/toasts.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/list_group.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/pagination.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/dropdowns.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/voting.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/heatmap.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/achievement-badge.css' %}"
-                      rel="stylesheet" />
-                <link href="{% static 'css/components/suchar-card.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/footer.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/components/error-page.css' %}" rel="stylesheet" />
-                <link href="{% static 'css/project.css' %}" rel="stylesheet" />
-            {% endcompress %}
+            {% render_bundle 'project' 'css' skip_common_chunks=False %}
         {% endblock css %}
         {% block javascript %}
-            {% compress js %}
-                <script defer src="{% static 'js/timezone.js' %}"></script>
-                <script defer src="{% static 'js/project.js' %}"></script>
-                <script defer src="{% static 'js/features/easter_eggs.js' %}"></script>
-                <script defer src="{% static 'js/features/konami.js' %}"></script>
-                <script defer src="{% static 'js/features/badumtss.js' %}"></script>
-                <script defer src="{% static 'js/features/logo_spin.js' %}"></script>
-                <script defer src="{% static 'js/features/console_egg.js' %}"></script>
-                <script defer src="{% static 'js/features/tumbleweed.js' %}"></script>
-                <script defer src="{% static 'js/features/theme_spam.js' %}"></script>
-                <script defer src="{% static 'js/features/archeolog.js' %}"></script>
-                <script defer src="{% static 'js/features/publika_rozgrzana.js' %}"></script>
-            {% endcompress %}
+            {# The global script bundle (#468): timezone, app, easter eggs - see webpack/src/js/project.js. #}
+            {# First on every page, so nothing to skip; also keeps the 500 page (no request) warning-free. #}
+            {% render_bundle 'project' 'js' attrs='defer' skip_common_chunks=False %}
         {% endblock javascript %}
         {% if request.user.is_authenticated %}
             {% comment %}
-        Easter-egg sound URLs for easter_eggs.js (#282): a classic script cannot
+        Easter-egg sound URLs for easter_eggs.js (#282): a bundle cannot
         resolve the static tag itself, and production hashes the filenames.
         Nonce'd so CSP script-src allows the inline block. Uses the comment tag,
         not a multi-line hash comment: Django parses that form on a single line
@@ -129,8 +79,8 @@
             </script>
             {% comment %}
         Meta-suchar pool for the logo-spin easter egg (#285). A plain JSON data
-        island: deliberately kept OUT of the compress-js block (its translated
-        text must not be minified into the bundle) and not built with the
+        island: deliberately kept OUT of the webpack bundles (its translated
+        text must stay in the page, where {% trans %} renders it) and not built with the
         json_script filter, which needs a context variable base.html has no view
         to provide. The escapejs filter keeps each translated string safe in the
         script context; the strings are static, so that is hygiene rather than a

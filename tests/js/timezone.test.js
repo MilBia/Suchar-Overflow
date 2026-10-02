@@ -1,19 +1,13 @@
 /**
- * Unit tests for suchar_overflow/static/js/timezone.js (issue #410): the
- * browser's IANA time zone is mirrored into the `user_tz` cookie, which
- * `suchar_overflow/utils/middleware.py` activates for input parsing and display.
+ * Unit tests for webpack/src/js/timezone.js (issue #410): the browser's IANA time zone is
+ * mirrored into the `user_tz` cookie, which `suchar_overflow/utils/middleware.py` activates for
+ * input parsing and display.
  *
- * Classic browser script reached through its guarded CommonJS tail (see
- * CLAUDE.md "JS tests (Vitest)"). `require()` runs the module body once, which
- * already syncs the cookie — every test clears cookies first and drives the
- * exported helpers directly. The module has no mutable module-level state, so
- * no `_resetForTests()` is needed.
+ * An ES module (#468): importing it runs the body once, which already syncs the cookie — every
+ * test clears cookies first and drives the exported helpers directly. The module has no mutable
+ * module-level state, so no `_resetForTests()` is needed.
  */
-const path = require('node:path');
-
-const TIMEZONE_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/timezone.js');
-
-let tz;
+import * as tz from '../../webpack/src/js/timezone.js';
 
 function clearCookies() {
     for (const part of document.cookie.split(';')) {
@@ -29,8 +23,6 @@ function stubZone(zone) {
 }
 
 beforeEach(() => {
-    clearCookies();
-    tz = require(TIMEZONE_PATH);
     clearCookies();
 });
 

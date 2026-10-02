@@ -1,27 +1,27 @@
 /**
  * Unit tests for the "Archeolog" scroll-to-bottom easter egg in
- * suchar_overflow/static/js/features/archeolog.js (issue #290).
+ * webpack/src/js/features/archeolog.js (issue #290).
  *
- * Classic browser script; its guarded CommonJS tail (inside the file's IIFE)
- * exposes the helpers to Vitest — inert in the browser, see the file and
- * CLAUDE.md "JS tests (Vitest)". `require()` runs the module body, which
- * registers a `DOMContentLoaded` listener that does not fire here (jsdom is
- * past `load`), so most tests drive the exported helpers directly.
+ * An ES module (#468): importing it runs its body, which registers a `DOMContentLoaded`
+ * listener that does not fire on its own here (jsdom is past `load`), so most tests drive the
+ * exported helpers directly. The module is imported once per file, so its mutable state is
+ * reset with the exported `_resetForTests()` (and `easterEggs.teardownAll()`) in
+ * `beforeEach`/`afterEach` — `vi.resetModules()` would not detach listeners from
+ * `document`/`window` (see CLAUDE.md "JS tests (Vitest)").
  *
- * The real `features/easter_eggs.js` is wired in first so `window.easterEggs`
- * (the deduped award this egg delegates to) behaves for real.
- * `vi.resetModules()` does not re-run a required CJS module, so both modules
- * expose `_resetForTests()` for the per-test cleanup.
+ * The real `features/easter_eggs.js` is used, so `easterEggs` (the deduped award +
+ * reduced-motion gate this egg delegates to) behaves for real. `toast.js` is mocked.
+ * This egg is pure delight unless noted: assertions on `fetch` / `award` stay.
  */
-const path = require('node:path');
+import * as archeolog from '../../webpack/src/js/features/archeolog.js';
+import { easterEggs, _resetForTests as resetEasterEggs } from '../../webpack/src/js/features/easter_eggs.js';
 
-const ARCHEOLOG_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/archeolog.js');
-const EASTER_EGGS_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/easter_eggs.js');
+import { showToast } from '../../webpack/src/js/toast.js';
+
+vi.mock('../../webpack/src/js/toast.js', () => ({ showToast: vi.fn() }));
 
 const SLUG = 'frontend-ee-archeolog';
 const MIN_TOTAL_PAGES = 5;
-
-let archeolog;
 
 function frontendEventPosts() {
     return globalThis.fetch.mock.calls.filter(([url]) => url === '/api/achievements/frontend-event');
@@ -78,7 +78,6 @@ function setAtTop(scrollHeight = 3000) {
 }
 
 beforeEach(() => {
-    vi.resetModules();
     sessionStorage.clear();
     localStorage.clear();
     document.body.innerHTML = '';
@@ -87,20 +86,18 @@ beforeEach(() => {
     setPath('/');
     setAtTop();
 
-    globalThis.getCsrfToken = vi.fn(() => 'test-token');
+    // csrf.js reads the token from the DOM; there is no global to stub.
+    document.head.innerHTML = '<meta name="csrf-token" content="test-token" />';
     globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => ({}) }));
-    window.showToast = vi.fn();
+    showToast.mockClear();
     delete window.EE_AUDIO;
 
-    require(EASTER_EGGS_PATH);
-    window.easterEggs._resetForTests();
-
-    archeolog = require(ARCHEOLOG_PATH);
+    resetEasterEggs();
     archeolog._resetForTests();
 });
 
 afterEach(() => {
-    window.easterEggs.teardownAll();
+    easterEggs.teardownAll();
     archeolog._resetForTests();
     vi.restoreAllMocks();
     vi.useRealTimers();
@@ -184,8 +181,8 @@ describe('handleScroll — end-to-end trigger', () => {
 
         archeolog.handleScroll();
 
-        expect(window.showToast).toHaveBeenCalledTimes(1);
-        expect(window.showToast).toHaveBeenCalledWith(archeolog.TOAST_BODY, archeolog.TOAST_TITLE, 'info');
+        expect(showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledWith(archeolog.TOAST_BODY, archeolog.TOAST_TITLE, 'info');
         expect(frontendEventPosts()).toHaveLength(1);
         expect(JSON.parse(frontendEventPosts()[0][1].body)).toEqual({
             event_slug: SLUG,
@@ -198,7 +195,7 @@ describe('handleScroll — end-to-end trigger', () => {
 
         archeolog.handleScroll();
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
         expect(frontendEventPosts()).toHaveLength(0);
     });
 
@@ -208,7 +205,7 @@ describe('handleScroll — end-to-end trigger', () => {
 
         archeolog.handleScroll();
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('does nothing on the eligible last page while not near the bottom', () => {
@@ -217,7 +214,7 @@ describe('handleScroll — end-to-end trigger', () => {
 
         archeolog.handleScroll();
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('throttles rapid scroll events — a second call within the window is a no-op', () => {
@@ -231,12 +228,12 @@ describe('handleScroll — end-to-end trigger', () => {
         // Still inside the throttle window — the eligible geometry is ignored.
         vi.advanceTimersByTime(archeolog.SCROLL_THROTTLE_MS - 50);
         archeolog.handleScroll();
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
 
         // Past the throttle window — now it's checked and fires.
         vi.advanceTimersByTime(100);
         archeolog.handleScroll();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('auto-fires via the trailing edge — no further handleScroll() call needed', () => {
@@ -253,12 +250,12 @@ describe('handleScroll — end-to-end trigger', () => {
         setAtBottom(); // becomes eligible before the window closes
         vi.advanceTimersByTime(50);
         archeolog.handleScroll(); // call #2: inside the window — schedules a trailing timer
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
 
         // No further handleScroll() call — only the scheduled trailing timer can
         // fire this.
         vi.advanceTimersByTime(archeolog.SCROLL_THROTTLE_MS - 50);
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
         expect(frontendEventPosts()).toHaveLength(1);
     });
 
@@ -280,7 +277,7 @@ describe('handleScroll — end-to-end trigger', () => {
         setAtBottom();
         archeolog.handleScroll();
 
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('fires once per page load — settles and never re-triggers or re-checks', () => {
@@ -289,14 +286,14 @@ describe('handleScroll — end-to-end trigger', () => {
         setAtBottom();
 
         archeolog.handleScroll();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
 
         vi.advanceTimersByTime(archeolog.SCROLL_THROTTLE_MS * 5);
         archeolog.handleScroll();
         archeolog.handleScroll();
 
         // Settled — no second toast and no second award POST this session.
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
         expect(frontendEventPosts()).toHaveLength(1);
     });
 });
@@ -318,7 +315,7 @@ describe('teardown / reset', () => {
         setAtBottom();
         dispatchScroll();
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it("easterEggs.teardownAll() also detaches archeolog's listener", () => {
@@ -327,13 +324,13 @@ describe('teardown / reset', () => {
         document.dispatchEvent(new Event('DOMContentLoaded'));
         expect(window.__archeologReady).toBe(true);
 
-        window.easterEggs.teardownAll();
+        easterEggs.teardownAll();
 
         makePagination({ currentPage: MIN_TOTAL_PAGES, hasNext: false });
         setAtBottom();
         dispatchScroll();
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('teardownArcheolog cancels a pending trailing timer', () => {
@@ -349,21 +346,21 @@ describe('teardown / reset', () => {
         archeolog.teardownArcheolog();
         vi.advanceTimersByTime(archeolog.SCROLL_THROTTLE_MS);
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('_resetForTests clears the settled flag so a fresh scroll is re-evaluated', () => {
         makePagination({ currentPage: MIN_TOTAL_PAGES, hasNext: false });
         setAtBottom();
         archeolog.handleScroll();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
 
         archeolog._resetForTests();
-        window.easterEggs._resetForTests();
+        resetEasterEggs();
         sessionStorage.clear(); // fresh session dedupe too — award() also checks storage
 
         archeolog.handleScroll();
-        expect(window.showToast).toHaveBeenCalledTimes(2);
+        expect(showToast).toHaveBeenCalledTimes(2);
     });
 });
 
@@ -383,7 +380,7 @@ describe('DOMContentLoaded init', () => {
         setAtBottom();
         dispatchScroll();
 
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('does not wire the listener for an anonymous body', () => {
@@ -397,7 +394,7 @@ describe('DOMContentLoaded init', () => {
         setAtBottom();
         dispatchScroll();
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('does not wire the listener off the suchar list', () => {
@@ -411,6 +408,6 @@ describe('DOMContentLoaded init', () => {
         setAtBottom();
         dispatchScroll();
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 });

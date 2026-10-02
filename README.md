@@ -49,23 +49,23 @@ cykliczne zadania (np. przyznawanie osiągnięć) w osobnej usłudze `cron`.
 
 ## Technologie
 
-| Warstwa                       | Technologia                                           |
-| ----------------------------- | ----------------------------------------------------- |
-| **Język**                     | Python 3.14                                           |
-| **Framework**                 | Django 6.1                                            |
-| **REST API**                  | Django Ninja                                          |
-| **Baza danych**               | PostgreSQL 18                                         |
-| **Cache**                     | Redis 8 (django-redis)                                |
-| **Kolejka i harmonogram**     | RQ (django-rq): usługi `worker` i `cron`              |
-| **Serwer ASGI**               | Gunicorn + Uvicorn                                    |
-| **Reverse Proxy**             | Traefik 3 (produkcja)                                 |
-| **Media Proxy**               | Nginx (produkcja)                                     |
-| **Konteneryzacja**            | Docker & Docker Compose                               |
-| **Zarządzanie zależnościami** | [uv](https://docs.astral.sh/uv/)                      |
-| **Minifikacja CSS/JS**        | django-compressor + rcssmin + rjsmin                  |
-| **Linting**                   | Ruff, djLint                                          |
-| **Type checking**             | mypy + django-stubs                                   |
-| **Testy**                     | pytest, pytest-django, factory-boy, pytest-playwright |
+| Warstwa                       | Technologia                                               |
+| ----------------------------- | --------------------------------------------------------- |
+| **Język**                     | Python 3.14                                               |
+| **Framework**                 | Django 6.1                                                |
+| **REST API**                  | Django Ninja                                              |
+| **Baza danych**               | PostgreSQL 18                                             |
+| **Cache**                     | Redis 8 (django-redis)                                    |
+| **Kolejka i harmonogram**     | RQ (django-rq): usługi `worker` i `cron`                  |
+| **Serwer ASGI**               | Gunicorn + Uvicorn                                        |
+| **Reverse Proxy**             | Traefik 3 (produkcja)                                     |
+| **Media Proxy**               | Nginx (produkcja)                                         |
+| **Konteneryzacja**            | Docker & Docker Compose                                   |
+| **Zarządzanie zależnościami** | [uv](https://docs.astral.sh/uv/)                          |
+| **Frontend**                  | webpack 5 + Babel + Sass + PostCSS, django-webpack-loader |
+| **Linting**                   | Ruff, djLint                                              |
+| **Type checking**             | mypy + django-stubs                                       |
+| **Testy**                     | pytest, pytest-django, factory-boy, pytest-playwright     |
 
 ---
 
@@ -117,6 +117,57 @@ Lub:
 ```bash
 just up
 ```
+
+#### Frontend (webpack) i live reload
+
+Od #466 repozytorium ma pipeline frontendu: **webpack + Babel + Sass + PostCSS**. Usługa `node`
+(uruchamiana razem z resztą przez `just up`) trzyma `webpack-dev-server`:
+
+- **http://localhost:3000** — aplikacja przez proxy do Django, z **live reloadem** (zmiana szablonu
+  albo źródła w `webpack/src/` przeładowuje stronę). Używaj jej przy pracy nad frontendem.
+- **http://localhost:8000** — Django bezpośrednio, działa jak dotąd (bundle dev są też zapisywane
+  na dysk w `suchar_overflow/static/webpack_bundles/`). W konsoli przeglądarki zobaczysz jedną
+  nieudaną próbę połączenia z gniazdem live reloadu — to normalne.
+
+Bez działającej usługi `node` nie ma pliku `webpack-stats.json` i strony zwracają błąd 500.
+Po zmianie `package.json` zbuduj obraz i odnów anonimowy wolumen z `node_modules`:
+`just build && docker compose -f docker-compose.local.yml up -d --renew-anon-volumes`.
+
+Bundle produkcyjne buduje `npm run build` (skrót: `just build-js`; na hoście, po jednorazowym
+`npm ci`) — potrzebne m.in. testom E2E, które ładują prawdziwe bundle (`just test-e2e` sprawdza,
+czy `webpack-stats.json` istnieje). Obraz produkcyjny buduje je sam w etapie `client-builder`.
+Nie uruchamiaj `just build-js` przy działającej usłudze `node`: oba piszą do tego samego katalogu,
+a dev-server nie wyemituje ponownie plików, które uważa za zapisane (`docker compose restart node`).
+
+##### Architektura frontendu
+
+```
+webpack/
+├── common.config.js, dev.config.js, prod.config.js, postcss.config.js, licenses-plugin.js
+└── src/
+    ├── js/
+    │   ├── project.js          # wpis globalny: importuje wszystko, co ładuje każda strona
+    │   ├── timezone.js         #   └─ pierwszy import (cookie `user_tz`)
+    │   ├── app.js              #   └─ motyw, nawigacja, dropdowny, modale, SSE, dzwonek
+    │   ├── csrf.js, toast.js   #   └─ `getCsrfToken`, `showToast` (importowane wprost)
+    │   ├── features/           #   └─ easter eggi, `voting`, `hidden_achievements`
+    │   └── pages/              # wpisy stron: `leaderboard`, `user_detail`, `suchar_form`, ...
+    └── scss/
+        ├── project.scss        # globalny arkusz: lista `@use` w kolejności kaskady
+        ├── _*.scss, components/
+        └── pages/              # arkusze stron, ładowane po globalnym
+```
+
+- **Wpisy.** `project` (JS + globalne CSS) renderuje `base.html`. Strony dokładają własne wpisy
+  (`{% render_bundle 'leaderboard' 'js' attrs='defer' %}`, `{% render_bundle 'dashboard' 'css' %}`),
+  które mają `dependOn: 'project'` — dzielą z nim instancje modułów i jeden runtime.
+  Przy `render_bundle` zawsze podawaj rozszerzenie (`'js'` albo `'css'`).
+- **Nowa strona ze skryptem lub stylem:** dodaj `webpack/src/js/pages/<nazwa>.js` (importuje swój
+  `.scss`), zarejestruj go w `webpack/common.config.js` z `dependOn: 'project'` i wyrenderuj w szablonie.
+- **Biblioteki** (Chart.js, flatpickr) pochodzą z npm i są pod Dependabotem; ich licencje trafiają do
+  `/static/webpack_bundles/licenses.txt` w buildzie produkcyjnym.
+- **Testy JS:** `just test-js` (Vitest + jsdom, na hoście) importuje moduły ES z `webpack/src/js/`
+  i sprawdza m.in., że moduły współdzielone nie są kopiowane do wpisów stron.
 
 Przy starcie kontener `django` sam stosuje migracje i kompiluje tłumaczenia
 (`compilemessages`: pliki `.po` → `.mo`). Pliki `.mo` nie są w repozytorium, więc bez tego
@@ -228,7 +279,7 @@ just prod-build
 just prod-up
 ```
 
-> Migracje bazy danych, `collectstatic` i `compress` (minifikacja CSS/JS) wykonują się automatycznie przy starcie kontenera Django.
+> Migracje bazy danych i `collectstatic` wykonują się automatycznie przy starcie kontenera Django. Bundle JS/CSS (webpack) są budowane w obrazie (etap `client-builder`), nie przy starcie.
 > Pliki statyczne (`/static/`) i media (`/media/`) serwuje nginx za Traefikiem — Django zapisuje statyki do wolumenu `production_django_static`, nginx czyta go tylko do odczytu.
 
 #### Healthcheck i monitoring (`/healthz/`)
@@ -321,6 +372,7 @@ Projekt udostępnia skróty poprzez [just](https://github.com/casey/just):
 | `just exec <cmd>`               | Dowolna komenda w działającym kontenerze (po `just up`) |
 | `just messages`                 | Kompilacja tłumaczeń (`.po` → `.mo`)                    |
 | `just test [args]`              | Uruchomienie testów jednostkowych (pytest)              |
+| `just build-js`                 | Zbudowanie bundli webpacka (`npm run build`, na hoście) |
 | `just test-e2e [args]`          | Uruchomienie testów E2E (Playwright)                    |
 | `just test-all`                 | Testy jednostkowe, a następnie E2E                      |
 | `just fill-translations [args]` | Uzupełnianie tłumaczeń przez lokalny model AI           |
@@ -402,8 +454,9 @@ Suchar-Overflow/
 │   ├── stats/                #   └─ statystyki i leaderboard
 │   ├── users/                #   └─ zarządzanie użytkownikami (ActivationToken, mail tasks)
 │   ├── contrib/              #   └─ współdzielone narzędzia i mixiny
-│   ├── static/               #   └─ CSS, JS, obrazy, czcionki
+│   ├── static/               #   └─ CSS, JS, obrazy, czcionki (+ `webpack_bundles/` – wynik buildu, poza gitem)
 │   └── templates/            #   └─ szablony Django (HTML)
+├── webpack/                  # Konfiguracja webpacka (common/dev/prod/postcss) i źródła w `src/`
 ├── locale/                   # Tłumaczenia (PL, EN)
 ├── tests/                    # Testy narzędziowe (root-level)
 │   └── e2e/                  #   └─ testy Playwright (E2E)

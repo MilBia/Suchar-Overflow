@@ -67,7 +67,7 @@ def test_whitenoise_is_not_a_dependency() -> None:
     assert "whitenoise" not in pyproject.lower()
 
 
-def test_nginx_caches_hashed_static_forever_and_compresses() -> None:
+def test_nginx_caches_hashed_static_forever_and_gzips() -> None:
     assert "location /static/" in _NGINX_CONF
     assert "gzip on;" in _NGINX_CONF
     assert "gzip_static on;" in _NGINX_CONF
@@ -76,8 +76,11 @@ def test_nginx_caches_hashed_static_forever_and_compresses() -> None:
     match = re.search(r'location ~ "(\^/static/[^"]+)"', _NGINX_CONF)
     assert match, "hashed-name location must use a quoted regex"
     pattern = re.sub(r"\(\?<\w+>", "(", match.group(1))
-    assert re.match(pattern, "/static/CACHE/css/output.0123456789ab.css")
+    # webpack's `[name].[contenthash]` names (hashDigestLength 12) and the manifest storage's.
+    assert re.match(pattern, "/static/webpack_bundles/css/project.0123456789ab.css")
     assert re.match(pattern, "/static/js/project.0123456789ab.js")
+    # Source maps (`name.<hash>.js.map`) are as immutable as the bundle they belong to.
+    assert re.match(pattern, "/static/webpack_bundles/js/project.0123456789ab.js.map")
     assert not re.match(pattern, "/static/js/project.js")
 
 
@@ -115,6 +118,8 @@ def test_asgi_serves_static_only_in_debug(
         sys.modules.pop("config.asgi", None)
 
 
-def test_production_start_clears_the_static_volume_before_compress() -> None:
+def test_production_start_clears_the_static_volume_and_has_no_compress_step() -> None:
     start = (_ROOT / "compose/production/django/start").read_text(encoding="utf-8")
-    assert start.index("manage.py collectstatic --noinput --clear") < start.index("manage.py compress --force")
+    assert "manage.py collectstatic --noinput --clear" in start
+    # django-compressor is gone (#469): the bundles are built into the image, not at start-up.
+    assert "manage.py compress" not in start

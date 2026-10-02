@@ -18,3 +18,6 @@ staticfiles/
 # Antigravity workflows: `// turbo` annotations sit on their own line above a
 # step, and prettier would fold them into the preceding list item.
 .agent/workflows/
+
+# webpack build output (#466).
+suchar_overflow/static/webpack_bundles/

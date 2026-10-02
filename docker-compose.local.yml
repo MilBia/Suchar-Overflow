@@ -97,6 +97,40 @@ services:
             retries: 3
             start_period: 30s
 
+    # webpack-dev-server (#466): http://localhost:3000 serves the app through a proxy to
+    # django with live reload; :8000 keeps working. The bundles are also written to
+    # suchar_overflow/static/webpack_bundles/ (and webpack-stats.json), which is what django reads.
+    # After changing package.json: `just build` and `docker compose up -d --renew-anon-volumes`.
+    node:
+        build:
+            context: .
+            dockerfile: ./compose/local/node/Dockerfile
+        image: suchar_overflow_local_node
+        container_name: suchar_overflow_local_node
+        depends_on:
+            django:
+                condition: service_healthy
+        volumes:
+            - /app/node_modules
+            - .:/app:z
+        ports:
+            - '3000:3000'
+        command: npm run dev
+        healthcheck:
+            # Healthy once the first compilation has been written (the stats file is the signal
+            # django's loader waits for) and the dev server answers.
+            test:
+                [
+                    'CMD',
+                    'node',
+                    '-e',
+                    "fetch('http://127.0.0.1:3000/static/webpack_bundles/').then((r) => process.exit(r.status < 500 ? 0 : 1), () => process.exit(1))",
+                ]
+            interval: 10s
+            timeout: 6s
+            retries: 6
+            start_period: 60s
+
     postgres:
         build:
             context: .

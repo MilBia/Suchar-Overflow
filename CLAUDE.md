@@ -6,7 +6,7 @@ Django 6.1 web app (joke aggregator). Backend: Python 3.14, PostgreSQL, Redis.
 Frontend: Django templates (DjangoTemplates backend), vanilla JS, CSS custom properties.
 Package manager: `uv`. Local dev and CI both run inside Docker Compose.
 Compose services: `django`, `worker` and `cron` (RQ, same image — see Background jobs), `postgres`, `redis`, `mailpit` (catches outgoing dev email at
-`localhost:8025`).
+`localhost:8025`), `node` (webpack-dev-server on `localhost:3000`, see Frontend pipeline).
 `compose/base/` holds what both stacks share (`django/entrypoint`, `healthcheck`, `worker`, `cron`, the `postgres/` image and
 its `maintenance/` backup scripts); `compose/local/` and `compose/production/` hold only their
 own Django `Dockerfile`/`start` plus Traefik/nginx (#456). Every `FROM` and pulled `image:`
@@ -78,15 +78,15 @@ otherwise only a Django transitive. WhiteNoise itself is gone (#463): production
 returns (so the deadlock can't reappear through a new middleware either).
 
 **Static files (#463).** Nothing in the Django process serves `/static/`. In production
-`collectstatic --noinput` + `compress --force` (`compose/production/django/start`) write
+`collectstatic --noinput --clear` (`compose/production/django/start`) writes
 `STATIC_ROOT` (`/app/staticfiles`, `ManifestStaticFilesStorage`) into the
 `production_django_static` volume — rw in `django`, `:ro` in `nginx`, which serves
 `/static/` next to `/media/` (Traefik's `web-static-router` and `web-media-router` both
 point at the `nginx` service). `compose/production/nginx/default.conf` gives names
-ending in `.<12 hex>.<ext>` (the manifest storage's and the compressor's hashes)
-`Cache-Control: public, max-age=31536000, immutable`, everything else one hour, turns on
-`gzip` and `gzip_static` (compressor's `GzipCompressorFileStorage` writes the `.gz` for
-`CACHE/`; the manifest storage writes none, so other files are compressed on the fly).
+ending in `.<12 hex>.<ext>` (the manifest storage's and webpack's `[contenthash]` with
+`hashDigestLength: 12`) `Cache-Control: public, max-age=31536000, immutable`, everything else one hour,
+turns on `gzip` and `gzip_static` (kept, but nothing writes `.gz` files any more — the webpack bundles
+are built in the image, see _Frontend pipeline_ — so `gzip on` compresses everything on the fly).
 The regex location is quoted — nginx reads an unquoted `{12}` as a block. `collectstatic`
 runs with `--clear` (there is no production yet, so nothing to keep): each start wipes
 the volume and rebuilds it, so it never accumulates files of past builds. The price: a
@@ -254,7 +254,7 @@ until you push a commit to that PR with the matching `rev`
 - `--reuse-db` keeps the DB between runs; pass `--create-db` to rebuild from scratch.
 - The test settings (`config/settings/test.py`) use `locmem` cache (no Redis needed;
   local and production use Redis — see Settings architecture)
-  and `COMPRESS_ENABLED = False` (no compressor).
+  and `WEBPACK_LOADER` is swapped for `FakeWebpackLoader` (no built bundles needed, see _Frontend pipeline_).
 - **Email sending (#461)**: views queue `send_activation_email` and the two email-change jobs
   (`send_email_change_verify_email` / `send_email_change_notify_email`, one job per message so a retry
   never repeats the other send) through `enqueue_email` (`users/tasks.py`, `sync_to_async` in the async views), so a request
@@ -280,7 +280,7 @@ until you push a commit to that PR with the matching `rev`
 
 ## JS tests (Vitest)
 
-`just test` has no JS coverage. Client-side logic in `suchar_overflow/static/js/`
+`just test` has no JS coverage. Client-side logic in `webpack/src/js/`
 — sequence matchers, key buffers, idle/combo timers, `sessionStorage`/`localStorage`
 dedupe — is unit-tested with **Vitest + jsdom** (issue #281, option C: pure logic
 here, Playwright E2E for the integration path — audio, the real
@@ -289,55 +289,45 @@ here, Playwright E2E for the integration path — audio, the real
 - **Why Vitest and not more E2E**: the logic that needs the most coverage is
   time-window logic (idle timers, combo windows, the 3s hover dwell). `vi.useFakeTimers()` / `vi.advanceTimersByTime()` makes it deterministic and instant;
   `page.clock` against a real browser + a `transaction=True` DB per test does not.
-- **Not a build step.** Vitest is a dev-only runner in the same category as pytest
-  — it never transforms, bundles, or ships anything. The "no JS build step" rule
-  (see _Vendored JS libraries_ / _Content Security Policy_) is unaffected: npm for
-  vendoring or bundling runtime assets stays rejected; npm as a test runner is the
-  accepted, separate case.
+- **npm's role.** Vitest is a dev-only runner, like pytest — it ships nothing. npm itself is no
+  longer limited to test tooling: since #465 it is also the source of the runtime libraries (`chart.js`,
+  `flatpickr`) and of the webpack toolchain (see _Frontend pipeline_ and _JS libraries from npm_).
 - **Run it**: `just test-js` (or `npm test`). Runs on the **host**, not in a
   container — like `pre-commit`, no Django/DB dependency, Node is not in the Django
   image. Needs Node (`.nvmrc`) + a one-off `npm ci`. Config: `vitest.config.mjs`
-  (`.mjs` because `package.json` is `"type": "commonjs"` so `.test.js` files can
-  `require()` the plain scripts under test). Tests live in `tests/js/` — inert to
-  pytest, kept out of `tests/e2e/`.
+  (`include` is `tests/js/**/*.test.js`; `.mjs` because `package.json` is `"type": "commonjs"`,
+  and webpack carries a `type: 'javascript/auto'` rule for `.js` so it accepts the `import` syntax).
+  Tests live in `tests/js/` — inert to pytest, kept out of `tests/e2e/`.
 - **CI**: a dedicated `js-tests` job (`actions/setup-node` + `npm ci` + `npm test`),
   parallel to `linter`/`pytest`, no Docker. `package-lock.json` is committed and CI
   uses `npm ci`. Dependabot tracks the `npm` ecosystem (`.github/dependabot.yml`).
 - **No JS coverage gate.** `fail_under = 90` stays Python-only; the two suites'
   coverage is never combined (deliberate, issue #180).
-- **Reaching a classic script from a test**: the files under `static/js/` are
-  classic `<script>`s concatenated inside `{% compress js %}` — adding `export` is
-  a bundle-breaking SyntaxError. Instead, append a guarded CommonJS tail:
-  `if (typeof module !== "undefined" && module.exports) { module.exports = {...} }`.
-  `module` is undefined in the browser, so it is inert there and survives `rjsmin`.
-  It is **not** dead code (like `window.__hiddenAchievementsReady`) — don't strip it
-  in a JS sweep. `hidden_achievements.js` is the reference; `easter_eggs.js` (#282)
-  follows the same pattern. Don't restructure a `{% compress js %}` block _to reach
-  a script from a test_ — the CJS tail is what makes that unnecessary;
-  `tests/test_compressed_page_assets.py` guards that the served bundle stays a valid
-  classic script. (Adding a genuinely global module to `base.html`'s block for a
-  product reason, as #282 did with `easter_eggs.js`, is a different thing and is
-  fine — same-block scripts still concatenate to one bundle.)
-- **jsdom gotchas**: `require()` of a script registers its `DOMContentLoaded`
+- **Modules are ES modules; tests `import` them.** Every file under `webpack/src/js/` is an ES module
+  with named exports, so a test just `import`s what it needs — no export tail, no `require()`. Keep the
+  `window.__*Ready` flags, `window.easterEggs`, `window.showToast`, `window.getCsrfToken` and
+  `window.EE_AUDIO`: E2E and the templates read them, even where no production code does. A module's
+  `_resetForTests()` is a **named export** (not attached to `window.easterEggs`).
+- **jsdom gotchas**: importing a module registers its `DOMContentLoaded`
   listener but jsdom is already past `load`, so init never runs — test the exported
-  helpers, not init. Stub `globalThis.getCsrfToken` and `globalThis.fetch` per test
-  for any path that awards. Clear `sessionStorage`/`localStorage` and reset
-  `document.body.innerHTML` in `beforeEach`. **`vi.resetModules()` does not detach
-  listeners a `setupX()` added to `document`** — they accumulate across tests in a
-  file. It's harmless where the handler is idempotent (`hidden_achievements.js`'s
-  storage writes, `easter_eggs.js`'s own `DOMContentLoaded`) but the key-buffer /
-  combo handlers a #283+ easter egg attaches to `document` (or `tumbleweed.js`'s
-  activity listeners on `window`) are not — such a test must call
-  `window.easterEggs.teardownAll()` (the module's own detach) in `afterEach` so
-  the next test starts clean.
-- **`vi.resetModules()` also does not re-run a CJS module reached via
-  `require()`** — so a module's mutable module-level state (e.g. `easter_eggs.js`'s
-  in-memory dedupe `Set`, its audio cache) survives between tests too.
-  `easter_eggs.js` exposes `_resetForTests()` (attached only in the CJS tail,
-  never on the browser `window.easterEggs`) which clears all of it; `beforeEach`
-  in _both_ `tests/js/easter_eggs.test.js` and `tests/js/hidden_achievements.test.js`
-  calls it right after the `require`. New modules with module-level mutable state
-  should follow the same pattern.
+  helpers, not init. Stub `globalThis.fetch` per test for any path that awards; the CSRF token comes from
+  a `<meta name="csrf-token">` in `document.head` (`csrf.js` reads the DOM), not from a stubbed global.
+  Mock the toast with `vi.mock('../../webpack/src/js/toast.js', () => ({ showToast: vi.fn() }))`. Clear
+  `sessionStorage`/`localStorage` and reset `document.body.innerHTML` in `beforeEach`.
+- **Module state survives between tests.** `vi.resetModules()` + `await import()` re-evaluates a module, but a
+  statically imported one lives as a single instance per test file, so mutable module-level state (e.g.
+  `easter_eggs.js`'s in-memory dedupe `Set`, its audio cache) is reset by the exported `_resetForTests()`;
+  `beforeEach` in _both_ `tests/js/easter_eggs.test.js` and `tests/js/hidden_achievements.test.js` calls it.
+  New modules with module-level mutable state should follow the same pattern.
+- **`vi.resetModules()` does not detach listeners** a `setupX()` added to `document` or `window` — they
+  accumulate across tests in a file. It's harmless where the handler is idempotent
+  (`hidden_achievements.js`'s storage writes, `easter_eggs.js`'s own `DOMContentLoaded`) but the key-buffer /
+  combo handlers an easter egg attaches to `document` (or `tumbleweed.js`'s activity listeners on `window`)
+  are not — such a test must call `window.easterEggs.teardownAll()` (the module's own detach) in
+  `afterEach` so the next test starts clean.
+- **SCSS imports only in entry files.** Modules that Vitest imports never import a stylesheet (Vitest does
+  not process SCSS); the page entries under `webpack/src/js/pages/` do.
+- **Entry/chunk guard**: `tests/js/webpack_entries.test.js` — see _Frontend pipeline_.
 
 ## Code style — ruff rules in force
 
@@ -446,7 +436,7 @@ Tests for this load a fresh copy of `base.py` from `tmp_path`
 (stubbed env + `importlib.reload`) rather than a per-file copy of that helper.
 
 **Critical**: Python module-level code in `base.py` runs at import time.
-A setting like `COMPRESS_ENABLED = not DEBUG` in `base.py` evaluates immediately
+A setting like `X = not DEBUG` in `base.py` evaluates immediately
 using `base.py`'s own `DEBUG`, **not** the child file's overridden value.
 
 Rules:
@@ -455,11 +445,6 @@ Rules:
 - Environment-specific overrides live entirely in `local.py`, `test.py`, or `production.py`.
 - Never use expressions that reference sibling settings in `base.py` defaults
   (e.g. `X = not DEBUG`) if child files need a different value.
-
-Current safe defaults in `base.py`:
-
-- `COMPRESS_ENABLED = False` — production.py sets `True`
-- `COMPRESS_OFFLINE = False` — production.py sets `True`
 
 `CACHES` is defined once, in `base.py` (#454): django-redis on `REDIS_URL`, with
 `IGNORE_EXCEPTIONS` (a Redis outage degrades to cache misses, not 500s) and
@@ -546,7 +531,7 @@ The loop also carries a **second, deliberately minimal** signal (issue #292, umb
 #279): if `toast_pending:{user.pk}` (`toast_cache_key`) is set it additionally yields
 `data: toast\n\n` on the same default event. This is the first-funny-vote 🥁 toast —
 the loop still only _reads_ both keys (never clears them); the browser
-(`project.js`) branches on `event.data` (`new` → `GET /api/achievements/unseen`;
+(`app.js`) branches on `event.data` (`new` → `GET /api/achievements/unseen`;
 `toast` → `GET /api/achievements/toast`) and each fetch clears its own key. Two
 guards keep the toast single-surface: `handleFirstFunnyToast` bails if
 `document.visibilityState === 'hidden'` (a background tab must not consume the
@@ -558,7 +543,7 @@ richer belongs behind its own endpoint, not a wider SSE protocol.
 **Client lifecycle (#428).** Each open stream is one long-lived connection, and the
 HTTP/1.1 dev server gets only 6 per host from the browser (production's Traefik
 negotiates HTTP/2 on 443, where the limit doesn't apply — config-based, not measured),
-so `project.js` holds a stream only while the page is shown: a tab hidden for
+so `app.js` holds a stream only while the page is shown: a tab hidden for
 `HIDDEN_STREAM_CLOSE_DELAY_MS` (30 s) closes it and reopens on return, and `pagehide`
 closes it on the way into the bfcache, because Chromium keeps a bfcache'd
 page's `EventSource` connected (each link click in one tab used to park another
@@ -611,7 +596,7 @@ first-funny-vote 🥁 toast (`ToastResponseSchema`: `{"toast": {"title", "body"}
 `{"toast": null}`); the text is `gettext`-ed here so it lands in the _author's_
 language, not the voter's (issue #292).
 
-`static/js/features/hidden_achievements.js` sets `window.__hiddenAchievementsReady =
+`webpack/src/js/features/hidden_achievements.js` sets `window.__hiddenAchievementsReady =
 true` at the end of its `DOMContentLoaded` handler — this looks like a no-op (no
 production code reads it) but `tests/e2e/test_hidden_achievements.py` waits on it
 instead of `wait_for_load_state("networkidle")`, because the achievement listeners
@@ -625,9 +610,9 @@ shared groundwork; the child issues (#283+) each add one easter egg on top.
 "Wire nothing global themselves" means a child adds **no new helper to
 `window.easterEggs`** and no new global data blob — it consumes the surface
 below. A child whose _trigger_ must listen on every page (e.g. `konami.js`, #283)
-still gets its own `<script>` in `base.html`'s global `{% compress js %}` block,
-right after `easter_eggs.js`; that is expected, not a violation (same-block
-scripts concatenate to one bundle, so `BASE_JS_BUNDLES` stays `1`). It exposes
+still gets its own `import` in `webpack/src/js/project.js` (the global `project` entry),
+right after `easter_eggs.js`; that is expected, not a violation (it ends up in the one
+global bundle). It exposes
 `window.easterEggs` with:
 `awardFrontendAchievement(slug)` / `alreadyAwarded(slug)` / `markAwarded(slug)` /
 `award(slug)` (the session-dedupe + `POST /api/achievements/frontend-event` that
@@ -637,19 +622,20 @@ only plays after an explicit `ee_muted === "0"` opt-in); `playSound(name)`;
 `reducedJuice()` / `withJuice(fn)` (the single `prefers-reduced-motion` gate);
 `registerTeardown(key, fn)` / `teardownAll()`.
 
-- **It IS in `base.html`'s global `{% compress js %}` block**, after `project.js`
-  (deliberate — children need `window.getCsrfToken`/`window.showToast`, and being
-  global means it loads before every per-page bundle, so `hidden_achievements.js`
-  can rely on `window.easterEggs`). Same-block scripts concatenate into one output
-  file, so `BASE_JS_BUNDLES` in `tests/test_compressed_page_assets.py` stays `1`.
+- **It IS imported by the global `project` entry** (`webpack/src/js/project.js`), after `./app.js`
+  (deliberate — children need `showToast`/`getCsrfToken`, which `app.js` publishes as
+  `window.showToast`/`window.getCsrfToken` and which also live in `toast.js`/`csrf.js` that modules import
+  directly; and being global means it runs before every page entry, since those have `dependOn:
+'project'`, so `hidden_achievements.js` can rely on `window.easterEggs`). Nothing in the bundles reads
+  `window.easterEggs` — modules import `easter_eggs.js` itself; the facade is for E2E and the console.
 - **Sound**: `rimshot.wav` / `dust.wav` in `suchar_overflow/static/audio/`,
   regenerate with `just gen-audio` (`scripts/generate_easter_egg_audio.py`). They
   are **original CC0** works synthesised from the stdlib alone — no external
   encoder, so it runs anywhere, and plain 16-bit mono WAV is byte-deterministic
   (a Vorbis/Opus re-encode is not), so a no-op run leaves `git diff` clean. Both
   files together are ~42 kB. See `static/audio/AUDIO_CREDITS.txt`; unlike
-  `flatpickr.LICENSE.txt` there is no upstream and no drift-guard test. A classic
-  script can't resolve `{% static %}`, so `base.html` emits a small nonce'd
+  any npm package's licence there is no upstream and no drift-guard test. A bundle
+  can't resolve `{% static %}`, so `base.html` emits a small nonce'd
   `window.EE_AUDIO` map of the hashed URLs, for authenticated users only.
 - `window.__easterEggsReady` is the same kind of init-complete signal as
   `window.__hiddenAchievementsReady`. No child needs it as a sync point yet, so
@@ -667,13 +653,9 @@ a wink toast, and `window.easterEggs.award('frontend-ee-konami')` (which POSTs
 once per session via the sessionStorage dedupe). `window.__konamiReady` is its
 init-complete signal — the E2E test waits on it before pressing keys.
 
-- **The whole file is an IIFE.** Unlike `easter_eggs.js` / `project.js` (which
-  also dump names at bundle top level but predate this and mostly namespace via
-  `window.*`), `konami.js` keeps its many generic helpers (`rand`, `STYLE_ID`,
-  `SVG_NS`, `keyBuffer`, …) private — a top-level `const` collision with a future
-  group-A egg (#284+) sharing the same global `{% compress js %}` block is a
-  bundle-wide `SyntaxError`, not a localised bug. The guarded CJS export tail
-  lives _inside_ the IIFE (closures still see `module`).
+- **An ES module** imported by `webpack/src/js/project.js` right after `easter_eggs.js`; its helpers
+  (`rand`, `STYLE_ID`, `SVG_NS`, `keyBuffer`, …) are module-scoped, and the test-facing functions
+  (`handleKeydown`, `_resetForTests`, …) are named exports.
 - **The key matcher is a fixed-length sliding window, not a rolling index.** A
   hand-rolled state machine desyncs on the repeated `↑ ↑` prefix: an odd run of
   `ArrowUp` before the real code (`↑ ↑ ↑ ↓ …`) leaves the index pointing at the
@@ -703,9 +685,9 @@ init-complete signal — the E2E test waits on it before pressing keys.
   calls `konami._resetForTests()` (its own detach + buffer reset, aliased to
   `teardownKonami`) each `beforeEach`/`afterEach`, and `easter_eggs.js`'s
   `teardownAll()` also reaches it (it registers via `registerTeardown('konami')`).
-- rjsmin (in `{% compress js %}`) preserves the non-ASCII toast string (emoji,
-  `…`, Polish diacritics) — verified against the production-storage
-  `collectstatic` + `compress --force` bundle, not just `just test`.
+- Terser (webpack's minifier) preserves the non-ASCII toast string (emoji,
+  `…`, Polish diacritics) — verified against the production
+  `npm run build` bundle, not just `just test`.
 
 ### "ba dum tss" / dust easter egg (`features/badumtss.js`)
 
@@ -723,11 +705,8 @@ E2E test waits on it before typing.
   It consumes only `easterEggs.reducedJuice()` and `easterEggs.playSound`
   (the muted-by-default `rimshot` cue — `EE_AUDIO.rimshot` already exists from
   #282, no new audio file).
-- **The whole file is an IIFE**, same reason as `konami.js`: its generic helpers
-  (`rand`, `STYLE_ID`, `makeMote`, …) must not collide at bundle top level with
-  konami's or a future #285+ egg's. The guarded CJS export tail lives inside the
-  IIFE. It is in `base.html`'s global `{% compress js %}` block right after
-  `konami.js` — same-block concatenation, so `BASE_JS_BUNDLES` stays `1`.
+- **An ES module**, like `konami.js` (own scope for `rand`, `STYLE_ID`, `makeMote`, …; test-facing
+  functions are named exports), imported by `project.js` right after `konami.js`.
 - **The key buffer is a bounded string with an idle-clear timer.** Only printable
   single-character `e.key` values extend it (`Shift`/`ArrowLeft`/… are inert and
   don't break a phrase); it is sliced to the longest phrase's length each
@@ -750,9 +729,9 @@ E2E test waits on it before typing.
   calls `badumtss._resetForTests()` (its own detach + buffer reset, aliased to
   `teardownBaDumTss`) each `beforeEach`/`afterEach`, and `easter_eggs.js`'s
   `teardownAll()` also reaches it (it registers via `registerTeardown('badumtss')`).
-- rjsmin (in `{% compress js %}`) preserves the non-ASCII toast string (the 🥁
-  emoji) — verified against the production-storage `collectstatic` +
-  `compress --force` bundle, not just `just test`.
+- Terser (webpack's minifier) preserves the non-ASCII toast string (the 🥁
+  emoji) — verified against the production
+  `npm run build` bundle, not just `just test`.
 
 ### "spin the logo" easter egg (`features/logo_spin.js`)
 
@@ -760,10 +739,8 @@ Issue #285, umbrella #278 — the **third** group-A child on the #282 foundation
 Mash the navbar logo 7× in quick succession → a short 360° logo spin (unless
 `prefers-reduced-motion`) and a toast with a random "meta-suchar" about dryness /
 the site. `window.__logoSpinReady` is its init-complete signal — the E2E test
-waits on it. Same shape as `konami.js` / `badumtss.js`: whole file is an IIFE
-(no top-level `const` collisions in the shared bundle), guarded CJS export tail
-inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
-`badumtss.js` (so `BASE_JS_BUNDLES` stays `1`).
+waits on it. Same shape as `konami.js` / `badumtss.js`: an ES module imported by
+`project.js` right after `badumtss.js`.
 
 - **Pure delight — no achievement, no `frontend-ee-` slug, no network.** It does
   not touch `VALID_FRONTEND_SLUGS` / `POST /api/achievements/frontend-event` /
@@ -797,14 +774,13 @@ inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
   skips the whole branch.
 - **The meta-suchar pool is a hand-authored `<script id="ee-logo-suchary"
 type="application/json">` data island in `base.html`, for authenticated users
-  only — NOT inside `{% compress js %}`** (its translated text must not be
-  minified into the bundle; a no-`src` `<script>` inside the block would also
-  lose its `id` to `JsCompressor`). It is _not_ the `json_script` filter —
+  only — NOT part of any bundle** (a bundle can't run `{% trans %}`, so the translated text lives in
+  the template and the module reads it by `id`). It is _not_ the `json_script` filter —
   `base.html` has no view to build a context list — so each line is a `{% trans %}`
   string piped through `|escapejs` (a non-executable `type="application/json"`
   block is not subject to CSP `script-src`, so no nonce, matching the existing
   `json_script` usages). `tests/test_logo_spin_pool.py` guards that it renders
-  valid JSON and survives `COMPRESS_ENABLED = True`. The msgids are **Polish**
+  valid JSON. The msgids are **Polish**
   (unlike the English msgids elsewhere in `base.html`) — they render correctly
   against a stale catalog, and the sibling eggs' toast text is untranslated
   Polish in JS anyway; the `en` catalog entries land with the standing
@@ -831,15 +807,13 @@ console output.
   network, no DOM, no audio, no animation.** It does **not** consume
   `window.easterEggs` at all (no reduced-motion gate, no `award`, no
   `playSound`), so it registers nothing with `registerTeardown()` and bundle
-  order past `project.js` is irrelevant to it. The Vitest suite asserts no
+  import order past `app.js` is irrelevant to it. The Vitest suite asserts no
   `fetch`.
 - **CSP:** `console.log` only — no `eval`, no inline `<script>`, nothing the CSP
   middleware has to allow.
-- **The whole file is an IIFE** with the guarded CJS export tail inside it, same
-  reason as `konami.js` / `badumtss.js` / `logo_spin.js`: its constants (`ART`,
-  `TEXT`, `SESSION_KEY`, `REPO_URL`, the two style strings) and helpers must not
-  collide at the top level of `base.html`'s shared `{% compress js %}` block,
-  where it sits right after `logo_spin.js` (so `BASE_JS_BUNDLES` stays `1`).
+- **An ES module** like `konami.js` / `badumtss.js` / `logo_spin.js` (its constants — `ART`, `TEXT`,
+  `SESSION_KEY`, `REPO_URL`, the two style strings — are module-scoped), imported by `project.js`
+  right after `logo_spin.js`.
 - **"No spam" = once per browser session.** The latch is
   `sessionStorage['ee_console_shown']`, with an in-memory `shownThisPage`
   fallback set _before_ the `sessionStorage.setItem` so a storage failure
@@ -851,10 +825,9 @@ console output.
   silent; the E2E suite covers that.
 - `ART` is a `String[]` joined with `'\n'`, deliberately backslash-free: a
   trailing `\` inside a single-quoted line would escape the closing quote.
-- rjsmin (in `{% compress js %}`) preserves the non-ASCII payload (the 😉 emoji,
-  the Polish diacritics in the wordmark and the wink) — verified against the
-  production-storage `collectstatic` + `compress --force` bundle, not just
-  `just test`.
+- Terser (webpack's minifier) preserves the non-ASCII payload (the 😉 emoji,
+  the Polish diacritics in the wordmark and the wink) — verified against the production
+  `npm run build` bundle, not just `just test`.
 - Its test-only export exposes `_resetForTests()` (clears `shownThisPage` **and**
   the `sessionStorage` key) for the `beforeEach`/`afterEach` in
   `tests/js/console_egg.test.js`, per "JS tests (Vitest)" above.
@@ -867,11 +840,8 @@ On `/suchary` (any sub-page) for a logged-in user, 120 s with no `scroll` /
 the caption "cisza… aż tak sucho?", then it clears itself after ~4.4 s. It
 **replays** on every fresh 120 s of stillness once the cooldown is up.
 `window.__tumbleweedReady` is its init-complete signal — the E2E test waits on it
-before advancing the fake clock. Same shape as the sibling eggs: whole file is an
-IIFE (so its helpers — `rand`, `STYLE_ID`, … — don't collide at bundle top
-level), guarded CJS export tail inside the IIFE, in `base.html`'s global
-`{% compress js %}` block right after `console_egg.js` (so `BASE_JS_BUNDLES`
-stays `1`).
+before advancing the fake clock. Same shape as the sibling eggs: an ES module
+imported by `project.js` right after `console_egg.js`.
 
 - **Pure delight — no achievement, no `frontend-ee-` slug, no network, no
   sound.** It consumes only `easterEggs.reducedJuice()` (via `registerTeardown`)
@@ -890,7 +860,7 @@ stays `1`).
   the path anyway before firing.
 - **`onIdle` bails while the tab is backgrounded** (`document.visibilityState`
   `'hidden'`): CSS animations are frozen there, so a roll would burn the 5 min
-  cooldown on something nobody sees (same reasoning as `project.js`'s
+  cooldown on something nobody sees (same reasoning as `app.js`'s
   first-funny-toast visibility guard). It re-arms and re-checks on the next idle
   window. `lastFireAt()` also rejects a _future_ stored timestamp — a system
   clock wound back by NTP/DST would otherwise make `Date.now() - last` negative
@@ -932,9 +902,9 @@ stays `1`).
   clears `ee_tumbleweed_last`) each `beforeEach`/`afterEach`, and
   `easter_eggs.js`'s `teardownAll()` also reaches it (registers via
   `registerTeardown('tumbleweed')`).
-- rjsmin (in `{% compress js %}`) preserves the non-ASCII caption (the `…`
-  ellipsis, Polish diacritics) — verified against the production-storage
-  `collectstatic` + `compress --force` bundle, not just `just test`.
+- Terser (webpack's minifier) preserves the non-ASCII caption (the `…`
+  ellipsis, Polish diacritics) — verified against the production
+  `npm run build` bundle, not just `just test`.
 
 ### "Niezdecydowany" / theme-spam easter egg (`features/theme_spam.js`)
 
@@ -947,13 +917,11 @@ migration `0021_niezdecydowany_achievement_data`. It **replays** on every fresh
 burst of 10 (like konami / badumtss / logo_spin — deliberately not one-shot).
 `window.__themeSpamReady`
 is its init-complete signal — the E2E test waits on it before clicking. Same
-shape as the sibling eggs: whole file is an IIFE (so its helpers — `STYLE_ID`,
-`SPIN_CLASS`, … — don't collide at bundle top level), guarded CJS export tail
-inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
-`tumbleweed.js` (so `BASE_JS_BUNDLES` stays `1`).
+shape as the sibling eggs: an ES module imported by `project.js` right after
+`tumbleweed.js`.
 
 - **The trigger is a `click` listener directly on `#theme-toggle`, not a
-  `MutationObserver` on `data-theme`.** `project.js` calls
+  `MutationObserver` on `data-theme`.** `app.js` calls
   `setTheme(currentTheme)` unconditionally on every page load, which would be
   a built-in false positive for an attribute observer — the click listener has
   no such problem.
@@ -970,7 +938,7 @@ inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
   exactly 10 timestamps spanning ≤ 5000 ms, then clears itself so a replay
   needs a fresh 10.
 - **The egg never calls `setTheme` and never touches `localStorage.theme` or
-  the theme cookie** — it only counts clicks on a button `project.js`'s own
+  the theme cookie** — it only counts clicks on a button `app.js`'s own
   listener already owns. This is what makes #289's "motyw kończy w stanie z
   ostatniego kliknięcia (bez psucia preferencji)" true by construction; both
   Vitest and the E2E test assert it explicitly rather than trusting the
@@ -1001,9 +969,9 @@ inside the IIFE, in `base.html`'s global `{% compress js %}` block right after
   listener only exists after the module's own `DOMContentLoaded` init runs;
   the wiring tests (attach/detach, authed/anonymous gating) dispatch real
   `click` events on the button instead, to actually exercise that listener.
-- rjsmin (in `{% compress js %}`) preserves the non-ASCII toast string (the
-  🙃 emoji, Polish diacritics) — verified against the production-storage
-  `collectstatic` + `compress --force` bundle, not just `just test`.
+- Terser (webpack's minifier) preserves the non-ASCII toast string (the
+  🙃 emoji, Polish diacritics) — verified against the production
+  `npm run build` bundle, not just `just test`.
 
 ### "Archeolog" / scroll-to-bottom easter egg (`features/archeolog.js`)
 
@@ -1023,9 +991,8 @@ most once per session — not a replaying egg like konami/badumtss/logo_spin/
 theme_spam, since there is nothing to replay until a full reload puts you
 back near the top of a list this long. `window.__archeologReady` is its
 init-complete signal — the E2E test waits on it before scrolling. Same
-shape as the sibling eggs: whole file is an IIFE, guarded CJS export tail
-inside the IIFE, in `base.html`'s global `{% compress js %}` block right
-after `theme_spam.js` (so `BASE_JS_BUNDLES` stays `1`).
+shape as the sibling eggs: an ES module imported by `project.js` right
+after `theme_spam.js`.
 
 - **"Last page" and "total pages" are both read structurally from
   `.pagination`, never from the (translated) "Next" label text.** The
@@ -1081,9 +1048,8 @@ in `VALID_FRONTEND_SLUGS`, seeded by migration
 of 10 (like konami / badumtss / logo_spin / theme_spam); `easterEggs.award`
 still POSTs once per session. `window.__publikaRozgrzanaReady` is its
 init-complete signal — the E2E test waits on it before voting. Same shape as
-the sibling eggs: whole file is an IIFE, guarded CJS export tail inside the
-IIFE, in `base.html`'s global `{% compress js %}` block right after
-`archeolog.js` (so `BASE_JS_BUNDLES` stays `1`).
+the sibling eggs: an ES module imported by `project.js` right after
+`archeolog.js`.
 
 - **The `click` listener is delegated on `document` in the CAPTURE phase**
   (`{capture: true}`), not bubble. `voting.js` also delegates a `click`
@@ -1123,7 +1089,7 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
 - **The combo-meter is a floating `<div id="ee-publika-meter">`** built in JS
   (`createElement` / `textContent`, never `innerHTML`), styled inline
   property-by-property (jsdom's CSSOM drops custom props set via `cssText`)
-  from the project's theme-aware custom properties (`variables.css`) with
+  from the project's theme-aware custom properties (`_variables.scss`) with
   literal fallbacks — **no Bootstrap classes**, unlike the surrounding
   `suchar_list.html` markup. The 10th funny vote runs `resetCombo()` (which
   removes the meter) _before_ `firePublikaRozgrzana()`, so the meter is gone
@@ -1142,18 +1108,17 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
   meter and the `<style>`, clears `ee_publika_combo`) each
   `beforeEach`/`afterEach`, and `easter_eggs.js`'s `teardownAll()` also
   reaches it (registers via `registerTeardown('publikaRozgrzana')`).
-- rjsmin (in `{% compress js %}`) preserves the non-ASCII toast string (the 🔥
-  emoji, `„…”` quotes, Polish diacritics) — verify against the
-  production-storage `collectstatic` + `compress --force` bundle, not just
-  `just test`.
+- Terser (webpack's minifier) preserves the non-ASCII toast string (the 🔥
+  emoji, `„…”` quotes, Polish diacritics) — verify against the production
+  `npm run build` bundle, not just `just test`.
 
 ### Time zones — service zone `Europe/Warsaw` (#405) + visitor zone for I/O (#410)
 
 `TIME_ZONE = "Europe/Warsaw"` (`base.py`) with `USE_TZ = True`: the DB stores UTC.
 On top of that, `suchar_overflow/utils/middleware.py:user_timezone_middleware` (after
 `LocaleMiddleware`, sync + async) wraps each request in `timezone.override(zone)`
-for the zone in the `user_tz` cookie, which `static/js/timezone.js` (first script
-in `base.html`'s global `{% compress js %}` block; runs for **anonymous** visitors
+for the zone in the `user_tz` cookie, which `webpack/src/js/timezone.js` (the first
+import of the global `project` entry; runs for **anonymous** visitors
 too — no auth gate) writes from `Intl.DateTimeFormat().resolvedOptions().timeZone`.
 Only exact keys from `zoneinfo.available_timezones()` are accepted (cached once per
 process); a missing/unknown/garbage cookie leaves `TIME_ZONE` in effect. The first
@@ -1314,107 +1279,36 @@ Django 6.0's `django.middleware.csp.ContentSecurityPolicyMiddleware` is enabled 
 `MIDDLEWARE` (`config/settings/base.py`), configured via `SECURE_CSP` in the same file.
 `script-src` requires `CSP.NONCE` — inline `<script>` blocks need the nonce Django
 injects. `style-src` allows `unsafe-inline` for CSS custom properties. There is no
-third-party CDN allowlisted anywhere in `SECURE_CSP` — `chart.umd.min.js` and
-`flatpickr` are vendored under `static/js/`, and fonts (Inter, Fira Code) are
-self-hosted via `static/css/fonts.css`; none of them load from `cdn.jsdelivr.net` or
+third-party CDN allowlisted anywhere in `SECURE_CSP` — Chart.js and
+flatpickr come from npm and are bundled by webpack, and fonts (Inter, Fira Code) are
+self-hosted via `webpack/src/scss/_fonts.scss`; none of them load from `cdn.jsdelivr.net` or
 Google Fonts.
 If you add inline `<script>` tags to a template, they must use the nonce or they will
 be blocked in browsers that enforce CSP.
 
-### Vendored JS libraries — no Dependabot coverage
+### JS libraries from npm
 
-`chart.umd.min.js` and `flatpickr.min.js` under `static/js/` are hand-vendored, not
-managed by any package manager — `.github/dependabot.yml` only tracks `uv`, `docker`,
-`docker-compose`, and `github-actions`, so neither Dependabot nor any bot notices when
-a newer release ships (see issue #177). Adding a `package.json` + npm _to manage or
-bundle these vendored runtime assets_ was considered and rejected — it would require
-introducing a JS build step the project deliberately doesn't have (see Content
-Security Policy above), for two files that don't need one. (This is narrower than it
-used to read: a `package.json` does now exist, but only for **dev-only tooling** — the
-Vitest test runner (see _JS tests (Vitest)_ above) and the `prettier` version pin. Neither
-touches served assets, so it is not the build step this paragraph rejects.)
+`chart.js` (`chart.js/auto`, imported by the `leaderboard` and `user_detail` entries) and `flatpickr`
+(JS and its CSS, imported by the `suchar_form` entry) are `devDependencies` in `package.json`, bundled by
+webpack — nothing is vendored under `static/` any more (#468; the hand-vendored `chart.umd.min.js`,
+`flatpickr.min.js`/`.min.css`, `flatpickr.LICENSE.txt` and their drift/sourcemap tests are gone). The
+Dependabot `npm` ecosystem (`.github/dependabot.yml`) now opens version PRs for them; to check by hand run
+`npm outdated`. The versions are pinned in `package.json`/`package-lock.json` (Chart.js 4.5.1,
+flatpickr 4.6.13 at the move).
 
-Instead: **check manually, roughly each time you touch this area or do a periodic
-dependency review** (see #176-style project reviews). To check current vs. latest:
-
-```bash
-head -5 suchar_overflow/static/js/chart.umd.min.js   # vendored version, in the banner comment
-curl -s https://registry.npmjs.org/chart.js/latest | grep -o '"version":"[^"]*"'
-head -1 suchar_overflow/static/js/flatpickr.min.js   # whole file is 2 lines — line 2 is the minified bundle, head -1 only
-curl -s https://registry.npmjs.org/flatpickr/latest | grep -o '"version":"[^"]*"'
-```
-
-To refresh a vendored file, pull the same jsdelivr npm build the existing file came
-from (do not hand-edit the version banner — regenerate it):
-
-```bash
-curl -sSfL -o suchar_overflow/static/js/chart.umd.min.js \
-  https://cdn.jsdelivr.net/npm/chart.js@<version>/dist/chart.umd.min.js
-curl -sSfL -o suchar_overflow/static/js/flatpickr.min.js \
-  https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.js
-```
-
-**Then strip any trailing `//# sourceMappingURL=...` line** from every vendored
-file you just pulled (`.js` _and_ `.css`) — the jsdelivr `dist/` builds end with
-one, but the `.map` file is deliberately _not_ vendored (see below), and
-production's `ManifestStaticFilesStorage` (formerly WhiteNoise's compressed variant)
-(`config/settings/production.py`) hard-fails `collectstatic` when a
-`sourceMappingURL` points at a missing file (issue #249) — `set -o errexit` in
-`compose/production/django/start` then stops the container before
-`compress --force` ever runs:
-
-```bash
-sed -i -E \
-  -e 's|//# ?sourceMappingURL=[^[:space:]]*||' \
-  -e 's|/\*# ?sourceMappingURL=[^*]*\*/||' \
-  suchar_overflow/static/js/chart.umd.min.js \
-  suchar_overflow/static/js/flatpickr.min.js \
-  suchar_overflow/static/css/pages/flatpickr.min.css
-```
-
-(Covers both the JS `//# sourceMappingURL=` and the CSS `/*# sourceMappingURL=... */`
-banner forms. It deletes only the comment, not the whole line — the vendored bundles
-are 1–2 lines, so a blanket `sed '/.../d'` would nuke the bundle if a CDN ever appended
-the banner to the code line instead of putting it on its own. As of the last refresh
-only `chart.umd.min.js` actually carried one; running it against a file with none is a
-harmless no-op.)
-
-Vendoring the `.map` instead was rejected: it is a large file nobody debugs
-into, and it adds another no-Dependabot artifact to keep in sync by hand. The
-rule is **no `sourceMappingURL` reference in any vendored asset** —
-`tests/test_vendored_static_no_sourcemap.py` is the regression guard, and
-verifying `collectstatic --noinput` under production `STORAGES` in the container
-is the belt-and-braces check (`DJANGO_SETTINGS_MODULE=config.settings.production`
-plus dummy `DJANGO_SECRET_KEY`/`DJANGO_ADMIN_URL`/`DJANGO_ALLOWED_HOSTS`/
-`DATABASE_URL`/`REDIS_URL`, then `python manage.py collectstatic --noinput --clear`).
-
-Flatpickr also vendors a stylesheet at `suchar_overflow/static/css/pages/flatpickr.min.css`
-— when bumping `flatpickr.min.js`, refresh the CSS from the same release too
-(`https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.css`), or the JS
-and CSS builds can drift out of sync.
-
-`suchar_overflow/static/js/flatpickr.LICENSE.txt` carries flatpickr's MIT notice
-and **must be refreshed in lockstep with `flatpickr.min.js`** (its first line is a
-`flatpickr v<version>` marker; `tests/test_vendored_flatpickr_license.py` fails the
-build if it drifts from the bundle's banner). It exists because `flatpickr.min.js`
-now passes through `RJSMinFilter` (`COMPRESS_JS_FILTERS`), which keeps only bang
-comments (`/*!`) — flatpickr's banner is a plain `/*` comment, so it is stripped
-from the served `/static/CACHE/` bundle and the licence text would otherwise appear
-in nothing production serves (issue #251). `collectstatic` ships the `.txt` next to
-the bundle at `/static/js/flatpickr.LICENSE.txt`. Chart.js needs no such file — its
-banner is `/*!`, which `rjsmin` preserves. Grab the text from the matching tag:
-`curl -sSfL https://raw.githubusercontent.com/flatpickr/flatpickr/v<version>/LICENSE.md`
-— but paste it _below_ the file's existing header (the `flatpickr v<version>` marker
-line plus the short explanatory block above the `---` rule), don't `curl` straight over
-the file: that header is local, not upstream, and the version-marker test reads its
-first line.
-
-After swapping either file, check the upstream changelog for breaking changes in the
-APIs this project actually uses, then manually verify in a browser (console clean, no
-CSP violations) — `just test` has no JS test coverage, so a green suite is not
-evidence the swap works. Chart.js usage: line/bar/doughnut charts on
-`/stats/leaderboard/` and user profile pages. Flatpickr usage: check
-`static/js/` for `flatpickr(` call sites before assuming defaults are unaffected.
+- **Licences (#251).** Terser drops ordinary comments, and flatpickr's ES build has no licence banner it
+  would keep, so `webpack/licenses-plugin.js` (production config only) writes `licenses.txt` next to the
+  bundles — name, version and full licence text of every bundled npm package — served as
+  `/static/webpack_bundles/licenses.txt`. `tests/js/webpack_entries.test.js` asserts it contains flatpickr's
+  and Chart.js's MIT text; there is no manual lockstep file to refresh.
+- **Source maps (#249).** Production's manifest storage fails `collectstatic` on a `sourceMappingURL` that
+  points at a missing file. `tests/test_static_sourcemaps.py` checks that nothing hand-written under
+  `static/` carries one and, when a build exists, that every reference inside the bundles resolves
+  (skipped without a build).
+- **After bumping a version**: check the upstream changelog for breaking changes in the APIs the project
+  uses, run `just build-js`, run the E2E suite (charts on `/stats/leaderboard/` and profile pages,
+  flatpickr on the suchar form) — `tests/e2e/test_clean_console.py` also fails on console errors and CSP
+  violations on every page. A green `just test` alone is not evidence the bump works.
 
 ### Async views
 
@@ -1424,91 +1318,118 @@ new class-based view, check a neighboring view in the same app first; the async
 pattern (via `sync_to_async`/`request.auser()`/`aupdate()`/`async for`) is the norm,
 not the exception.
 
-### Django Compressor
+### Frontend pipeline — webpack (#465–#469)
 
-`{% compress css %}` / `{% compress js %}` tags in `base.html` are transparent when
-`COMPRESS_ENABLED = False` (dev/test). Only active in production after `manage.py compress --force`
-runs (handled automatically in `compose/production/django/start`).
+A webpack 5 build (Babel, Sass, PostCSS) produces the bundles `django-webpack-loader`
+puts in the templates: `{% load webpack_loader %}` + `{% render_bundle '<entry>' 'js' attrs='defer' %}` /
+`{% render_bundle '<entry>' 'css' %}`. This reversed the old "no JS build step" rule (#177) and replaced
+django-compressor, rjsmin/rcssmin and the vendored libraries entirely (#466 toolchain, #467 SCSS, #468 JS
+as ES modules + npm libraries, #469 compressor removed: no `{% compress %}`, `COMPRESS_*`, `compressor` in
+`INSTALLED_APPS`/`STATICFILES_FINDERS`, `compress --force` in the production `start`, or
+`django-compressor`/`rcssmin`/`rjsmin` in the dependencies).
 
-**Never use CSS `@import` for a project module** (issue #204). `COMPRESS_CSS_FILTERS`
-(`CssAbsoluteFilter` + `RCSSMinFilter`) neither resolves nor inlines a bare
-`@import 'x.css'` — `CssAbsoluteFilter` only rewrites `url(...)` / `src="..."`, so the
-directive is copied into `/static/CACHE/css/output.<hash>.css` verbatim. Two problems:
-
-- **It defeats the compressor.** Instead of the single minified bundle the
-  `{% compress %}` block exists to produce, the browser gets that bundle _plus_ ~22
-  extra render-blocking requests it can only discover sequentially (it must fetch and
-  parse the bundle before it sees the `@import`s). That is the #204 regression — the
-  compressor stops doing the one thing it was switched on for.
-- **Whether those copied `@import`s even resolve in production is incidental.**
-  `production.py` sets `STORAGES["staticfiles"]` to a
-  `CompressedManifestStaticFilesStorage`, and `compose/production/django/start` runs
-  `collectstatic` _before_ `compress --force`; Django's `HashedFilesMixin` rewrites
-  `@import 'x.css'` → `@import url("x.<hash>.css")`, which `CssAbsoluteFilter` then
-  _does_ absolutise — so today's production bundle's imports happen to point at real
-  files. Switch to any non-manifest `STORAGES`, or set `COMPRESS_ENABLED = True` in any
-  other settings profile, and all ~22 turn into `/static/CACHE/css/<module>.css` → HTTP 404. Invisible in dev/test because compression is off there.
-
-`manage.py compress --force` is **not** a gate for this — it reports success on the
-broken state too (confirmed on `main` during the #237 review). Exactly two unit tests
-run with `COMPRESS_ENABLED = True`, and nothing else in the suite does:
-`tests/test_compressed_css.py` asserts the `base.html` bundle has no `@import`, has
-absolutised `url(...)` refs, and preserves the cascade order (writing into the gitignored
-`staticfiles/CACHE/` via compressor's own storage); `tests/test_compressed_page_assets.py`
-(#205) covers the page-specific blocks — see below. Both run on the default non-manifest
-storage, so they guard "no `@import` in the bundle", not any particular production
-render. Stylesheet composition therefore lives in the templates:
-
-- One `{% compress %}` block = one output file, and **position inside the block is the
-  cascade order**. `base.html`'s css block lists the ~21 global modules in the canonical
-  order fonts → core → components → `project.css`; `utilities.css` and
-  `components/forms.css` carry comments that depend on it. A new global module gets a
-  `<link>` at the right position there. There is no `pages/` stage in the global block
-  anymore — `pages/leaderboard.css` and `pages/profile.css` moved to page-specific
-  blocks in #250 (`stats/leaderboard.html` and `users/base_dashboard.html`
-  respectively; `base_dashboard.html` covers `user_detail`/`user_form`/
-  `password_change_form`, since its sidebar uses `.dashboard-card`/`.sticky-sidebar`).
-  Both load _after_ the global bundle, so their equal-specificity `!important` rules
-  (`.rank-*` vs `utilities.css`, `.sticky-sidebar` vs `layout.css`) still win on order.
-  `.stats-text-sm` was shared by the leaderboard partial and `user_detail.html`, so it
-  moved to `project.css` (still last in the global bundle) rather than either
-  page sheet; `.sticky-preview` moved from `profile.css` to `pages/suchar_form.css`,
-  its only consumer.
-- A page template keeps `{{ block.super }}` **outside** any `{% compress %}` tag — it
-  already expands to base's finished `<link ... CACHE/css/output.<hash>.css>`, and
-  re-feeding a compressed output through the compressor is wrong — then opens its
-  **own** `{% compress css %}` block for its page-specific sheets, a second output file.
-  Don't try to merge page sheets into base's block. `base_dashboard.html` needs its own
-  `{% load compress %}` — `{% load %}` does not inherit from `base.html`.
-- Vendored, already-minified sheets (`pages/flatpickr.min.css`) are fine inside a block.
-
-Page-specific `<script>` blocks (issue #205) follow that same "own block,
-`{{ block.super }}` stays outside" rule, and add two JS-only ones. All three break only
-under `COMPRESS_OFFLINE = True` (production; dev/test never notice):
-
-- **`{{ block.super }}` inside your own `{% compress %}` block → `OfflineGenerationError`
-  on _every_ request.** Offline generation renders the block without the real parent
-  context, so the runtime hash misses the offline manifest. Keep `{{ block.super }}`
-  above the new block. (Verified as a negative control while implementing #205.)
-- **Never put `json_script` output inside a `{% compress js %}` block.** `JsCompressor`
-  treats any `<script>` without `src` as an inline hunk, minifies it into the bundle —
-  the `id="..."` that `getElementById` needs is gone — and its per-request content
-  guarantees an offline hash mismatch. `stats/leaderboard.html` and
-  `users/user_detail.html` therefore use two compress blocks with the `json_script`
-  calls between them.
-- **`defer` must survive, and all `<script>`s in one block must share their attributes.**
-  `{% block javascript %}` lives in `<head>`, so every page script needs `defer`;
-  compressor emits a single `<script>` tag per block and does keep the attribute.
-
-Also remember `{% load compress %}` in each page template — `{% load %}` does not inherit
-from `base.html`. `tests/test_compressed_page_assets.py` is the regression guard for the
-page-specific blocks. Most of it renders with `COMPRESS_ENABLED = True` (online),
-asserting no raw `/static/` asset survives, that compressor's generated `<script>` tags
-keep `defer`, and that the `json_script` ids are intact. One test
-(`test_pages_render_under_offline_compression`) additionally builds the offline manifest
-with `compress --force` and renders every page under `COMPRESS_OFFLINE = True`, so the
-`{{ block.super }}` rule has a guard too — `compress --force` alone reports success on
-the broken state, the `OfflineGenerationError` only fires at render time.
+- **Layout.** Configs in `webpack/` (`common`, `dev`, `prod`, `postcss`; CommonJS, like the rest of
+  `package.json`, which is `"type": "commonjs"`), `babel.config.js` at the root, sources under
+  `webpack/src/` — deliberately **not** under `suchar_overflow/static/`, which `collectstatic` copies
+  wholesale. Output: `suchar_overflow/static/webpack_bundles/` (`js/[name].[contenthash].js`,
+  `css/[name].[contenthash].css`, 12 hex digits after a dot — the shape nginx marks `immutable`) plus
+  `webpack-stats.json` in the repo root. Both are gitignored **and** in `.dockerignore`, so a stale
+  host build can never reach an image. `package.json`/`package-lock.json` are in the build context
+  (the `node` image and the `client-builder` stage run `npm ci` from them); `node_modules/` is not.
+- **Entries and shared chunks.** `optimization.runtimeChunk: 'single'` + `splitChunks: {chunks: 'all'}` +
+  `dependOn: 'project'` on every page entry: one runtime for every entry, so a page that renders the global
+  `project` entry **and** a page entry never instantiates a module twice (two `EventSource`s, a split
+  dedupe `Set`…). Without `dependOn` webpack copies small shared modules into each entry (negative
+  control: `easter_eggs.js` then lands in 2 chunks — a separate dedupe `Set`, a separate teardown
+  registry); `tests/js/webpack_entries.test.js` builds the prod config into a tmp dir and counts the chunks
+  holding each module. The loader's
+  `SKIP_COMMON_CHUNKS = True` drops the chunks a second `render_bundle` would repeat; that needs
+  `request` in the template context, hence `base.html`'s first call passes `skip_common_chunks=False`
+  (nothing to skip, and the 500 page renders without a request). `tests/test_webpack_toolchain.py`
+  pins it.
+- **Entries (#468).** The global `project` entry (`webpack/src/js/project.js`) imports, in this order,
+  `./timezone.js` (first: sets the `user_tz` cookie, `document.cookie` in `try/catch` so blocked cookies
+  don't stop the rest), `./app.js` (the old `project.js`: theme, navbar, dropdowns, modals, tooltips, the SSE
+  client, the bell; publishes `window.getCsrfToken` and `window.showToast`), `./features/easter_eggs.js`,
+  then `konami`, `badumtss`, `logo_spin`, `console_egg`, `tumbleweed`, `theme_spam`, `archeolog`,
+  `publika_rozgrzana`. Import order **is** initialisation order and the order `DOMContentLoaded`
+  listeners register in; `webpack_entries.test.js` pins it. `csrf.js` (`getCsrfToken`) and `toast.js`
+  (`showToast`) are separate modules other modules import directly. Page entries, all `dependOn: 'project'`:
+  `hidden_achievements`, `voting` (both in `features/`), `leaderboard` and `user_detail` (Chart.js),
+  `suchar_form` (flatpickr + its CSS), and the CSS-only `achievements` and `dashboard`.
+- **Contracts that stay.** `window.easterEggs` (a facade — nothing in the bundles reads it), `window.showToast`,
+  `window.getCsrfToken` (E2E reads them), the `window.__*Ready` flags (E2E), `window.EE_AUDIO`, and
+  `_resetForTests` as a named module export. The IIFE wrappers and the guarded
+  `if (typeof module !== 'undefined' && module.exports)` tails are gone: every module has its own scope.
+- **Templates.** Always pass the extension to `render_bundle` — `'js'` (with `attrs='defer'`) **or**
+  `'css'` (see _Styles_ for why). Keep `{{ block.super }}` as the **first** line of an overridden
+  `{% block javascript %}`/`{% block css %}`: it already renders base's tags, and the page's own
+  tags must come after them. `{% block javascript %}` lives in `<head>`, so every page script needs `defer`.
+  Data islands (`json_script`, `#ee-logo-suchary`, the nonce'd inline `window.EE_AUDIO` map) stay in the
+  templates, outside the bundles: a bundle can't run `{% trans %}`/`{% static %}`, and the page entry
+  reads the island by `id`. `tests/test_webpack_toolchain.py` renders every page and asserts each entry's
+  CSS/JS appears once, with `defer`, after `project`, and that the islands are in place.
+- **URLs.** webpack-bundle-tracker writes `publicPath` (`/static/webpack_bundles/…`) into the stats, and
+  the loader uses it as-is — it does not go through `staticfiles_storage`. So the unhashed-by-Django
+  names are what pages reference; production's `collectstatic` still hashes copies, harmlessly.
+  `IGNORE` hides `.map`/hot-update files from `render_bundle`.
+- **Settings.** `base.py` has `WEBPACK_LOADER` (`CACHE: True`, absolute `STATS_FILE`); `local.py` turns
+  the cache off; `test.py` swaps in `FakeWebpackLoader` (one placeholder tag, no stats file needed);
+  `e2e.py` restores the real loader, so **E2E needs built bundles**: `just build-js` (host, needs
+  `npm ci` once; CI does both before the pytest steps). `just test-e2e` refuses to start without
+  `webpack-stats.json`. Each layer copies the dict instead of mutating `base`'s (the settings-layer
+  rule above).
+- **Dev.** `just up` starts the `node` service: `http://localhost:3000` proxies everything to
+  `django:8000` (Host/Origin stay `localhost:3000`, so `ALLOWED_HOSTS`/CSRF see the browser's address)
+  with live reload on template and source changes; `:8000` keeps working because the dev build is
+  also **written to disk** (`devMiddleware.writeToDisk`) where Django's static handler finds it. Dev
+  `devtool` is `cheap-module-source-map`, never `eval*` — the CSP has no `'unsafe-eval'`. `compress: false` keeps the dev server from buffering the SSE stream. The client's socket URL is
+  `auto://0.0.0.0:0/ws` (the page's own origin), so on `:8000` it fails once and gives up — a console
+  line, not a CSP violation. After a `package.json` change: `just build` and
+  `docker compose up -d --renew-anon-volumes` (the `node_modules` volume is anonymous). Without
+  the `node` service no `webpack-stats.json` exists and every page 500s. **Don't run `just build-js` (a
+  production build on the host) and the `node` service at once** (the recipe refuses while the container runs): both write the same output directory,
+  and the dev server doesn't re-emit files it believes it already wrote — after `just build-js` run
+  `docker compose restart node`.
+- **Production.** `compose/production/django/Dockerfile` has a `client-builder` stage
+  (`docker.io/node:<major of .nvmrc>-trixie-slim`; `npm ci` **before** anything sets `NODE_ENV`, or
+  webpack — a devDependency — would be skipped) whose bundles and stats file are copied into the
+  build stage; `collectstatic` then picks the bundles up. The bundles are built in the image, not at
+  container start: `compose/production/django/start` runs `migrate` and `collectstatic --noinput --clear`
+  (the `--clear` rebuilds the volume from the image each start). Terser minifies, keeping emoji and
+  Polish diacritics (check with the production bundle, not only `just test`). Prod devtool is `source-map` with real
+  `.map` files next to the bundles, so no `sourceMappingURL` dangles (#249 — manifest storage fails
+  hard on that). `tests/test_static_sourcemaps.py` covers it (see _JS libraries from npm_);
+  `tests/test_manifest_static_storage.py` also checks that every asset in `webpack-stats.json` exists after
+  a real `collectstatic` (skipped without a build).
+- **Styles (#467).** The global stylesheet is `webpack/src/scss/project.scss`: an ordered list of `@use`
+  lines (fonts → core → components → `_site.scss`, the old `project.css`) that **is** the cascade order,
+  exactly as the `<link>` order in the old compressor block was — `utilities` and
+  `components/forms` carry comments that depend on it; a new global module goes in at the right position,
+  not at the end. The partials are plain CSS (a valid SCSS subset); `@use`, never the deprecated
+  `@import`. Variables stay CSS custom properties (`_variables.scss`) so the light/dark theme switches at
+  runtime. Page sheets (`scss/pages/*.scss`) are **not** in it: each page has an entry
+  (`webpack/src/js/pages/<name>.js` imports its scss — `achievements`, `dashboard` = the old
+  `profile.css`, `leaderboard`, `suchar_form`, which also imports flatpickr's CSS from npm first) and the
+  template renders `{% render_bundle '<entry>' 'css' %}` after `{{ block.super }}`, so the page's
+  equal-specificity `!important` rules still win on order (#250). Always pass an extension to
+  `render_bundle` for CSS (`'css'`) **and** JS (`'js'`): a call without one renders both, and a second
+  copy of `project.css` landing after the page sheet silently flips the cascade (it did, once —
+  E2E `test_dashboard_chrome` caught it). `fonts` are written `url('/static/fonts/…')` and css-loader is
+  told to leave `/static/` URLs alone (nginx/collectstatic serve them, the manifest storage hashes them).
+  postcss-preset-env (`last 2 versions`) adds `-webkit-` prefixes, logical-property fallbacks and
+  `@supports` wrappers around `color-mix()`; `rgb(from …)` passes through. `tests/test_scss_sources.py`
+  guards the `@use` order, that every partial is used once and the font paths;
+  `tests/test_webpack_toolchain.py` that every page renders its entry's CSS once, after the global one.
+- **Deliberate limits.** `publicPath` (`/static/webpack_bundles/`) and the font URLs (`/static/fonts/`) are
+  written as literals, and the tests `removeprefix(STATIC_URL)`: changing `STATIC_URL` (a CDN) means changing
+  `webpack/common.config.js` and `_fonts.scss` with it. Production ships real `.map` files (public
+  `sourcesContent`, `immutable` in nginx) — fine for an open-source repo, but a decision, not an accident.
+- **Guards.** The Node tag in both Dockerfiles and `engines.node` follow `.nvmrc`'s major
+  (`tests/test_webpack_toolchain.py`); `compose/local/node/` is on Dependabot's docker list.
+  `tests/e2e/test_clean_console.py` loads every page and fails on console errors and CSP violations (its
+  `ConsoleMessage` handler annotation must be a real import, not under `TYPE_CHECKING` — Playwright
+  inspects the annotation).
 
 ### Achievement engine
 
@@ -1628,16 +1549,18 @@ just build
 ```
 
 Notable non-obvious dependencies already in use: `django-rq` / `rq`
-(job queue and cron, see Background jobs), `django-ninja` (the `/api/`
+(job queue and cron, see Background jobs), `django-webpack-loader` (renders the webpack
+bundles, see Frontend pipeline; the JS/CSS toolchain and libraries are npm's, not `uv`'s), `django-ninja` (the `/api/`
 router), `django-modeltranslation` (model-field translation for `Achievement`, distinct
 from the template-level `i18n` used elsewhere).
 
 ## Templates and static files
 
 - Templates: `suchar_overflow/templates/` — Django template engine (`DjangoTemplates`)
-  with `{% load compress %}`, `{% load static %}` and `{% load i18n %}` where needed.
-- CSS: `suchar_overflow/static/css/` — uses CSS custom properties (`variables.css`).
-- JS: `suchar_overflow/static/js/project.js` (main) + `js/features/` (split features).
+  with `{% load webpack_loader %}`, `{% load static %}` and
+  `{% load i18n %}` where needed.
+- CSS: SCSS under `webpack/src/scss/` (global partials + `pages/`) — uses CSS custom properties (`_variables.scss`).
+- JS: ES modules under `webpack/src/js/` — `project.js` (global entry), `app.js` (main), `features/` and `pages/` (see _Frontend pipeline_).
 - djlint enforces template formatting. After editing templates, run `pre-commit` to
   auto-format. djlint max line length for templates is 120 chars, indent 4 spaces.
 - **`{# … #}` comments are single-line only.** Django's lexer does not span newlines

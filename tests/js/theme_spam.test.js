@@ -1,29 +1,29 @@
 /**
  * Unit tests for the "Niezdecydowany" theme-toggle-spam easter egg in
- * suchar_overflow/static/js/features/theme_spam.js (issue #289).
+ * webpack/src/js/features/theme_spam.js (issue #289).
  *
- * Classic browser script; its guarded CommonJS tail (inside the file's IIFE)
- * exposes the helpers to Vitest — inert in the browser, see the file and
- * CLAUDE.md "JS tests (Vitest)". `require()` runs the module body, which
- * registers a `DOMContentLoaded` listener that does not fire here (jsdom is
- * past `load`), so most tests drive the exported helpers directly.
+ * An ES module (#468): importing it runs its body, which registers a `DOMContentLoaded`
+ * listener that does not fire on its own here (jsdom is past `load`), so most tests drive the
+ * exported helpers directly. The module is imported once per file, so its mutable state is
+ * reset with the exported `_resetForTests()` (and `easterEggs.teardownAll()`) in
+ * `beforeEach`/`afterEach` — `vi.resetModules()` would not detach listeners from
+ * `document`/`window` (see CLAUDE.md "JS tests (Vitest)").
  *
- * The real `features/easter_eggs.js` is wired in first so `window.easterEggs`
- * (the deduped award + reduced-motion gate this egg delegates to) behaves for
- * real. `vi.resetModules()` does not re-run a required CJS module, so both
- * modules expose `_resetForTests()` for the per-test cleanup.
+ * The real `features/easter_eggs.js` is used, so `easterEggs` (the deduped award +
+ * reduced-motion gate this egg delegates to) behaves for real. `toast.js` is mocked.
+ * This egg is pure delight unless noted: assertions on `fetch` / `award` stay.
  */
-const path = require('node:path');
+import * as themeSpam from '../../webpack/src/js/features/theme_spam.js';
+import { easterEggs, _resetForTests as resetEasterEggs } from '../../webpack/src/js/features/easter_eggs.js';
 
-const THEME_SPAM_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/theme_spam.js');
-const EASTER_EGGS_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/easter_eggs.js');
+import { showToast } from '../../webpack/src/js/toast.js';
+
+vi.mock('../../webpack/src/js/toast.js', () => ({ showToast: vi.fn() }));
 
 const SLUG = 'frontend-ee-niezdecydowany';
 const STYLE_ID = 'ee-theme-spam-style';
 const SPIN_CLASS = 'ee-toggle-spin';
 const THRESHOLD = 10;
-
-let themeSpam;
 
 function frontendEventPosts() {
     return globalThis.fetch.mock.calls.filter(([url]) => url === '/api/achievements/frontend-event');
@@ -51,28 +51,25 @@ function clickToggle(count, gapMs) {
 }
 
 beforeEach(() => {
-    vi.resetModules();
     sessionStorage.clear();
     localStorage.clear();
     document.body.innerHTML = '';
     document.documentElement.removeAttribute('data-theme');
     document.head.querySelector(`#${STYLE_ID}`)?.remove();
 
-    globalThis.getCsrfToken = vi.fn(() => 'test-token');
+    // csrf.js reads the token from the DOM; there is no global to stub.
+    document.head.innerHTML = '<meta name="csrf-token" content="test-token" />';
     globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => ({}) }));
-    window.showToast = vi.fn();
+    showToast.mockClear();
     delete window.EE_AUDIO;
     delete window.matchMedia; // jsdom: absence => reducedJuice() === true
 
-    require(EASTER_EGGS_PATH);
-    window.easterEggs._resetForTests();
-
-    themeSpam = require(THEME_SPAM_PATH);
+    resetEasterEggs();
     themeSpam._resetForTests();
 });
 
 afterEach(() => {
-    window.easterEggs.teardownAll();
+    easterEggs.teardownAll();
     themeSpam._resetForTests();
     vi.restoreAllMocks();
     vi.useRealTimers();
@@ -84,7 +81,7 @@ describe('click-window matcher — handleToggleClick', () => {
 
         clickToggle(THRESHOLD, 400); // 9 * 400ms = 3.6s, inside the window
 
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
         expect(frontendEventPosts()).toHaveLength(1);
         expect(JSON.parse(frontendEventPosts()[0][1].body)).toEqual({
             event_slug: SLUG,
@@ -96,7 +93,7 @@ describe('click-window matcher — handleToggleClick', () => {
 
         clickToggle(THRESHOLD, 600); // 9 * 600ms = 5.4s, past the window
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
         expect(frontendEventPosts()).toHaveLength(0);
     });
 
@@ -105,7 +102,7 @@ describe('click-window matcher — handleToggleClick', () => {
 
         clickToggle(THRESHOLD - 1, 100);
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('is a sliding window of the last 10 clicks, not a rolling counter', () => {
@@ -116,7 +113,7 @@ describe('click-window matcher — handleToggleClick', () => {
         clickToggle(5, 2000);
         clickToggle(THRESHOLD, 200);
 
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('replays the effect on a fresh burst of 10, but POSTs the award only once', () => {
@@ -125,7 +122,7 @@ describe('click-window matcher — handleToggleClick', () => {
         clickToggle(THRESHOLD, 200);
         clickToggle(THRESHOLD, 200);
 
-        expect(window.showToast).toHaveBeenCalledTimes(2);
+        expect(showToast).toHaveBeenCalledTimes(2);
         expect(frontendEventPosts()).toHaveLength(1); // sessionStorage dedupe
     });
 
@@ -156,7 +153,7 @@ describe('click-window matcher — handleToggleClick', () => {
         vi.setSystemTime(new Date(start.getTime() - 10 * 60 * 1000));
         clickToggle(5, 100);
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 });
 
@@ -179,7 +176,7 @@ describe('triggerThemeSpam — spin effect', () => {
 
         expect(btn.classList.contains(SPIN_CLASS)).toBe(false);
         expect(document.getElementById(STYLE_ID)).toBeNull();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('reduced-motion path: also honored when matchMedia explicitly reports it', () => {
@@ -193,7 +190,7 @@ describe('triggerThemeSpam — spin effect', () => {
 
         expect(btn.classList.contains(SPIN_CLASS)).toBe(false);
         expect(document.getElementById(STYLE_ID)).toBeNull();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('strips the spin class after the animation', () => {
@@ -210,7 +207,7 @@ describe('triggerThemeSpam — spin effect', () => {
 
     it('does nothing when #theme-toggle is missing', () => {
         expect(() => themeSpam.triggerThemeSpam()).not.toThrow();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 });
 
@@ -235,7 +232,7 @@ describe('teardown / reset', () => {
         themeSpam._resetForTests();
 
         clickToggle(THRESHOLD - 1, 100); // alone, must not complete the burst
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('teardownThemeSpam detaches the click listener', () => {
@@ -248,7 +245,7 @@ describe('teardown / reset', () => {
 
         vi.useFakeTimers();
         dispatchClicks(btn, THRESHOLD, 100);
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 });
 
@@ -263,7 +260,7 @@ describe('DOMContentLoaded init', () => {
 
         vi.useFakeTimers();
         dispatchClicks(btn, THRESHOLD, 100);
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('does not wire the listener for an anonymous body', () => {
@@ -276,6 +273,6 @@ describe('DOMContentLoaded init', () => {
 
         vi.useFakeTimers();
         dispatchClicks(btn, THRESHOLD, 100);
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 });

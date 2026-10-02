@@ -1,0 +1,99 @@
+const path = require('path');
+const BundleTracker = require('webpack-bundle-tracker');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+const ROOT = path.resolve(__dirname, '..');
+
+// Sources live outside suchar_overflow/static/ on purpose: collectstatic copies
+// everything under STATICFILES_DIRS, and the sources must not ship next to the bundles.
+module.exports = {
+    context: ROOT,
+    target: 'web',
+    entry: {
+        // The global entry: what every page loads (base.html), in the order the classic scripts used to
+        // initialise. `timezone` comes first, as it did in the old {% compress js %} block.
+        project: path.resolve(__dirname, 'src/js/project.js'),
+        // Page and feature entries. `dependOn: 'project'` makes them share the global entry's module
+        // instances (with the single runtime): a page entry that imports `easter_eggs.js`, `toast.js` or
+        // `csrf.js` gets the instance `project` already evaluated instead of a second copy with its own
+        // state (dedupe Set, teardown registry...). Rendered after `project`, so the page's stylesheet
+        // still wins on order (#250). `tests/js/webpack_entries.test.js` guards the sharing.
+        achievements: { import: path.resolve(__dirname, 'src/js/pages/achievements.js'), dependOn: 'project' },
+        dashboard: { import: path.resolve(__dirname, 'src/js/pages/dashboard.js'), dependOn: 'project' },
+        hidden_achievements: {
+            import: path.resolve(__dirname, 'src/js/features/hidden_achievements.js'),
+            dependOn: 'project',
+        },
+        leaderboard: { import: path.resolve(__dirname, 'src/js/pages/leaderboard.js'), dependOn: 'project' },
+        suchar_form: { import: path.resolve(__dirname, 'src/js/pages/suchar_form.js'), dependOn: 'project' },
+        user_detail: { import: path.resolve(__dirname, 'src/js/pages/user_detail.js'), dependOn: 'project' },
+        voting: { import: path.resolve(__dirname, 'src/js/features/voting.js'), dependOn: 'project' },
+    },
+    output: {
+        path: path.resolve(ROOT, 'suchar_overflow/static/webpack_bundles/'),
+        publicPath: '/static/webpack_bundles/',
+        // `.<12 hex>.<ext>` is the shape nginx matches for `Cache-Control: immutable`
+        // (compose/production/nginx/default.conf), so keep the dot and the 12 digits.
+        filename: 'js/[name].[contenthash].js',
+        chunkFilename: 'js/[name].[contenthash].js',
+        assetModuleFilename: 'assets/[name].[contenthash][ext]',
+        hashDigestLength: 12,
+        clean: true,
+    },
+    optimization: {
+        // One runtime shared by every entry, so a page that loads two entries (the global
+        // `project` plus a page script) never instantiates a module twice. The loader drops
+        // the chunks a second `render_bundle` call would repeat (SKIP_COMMON_CHUNKS).
+        runtimeChunk: 'single',
+        splitChunks: { chunks: 'all' },
+    },
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: 'css/[name].[contenthash].css',
+            chunkFilename: 'css/[name].[contenthash].css',
+        }),
+        // django-webpack-loader reads this file to turn `{% render_bundle 'project' %}`
+        // into <script>/<link> tags. Gitignored, written by every build.
+        new BundleTracker({
+            path: ROOT,
+            filename: 'webpack-stats.json',
+        }),
+    ],
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                // package.json says "type": "commonjs" (the configs here are CJS), which webpack
+                // would read as `javascript/dynamic` and reject `import` in the sources.
+                type: 'javascript/auto',
+                use: 'babel-loader',
+            },
+            {
+                test: /\.(s?css)$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        // Fonts are written as absolute /static/fonts/... (nginx / collectstatic serve
+                        // them, the manifest storage hashes them); css-loader must not try to bundle them.
+                        options: { importLoaders: 2, url: { filter: (url) => !url.startsWith('/static/') } },
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: { postcssOptions: { config: path.resolve(__dirname, 'postcss.config.js') } },
+                    },
+                    'sass-loader',
+                ],
+            },
+            {
+                // Fonts, images and audio referenced from url() in the stylesheets.
+                test: /\.(woff2?|ttf|otf|eot|svg|png|jpe?g|gif|webp|avif|ico)$/,
+                type: 'asset/resource',
+            },
+        ],
+    },
+    resolve: {
+        extensions: ['.js', '.scss'],
+    },
+};

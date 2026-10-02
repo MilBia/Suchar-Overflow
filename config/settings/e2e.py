@@ -8,6 +8,7 @@ pytest-django's live_server serves at http://127.0.0.1:<port>.
 import os
 
 from .test import *  # noqa: F403
+from .test import WEBPACK_LOADER as _TEST_WEBPACK_LOADER
 
 # live_server binds to 127.0.0.1 — trust it for CSRF checks
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
@@ -20,6 +21,12 @@ CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", "http://localhost"]
 # getCsrfToken().  HttpOnly cookies are invisible to JS, so we disable
 # the flag for E2E tests so the JS can read the token and POST awards.
 CSRF_COOKIE_HTTPONLY = False
+
+# The browser really fetches the bundles, so use the real loader and the stats file written by
+# `npm run build` (`just build-js`; see the `test-e2e` recipe).
+WEBPACK_LOADER = {
+    "DEFAULT": {**_TEST_WEBPACK_LOADER["DEFAULT"], "LOADER_CLASS": "webpack_loader.loaders.WebpackLoader"},
+}
 
 # Playwright runs tests inside an async event loop. Django's ORM normally
 # blocks sync DB access from async contexts; this flag disables that guard

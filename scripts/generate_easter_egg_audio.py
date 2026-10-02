@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate the self-hosted easter-egg sound effects.
 
-The easter-egg audio helper in ``static/js/features/easter_eggs.js`` plays two
+The easter-egg audio helper in ``webpack/src/js/features/easter_eggs.js`` plays two
 short cues (see issue #282). Rather than vendoring third-party samples and
 tracking their licences by hand (as with ``flatpickr.LICENSE.txt``), the sounds
 are synthesised here from scratch with the standard library only, so they are

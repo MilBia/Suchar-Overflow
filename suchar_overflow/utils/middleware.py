@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
     from django.http import HttpResponseBase
 
-#: Written by ``static/js/timezone.js`` from the browser's
+#: Written by ``webpack/src/js/timezone.js`` from the browser's
 #: ``Intl.DateTimeFormat().resolvedOptions().timeZone`` (#410).
 TIMEZONE_COOKIE_NAME = "user_tz"
 

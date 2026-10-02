@@ -1,23 +1,15 @@
 /**
  * Unit tests for the busy-state helper in
- * suchar_overflow/static/js/features/voting.js (issue #298).
+ * webpack/src/js/features/voting.js (issue #298).
  *
- * The file is a classic browser script; its guarded CommonJS tail exposes
- * `setVotingBusy` to Vitest (inert in the browser — see the file and CLAUDE.md
- * "JS tests (Vitest)"). `require()` runs the module body, which only registers a
- * `DOMContentLoaded` listener jsdom is already past, so init never runs — we
- * test the exported helper directly.
+ * An ES module (#468): `setVotingBusy` is a named export. Importing the module only
+ * registers a `DOMContentLoaded` listener jsdom is already past, so init never runs —
+ * we test the exported helper directly.
  */
-const path = require('node:path');
-
-const MODULE_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/voting.js');
-
-let setVotingBusy;
+import { setVotingBusy } from '../../webpack/src/js/features/voting.js';
 
 beforeEach(() => {
-    vi.resetModules();
     document.body.innerHTML = '';
-    ({ setVotingBusy } = require(MODULE_PATH));
 });
 
 function makeContainer() {

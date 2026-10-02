@@ -8,25 +8,18 @@ must hold and neither is covered by the JS/E2E suites:
    The strings go through `|escapejs` (not `|json_script`, which needs a context
    variable base.html has no view to build), so a bad escape would surface as a
    `JSONDecodeError` here rather than a silent client-side parse failure.
-2. The island stays **out of `{% compress js %}`**. `JsCompressor` would treat a
-   `<script>` without `src` as an inline hunk, minify it into the bundle and
-   drop the `id` — so with `COMPRESS_ENABLED = True` the island must still be
-   present verbatim, not folded into a `/static/CACHE/js/` bundle.
+2. The island stays a **plain inline `<script>` in the page**, not part of a webpack bundle: its text
+   is translated per request by `{% trans %}`, which a build step could not do.
 """
 
 import json
 import re
-from typing import TYPE_CHECKING
 
 import pytest
-from django.core.cache import cache
 from django.test import Client
 from django.urls import reverse
 
 from suchar_overflow.conftest import make_user
-
-if TYPE_CHECKING:
-    from pytest_django.fixtures import Settings as SettingsWrapper
 
 # Attribute-order-tolerant: djlint (or a future formatter) may reorder `id` and
 # `type` or wrap the tag — all that matters is a <script> carrying this id.
@@ -59,21 +52,3 @@ def test_pool_island_is_valid_json_list_of_strings() -> None:
 @pytest.mark.django_db
 def test_pool_island_absent_for_anonymous_users() -> None:
     assert not ISLAND_RE.search(_home(Client()))
-
-
-@pytest.mark.django_db
-def test_pool_island_survives_online_compression(settings: SettingsWrapper) -> None:
-    settings.COMPRESS_ENABLED = True
-    settings.COMPRESS_OFFLINE = False
-    # compressor caches "already written" per content hash; clear so a stale
-    # bundle from an earlier test can't mask a regression (see
-    # tests/test_compressed_page_assets.py::_render).
-    cache.clear()
-
-    client = Client()
-    client.force_login(make_user("logo_spin_pool_compress"))
-    html = _home(client)
-
-    match = ISLAND_RE.search(html)
-    assert match, "compression folded the #ee-logo-suchary island into the bundle"
-    json.loads(match.group(1))

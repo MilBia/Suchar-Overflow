@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static i18n compress %}
+{% load static i18n webpack_loader %}
 
 {% block title %}
     {% trans "My Achievements" %} | Suchar Overflow
@@ -8,19 +8,13 @@
 
 {% block css %}
     {{ block.super }}
-    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-    {% compress css %}
-        <link href="{% static 'css/achievement-page.css' %}" rel="stylesheet" />
-    {% endcompress %}
+    {% render_bundle 'achievements' 'css' %}
 {% endblock css %}
 
 {% block javascript %}
     {{ block.super }}
-    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
     {% if request.user.is_authenticated %}
-        {% compress js %}
-            <script defer src="{% static 'js/features/hidden_achievements.js' %}"></script>
-        {% endcompress %}
+        {% render_bundle 'hidden_achievements' 'js' attrs='defer' %}
     {% endif %}
 {% endblock javascript %}
 
