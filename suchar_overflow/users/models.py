@@ -55,12 +55,12 @@ class AuthToken(models.Model):
         related_name="token",
         verbose_name=_("User"),
     )
-    token_hash = models.CharField(_("Token hash"), max_length=64, unique=True, editable=False)
-    created = models.DateTimeField(_("Created"), auto_now_add=True)
+    token_hash = models.CharField(_("Skrót tokenu"), max_length=64, unique=True, editable=False)
+    created = models.DateTimeField(_("Utworzony"), auto_now_add=True)
 
     class Meta:
-        verbose_name = _("API token")
-        verbose_name_plural = _("API tokens")
+        verbose_name = _("Token API")
+        verbose_name_plural = _("Tokeny API")
 
     def __str__(self) -> str:
         user_name = self.user.username if "user" in self._state.fields_cache else f"User #{self.user_id}"

@@ -69,7 +69,7 @@ class AuthTokenAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         self._announce(request, obj.user, raw_token)
 
-    @admin.action(description=_("Generate a new token for the selected users (invalidates the old one)"))
+    @admin.action(description=_("Wygeneruj nowy token dla zaznaczonych użytkowników (unieważnia stary)"))
     def regenerate(self, request: HttpRequest, queryset: QuerySet[AuthToken]) -> None:
         for token in queryset.select_related("user"):
             _new, raw_token = AuthToken.issue(token.user)
@@ -78,7 +78,8 @@ class AuthTokenAdmin(admin.ModelAdmin):
     def _announce(self, request: HttpRequest, user: User, raw_token: str) -> None:
         self.message_user(
             request,
-            _("Token for %(user)s (shown only once): %(token)s") % {"user": user.username, "token": raw_token},
+            _("Token użytkownika %(user)s (widoczny tylko raz): %(token)s")
+            % {"user": user.username, "token": raw_token},
             messages.WARNING,
         )
 

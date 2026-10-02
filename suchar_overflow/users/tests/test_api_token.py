@@ -113,7 +113,7 @@ def test_admin_issues_a_token_and_shows_it_once(admin_client: Client, user: User
     response = admin_client.post(reverse("admin:users_authtoken_add"), {"user": user.pk}, follow=True)
     assert response.status_code == HTTPStatus.OK
     stored = AuthToken.objects.get(user=user)
-    message = next(str(m) for m in response.context["messages"] if "shown only once" in str(m) or "tylko raz" in str(m))
+    message = next(str(m) for m in response.context["messages"] if "tylko raz" in str(m))
     raw = message.rsplit(" ", 1)[-1]
     assert AuthToken.hash_token(raw) == stored.token_hash
     assert Client(headers={"Authorization": f"Bearer {raw}"}).get(ME).status_code == HTTPStatus.OK
