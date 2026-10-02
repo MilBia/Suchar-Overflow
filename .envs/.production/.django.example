@@ -29,7 +29,8 @@ DJANGO_SECURE_SSL_REDIRECT=True
 # ------------------------------------------------------------------------------
 # Interactive OpenAPI docs at /api/docs (default True). Suggested: False in
 # production — the docs page is public and lists every endpoint.
-# API_ENABLE_DOCS=False
+# DJANGO_API_ENABLE_DOCS=False
+# The pre-prefix name API_ENABLE_DOCS is still read as a fallback for one release.
 
 # Database
 # ------------------------------------------------------------------------------

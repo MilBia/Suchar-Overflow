@@ -112,7 +112,7 @@ Traefik and nginx `depends_on: django: service_healthy`. Tests use LocMem, so
 **API conventions (#458).** `config/api.py`'s `SucharOverflowAPI` names every operation
 `<router tag>_<function>` (`reverse("api:suchary_vote_suchar")`), so each `Router` must
 carry `tags=[...]` — `tests/test_api_conventions.py` lists every operation and fails when a
-new one is missing. `/api/docs` follows `API_ENABLE_DOCS` (env, default on — switch it off
+new one is missing. `/api/docs` follows `API_ENABLE_DOCS` (env `DJANGO_API_ENABLE_DOCS`, bare name as a one-release fallback, default on — switch it off
 in production); `PermissionDenied` becomes a 403 `{"message": ...}`.
 
 Worker RSS that climbs under load and never comes back (#431) was CPython 3.14.2's
