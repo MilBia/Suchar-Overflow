@@ -1,6 +1,7 @@
 """Email jobs (#461): they render in the language the requester had, and retry on SMTP errors."""
 
 import uuid
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -16,6 +17,9 @@ from suchar_overflow.users.tasks import enqueue_email
 from suchar_overflow.users.tasks import send_activation_email
 from suchar_overflow.users.tasks import send_email_change_notify_email
 from suchar_overflow.users.tasks import send_email_change_verify_email
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 def _translated(msgid: str, language: str) -> str:
@@ -86,3 +90,18 @@ def test_enqueue_email_passes_language_and_retry_policy(rq_queue: MagicMock) -> 
     assert isinstance(retry, Retry)
     assert retry.max == len(EMAIL_RETRY_INTERVALS) == 3
     assert retry.intervals == [10, 60, 300]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "send",
+    [
+        lambda pk: send_activation_email(pk, "example.com", "t", "https"),
+        lambda pk: send_email_change_verify_email(pk, "n@example.com", "https://v"),
+        lambda pk: send_email_change_notify_email(pk, "o@example.com", "n@example.com", "https://r"),
+    ],
+)
+def test_a_deleted_user_is_skipped_not_retried(send: Callable[[int], None], caplog: pytest.LogCaptureFixture) -> None:
+    send(987654321)  # no exception: RQ would otherwise retry and then mail the admins
+    assert mail.outbox == []
+    assert "no longer exists" in caplog.text

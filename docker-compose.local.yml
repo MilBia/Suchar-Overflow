@@ -58,6 +58,8 @@ services:
             - ./.envs/.local/.django
             - ./.envs/.local/.postgres
         command: /worker
+        # A job may run up to DEFAULT_TIMEOUT (300 s); give RQ's warm shutdown time to finish it.
+        stop_grace_period: 330s
         healthcheck:
             # Fails when no worker is registered on any queue in RQ_QUEUES.
             test: ['CMD', 'python', 'manage.py', 'rq_healthcheck']

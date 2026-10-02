@@ -5,6 +5,7 @@ requester's language and renders inside ``translation.override``. Jobs take only
 primary key and serialisable values, never a model instance.
 """
 
+import logging
 from typing import TYPE_CHECKING
 
 import django_rq
@@ -21,7 +22,22 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 #: Seconds before the 1st, 2nd and 3rd retry of a failed send (a flaky SMTP server).
+logger = logging.getLogger(__name__)
+
 EMAIL_RETRY_INTERVALS = [10, 60, 300]
+
+
+def _get_user(user_pk: int) -> User | None:
+    """The user to mail, or ``None`` when deleted since queueing.
+
+    A permanent condition: raising would burn the retries and then mail the admins
+    about a message nobody is waiting for.
+    """
+    try:
+        return User.objects.get(pk=user_pk)
+    except User.DoesNotExist:
+        logger.warning("Skipping email job: user %s no longer exists", user_pk)
+        return None
 
 
 def enqueue_email(task: Callable[..., None], *args: object) -> None:
@@ -45,7 +61,9 @@ def send_activation_email(
     protocol: str,
     language: str | None = None,
 ) -> None:
-    user = User.objects.get(pk=user_pk)
+    user = _get_user(user_pk)
+    if user is None:
+        return
     with translation.override(language):
         mail_subject = _("Confirm you have a sense of humor (Account Activation)")
         message = render_to_string(
@@ -67,7 +85,9 @@ def send_email_change_verify_email(
     language: str | None = None,
 ) -> None:
     """Ask the *new* address to confirm the change."""
-    user = User.objects.get(pk=user_pk)
+    user = _get_user(user_pk)
+    if user is None:
+        return
     with translation.override(language):
         subject = _("Confirm it's you (Email Change)")
         message = render_to_string(
@@ -93,7 +113,9 @@ def send_email_change_notify_email(
     A separate job from ``send_email_change_verify_email``: one job per message, so a
     retry after one send fails never repeats the other.
     """
-    user = User.objects.get(pk=user_pk)
+    user = _get_user(user_pk)
+    if user is None:
+        return
     with translation.override(language):
         subject = _("Someone wants to change your email address (We hope it's you)")
         message = render_to_string(

@@ -123,6 +123,35 @@ def test_signup_passes_the_requesters_language_to_the_job(
     assert rq_queue.enqueue.call_args.kwargs["language"] == language
 
 
+@pytest.mark.django_db(transaction=True)
+def test_signup_with_unreachable_queue_leaves_no_stranded_account(client: Client, rq_queue: MagicMock) -> None:
+    rq_queue.enqueue.side_effect = ConnectionError("redis down")
+    client.raise_request_exception = False
+    response = client.post(
+        reverse("users:signup"),
+        {
+            "username": "stranded",
+            "email": "stranded@example.com",
+            "password1": "Str0ngP@ssword!",
+            "password2": "Str0ngP@ssword!",
+        },
+    )
+    assert response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+    # The username/email stay free, so the visitor can simply try again.
+    assert not User.objects.filter(username="stranded").exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_email_change_with_unreachable_queue_drops_the_request(client: Client, rq_queue: MagicMock) -> None:
+    rq_queue.enqueue.side_effect = ConnectionError("redis down")
+    client.raise_request_exception = False
+    user = make_user("user1", email="old@example.com")
+    client.force_login(user)
+    response = client.post(reverse("users:email_change_initiate"), {"email": "new@example.com"})
+    assert response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+    assert not EmailChangeRequest.objects.filter(user=user).exists()
+
+
 @pytest.mark.django_db
 def test_signup_redirects_to_done_page(client: Client) -> None:
     response = client.post(

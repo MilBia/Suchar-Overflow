@@ -63,6 +63,8 @@ services:
             - ./.envs/.production/.django
             - ./.envs/.production/.postgres
         command: /worker
+        # A job may run up to DEFAULT_TIMEOUT (300 s); give RQ's warm shutdown time to finish it.
+        stop_grace_period: 330s
         restart: unless-stopped
         healthcheck:
             # Fails when no worker is registered on any queue in RQ_QUEUES.

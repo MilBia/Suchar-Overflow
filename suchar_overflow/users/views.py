@@ -468,13 +468,19 @@ class SignupView(View):
         activation = await ActivationToken.objects.acreate(user=user)
         host = request.get_host()
         protocol = "https" if request.is_secure() else "http"
-        await sync_to_async(enqueue_email)(
-            send_activation_email,
-            user.pk,
-            host,
-            str(activation.token),
-            protocol,
-        )
+        try:
+            await sync_to_async(enqueue_email)(
+                send_activation_email,
+                user.pk,
+                host,
+                str(activation.token),
+                protocol,
+            )
+        except Exception:
+            # Queue unreachable: without this the inactive account (and its taken
+            # username/email) would be stranded with no activation mail ever sent.
+            await user.adelete()
+            raise
         return redirect(reverse_lazy("users:signup_done"))
 
 
@@ -555,8 +561,19 @@ class EmailChangeInitiateView(AsyncLoginRequiredMixin):
         verify_full = f"{protocol}://{host}{verify_url}"
         revoke_full = f"{protocol}://{host}{revoke_url}"
 
-        await sync_to_async(enqueue_email)(send_email_change_verify_email, user.pk, new_email, verify_full)
-        await sync_to_async(enqueue_email)(send_email_change_notify_email, user.pk, old_email, new_email, revoke_full)
+        try:
+            await sync_to_async(enqueue_email)(send_email_change_verify_email, user.pk, new_email, verify_full)
+            await sync_to_async(enqueue_email)(
+                send_email_change_notify_email,
+                user.pk,
+                old_email,
+                new_email,
+                revoke_full,
+            )
+        except Exception:
+            # Queue unreachable: drop the request so the user can simply retry.
+            await email_request.adelete()
+            raise
         return redirect(reverse_lazy("users:email_change_done"))
 
 
