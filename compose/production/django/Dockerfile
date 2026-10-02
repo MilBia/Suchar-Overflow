@@ -4,7 +4,7 @@
 # 3.14.2). Both stages then share the same interpreter the bytecode is built for,
 # and the same Debian release (glibc) the venv's C extensions are built against —
 # keep both FROM lines on one tag (#437, tests/test_python_runtime.py).
-FROM ghcr.io/astral-sh/uv:0.12.21 AS uv
+FROM ghcr.io/astral-sh/uv:0.12.22 AS uv
 
 # Frontend bundles (#466). The tag follows .nvmrc's major (tests/test_webpack_toolchain.py).
 # NODE_ENV stays unset until after `npm ci`: with `production` it would skip the
