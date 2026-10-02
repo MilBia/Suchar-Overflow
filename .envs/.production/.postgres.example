@@ -5,3 +5,5 @@ POSTGRES_PORT=5432
 POSTGRES_DB=suchar_overflow
 POSTGRES_USER=<GENERATE_A_RANDOM_USER>
 POSTGRES_PASSWORD=<GENERATE_A_LONG_RANDOM_PASSWORD>
+# DATABASE_URL is composed from the variables above by /entrypoint, which overwrites any value
+# set by hand. To use another database, change POSTGRES_* instead.

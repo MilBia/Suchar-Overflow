@@ -1,6 +1,9 @@
 # General
 # ------------------------------------------------------------------------------
 # DJANGO_READ_DOT_ENV_FILE=True
+# Never enable debug in production (default False).
+# DJANGO_DEBUG=False
+# Secrets kept out of git can also go in .envs/.secrets (optional; this file overrides it).
 DJANGO_SETTINGS_MODULE=config.settings.production
 DJANGO_SECRET_KEY=<GENERATE_A_LONG_RANDOM_SECRET_KEY>
 DJANGO_ADMIN_URL=<YOUR_ADMIN_URL_PATH>/
@@ -24,6 +27,8 @@ DJANGO_SECURE_SSL_REDIRECT=True
 # DJANGO_SECURE_HSTS_SECONDS=518400
 # DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=True
 # DJANGO_SECURE_HSTS_PRELOAD=False
+# X-Content-Type-Options: nosniff (default True).
+# DJANGO_SECURE_CONTENT_TYPE_NOSNIFF=True
 
 # API
 # ------------------------------------------------------------------------------
@@ -40,6 +45,8 @@ DJANGO_SECURE_SSL_REDIRECT=True
 
 # Email (SMTP)
 # ------------------------------------------------------------------------------
+# Mail backend (default: the SMTP backend, configured by the DJANGO_EMAIL_* options below).
+# DJANGO_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 # DJANGO_DEFAULT_FROM_EMAIL=Suchar Overflow <noreply@your-domain.com>
 # DJANGO_SERVER_EMAIL=Suchar Overflow <noreply@your-domain.com>
 # DJANGO_EMAIL_SUBJECT_PREFIX=[Suchar Overflow]
