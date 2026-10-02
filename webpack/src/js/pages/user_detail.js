@@ -1,4 +1,5 @@
-/* User detail page: activity (dryness) and reception charts */
+/* User detail page: activity (dryness) and reception charts — wpis webpacka (#468). */
+import Chart from 'chart.js/auto';
 
 document.addEventListener('DOMContentLoaded', function () {
     // Activity Chart

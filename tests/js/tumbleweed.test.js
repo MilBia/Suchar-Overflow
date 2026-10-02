@@ -1,33 +1,30 @@
 /**
  * Unit tests for the "tumbleweed after inactivity" easter egg in
- * suchar_overflow/static/js/features/tumbleweed.js (issue #288).
+ * webpack/src/js/features/tumbleweed.js (issue #288).
  *
- * Classic browser script; its guarded CommonJS tail (inside the file's IIFE)
- * exposes the helpers to Vitest — inert in the browser, see the file and
- * CLAUDE.md "JS tests (Vitest)". `require()` runs the module body, which
- * registers a `DOMContentLoaded` listener that does not fire here (jsdom is
- * past `load`), so most tests drive the exported helpers directly.
+ * An ES module (#468): importing it runs its body, which registers a `DOMContentLoaded`
+ * listener that does not fire on its own here (jsdom is past `load`), so most tests drive the
+ * exported helpers directly. The module is imported once per file, so its mutable state is
+ * reset with the exported `_resetForTests()` (and `easterEggs.teardownAll()`) in
+ * `beforeEach`/`afterEach` — `vi.resetModules()` would not detach listeners from
+ * `document`/`window` (see CLAUDE.md "JS tests (Vitest)").
  *
- * The real `features/easter_eggs.js` is wired in first so `window.easterEggs`
- * (the reduced-motion gate this egg delegates to) behaves for real.
- * `vi.resetModules()` re-runs neither required CJS module, so both expose
- * `_resetForTests()` for the per-test cleanup.
- *
- * This egg is pure delight: no achievement, no slug, no network. Several tests
- * assert `globalThis.fetch` and `window.easterEggs.award` are never called.
+ * The real `features/easter_eggs.js` is used, so `easterEggs` (the deduped award +
+ * reduced-motion gate this egg delegates to) behaves for real. `toast.js` is mocked.
+ * This egg is pure delight unless noted: assertions on `fetch` / `award` stay.
  */
-const path = require('node:path');
+import * as tumbleweed from '../../webpack/src/js/features/tumbleweed.js';
+import { easterEggs, _resetForTests as resetEasterEggs } from '../../webpack/src/js/features/easter_eggs.js';
 
-const TUMBLEWEED_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/tumbleweed.js');
-const EASTER_EGGS_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/easter_eggs.js');
+import { showToast } from '../../webpack/src/js/toast.js';
+
+vi.mock('../../webpack/src/js/toast.js', () => ({ showToast: vi.fn() }));
 
 const STYLE_ID = 'ee-tumbleweed-style';
 const OVERLAY_SELECTOR = 'div.ee-tumbleweed-overlay';
 const IDLE_MS = 120000;
 const COOLDOWN_MS = 300000;
 const STORAGE_KEY = 'ee_tumbleweed_last';
-
-let tumbleweed;
 
 function overlays() {
     return [...document.body.querySelectorAll(OVERLAY_SELECTOR)];
@@ -46,7 +43,6 @@ function initOnSucharyList() {
 }
 
 beforeEach(() => {
-    vi.resetModules();
     sessionStorage.clear();
     localStorage.clear();
     document.body.innerHTML = '';
@@ -56,21 +52,19 @@ beforeEach(() => {
     document.head.querySelector(`#${STYLE_ID}`)?.remove();
     setPath('/');
 
-    globalThis.getCsrfToken = vi.fn(() => 'test-token');
+    // csrf.js reads the token from the DOM; there is no global to stub.
+    document.head.innerHTML = '<meta name="csrf-token" content="test-token" />';
     globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => ({}) }));
-    window.showToast = vi.fn();
+    showToast.mockClear();
     delete window.EE_AUDIO;
     delete window.matchMedia; // jsdom: absence => reducedJuice() === true
 
-    require(EASTER_EGGS_PATH);
-    window.easterEggs._resetForTests();
-
-    tumbleweed = require(TUMBLEWEED_PATH);
+    resetEasterEggs();
     tumbleweed._resetForTests();
 });
 
 afterEach(() => {
-    window.easterEggs.teardownAll();
+    easterEggs.teardownAll();
     tumbleweed._resetForTests();
     vi.restoreAllMocks();
     vi.useRealTimers();
@@ -324,7 +318,7 @@ describe('rollTumbleweed — full motion', () => {
 
     it('does not fire a toast in the full-motion path', () => {
         tumbleweed.triggerTumbleweed();
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('builds the caption with textContent, not markup', () => {
@@ -361,7 +355,7 @@ describe('rollTumbleweed — full motion', () => {
     });
 
     it('never touches the network or the achievement system (pure delight)', () => {
-        const award = vi.spyOn(window.easterEggs, 'award');
+        const award = vi.spyOn(easterEggs, 'award');
         tumbleweed.triggerTumbleweed();
         expect(globalThis.fetch).not.toHaveBeenCalled();
         expect(award).not.toHaveBeenCalled();
@@ -373,27 +367,9 @@ describe('rollTumbleweed — prefers-reduced-motion', () => {
         // matchMedia absent => easterEggs.reducedJuice() === true
         tumbleweed.triggerTumbleweed();
 
-        expect(window.showToast).toHaveBeenCalledWith(tumbleweed.CAPTION, '🌾', 'info');
+        expect(showToast).toHaveBeenCalledWith(tumbleweed.CAPTION, '🌾', 'info');
         expect(overlays()).toHaveLength(0);
         expect(document.getElementById(STYLE_ID)).toBeNull();
-    });
-
-    it('falls back to matchMedia when window.easterEggs is missing', () => {
-        window.matchMedia = vi.fn((q) => ({ matches: true, media: q }));
-        const saved = window.easterEggs;
-        delete window.easterEggs;
-        try {
-            tumbleweed.triggerTumbleweed();
-            expect(window.showToast).toHaveBeenCalledTimes(1);
-            expect(overlays()).toHaveLength(0);
-        } finally {
-            window.easterEggs = saved;
-        }
-    });
-
-    it('does not throw when window.showToast is unavailable', () => {
-        delete window.showToast;
-        expect(() => tumbleweed.triggerTumbleweed()).not.toThrow();
     });
 });
 

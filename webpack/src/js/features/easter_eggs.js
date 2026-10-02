@@ -5,20 +5,18 @@
  * sesji, bramki reduced-motion ani odtwarzania dźwięku. Ten plik NIE podpina
  * żadnego easter egga — wystawia jedynie `window.easterEggs`.
  *
- * Ładowany w globalnym bloku `{% compress js %}` w base.html, PO project.js
- * (potrzebuje `window.getCsrfToken`; dzieci używają też `window.showToast`,
- * które project.js definiuje dopiero we własnym handlerze DOMContentLoaded —
- * więc czytaj je z handlera zdarzenia, nigdy w czasie ładowania modułu).
- * Ponieważ ten blok jest globalny, wykonuje się przed każdym bundle'em
- * per-strona, dlatego features/hidden_achievements.js może polegać na tym, że
- * `window.easterEggs` jest już ustawione.
+ * Moduł ES (#468), importowany we wpisie `project` po `app.js`. Dzieci (#283+)
+ * importują stąd `easterEggs` wprost (`import { easterEggs } from './easter_eggs.js'`),
+ * a wpisy stron zależą od wpisu `project` (`dependOn`), więc dostają TĘ SAMĄ instancję
+ * modułu — jedna Set deduplikacji, jeden rejestr teardown. `window.easterEggs` zostaje
+ * jako fasada (kontrakt z #282), ale nic w bundlach już jej nie czyta.
  *
- * Zależy od `window.getCsrfToken` (project.js), a dla dźwięku od
- * `window.EE_AUDIO` (drobna, opatrzona nonce'em inline'owa mapa URL-i
- * `{% static %}` emitowana przez base.html dla zalogowanych użytkowników —
- * klasyczny skrypt nie rozwiąże `{% static %}` sam, a produkcja hashuje nazwy
- * plików).
+ * Zależy od `getCsrfToken` (csrf.js), a dla dźwięku od `window.EE_AUDIO`
+ * (drobna, opatrzona nonce'em inline'owa mapa URL-i `{% static %}` emitowana
+ * przez base.html dla zalogowanych użytkowników — bundle nie rozwiąże
+ * `{% static %}` sam, a produkcja hashuje nazwy plików).
  */
+import { getCsrfToken } from '../csrf.js';
 
 // ── Frontend-achievement helpers (shared with hidden_achievements.js) ─────────
 
@@ -75,7 +73,7 @@ function awardFrontendAchievement(slug) {
 
 // Convenience: dedupe + POST in one call. Returns true on the first award for
 // this slug in the session, false if it was already awarded. Children that also
-// want an immediate toast call `window.showToast` themselves after this.
+// want an immediate toast call `showToast` (toast.js) themselves after this.
 function award(slug) {
     if (alreadyAwarded(slug)) return false;
     markAwarded(slug);
@@ -186,7 +184,7 @@ function teardownAll() {
 
 // ── Public surface ───────────────────────────────────────────────────────────
 
-const easterEggs = {
+export const easterEggs = {
     awardFrontendAchievement,
     alreadyAwarded,
     markAwarded,
@@ -221,21 +219,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/* Test-only export for Vitest + jsdom (tests/js/easter_eggs.test.js).
- * `module` is undefined in the browser, so this block is inert there and is
- * preserved verbatim by rjsmin inside {% compress js %}. NOT dead code — see
- * CLAUDE.md "JS tests (Vitest)" and the same tail in hidden_achievements.js.
- *
- * `vi.resetModules()` does NOT re-run a CJS module reached via `require()`, so
- * this module's mutable module-level state (the dedupe Set, the audio cache, the
- * teardown registry) survives between tests. `_resetForTests()` is the per-test
- * reset the `beforeEach` in both JS test files must call; it is attached here
- * only, so it never reaches `window.easterEggs` in a real browser. */
-if (typeof module !== 'undefined' && module.exports) {
-    easterEggs._resetForTests = () => {
-        awardedThisPage.clear();
-        Object.keys(audioCache).forEach((key) => delete audioCache[key]);
-        Object.keys(teardownRegistry).forEach((key) => delete teardownRegistry[key]);
-    };
-    module.exports = easterEggs;
+/* Per-test reset of this module's mutable state (the dedupe Set, the audio cache, the teardown
+ * registry). ES modules are re-evaluated by `vi.resetModules()` + a fresh `import()`, but a test
+ * file that imports statically keeps one instance — so its `beforeEach` calls this. It is a module
+ * export only: it never reaches `window.easterEggs` in a real browser. NOT dead code — see
+ * CLAUDE.md "JS tests (Vitest)". */
+export function _resetForTests() {
+    awardedThisPage.clear();
+    Object.keys(audioCache).forEach((key) => delete audioCache[key]);
+    Object.keys(teardownRegistry).forEach((key) => delete teardownRegistry[key]);
 }
+
+export default easterEggs;

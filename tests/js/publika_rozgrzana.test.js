@@ -1,24 +1,25 @@
 /**
  * Unit tests for the "Publika Rozgrzana" combo easter egg in
- * suchar_overflow/static/js/features/publika_rozgrzana.js (issue #296).
+ * webpack/src/js/features/publika_rozgrzana.js (issue #296).
  *
- * Classic browser script; its guarded CommonJS tail (inside the file's IIFE)
- * exposes the helpers to Vitest — inert in the browser, see the file and
- * CLAUDE.md "JS tests (Vitest)". `require()` runs the module body, which
- * registers a `DOMContentLoaded` listener that does not fire here (jsdom is
- * past `load`), so most tests drive the exported helpers directly.
+ * An ES module (#468): importing it runs its body, which registers a `DOMContentLoaded`
+ * listener that does not fire on its own here (jsdom is past `load`), so most tests drive the
+ * exported helpers directly. The module is imported once per file, so its mutable state is
+ * reset with the exported `_resetForTests()` (and `easterEggs.teardownAll()`) in
+ * `beforeEach`/`afterEach` — `vi.resetModules()` would not detach listeners from
+ * `document`/`window` (see CLAUDE.md "JS tests (Vitest)").
  *
- * The real `features/easter_eggs.js` is wired in first so `window.easterEggs`
- * (the session-deduped award + reduced-motion gate this egg delegates to)
- * behaves for real. `vi.resetModules()` does not re-run a required CJS module,
- * so both modules expose `_resetForTests()` for the per-test cleanup — the
- * egg's also clears the `sessionStorage` chain key.
+ * The real `features/easter_eggs.js` is used, so `easterEggs` (the deduped award +
+ * reduced-motion gate this egg delegates to) behaves for real. `toast.js` is mocked.
+ * The real `voting.js` is imported too, for the capture-vs-bubble ordering test.
+ * This egg is pure delight unless noted: assertions on `fetch` / `award` stay.
  */
-const path = require('node:path');
+import * as publika from '../../webpack/src/js/features/publika_rozgrzana.js';
+import { easterEggs, _resetForTests as resetEasterEggs } from '../../webpack/src/js/features/easter_eggs.js';
+import '../../webpack/src/js/features/voting.js';
+import { showToast } from '../../webpack/src/js/toast.js';
 
-const PUBLIKA_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/publika_rozgrzana.js');
-const EASTER_EGGS_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/easter_eggs.js');
-const VOTING_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/voting.js');
+vi.mock('../../webpack/src/js/toast.js', () => ({ showToast: vi.fn() }));
 
 const SLUG = 'frontend-ee-publika-rozgrzana';
 const STORAGE_KEY = 'ee_publika_combo';
@@ -26,8 +27,6 @@ const METER_ID = 'ee-publika-meter';
 const STYLE_ID = 'ee-publika-style';
 const THRESHOLD = 10;
 const WINDOW_MS = 60000;
-
-let publika;
 
 function frontendEventPosts() {
     return globalThis.fetch.mock.calls.filter(([url]) => url === '/api/achievements/frontend-event');
@@ -70,7 +69,6 @@ function readStoredChain() {
 }
 
 beforeEach(() => {
-    vi.resetModules();
     sessionStorage.clear();
     localStorage.clear();
     document.body.innerHTML = '';
@@ -79,21 +77,19 @@ beforeEach(() => {
     delete window.__publikaRozgrzanaReady;
     setPath('/suchary');
 
-    globalThis.getCsrfToken = vi.fn(() => 'test-token');
+    // csrf.js reads the token from the DOM; there is no global to stub.
+    document.head.innerHTML = '<meta name="csrf-token" content="test-token" />';
     globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => ({}) }));
-    window.showToast = vi.fn();
+    showToast.mockClear();
     delete window.EE_AUDIO;
     delete window.matchMedia; // jsdom: absence => reducedJuice() === true
 
-    require(EASTER_EGGS_PATH);
-    window.easterEggs._resetForTests();
-
-    publika = require(PUBLIKA_PATH);
+    resetEasterEggs();
     publika._resetForTests();
 });
 
 afterEach(() => {
-    window.easterEggs.teardownAll();
+    easterEggs.teardownAll();
     publika._resetForTests();
     vi.restoreAllMocks();
     vi.useRealTimers();
@@ -142,8 +138,8 @@ describe('chain building — handleVoteClick', () => {
     it('fires at the 10th: toast + award POST, then clears the chain', () => {
         for (let i = 0; i < THRESHOLD; i += 1) fireVote(makeVoteButton('funny'));
 
-        expect(window.showToast).toHaveBeenCalledTimes(1);
-        expect(window.showToast.mock.calls[0][1]).toBe('Publika Rozgrzana');
+        expect(showToast).toHaveBeenCalledTimes(1);
+        expect(showToast.mock.calls[0][1]).toBe('Publika Rozgrzana');
         expect(frontendEventPosts()).toHaveLength(1);
         expect(JSON.parse(frontendEventPosts()[0][1].body)).toEqual({
             event_slug: SLUG,
@@ -155,7 +151,7 @@ describe('chain building — handleVoteClick', () => {
     it('does nothing at 9 (below the threshold)', () => {
         for (let i = 0; i < THRESHOLD - 1; i += 1) fireVote(makeVoteButton('funny'));
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
         expect(meterText()).toBe('9/10');
     });
 
@@ -163,7 +159,7 @@ describe('chain building — handleVoteClick', () => {
         for (let i = 0; i < THRESHOLD; i += 1) fireVote(makeVoteButton('funny'));
         for (let i = 0; i < THRESHOLD; i += 1) fireVote(makeVoteButton('funny'));
 
-        expect(window.showToast).toHaveBeenCalledTimes(2);
+        expect(showToast).toHaveBeenCalledTimes(2);
         expect(frontendEventPosts()).toHaveLength(1); // easterEggs.award sessionStorage dedupe
     });
 });
@@ -223,7 +219,7 @@ describe('60 s window', () => {
         }
         fireVote(makeVoteButton('funny'));
 
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
         // The last click landed after the window elapsed → a brand-new chain.
         expect(readStoredChain().count).toBe(1);
     });
@@ -237,7 +233,7 @@ describe('60 s window', () => {
             vi.advanceTimersByTime(4000); // 9 * 4s = 36s, inside 60s
         }
 
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
         expect(frontendEventPosts()).toHaveLength(1);
     });
 
@@ -303,7 +299,7 @@ describe('prefers-reduced-motion', () => {
         for (let i = 0; i < THRESHOLD; i += 1) fireVote(makeVoteButton('funny'));
 
         expect(document.getElementById(STYLE_ID)).toBeNull();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
         expect(frontendEventPosts()).toHaveLength(1);
     });
 
@@ -334,7 +330,6 @@ describe('capture-phase ordering vs voting.js', () => {
         // `document`. If publika ever regressed to bubble, being last it would see
         // voting.js's optimistic `.active` toggle already applied and treat the
         // click as an un-vote → the meter would never appear.
-        require(VOTING_PATH);
         document.dispatchEvent(new Event('DOMContentLoaded'));
 
         document.body.dataset.userIsAuthenticated = 'true';

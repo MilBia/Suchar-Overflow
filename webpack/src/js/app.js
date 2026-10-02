@@ -1,13 +1,12 @@
-/* Project specific Javascript goes here. */
+/* Site-wide behaviour: theme toggle, navbar, dropdowns, modals, tooltips, toasts' host, bell and the
+ * achievements SSE client. Was `project.js` as a classic script; since #468 it is a module imported
+ * by the `project` entry (webpack/src/js/project.js), right after `timezone.js`. */
+import { getCsrfToken } from './csrf.js';
+import { showToast } from './toast.js';
 
-function getCsrfToken() {
-    return (
-        document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
-        document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
-        ''
-    );
-}
+// The names the E2E suite and code outside the bundles read (see csrf.js / toast.js).
 window.getCsrfToken = getCsrfToken;
+window.showToast = showToast;
 
 const themeToggleBtn = document.getElementById('theme-toggle');
 const htmlElement = document.documentElement;
@@ -515,70 +514,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape' && activeTooltip) hideTooltip();
     });
 
-    // Custom Toast Helper
-    function showToast(messageHtml, titleText, type = 'success', isPersistent = false) {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
-
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        // Errors interrupt the screen reader (assertive, via role="alert");
-        // everything else — achievements, easter-egg delight — is announced
-        // politely so it doesn't talk over the user (issue #345).
-        toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
-        if (isPersistent) {
-            toast.setAttribute('data-persistent', 'true');
-        }
-
-        const header = document.createElement('div');
-        header.className = 'toast-header';
-
-        const strong = document.createElement('strong');
-        strong.className = 'me-auto';
-        // Translated fallbacks travel on #toast-container's data- attributes
-        // (rendered by base.html) — a classic script can't call {% trans %}.
-        strong.textContent = titleText || container.dataset.defaultTitle || 'Powiadomienie';
-
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'btn-close';
-        closeBtn.setAttribute('aria-label', container.dataset.closeText || 'Zamknij');
-
-        header.appendChild(strong);
-        header.appendChild(closeBtn);
-
-        const body = document.createElement('div');
-        body.className = 'toast-body';
-        if (messageHtml instanceof Node) {
-            body.appendChild(messageHtml);
-        } else {
-            body.textContent = messageHtml;
-        }
-
-        toast.appendChild(header);
-        toast.appendChild(body);
-
-        container.appendChild(toast);
-
-        // Setup dismiss behavior
-        const dismiss = () => {
-            toast.classList.add('hiding');
-            const remove = () => toast.remove();
-            toast.addEventListener('transitionend', remove, { once: true });
-            // Same reason as hideTooltip's fallback: no fade transition (reduced
-            // motion, background tab) means no transitionend, so clean up anyway.
-            setTimeout(remove, 400);
-        };
-
-        if (!isPersistent) {
-            setTimeout(dismiss, 5000);
-        }
-
-        closeBtn.addEventListener('click', dismiss);
-    }
-
-    window.showToast = showToast;
-
     // Bell notification dropdown
     const bellWrapper = document.getElementById('bell-wrapper');
     const bellBtn = document.getElementById('bell-btn');
@@ -659,9 +594,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) return;
 
                 const data = await response.json();
-                if (!data || !data.toast || !window.showToast) return;
+                if (!data || !data.toast) return;
 
-                window.showToast(data.toast.body, data.toast.title, 'success');
+                showToast(data.toast.body, data.toast.title, 'success');
             } catch (err) {
                 console.error('Error fetching first-funny toast:', err);
             } finally {

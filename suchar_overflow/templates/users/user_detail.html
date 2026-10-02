@@ -1,6 +1,6 @@
 {% extends "users/base_dashboard.html" %}
 
-{% load static i18n compress %}
+{% load static i18n webpack_loader %}
 
 {% block title %}
     {% trans "User" %}: {{ object.username }}
@@ -289,15 +289,9 @@
 
 {% block javascript %}
     {{ block.super }}
-    {# block.super stays outside the block below — see #205 note in CLAUDE.md. #}
-    {% compress js %}
-        <script defer src="{% static 'js/chart.umd.min.js' %}"></script>
-    {% endcompress %}
-    {# json_script output must stay OUT of {% compress %} — see #205. #}
+    {# Data islands stay in the template, outside the bundles; user_detail.js reads them by id. #}
     {{ activity_labels|json_script:"activity-labels-data" }}
     {{ activity_values|json_script:"activity-values-data" }}
     {{ reception_data|json_script:"reception-data-data" }}
-    {% compress js %}
-        <script defer src="{% static 'js/pages/user_detail.js' %}"></script>
-    {% endcompress %}
+    {% render_bundle 'user_detail' 'js' attrs='defer' %}
 {% endblock javascript %}

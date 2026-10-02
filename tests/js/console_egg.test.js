@@ -1,28 +1,20 @@
 /**
  * Unit tests for the developer console easter egg in
- * suchar_overflow/static/js/features/console_egg.js (issue #287).
+ * webpack/src/js/features/console_egg.js (issue #287).
  *
- * Classic browser script; its guarded CommonJS tail (inside the file's IIFE)
- * exposes the helpers to Vitest — inert in the browser, see the file and
- * CLAUDE.md "JS tests (Vitest)". `require()` runs the module body, which
- * registers a `DOMContentLoaded` listener that does not fire here (jsdom is
- * past `load`), so most tests drive the exported helpers directly.
- *
- * `vi.resetModules()` does not re-run a required CJS module, so the module
- * exposes `_resetForTests()` for the per-test cleanup (it also clears the
- * sessionStorage dedupe key).
+ * An ES module (#468): importing it registers a `DOMContentLoaded` listener that does not fire
+ * here (jsdom is past `load`), so most tests drive the exported helpers directly. The module
+ * lives as one instance per file, so it exposes `_resetForTests()` for the per-test cleanup (it
+ * also clears the sessionStorage dedupe key).
  *
  * This egg is pure delight: no achievement, no slug, no network, no DOM, no
  * sound. It only emits one styled `console.log` per browser session.
  */
-const path = require('node:path');
-
-const CONSOLE_EGG_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/console_egg.js');
+import * as consoleEgg from '../../webpack/src/js/features/console_egg.js';
 
 const SESSION_KEY = 'ee_console_shown';
 const REPO_URL = 'https://github.com/MilBia/Suchar-Overflow';
 
-let consoleEgg;
 let logSpy;
 
 /** The full text console.log was called with, arguments joined. */
@@ -31,7 +23,6 @@ function loggedText() {
 }
 
 beforeEach(() => {
-    vi.resetModules();
     sessionStorage.clear();
     localStorage.clear();
     document.body.innerHTML = '';
@@ -40,7 +31,6 @@ beforeEach(() => {
 
     logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    consoleEgg = require(CONSOLE_EGG_PATH);
     consoleEgg._resetForTests();
 });
 

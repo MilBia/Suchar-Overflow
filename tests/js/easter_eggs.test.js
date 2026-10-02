@@ -1,34 +1,27 @@
 /**
  * Unit tests for the easter-egg foundation helpers in
- * suchar_overflow/static/js/features/easter_eggs.js (issue #282).
+ * webpack/src/js/features/easter_eggs.js (issue #282).
  *
- * Classic browser script; its guarded CommonJS tail exposes the `window.easter
- * Eggs` surface to Vitest (inert in the browser — see the file and CLAUDE.md
- * "JS tests (Vitest)"). `require()` runs the module body, which registers a
- * `DOMContentLoaded` listener that never fires here (jsdom is past `load`), so
- * these tests drive the exported helpers directly.
+ * An ES module (#468): importing it runs its body, which registers a `DOMContentLoaded`
+ * listener that never fires on its own here (jsdom is past `load`), so these tests drive the
+ * exported helpers directly and dispatch the event by hand where init matters. The module is
+ * imported once per file, so its mutable state is reset with `_resetForTests()` in `beforeEach`
+ * (see CLAUDE.md "JS tests (Vitest)").
  */
-const path = require('node:path');
-
-const MODULE_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/easter_eggs.js');
-
-let ee;
+import { _resetForTests, easterEggs as ee } from '../../webpack/src/js/features/easter_eggs.js';
 
 beforeEach(() => {
-    vi.resetModules();
     sessionStorage.clear();
     localStorage.clear();
     document.body.innerHTML = '';
+    // csrf.js reads the token from the DOM; the helpers import it, there is no global to stub.
+    document.head.innerHTML = '<meta name="csrf-token" content="test-token" />';
 
-    globalThis.getCsrfToken = vi.fn(() => 'test-token');
     globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => ({}) }));
     delete window.EE_AUDIO;
     delete window.matchMedia;
 
-    ee = require(MODULE_PATH);
-    // vi.resetModules() doesn't re-run a required CJS module, so its module-level
-    // state (dedupe Set, audio cache, teardown registry) leaks between tests.
-    ee._resetForTests();
+    _resetForTests();
 });
 
 afterEach(() => {

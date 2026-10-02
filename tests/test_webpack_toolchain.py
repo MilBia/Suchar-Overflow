@@ -43,7 +43,15 @@ def _lines(path: str) -> list[str]:
 
 _RUNTIME = "js/runtime.aaaaaaaaaaaa.js"
 _PROJECT_CSS = "css/project.dddddddddddd.css"
-_PAGE_ENTRIES = ("achievements", "dashboard", "leaderboard", "suchar_form")
+_PAGE_ENTRIES = (
+    "achievements",
+    "dashboard",
+    "hidden_achievements",
+    "leaderboard",
+    "suchar_form",
+    "user_detail",
+    "voting",
+)
 
 
 def _page_css(entry: str) -> str:
@@ -188,3 +196,51 @@ def test_page_renders_its_entry_css_once_after_the_global_one(
     assert hrefs.count(page) == 1, hrefs
     assert hrefs.index(page) > hrefs.index(project)
     assert not re.search(r"<link[^>]*\bdefer\b", html)
+
+
+# Page → the script entries it renders after the global `project` one, and the data islands it keeps.
+_PAGES_WITH_SCRIPTS: list[tuple[str, dict[str, str], list[str], list[str]]] = [
+    ("stats:leaderboard", {}, ["leaderboard"], ["chart-datasets-data"]),
+    ("suchary:list", {}, ["hidden_achievements", "voting"], []),
+    ("suchary:add", {}, ["hidden_achievements", "suchar_form"], []),
+    ("achievements:list", {}, ["hidden_achievements"], []),
+    (
+        "users:detail",
+        {"username": "script_probe"},
+        ["user_detail"],
+        ["activity-labels-data", "activity-values-data", "reception-data-data"],
+    ),
+]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(("url_name", "kwargs", "entries", "json_ids"), _PAGES_WITH_SCRIPTS)
+def test_page_renders_its_scripts_deferred_once_after_project(  # noqa: PLR0913, PLR0917
+    real_loader: None,  # noqa: ARG001
+    client: Client,
+    url_name: str,
+    kwargs: dict[str, str],
+    entries: list[str],
+    json_ids: list[str],
+) -> None:
+    client.force_login(make_user("script_probe"))
+    html = client.get(reverse(url_name, kwargs=kwargs)).content.decode()
+    tags = re.findall(r"<script\b[^>]*\bsrc=\"[^\"]+\"[^>]*>", html)
+    srcs = [re.search(r'src="([^"]+)"', tag).group(1) for tag in tags]  # type: ignore[union-attr]
+
+    # Nothing but webpack bundles: no classic /static/js script and no compressor output is left.
+    assert srcs
+    assert all(src.startswith("/static/webpack_bundles/js/") for src in srcs), srcs
+    # Every script keeps `defer` (the block lives in <head>), and no chunk is repeated: the shared runtime
+    # is rendered once, with the first entry (`project`, which comes first).
+    assert all(" defer" in tag for tag in tags), tags
+    assert len(srcs) == len(set(srcs)), srcs
+    assert srcs.count(f"/static/webpack_bundles/{_RUNTIME}") == 1
+    assert srcs[0] == f"/static/webpack_bundles/{_RUNTIME}"
+    project_at = next(i for i, src in enumerate(srcs) if "/js/project." in src)
+    for entry in entries:
+        entry_at = next(i for i, src in enumerate(srcs) if f"/js/{entry}." in src)
+        assert entry_at > project_at, (entry, srcs)
+    # Data islands stay in the page, outside the bundles, for the page scripts to read by id.
+    for json_id in json_ids:
+        assert f'id="{json_id}"' in html, json_id

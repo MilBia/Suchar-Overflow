@@ -17,6 +17,7 @@ takes effect and is undone on teardown. The same
 `ManifestStaticFilesStorage` production uses (#463).
 """
 
+import json
 import re
 import struct
 from pathlib import Path
@@ -98,6 +99,29 @@ def test_pages_render_under_manifest_storage(client: Client) -> None:
         url = reverse(url_name, kwargs=resolved)
         response = client.get(url)
         assert response.status_code == 200, (url, response.status_code)
+
+
+_STATS_FILE = Path(django_settings.BASE_DIR) / "webpack-stats.json"
+
+
+@pytest.mark.skipif(not _STATS_FILE.is_file(), reason="needs a webpack build: `just build-js`")
+@pytest.mark.usefixtures("manifest_storage")
+def test_built_bundles_survive_collectstatic() -> None:
+    """The bundles the loader names exist in STATIC_ROOT after a manifest-storage `collectstatic` (#468).
+
+    `collectstatic` post-processing resolves every `url()` in the CSS (the `/static/fonts/…` paths) and
+    every `sourceMappingURL`, and fails hard on a missing target, so reaching this line already proves
+    those. What it adds: each URL `render_bundle` will emit (the stats' `publicPath`) is a real file.
+    """
+    stats = json.loads(_STATS_FILE.read_text(encoding="utf-8"))
+    assert stats["status"] == "done"
+    static_root = Path(django_settings.STATIC_ROOT)
+    assert stats["assets"]
+    for asset in stats["assets"].values():
+        relative = asset["publicPath"].removeprefix(django_settings.STATIC_URL)
+        assert (static_root / relative).is_file(), asset["publicPath"]
+    # The licence notices for the bundled libraries ship with them (#251).
+    assert (static_root / "webpack_bundles" / "licenses.txt").is_file()
 
 
 @pytest.mark.django_db

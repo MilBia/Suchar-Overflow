@@ -10,13 +10,24 @@ module.exports = {
     context: ROOT,
     target: 'web',
     entry: {
+        // The global entry: what every page loads (base.html), in the order the classic scripts used to
+        // initialise. `timezone` comes first, as it did in the old {% compress js %} block.
         project: path.resolve(__dirname, 'src/js/project.js'),
-        // One entry per page that has its own stylesheet (and, from #468, its own script).
-        // Rendered after the global `project` entry, so page rules still win on order (#250).
-        achievements: path.resolve(__dirname, 'src/js/pages/achievements.js'),
-        dashboard: path.resolve(__dirname, 'src/js/pages/dashboard.js'),
-        leaderboard: path.resolve(__dirname, 'src/js/pages/leaderboard.js'),
-        suchar_form: path.resolve(__dirname, 'src/js/pages/suchar_form.js'),
+        // Page and feature entries. `dependOn: 'project'` makes them share the global entry's module
+        // instances (with the single runtime): a page entry that imports `easter_eggs.js`, `toast.js` or
+        // `csrf.js` gets the instance `project` already evaluated instead of a second copy with its own
+        // state (dedupe Set, teardown registry...). Rendered after `project`, so the page's stylesheet
+        // still wins on order (#250). `tests/js/webpack_entries.test.js` guards the sharing.
+        achievements: { import: path.resolve(__dirname, 'src/js/pages/achievements.js'), dependOn: 'project' },
+        dashboard: { import: path.resolve(__dirname, 'src/js/pages/dashboard.js'), dependOn: 'project' },
+        hidden_achievements: {
+            import: path.resolve(__dirname, 'src/js/features/hidden_achievements.js'),
+            dependOn: 'project',
+        },
+        leaderboard: { import: path.resolve(__dirname, 'src/js/pages/leaderboard.js'), dependOn: 'project' },
+        suchar_form: { import: path.resolve(__dirname, 'src/js/pages/suchar_form.js'), dependOn: 'project' },
+        user_detail: { import: path.resolve(__dirname, 'src/js/pages/user_detail.js'), dependOn: 'project' },
+        voting: { import: path.resolve(__dirname, 'src/js/features/voting.js'), dependOn: 'project' },
     },
     output: {
         path: path.resolve(ROOT, 'suchar_overflow/static/webpack_bundles/'),

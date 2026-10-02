@@ -1,54 +1,39 @@
 /**
  * Unit tests for the dedupe / counter logic in
- * suchar_overflow/static/js/features/hidden_achievements.js.
+ * webpack/src/js/features/hidden_achievements.js.
  *
- * The file is a classic browser script; its guarded CommonJS tail exposes the
- * internal helpers to Vitest (inert in the browser — see the file and
- * CLAUDE.md "JS tests (Vitest)").
+ * An ES module (#468): the helpers are named exports, imported statically (one
+ * instance per file). Its `DOMContentLoaded` init never runs here (jsdom is past
+ * `load`), so the exported `setupX()` helpers are driven directly.
  *
- * Since #282 the `sessionStorage` dedupe marker and the frontend-event POST
- * live in features/easter_eggs.js and reach this file as `window.easterEggs`
- * (base.html loads it globally, first). `beforeEach` wires the *real* module in
- * so these tests still exercise the actual dedupe behaviour end to end;
- * easter_eggs' own edge cases (mute default, reduced-motion gate, teardown) are
- * covered in tests/js/easter_eggs.test.js.
+ * The `sessionStorage` dedupe marker and the frontend-event POST live in
+ * features/easter_eggs.js and are imported by the module, so these tests exercise
+ * the *real* dedupe behaviour end to end; easter_eggs' own edge cases (mute
+ * default, reduced-motion gate, teardown) are covered in tests/js/easter_eggs.test.js.
  */
-const path = require('node:path');
-
-const MODULE_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/hidden_achievements.js');
-const EASTER_EGGS_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/easter_eggs.js');
-
-let hiddenAchievements;
+import { _resetForTests as resetEasterEggs } from '../../webpack/src/js/features/easter_eggs.js';
+import * as hiddenAchievements from '../../webpack/src/js/features/hidden_achievements.js';
 
 // Shared registry for `setupX()` calls. jsdom's `document` survives between
-// tests and `vi.resetModules()` does not detach listeners a `setupX()` added to
-// it, so a test that never reaches its award (and so never triggers the
+// tests, so a test that never reaches its award (and so never triggers the
 // in-`award()` teardown) would otherwise leak `mouseover`/`click` handlers into
 // the next test. Draining every registered teardown in `afterEach` keeps
 // `document` clean regardless of whether the test awarded.
 let teardownRegistry;
 
 beforeEach(() => {
-    vi.resetModules();
     sessionStorage.clear();
     localStorage.clear();
     document.body.innerHTML = '';
+    // csrf.js reads the token from the DOM; there is no global to stub.
+    document.head.innerHTML = '<meta name="csrf-token" content="test-token" />';
     window.history.pushState({}, '', '/');
     teardownRegistry = {};
 
-    // Free globals the scripts reach for without declaring them.
-    globalThis.getCsrfToken = vi.fn(() => 'test-token');
     globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => [] }));
 
-    // The shared helpers hidden_achievements.js now delegates to via
-    // `window.easterEggs` (#282). Requiring the real module sets that global as a
-    // side effect, so `award()`'s dedupe + POST are exercised for real.
-    // `_resetForTests()` clears its module-level state, which vi.resetModules()
-    // does not (a required CJS module is not re-run).
-    require(EASTER_EGGS_PATH);
-    window.easterEggs._resetForTests();
-
-    hiddenAchievements = require(MODULE_PATH);
+    // easter_eggs.js keeps module-level state (the dedupe Set).
+    resetEasterEggs();
 });
 
 afterEach(() => {
@@ -245,18 +230,16 @@ describe('setupNiecierpliwy() — short-submit counter', () => {
 });
 
 describe('setupOdkrywca() — cross-session visit counter (localStorage)', () => {
-    it('accumulates visits across module reloads and awards on the 5th', () => {
+    it('accumulates visits across page loads and awards on the 5th', () => {
         window.history.pushState({}, '', '/achievements/');
 
         for (let visit = 1; visit <= 4; visit += 1) {
-            vi.resetModules();
-            require(MODULE_PATH).setupOdkrywca(teardownRegistry);
+            hiddenAchievements.setupOdkrywca(teardownRegistry);
             expect(localStorage.getItem('odkrywca_visits')).toBe(String(visit));
         }
         expect(globalThis.fetch).not.toHaveBeenCalled();
 
-        vi.resetModules();
-        require(MODULE_PATH).setupOdkrywca(teardownRegistry);
+        hiddenAchievements.setupOdkrywca(teardownRegistry);
 
         expect(localStorage.getItem('odkrywca_visits')).toBeNull();
         const posts = globalThis.fetch.mock.calls.filter(([url]) => url === '/api/achievements/frontend-event');
@@ -275,13 +258,11 @@ describe('setupZbieraczSucharow() — page-view counter with vote reset', () => 
     it('awards after 5 counted /suchary views', () => {
         window.history.pushState({}, '', '/suchary/');
         for (let i = 0; i < 4; i += 1) {
-            vi.resetModules();
-            require(MODULE_PATH).setupZbieraczSucharow(teardownRegistry);
+            hiddenAchievements.setupZbieraczSucharow(teardownRegistry);
         }
         expect(sessionStorage.getItem('zbieracz_pages')).toBe('4');
 
-        vi.resetModules();
-        require(MODULE_PATH).setupZbieraczSucharow(teardownRegistry);
+        hiddenAchievements.setupZbieraczSucharow(teardownRegistry);
 
         expect(sessionStorage.getItem('zbieracz_pages')).toBeNull();
         const posts = globalThis.fetch.mock.calls.filter(([url]) => url === '/api/achievements/frontend-event');

@@ -1,4 +1,6 @@
-/* AJAX Voting Logic */
+/* AJAX Voting Logic — moduł ES wpisu webpacka (#468). */
+import { getCsrfToken } from '../csrf.js';
+import { showToast } from '../toast.js';
 
 // Toggle the pure-CSS `.loading` spinner on a voting-controls container and,
 // alongside it, a visually-hidden live-region string so screen readers get a
@@ -7,7 +9,7 @@
 // it in the DOM before the content changes (a region that arrives pre-filled is
 // often not announced). Text comes from the container's `data-busy-text` so it
 // stays translatable; the literal is only a fallback.
-function setVotingBusy(container, busy) {
+export function setVotingBusy(container, busy) {
     container.classList.toggle('loading', busy);
     container.setAttribute('aria-busy', String(busy));
     let status = container.querySelector('.vote-status');
@@ -99,8 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // #299: the author dry-voting their own suchar earns a wink. The
             // server sends the translated toast text only in that case (null
             // otherwise), so there is nothing to gate on here.
-            if (data.self_dry_vote_toast && window.showToast) {
-                window.showToast(data.self_dry_vote_toast, '😉', 'info');
+            if (data.self_dry_vote_toast) {
+                showToast(data.self_dry_vote_toast, '😉', 'info');
             }
 
             // #295: this vote may have latched the "overdried" flag (#294) —
@@ -123,19 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
             funnyBtn.querySelector('.vote-count').textContent = snapshot.funnyCount;
             dryBtn.querySelector('.vote-count').textContent = snapshot.dryCount;
 
-            if (window.showToast) {
-                const errorText = container.dataset.errorText || 'Głos ugrzązł w suszy. Spróbuj ponownie.';
-                window.showToast(errorText, 'Błąd', 'error');
-            }
+            const errorText = container.dataset.errorText || 'Głos ugrzązł w suszy. Spróbuj ponownie.';
+            showToast(errorText, 'Błąd', 'error');
         } finally {
             setVotingBusy(container, false);
         }
     });
 });
-
-// Test-only handle for the busy-state helper — inert in the browser (`module`
-// is undefined there) and preserved by rjsmin. See CLAUDE.md "JS tests
-// (Vitest)"; not dead code.
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { setVotingBusy };
-}

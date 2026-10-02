@@ -94,7 +94,9 @@ test-e2e *args:
 # suchar_overflow/static/webpack_bundles/ and write webpack-stats.json (#466).
 # Runs on the host, like `test-js` (needs Node + a one-off `npm ci`). `just up` already
 # runs the `node` service, whose dev build is just as good for E2E; this is for a
-# checkout without it, and for CI.
+# checkout without it, and for CI. Don't run it while `node` is up: the dev server and this
+# build write the same directory, and the server will not re-emit files it believes it already
+# wrote — `docker compose restart node` afterwards, or stop it first.
 build-js:
     @npm run build
 

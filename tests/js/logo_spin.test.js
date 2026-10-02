@@ -1,17 +1,12 @@
 /**
  * Unit tests for the "spin the logo" easter egg in
- * suchar_overflow/static/js/features/logo_spin.js (issue #285).
+ * webpack/src/js/features/logo_spin.js (issue #285).
  *
- * Classic browser script; its guarded CommonJS tail (inside the file's IIFE)
- * exposes the helpers to Vitest — inert in the browser, see the file and
- * CLAUDE.md "JS tests (Vitest)". `require()` runs the module body, which
- * registers a `DOMContentLoaded` listener that does not fire here (jsdom is
- * past `load`), so the tests drive the exported helpers directly.
- *
- * The real `features/easter_eggs.js` is wired in first so `window.easterEggs`
- * (the reduced-motion gate this egg delegates to) behaves for real.
- * `vi.resetModules()` re-runs neither required CJS module, so both expose
- * `_resetForTests()` for the per-test cleanup.
+ * An ES module (#468): importing it registers a `DOMContentLoaded` listener that does not fire
+ * here (jsdom is past `load`), so the tests drive the exported helpers directly. The real
+ * `easter_eggs.js` is imported (the reduced-motion gate this egg delegates to), `toast.js` is
+ * mocked. Each module lives as one instance per file, so both expose `_resetForTests()` for the
+ * per-test cleanup.
  *
  * Trigger model: the logo is an `<a href="/">`, so every click navigates and
  * the count cannot live in memory. `handleLogoClick` records a "chain" in
@@ -22,10 +17,11 @@
  * Pure delight: NO achievement, NO frontend-ee- slug, NO network. Several
  * tests assert `globalThis.fetch` and `easterEggs.award` are never called.
  */
-const path = require('node:path');
+import { showToast } from '../../webpack/src/js/toast.js';
+import { easterEggs, _resetForTests as resetEasterEggs } from '../../webpack/src/js/features/easter_eggs.js';
+import * as logoSpin from '../../webpack/src/js/features/logo_spin.js';
 
-const LOGO_SPIN_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/logo_spin.js');
-const EASTER_EGGS_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/easter_eggs.js');
+vi.mock('../../webpack/src/js/toast.js', () => ({ showToast: vi.fn() }));
 
 const STYLE_ID = 'ee-logo-spin-style';
 const SPIN_CLASS = 'ee-logo-spin';
@@ -38,8 +34,6 @@ const POOL = [
     'Ten serwis zasilany jest wyłącznie sucharami z odzysku.',
     'Wykryto suchar klasy premium. Nawilżanie niedostępne.',
 ];
-
-let logoSpin;
 
 /** Fire the logo click handler as a plain primary-button click. */
 function click(extra) {
@@ -71,7 +65,6 @@ function logoEl() {
 }
 
 beforeEach(() => {
-    vi.resetModules();
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-01T00:00:00Z'));
     sessionStorage.clear();
@@ -83,27 +76,18 @@ beforeEach(() => {
     delete window.__logoSpinReady;
     styleEl()?.remove();
 
-    globalThis.getCsrfToken = vi.fn(() => 'test-token');
+    document.head.innerHTML = '<meta name="csrf-token" content="test-token" />';
     globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => ({}) }));
-    window.showToast = vi.fn();
+    showToast.mockClear();
     delete window.EE_AUDIO;
     delete window.matchMedia; // jsdom: absence => reducedJuice() === true
 
-    // Re-assign from the cached module export (not just `require` for its side
-    // effect): a few tests `delete window.easterEggs` to exercise the matchMedia
-    // fallback, and `vi.resetModules()` does not re-run the module body that would
-    // otherwise re-set `window.easterEggs`.
-    window.easterEggs = require(EASTER_EGGS_PATH);
-    window.easterEggs._resetForTests();
-
-    logoSpin = require(LOGO_SPIN_PATH);
+    resetEasterEggs();
     logoSpin._resetForTests();
 });
 
 afterEach(() => {
-    // Optional-chained: a few tests `delete window.easterEggs` to exercise the
-    // matchMedia fallback in prefersReducedMotion().
-    window.easterEggs?.teardownAll?.();
+    easterEggs.teardownAll();
     logoSpin._resetForTests();
     vi.restoreAllMocks();
     vi.useRealTimers();
@@ -136,7 +120,7 @@ describe('click chain — handleLogoClick', () => {
 
     it("never fires the effect itself (that is checkAndFire's job on next load)", () => {
         rapidClicks(THRESHOLD + 2);
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
         expect(styleEl()).toBeNull();
         expect(logoEl().classList.contains(SPIN_CLASS)).toBe(false);
     });
@@ -156,7 +140,7 @@ describe('click chain — handleLogoClick', () => {
     });
 
     it('never touches the network or the achievement system', () => {
-        const award = vi.spyOn(window.easterEggs, 'award');
+        const award = vi.spyOn(easterEggs, 'award');
         rapidClicks(THRESHOLD);
         expect(globalThis.fetch).not.toHaveBeenCalled();
         expect(award).not.toHaveBeenCalled();
@@ -167,13 +151,13 @@ describe('checkAndFire — on page load', () => {
     it('does nothing with fewer than 7 clicks in the chain', () => {
         rapidClicks(THRESHOLD - 1);
         expect(logoSpin.checkAndFire()).toBe(false);
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('fires the effect once the chain reaches 7 fresh clicks', () => {
         rapidClicks(THRESHOLD);
         expect(logoSpin.checkAndFire()).toBe(true);
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('clears the chain after firing so a replay needs another 7 clicks', () => {
@@ -189,26 +173,26 @@ describe('checkAndFire — on page load', () => {
         // No _resetForTests() here: only clear the mock and drop the leftover
         // <style>, so the second burst proves checkAndFire() cleared the chain on
         // its own rather than a test helper doing it.
-        window.showToast.mockClear();
+        showToast.mockClear();
         document.getElementById(STYLE_ID)?.remove();
 
         rapidClicks(THRESHOLD);
         expect(logoSpin.checkAndFire()).toBe(true);
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('still fires a completed chain when a slow reload pushed it just past 3 s', () => {
         rapidClicks(THRESHOLD);
         vi.advanceTimersByTime(CHAIN_MS + 500); // within CHAIN_MS + RELOAD_GRACE_MS
         expect(logoSpin.checkAndFire()).toBe(true);
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('does not fire when the 7-click chain has gone stale before load', () => {
         rapidClicks(THRESHOLD);
         vi.advanceTimersByTime(CHAIN_MS + RELOAD_GRACE_MS + 500);
         expect(logoSpin.checkAndFire()).toBe(false);
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
         expect(sessionStorage.getItem('ee_logo_clicks')).toBeNull();
     });
 
@@ -237,7 +221,7 @@ describe('checkAndFire — on page load', () => {
     });
 
     it('never touches the network or the achievement system when firing', () => {
-        const award = vi.spyOn(window.easterEggs, 'award');
+        const award = vi.spyOn(easterEggs, 'award');
         rapidClicks(THRESHOLD);
         logoSpin.checkAndFire();
         expect(globalThis.fetch).not.toHaveBeenCalled();
@@ -248,8 +232,8 @@ describe('checkAndFire — on page load', () => {
 describe('effect — triggerLogoSpin', () => {
     it('shows a toast whose text is one of the pool entries', () => {
         logoSpin.triggerLogoSpin();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
-        const [text, icon, type] = window.showToast.mock.calls[0];
+        expect(showToast).toHaveBeenCalledTimes(1);
+        const [text, icon, type] = showToast.mock.calls[0];
         expect(POOL).toContain(text);
         expect(icon).toBe('🌀');
         expect(type).toBe('info');
@@ -280,16 +264,16 @@ describe('effect — triggerLogoSpin', () => {
 
     it('shows the toast but does not spin under prefers-reduced-motion (no matchMedia)', () => {
         logoSpin.triggerLogoSpin();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
         expect(logoEl().classList.contains(SPIN_CLASS)).toBe(false);
         expect(styleEl()).toBeNull();
     });
 
     it('does not spin when easterEggs.reducedJuice() is true', () => {
         window.matchMedia = vi.fn(() => ({ matches: false }));
-        vi.spyOn(window.easterEggs, 'reducedJuice').mockReturnValue(true);
+        vi.spyOn(easterEggs, 'reducedJuice').mockReturnValue(true);
         logoSpin.triggerLogoSpin();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
         expect(logoEl().classList.contains(SPIN_CLASS)).toBe(false);
     });
 
@@ -304,36 +288,21 @@ describe('effect — triggerLogoSpin', () => {
         document.getElementById(POOL_ID).remove();
         window.matchMedia = vi.fn(() => ({ matches: false }));
         logoSpin.triggerLogoSpin();
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
         expect(logoEl().classList.contains(SPIN_CLASS)).toBe(true);
     });
 
     it('skips the toast when the pool is an empty array', () => {
         document.getElementById(POOL_ID).textContent = '[]';
         logoSpin.triggerLogoSpin();
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('does not throw when the logo is missing from the DOM', () => {
         logoEl().remove();
         window.matchMedia = vi.fn(() => ({ matches: false }));
         expect(() => logoSpin.triggerLogoSpin()).not.toThrow();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
-    });
-
-    it('falls back to matchMedia when window.easterEggs is absent (reduced)', () => {
-        delete window.easterEggs;
-        window.matchMedia = vi.fn(() => ({ matches: true }));
-        logoSpin.triggerLogoSpin();
-        expect(window.showToast).toHaveBeenCalledTimes(1);
-        expect(logoEl().classList.contains(SPIN_CLASS)).toBe(false);
-    });
-
-    it('falls back to matchMedia when window.easterEggs is absent (full motion)', () => {
-        delete window.easterEggs;
-        window.matchMedia = vi.fn(() => ({ matches: false }));
-        logoSpin.triggerLogoSpin();
-        expect(logoEl().classList.contains(SPIN_CLASS)).toBe(true);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 });
 
@@ -395,7 +364,7 @@ describe('DOMContentLoaded init', () => {
         // next load's checkAndFire fires the effect.
         domClicks(THRESHOLD);
         expect(logoSpin.checkAndFire()).toBe(true);
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('does not wire the click listener for an anonymous body', () => {
@@ -406,7 +375,7 @@ describe('DOMContentLoaded init', () => {
 
         domClicks(THRESHOLD);
         expect(logoSpin.checkAndFire()).toBe(false);
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it("fires from init's own checkAndFire when a completed chain is already stored", () => {
@@ -415,7 +384,7 @@ describe('DOMContentLoaded init', () => {
         document.body.dataset.userIsAuthenticated = 'true';
         document.dispatchEvent(new Event('DOMContentLoaded'));
 
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
         expect(sessionStorage.getItem('ee_logo_clicks')).toBeNull();
     });
 

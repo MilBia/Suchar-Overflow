@@ -1,31 +1,25 @@
 /**
  * Unit tests for the "ba dum tss" / dust easter egg in
- * suchar_overflow/static/js/features/badumtss.js (issue #284).
+ * webpack/src/js/features/badumtss.js (issue #284).
  *
- * Classic browser script; its guarded CommonJS tail (inside the file's IIFE)
- * exposes the helpers to Vitest — inert in the browser, see the file and
- * CLAUDE.md "JS tests (Vitest)". `require()` runs the module body, which
- * registers a `DOMContentLoaded` listener that does not fire here (jsdom is
- * past `load`), so most tests drive the exported helpers directly.
- *
- * The real `features/easter_eggs.js` is wired in first so `window.easterEggs`
- * (the reduced-motion gate + muted sound helper this egg delegates to) behaves
- * for real. `vi.resetModules()` re-runs neither required CJS module, so both
- * expose `_resetForTests()` for the per-test cleanup.
+ * An ES module (#468): importing it registers a `DOMContentLoaded` listener that does not fire
+ * here (jsdom is past `load`), so most tests drive the exported helpers directly. The real
+ * `easter_eggs.js` is imported (the reduced-motion gate + muted sound helper this egg delegates
+ * to), `toast.js` is mocked. Each module lives as one instance per file, so both expose
+ * `_resetForTests()` for the per-test cleanup.
  *
  * This egg is pure delight: no achievement, no slug, no network. Several tests
  * assert `globalThis.fetch` is never called.
  */
-const path = require('node:path');
+import { showToast } from '../../webpack/src/js/toast.js';
+import { easterEggs, _resetForTests as resetEasterEggs } from '../../webpack/src/js/features/easter_eggs.js';
+import * as badumtss from '../../webpack/src/js/features/badumtss.js';
 
-const BADUMTSS_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/badumtss.js');
-const EASTER_EGGS_PATH = path.resolve(__dirname, '../../suchar_overflow/static/js/features/easter_eggs.js');
+vi.mock('../../webpack/src/js/toast.js', () => ({ showToast: vi.fn() }));
 
 const STYLE_ID = 'ee-badumtss-style';
 const IDLE_MS = 2000;
 const DUST_PARTICLES = 24;
-
-let badumtss;
 
 /** Feed a string one `keydown` at a time through the exported handler. */
 function type(text, extra) {
@@ -37,7 +31,6 @@ function overlays() {
 }
 
 beforeEach(() => {
-    vi.resetModules();
     sessionStorage.clear();
     localStorage.clear();
     document.body.innerHTML = '';
@@ -46,21 +39,18 @@ beforeEach(() => {
     delete window.__baDumTssReady;
     document.head.querySelector(`#${STYLE_ID}`)?.remove();
 
-    globalThis.getCsrfToken = vi.fn(() => 'test-token');
+    document.head.innerHTML = '<meta name="csrf-token" content="test-token" />';
     globalThis.fetch = vi.fn(() => Promise.resolve({ ok: true, json: async () => ({}) }));
-    window.showToast = vi.fn();
+    showToast.mockClear();
     delete window.EE_AUDIO;
     delete window.matchMedia; // jsdom: absence => reducedJuice() === true
 
-    require(EASTER_EGGS_PATH);
-    window.easterEggs._resetForTests();
-
-    badumtss = require(BADUMTSS_PATH);
+    resetEasterEggs();
     badumtss._resetForTests();
 });
 
 afterEach(() => {
-    window.easterEggs.teardownAll();
+    easterEggs.teardownAll();
     badumtss._resetForTests();
     vi.restoreAllMocks();
     vi.useRealTimers();
@@ -69,48 +59,48 @@ afterEach(() => {
 describe('phrase matcher — handleKeydown', () => {
     it("fires on 'suchar'", () => {
         type('suchar');
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it("fires on 'badumtss'", () => {
         type('badumtss');
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it("fires on 'ba dum tss' (spaces are part of the phrase)", () => {
         type('ba dum tss');
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('shows the 🥁 toast with the canned text', () => {
         type('suchar');
-        expect(window.showToast).toHaveBeenCalledWith('ba dum tss', '🥁', 'success');
+        expect(showToast).toHaveBeenCalledWith('ba dum tss', '🥁', 'success');
     });
 
     it('does nothing on a partial phrase', () => {
         type('sucha');
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('matches a phrase typed after junk keys', () => {
         type('qwe123');
         type('suchar');
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('matches when the phrase is a suffix of a longer word', () => {
         type('niesuchar');
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('is case-insensitive (buffer is lower-cased)', () => {
         type('SUCHAR');
         type('Ba Dum Tss');
-        expect(window.showToast).toHaveBeenCalledTimes(2);
+        expect(showToast).toHaveBeenCalledTimes(2);
     });
 
     it('never touches the network or the achievement system (pure delight)', () => {
-        const award = vi.spyOn(window.easterEggs, 'award');
+        const award = vi.spyOn(easterEggs, 'award');
         type('suchar');
         type('badumtss');
         expect(globalThis.fetch).not.toHaveBeenCalled();
@@ -122,20 +112,20 @@ describe('phrase matcher — handleKeydown', () => {
         type('suchar', { target: { tagName: 'TEXTAREA' } });
         type('suchar', { target: { tagName: 'SELECT' } });
         type('suchar', { target: { isContentEditable: true } });
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('ignores chords with a Ctrl / Alt / Meta modifier', () => {
         type('suchar', { ctrlKey: true });
         type('suchar', { altKey: true });
         type('suchar', { metaKey: true });
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
 
         // A stray Ctrl+x mid-word is dropped, not buffered — the word still lands.
         type('suc');
         type('x', { ctrlKey: true });
         type('har');
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('only buffers single-character keys, not named keys', () => {
@@ -143,14 +133,14 @@ describe('phrase matcher — handleKeydown', () => {
         badumtss.handleKeydown({ key: 'Shift', target: null });
         badumtss.handleKeydown({ key: 'ArrowLeft', target: null });
         type('r');
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('replays the effect on every entry (no dedupe)', () => {
         type('suchar');
         type('suchar');
         type('badumtss');
-        expect(window.showToast).toHaveBeenCalledTimes(3);
+        expect(showToast).toHaveBeenCalledTimes(3);
     });
 });
 
@@ -160,7 +150,7 @@ describe('idle buffer clear', () => {
         type('sucha');
         vi.advanceTimersByTime(IDLE_MS + 1);
         type('r');
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('keeps the buffer alive while typing continues within the idle window', () => {
@@ -168,7 +158,7 @@ describe('idle buffer clear', () => {
         type('suc');
         vi.advanceTimersByTime(IDLE_MS - 100);
         type('har');
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 });
 
@@ -192,7 +182,7 @@ describe('dustBurst', () => {
         // matchMedia absent => easterEggs.reducedJuice() === true
         badumtss.triggerBaDumTss();
 
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
         expect(overlays()).toHaveLength(0);
         expect(document.getElementById(STYLE_ID)).toBeNull();
     });
@@ -232,47 +222,11 @@ describe('dustBurst', () => {
         expect(overlay.querySelectorAll('[id]')).toHaveLength(0);
         expect(overlay.querySelectorAll('use')).toHaveLength(0);
     });
-
-    it('still shows the effect when window.easterEggs is missing', () => {
-        window.matchMedia = vi.fn((q) => ({ matches: false, media: q }));
-        const saved = window.easterEggs;
-        delete window.easterEggs;
-        try {
-            type('suchar');
-            expect(window.showToast).toHaveBeenCalledTimes(1);
-            expect(overlays()).toHaveLength(1);
-        } finally {
-            window.easterEggs = saved;
-        }
-    });
-
-    it('falls back to matchMedia for reduced-motion when window.easterEggs is missing', () => {
-        // easter_eggs.js failed to load: without a local fallback `reduced` would be
-        // false and the dust storm would run for a reduced-motion user anyway.
-        window.matchMedia = vi.fn((q) => ({ matches: true, media: q }));
-        const saved = window.easterEggs;
-        delete window.easterEggs;
-        try {
-            type('suchar');
-            expect(window.showToast).toHaveBeenCalledTimes(1);
-            expect(overlays()).toHaveLength(0);
-            expect(document.getElementById(STYLE_ID)).toBeNull();
-        } finally {
-            window.easterEggs = saved;
-        }
-    });
-
-    it('does not throw when window.showToast is unavailable', () => {
-        window.matchMedia = vi.fn((q) => ({ matches: false, media: q }));
-        delete window.showToast;
-        expect(() => type('suchar')).not.toThrow();
-        expect(overlays()).toHaveLength(1); // the visual effect still runs
-    });
 });
 
 describe('sound', () => {
     it('asks easterEggs to play the rimshot cue on a match', () => {
-        const spy = vi.spyOn(window.easterEggs, 'playSound');
+        const spy = vi.spyOn(easterEggs, 'playSound');
         type('suchar');
         expect(spy).toHaveBeenCalledWith('rimshot');
     });
@@ -290,9 +244,9 @@ describe('teardown / reset', () => {
         expect(document.getElementById(STYLE_ID)).toBeNull();
 
         // Buffer is empty: the remaining letters alone must not fire.
-        window.showToast.mockClear();
+        showToast.mockClear();
         type('har');
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 
     it('teardownBaDumTss detaches the document keydown listener', () => {
@@ -305,7 +259,7 @@ describe('teardown / reset', () => {
         [...'suchar'].forEach((key) => {
             document.dispatchEvent(new KeyboardEvent('keydown', { key }));
         });
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 });
 
@@ -320,7 +274,7 @@ describe('DOMContentLoaded init', () => {
         [...'suchar'].forEach((key) => {
             document.dispatchEvent(new KeyboardEvent('keydown', { key }));
         });
-        expect(window.showToast).toHaveBeenCalledTimes(1);
+        expect(showToast).toHaveBeenCalledTimes(1);
     });
 
     it('does not wire the listener for an anonymous body', () => {
@@ -333,6 +287,6 @@ describe('DOMContentLoaded init', () => {
         [...'suchar'].forEach((key) => {
             document.dispatchEvent(new KeyboardEvent('keydown', { key }));
         });
-        expect(window.showToast).not.toHaveBeenCalled();
+        expect(showToast).not.toHaveBeenCalled();
     });
 });
