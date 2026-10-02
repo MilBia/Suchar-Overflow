@@ -238,7 +238,7 @@ nginx startują dopiero, gdy jest `healthy`.
 
 #### Dokumentacja API
 
-`/api/docs` (Swagger) jest domyślnie włączona. Na produkcji wyłącz ją zmienną `API_ENABLE_DOCS=False`.
+`/api/docs` (Swagger) jest domyślnie włączona. Na produkcji wyłącz ją zmienną `DJANGO_API_ENABLE_DOCS=False`.
 
 ### 4. Stwórz superusera (pierwsze uruchomienie)
 

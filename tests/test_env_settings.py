@@ -299,3 +299,22 @@ def test_missing_secrets_file_is_fine(
     settings = load_base_settings(monkeypatch, tmp_path, MINIMAL_ENV)
     assert not settings.SECRETS_ENV_FILE.exists()
     assert settings.ADMINS == []
+
+
+@pytest.mark.parametrize(
+    ("environment", "expected"),
+    [
+        ({}, True),
+        ({"DJANGO_API_ENABLE_DOCS": "False"}, False),
+        ({"API_ENABLE_DOCS": "False"}, False),  # legacy name, one release
+        ({"DJANGO_API_ENABLE_DOCS": "True", "API_ENABLE_DOCS": "False"}, True),  # prefixed wins
+    ],
+)
+def test_api_enable_docs_env(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    environment: dict[str, str],
+    expected: bool,  # noqa: FBT001
+) -> None:
+    module = load_base_settings(monkeypatch, tmp_path, {**MINIMAL_ENV, **environment})
+    assert module.API_ENABLE_DOCS is expected

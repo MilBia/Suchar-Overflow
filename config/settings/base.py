@@ -247,7 +247,9 @@ MIDDLEWARE = [
 # ------------------------------------------------------------------------------
 # Serves the interactive OpenAPI docs at /api/docs (#458); the schema itself stays
 # at /api/openapi.json. Consider switching it off in production.
-API_ENABLE_DOCS = env.bool("API_ENABLE_DOCS", default=True)
+# DJANGO_API_ENABLE_DOCS is the name (#453 prefix); bare API_ENABLE_DOCS is read as a
+# fallback for one release (CHANGELOG) — drop it afterwards.
+API_ENABLE_DOCS = env.bool("DJANGO_API_ENABLE_DOCS", default=env.bool("API_ENABLE_DOCS", default=True))
 
 # STATIC
 # ------------------------------------------------------------------------------
