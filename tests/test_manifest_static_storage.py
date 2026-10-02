@@ -56,7 +56,7 @@ PAGES: list[tuple[str, dict[str, str]]] = [
 
 
 @pytest.fixture
-def manifest_storage(settings: SettingsWrapper, tmp_path: Path) -> None:
+def manifest_storage(settings: SettingsWrapper, tmp_path: Path, request: pytest.FixtureRequest) -> None:
     settings.STATIC_ROOT = str(tmp_path / "static")
     settings.STORAGES = {
         **settings.STORAGES,
@@ -64,7 +64,11 @@ def manifest_storage(settings: SettingsWrapper, tmp_path: Path) -> None:
             "BACKEND": ("django.contrib.staticfiles.storage.ManifestStaticFilesStorage"),
         },
     }
-    call_command("collectstatic", "--noinput", verbosity=0)
+    # A dev-server build (`node` service) leaves libraries' own `sourceMappingURL` comments in the
+    # bundles, which the manifest storage rejects; only the production build is collected, and only by
+    # the tests that ask for it.
+    ignore = [] if request.node.get_closest_marker("needs_bundles") else ["webpack_bundles"]
+    call_command("collectstatic", "--noinput", verbosity=0, ignore_patterns=ignore)
 
 
 def test_every_template_static_literal_exists() -> None:
@@ -104,7 +108,18 @@ def test_pages_render_under_manifest_storage(client: Client) -> None:
 _STATS_FILE = Path(django_settings.BASE_DIR) / "webpack-stats.json"
 
 
+def _built_by_dev_server() -> bool:
+    if not _STATS_FILE.is_file():
+        return False
+    return any("vendors-node_modules" in name for name in json.loads(_STATS_FILE.read_text(encoding="utf-8"))["assets"])
+
+
 @pytest.mark.skipif(not _STATS_FILE.is_file(), reason="needs a webpack build: `just build-js`")
+@pytest.mark.skipif(
+    _built_by_dev_server(),
+    reason="the bundles are the dev server's: `just build-js` with `node` stopped",
+)
+@pytest.mark.needs_bundles
 @pytest.mark.usefixtures("manifest_storage")
 def test_built_bundles_survive_collectstatic() -> None:
     """The bundles the loader names exist in STATIC_ROOT after a manifest-storage `collectstatic` (#468).

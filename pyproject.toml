@@ -8,6 +8,7 @@ python_files = [
 ]
 markers = [
     "e2e: End-to-end browser tests using Playwright (requires live server).",
+    "needs_bundles: collects the real webpack bundles (production build) in collectstatic.",
 ]
 
 # ==== Coverage ====

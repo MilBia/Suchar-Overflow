@@ -1,4 +1,4 @@
-"""The debug toolbar works through the dev server on :3000 (#466).
+"""``InternalIPs`` (used by ``config.settings.local``): the debug toolbar through :3000 (#466).
 
 webpack-dev-server proxies :3000 to django, so the toolbar sees the ``node`` container's address as the
 client. That container starts *after* django (it waits for its healthcheck) and gets a new address
@@ -6,25 +6,24 @@ whenever compose recreates it, so ``INTERNAL_IPS`` must resolve it per request: 
 import time finds nothing on a fresh ``just up`` and the toolbar silently never shows on :3000.
 """
 
-import importlib
 import socket
-from typing import TYPE_CHECKING
 
 import pytest
 
-if TYPE_CHECKING:
-    from types import ModuleType
+from suchar_overflow.utils.debug import InternalIPs
+
+
+class _Settings:
+    INTERNAL_IPS = InternalIPs(["127.0.0.1", "10.0.2.2"])
 
 
 @pytest.fixture
-def local_settings(monkeypatch: pytest.MonkeyPatch) -> ModuleType:
-    monkeypatch.setenv("DJANGO_SECRET_KEY", "internal-ips-test")
-    monkeypatch.delenv("USE_DOCKER", raising=False)
-    return importlib.import_module("config.settings.local")
+def local_settings() -> type[_Settings]:
+    return _Settings
 
 
 def test_node_service_address_is_resolved_per_request(
-    local_settings: ModuleType,
+    local_settings: type[_Settings],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     ips = local_settings.INTERNAL_IPS
@@ -43,7 +42,10 @@ def test_node_service_address_is_resolved_per_request(
     assert "172.19.0.9" in ips
 
 
-def test_static_entries_never_trigger_a_lookup(local_settings: ModuleType, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_static_entries_never_trigger_a_lookup(
+    local_settings: type[_Settings],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     def fail(name: str) -> None:
         raise AssertionError(name)
 
@@ -51,7 +53,10 @@ def test_static_entries_never_trigger_a_lookup(local_settings: ModuleType, monke
     assert "127.0.0.1" in local_settings.INTERNAL_IPS
 
 
-def test_unresolvable_node_is_just_not_internal(local_settings: ModuleType, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_unresolvable_node_is_just_not_internal(
+    local_settings: type[_Settings],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     def unresolvable(name: str) -> None:
         raise socket.gaierror(name)
 

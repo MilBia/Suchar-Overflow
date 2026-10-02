@@ -37,6 +37,10 @@ def test_no_map_files_are_committed_under_static() -> None:
 
 
 @pytest.mark.skipif(not _BUNDLES.is_dir(), reason="needs a webpack build: `just build-js`")
+@pytest.mark.skipif(
+    any(_BUNDLES.glob("js/vendors-node_modules*")),
+    reason="the dev server's bundles: stop `node`, then `just build-js`",
+)
 def test_every_source_map_reference_in_the_bundles_resolves() -> None:
     bundles = [*_BUNDLES.rglob("*.js"), *_BUNDLES.rglob("*.css")]
     assert bundles
