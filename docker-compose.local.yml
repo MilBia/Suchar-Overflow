@@ -26,6 +26,13 @@ services:
         ports:
             - '8000:8000'
         command: /start
+        healthcheck:
+            # GET /healthz/ (database + Redis); `start` runs migrate and compilemessages first.
+            test: ['CMD', '/healthcheck', '8000']
+            interval: 10s
+            timeout: 6s
+            retries: 5
+            start_period: 60s
 
     postgres:
         build:

@@ -13,9 +13,8 @@ So this module runs `collectstatic` into a temporary `STATIC_ROOT` with
 Django's `ManifestStaticFilesStorage` (`manifest_strict = True` by default) and
 renders the pages against it. Django's own `setting_changed` receiver resets
 `staticfiles_storage` when `STORAGES` / `STATIC_ROOT` change, so the override
-takes effect and is undone on teardown. Plain `ManifestStaticFilesStorage`
-rather than whitenoise's compressed subclass: the manifest lookup is the same,
-and skipping the gzip/brotli pass keeps `collectstatic` fast.
+takes effect and is undone on teardown. The same
+`ManifestStaticFilesStorage` production uses (#463).
 """
 
 import re

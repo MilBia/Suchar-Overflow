@@ -3,6 +3,7 @@ volumes:
     production_postgres_data_backups: {}
     production_traefik: {}
     production_django_media: {}
+    production_django_static: {}
     production_redis_data: {}
 
 services:
@@ -14,6 +15,8 @@ services:
         image: suchar_overflow_production_django
         volumes:
             - production_django_media:/app/suchar_overflow/media
+            # `start` writes STATIC_ROOT (collectstatic + compress); nginx serves it (#463).
+            - production_django_static:/app/staticfiles
         depends_on:
             postgres:
                 condition: service_healthy
@@ -29,6 +32,14 @@ services:
             - ./.envs/.production/.postgres
         command: /start
         restart: unless-stopped
+        healthcheck:
+            # GET /healthz/ (database + Redis). `start` runs migrate, collectstatic and
+            # compress before gunicorn listens, hence the long start_period.
+            test: ['CMD', '/healthcheck', '5000']
+            interval: 30s
+            timeout: 6s
+            retries: 3
+            start_period: 120s
 
     postgres:
         build:
@@ -56,7 +67,8 @@ services:
             dockerfile: ./compose/production/traefik/Dockerfile
         image: suchar_overflow_production_traefik
         depends_on:
-            - django
+            django:
+                condition: service_healthy
         volumes:
             - production_traefik:/etc/traefik/acme
         ports:
@@ -84,7 +96,9 @@ services:
             dockerfile: ./compose/production/nginx/Dockerfile
         image: suchar_overflow_production_nginx
         depends_on:
-            - django
+            django:
+                condition: service_healthy
         volumes:
             - production_django_media:/usr/share/nginx/media:ro
+            - production_django_static:/usr/share/nginx/static:ro
         restart: unless-stopped

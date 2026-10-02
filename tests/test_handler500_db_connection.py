@@ -50,7 +50,7 @@ async def test_failing_500_page_still_releases_db_connections(
     # A manifest storage with no manifest: every {% static %} raises ValueError,
     # in the page and in the themed 500.html alike — the #436 failure mode.
     static_root = tmp_path / "static"
-    static_root.mkdir()  # WhiteNoise warns about a missing STATIC_ROOT
+    static_root.mkdir()
     settings.STATIC_ROOT = str(static_root)
     settings.STORAGES = {
         **settings.STORAGES,

@@ -1,11 +1,11 @@
 """Regression guard for issue #426 — a client disconnect must not freeze the server.
 
 Django's `ASGIHandler.__call__` wraps every request in asgiref's
-`ThreadSensitiveContext`. `WhiteNoiseMiddleware` is sync-only, so Django runs it
-in that context's executor thread, and it reaches the rest of the (async) stack
-through `async_to_sync`. When the client disconnects while WhiteNoise is still
-in its sync code, Django cancels the request task and leaves the context. Before
-asgiref 3.12.0, `ThreadSensitiveContext.__aexit__` then joined the executor
+`ThreadSensitiveContext`. A sync-only middleware (it was `WhiteNoiseMiddleware`,
+removed in #463) runs in that context's executor thread and reaches the rest of
+the (async) stack through `async_to_sync`. When the client disconnects while it is
+still in its sync code, Django cancels the request task and leaves the context.
+Before asgiref 3.12.0, `ThreadSensitiveContext.__aexit__` then joined the executor
 thread *on the event loop*, while that thread was about to wait on the same loop
 for `async_to_sync`: the worker deadlocked for good, with no log line and no
 traceback. Only a restart brought it back (upstream django/asgiref#535).

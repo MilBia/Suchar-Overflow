@@ -19,7 +19,7 @@ from .cache import toast_cache_key
 from .models import Achievement
 from .models import UserAchievement
 
-router = Router()
+router = Router(tags=["achievements"])
 
 # Exact-match allowlist for POST /frontend-event. Every client-awardable slug
 # must be listed here explicitly — an existing Achievement row is necessary but

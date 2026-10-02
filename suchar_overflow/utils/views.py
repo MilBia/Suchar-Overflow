@@ -1,18 +1,26 @@
 """Project-wide error views."""
 
 import logging
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 
+from asgiref.sync import sync_to_async
+from django.db import connection
 from django.http import HttpResponse
 from django.http import HttpResponseServerError
+from django.http import JsonResponse
 from django.utils.html import escape
 from django.utils.translation import get_language
 from django.utils.translation import gettext
 from django.views import defaults
+from django.views.decorators.cache import never_cache
+from django_redis import get_redis_connection
 
 from suchar_overflow.utils.db import releases_db_connections
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from django.http import HttpRequest
 
 logger = logging.getLogger(__name__)
@@ -63,3 +71,52 @@ def server_error(request: HttpRequest) -> HttpResponse:
     except Exception:
         logger.exception("Rendering 500.html failed; serving the static fallback")
         return HttpResponseServerError(fallback_500_html())
+
+
+@releases_db_connections
+def check_database() -> None:
+    """``SELECT 1`` on the default connection; raises when the database is unreachable.
+
+    Run in the request's thread via ``sync_to_async``; the wrapper closes the
+    connection afterwards when it is obsolete (``CONN_MAX_AGE = 0``), so a probe
+    every few seconds leaves nothing behind (#434, #447).
+    """
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+
+
+def check_cache() -> None:
+    """``PING`` on the raw Redis connection; raises when Redis is unreachable.
+
+    Not ``cache.get``: the cache runs with ``IGNORE_EXCEPTIONS`` (base.py), which
+    would swallow the very error this check exists to report.
+    """
+    get_redis_connection("default").ping()
+
+
+# name -> check; the key is the field in the response. #460 adds the RQ queue here.
+HEALTH_CHECKS: dict[str, Callable[[], None]] = {
+    "database": check_database,
+    "cache": check_cache,
+}
+
+
+@never_cache
+async def healthz(request: HttpRequest) -> JsonResponse:  # noqa: ARG001
+    """Liveness/readiness probe for the container healthcheck and uptime monitors (#457).
+
+    ``{"database": "ok"|"error", "cache": "ok"|"error"}`` with 200, or 503 when any
+    check failed. Failures are logged here, never echoed to the (anonymous) caller.
+    """
+    results: dict[str, str] = {}
+    for name, check in HEALTH_CHECKS.items():
+        try:
+            await sync_to_async(check)()
+        except Exception:
+            logger.exception("Health check %r failed", name)
+            results[name] = "error"
+        else:
+            results[name] = "ok"
+    healthy = all(value == "ok" for value in results.values())
+    return JsonResponse(results, status=HTTPStatus.OK if healthy else HTTPStatus.SERVICE_UNAVAILABLE)

@@ -226,6 +226,19 @@ just prod-up
 ```
 
 > Migracje bazy danych, `collectstatic` i `compress` (minifikacja CSS/JS) wykonują się automatycznie przy starcie kontenera Django.
+> Pliki statyczne (`/static/`) i media (`/media/`) serwuje nginx za Traefikiem — Django zapisuje statyki do wolumenu `production_django_static`, nginx czyta go tylko do odczytu.
+
+#### Healthcheck i monitoring (`/healthz/`)
+
+`GET /healthz/` zwraca `{"database": "ok", "cache": "ok"}` ze statusem 200 albo 503, gdy baza
+lub Redis nie odpowiada (szczegóły błędu trafiają tylko do logów). Endpoint nie jest
+przekierowywany na HTTPS i nie jest cache'owany — nadaje się do monitoringu uptime. Kontener
+`django` ma na nim healthcheck (`docker compose ps` pokazuje `healthy`/`unhealthy`), a Traefik i
+nginx startują dopiero, gdy jest `healthy`.
+
+#### Dokumentacja API
+
+`/api/docs` (Swagger) jest domyślnie włączona. Na produkcji wyłącz ją zmienną `API_ENABLE_DOCS=False`.
 
 ### 4. Stwórz superusera (pierwsze uruchomienie)
 

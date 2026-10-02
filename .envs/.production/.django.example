@@ -25,6 +25,12 @@ DJANGO_SECURE_SSL_REDIRECT=True
 # DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=True
 # DJANGO_SECURE_HSTS_PRELOAD=False
 
+# API
+# ------------------------------------------------------------------------------
+# Interactive OpenAPI docs at /api/docs (default True). Suggested: False in
+# production — the docs page is public and lists every endpoint.
+# API_ENABLE_DOCS=False
+
 # Database
 # ------------------------------------------------------------------------------
 # Keep 0: the app runs under ASGI, where CONN_MAX_AGE > 0 leaves one idle

@@ -37,10 +37,10 @@ TEMPLATES[0]["OPTIONS"]["loaders"] = [  # type: ignore[index]
 # base.py's MAILERS reads DJANGO_EMAIL_HOST/PORT; .envs/.local/.django points them
 # at the mailpit container (web UI on localhost:8025).
 
-# WhiteNoise
+# STATIC
 # ------------------------------------------------------------------------------
-# http://whitenoise.evans.io/en/latest/django.html#using-whitenoise-in-development
-INSTALLED_APPS = ["whitenoise.runserver_nostatic", *INSTALLED_APPS]
+# uvicorn serves no static files and there is no runserver; config/asgi.py wraps the
+# app in ASGIStaticFilesHandler while DEBUG is on (#463).
 
 
 # django-debug-toolbar
