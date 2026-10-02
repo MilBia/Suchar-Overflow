@@ -373,7 +373,7 @@ docker compose -f docker-compose.production.yml exec postgres restore <nazwa_bac
                        └───────────┘                        │ kolejka(/1)│         │
                        ┌───────────┐   zadania cykliczne    └────────────┘         │
                        │   cron    ├───────────────────────────────────────────────┘
-                       │  rqcron   │   (+ achievements_catch_up przy starcie)
+                       │  rqcron   │   (+ achievements_catch_up przy starcie; zadania i heartbeat przez redis)
                        └───────────┘
 ```
 
@@ -387,7 +387,7 @@ docker compose -f docker-compose.production.yml exec postgres restore <nazwa_bac
 | `postgres` | PostgreSQL 18 + skrypty backupu (`backup`, `backups`, `restore`, `rmbackup`).                                                                             |
 | `redis`    | Cache (baza `/0`) i kolejka RQ (baza `/1`, osobna, żeby wyczyszczenie cache nie usunęło zadań). Snapshot co 60 s do wolumenu `/data`.                     |
 
-Wszystkie usługi mają healthchecki; `traefik` i `nginx` startują dopiero, gdy `django` jest `healthy`.
+Healthchecki mają `django`, `worker`, `cron`, `postgres` i `redis`; `traefik` i `nginx` startują dopiero, gdy `django` jest `healthy`.
 Bundle webpacka powstają w obrazie (etap `client-builder`), nie przy starcie kontenera.
 
 ---
@@ -402,26 +402,26 @@ Szablony: `.envs/.production/.django.example` i `.postgres.example`; lokalne war
 
 **Ogólne i bezpieczeństwo**
 
-| Zmienna                                 | Opis                                                                                         | Domyślnie                                           | Środowisko  |
-| --------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
-| `DJANGO_SETTINGS_MODULE`                | Moduł ustawień (`config.settings.local` / `.production`)                                     | `config.settings.production` (`asgi.py`)            | wszystkie   |
-| `DJANGO_SECRET_KEY`                     | Klucz kryptograficzny; brak wartości domyślnej                                               | — (w `test` stały klucz)                            | local, prod |
-| `DJANGO_DEBUG`                          | Tryb debug (`base.py`; `local.py` ustawia `DEBUG = True` na sztywno)                         | `False`                                             | wszystkie   |
-| `DJANGO_READ_DOT_ENV_FILE`              | Czy czytać `.env` z korzenia repo                                                            | `False`                                             | wszystkie   |
-| `DJANGO_ALLOWED_HOSTS`                  | Dozwolone hosty, po przecinku                                                                | `example.com`                                       | prod        |
-| `DJANGO_ADMIN_URL`                      | Ścieżka panelu admina (z końcowym `/`); pod nią też panel `django-rq/`                       | — (wymagana)                                        | prod        |
-| `DJANGO_ADMINS`                         | Odbiorcy maili o błędach 500 (`ADMINS`/`MANAGERS`), po przecinku; puste = nikt               | puste                                               | wszystkie   |
-| `DJANGO_SECURE_SSL_REDIRECT`            | Przekierowanie HTTP → HTTPS (`/healthz/` jest wyłączony z przekierowania)                    | `True`                                              | prod        |
-| `DJANGO_SECURE_HSTS_SECONDS`            | `max-age` HSTS                                                                               | `518400`                                            | prod        |
-| `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS` | `includeSubDomains` w HSTS                                                                   | `True`                                              | prod        |
-| `DJANGO_SECURE_HSTS_PRELOAD`            | `preload` w HSTS; wymaga `DJANGO_SECURE_HSTS_SECONDS >= 31536000`, inaczej start się nie uda | `False`                                             | prod        |
-| `DJANGO_SECURE_CONTENT_TYPE_NOSNIFF`    | Nagłówek `X-Content-Type-Options: nosniff`                                                   | `True`                                              | prod        |
-| `DJANGO_API_ENABLE_DOCS`                | Publiczna dokumentacja `/api/docs` (zalecane `False` na produkcji)                           | `True`                                              | wszystkie   |
-| `API_ENABLE_DOCS`                       | Stara nazwa `DJANGO_API_ENABLE_DOCS`, czytana jeszcze jako zapasowa (jedno wydanie)          | `True`                                              | wszystkie   |
-| `FEEDBACK_URL`                          | Adres linku „zgłoś błąd" w stopce                                                            | issues repozytorium                                 | wszystkie   |
-| `DJANGO_STATIC_ROOT`                    | Gdzie `collectstatic` zapisuje pliki statyczne                                               | `<repo>/staticfiles` (`/app/staticfiles` w obrazie) | wszystkie   |
-| `USE_DOCKER`                            | `yes` ustawia `INTERNAL_IPS` pod debug toolbar w kontenerze                                  | `no`                                                | local       |
-| `DJANGO_ALLOW_ASYNC_UNSAFE`             | Ustawiana przez `e2e.py` dla Playwrighta; nie ustawiać ręcznie                               | `true` (tylko E2E)                                  | e2e         |
+| Zmienna                                 | Opis                                                                                                                                                                       | Domyślnie                                                                                              | Środowisko  |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ----------- |
+| `DJANGO_SETTINGS_MODULE`                | Moduł ustawień (`config.settings.local` / `.production`)                                                                                                                   | `config.settings.production` (`asgi.py`, `wsgi.py`); `manage.py` bez zmiennej: `config.settings.local` | wszystkie   |
+| `DJANGO_SECRET_KEY`                     | Klucz kryptograficzny; brak wartości domyślnej                                                                                                                             | — (w `test` ma wartość domyślną)                                                                       | local, prod |
+| `DJANGO_DEBUG`                          | Tryb debug (`base.py`; `local.py` ustawia `DEBUG = True` na sztywno)                                                                                                       | `False`                                                                                                | wszystkie   |
+| `DJANGO_READ_DOT_ENV_FILE`              | Czy czytać `.env` z korzenia repo                                                                                                                                          | `False`                                                                                                | wszystkie   |
+| `DJANGO_ALLOWED_HOSTS`                  | Dozwolone hosty, po przecinku (lokalnie `local.py` ustawia `["*"]` na sztywno); healthcheck `django` wysyła pierwszy wpis jako `Host`, więc błędna wartość psuje `healthy` | `example.com`                                                                                          | prod        |
+| `DJANGO_ADMIN_URL`                      | Ścieżka panelu admina (z końcowym `/`); pod nią też panel `django-rq/`                                                                                                     | — (wymagana)                                                                                           | prod        |
+| `DJANGO_ADMINS`                         | Odbiorcy maili o błędach 500 (`ADMINS`/`MANAGERS`), po przecinku; puste = nikt                                                                                             | puste                                                                                                  | wszystkie   |
+| `DJANGO_SECURE_SSL_REDIRECT`            | Przekierowanie HTTP → HTTPS (`/healthz/` jest wyłączony z przekierowania)                                                                                                  | `True`                                                                                                 | prod        |
+| `DJANGO_SECURE_HSTS_SECONDS`            | `max-age` HSTS                                                                                                                                                             | `518400`                                                                                               | prod        |
+| `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS` | `includeSubDomains` w HSTS                                                                                                                                                 | `True`                                                                                                 | prod        |
+| `DJANGO_SECURE_HSTS_PRELOAD`            | `preload` w HSTS; wymaga `DJANGO_SECURE_HSTS_SECONDS >= 31536000`, inaczej start się nie uda                                                                               | `False`                                                                                                | prod        |
+| `DJANGO_SECURE_CONTENT_TYPE_NOSNIFF`    | Nagłówek `X-Content-Type-Options: nosniff`                                                                                                                                 | `True`                                                                                                 | prod        |
+| `DJANGO_API_ENABLE_DOCS`                | Publiczna dokumentacja `/api/docs` (zalecane `False` na produkcji)                                                                                                         | `True`                                                                                                 | wszystkie   |
+| `API_ENABLE_DOCS`                       | Stara nazwa `DJANGO_API_ENABLE_DOCS`, czytana jeszcze jako zapasowa (jedno wydanie)                                                                                        | `True`                                                                                                 | wszystkie   |
+| `FEEDBACK_URL`                          | Adres linku „zgłoś błąd" w stopce                                                                                                                                          | issues repozytorium                                                                                    | wszystkie   |
+| `DJANGO_STATIC_ROOT`                    | Gdzie `collectstatic` zapisuje pliki statyczne                                                                                                                             | `<repo>/staticfiles` (`/app/staticfiles` w obrazie)                                                    | wszystkie   |
+| `USE_DOCKER`                            | `yes` ustawia `INTERNAL_IPS` pod debug toolbar w kontenerze                                                                                                                | `no`                                                                                                   | local       |
+| `DJANGO_ALLOW_ASYNC_UNSAFE`             | Ustawiana przez `e2e.py` dla Playwrighta; nie ustawiać ręcznie                                                                                                             | `true` (tylko E2E)                                                                                     | e2e         |
 
 **Baza danych**
 
