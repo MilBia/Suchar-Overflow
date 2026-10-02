@@ -1,8 +1,22 @@
 const fs = require('fs');
 const path = require('path');
 
-const NODE_MODULES = `${path.sep}node_modules${path.sep}`;
+// webpack reports `module.resource` with forward slashes on every OS, so match on those.
+const NODE_MODULES = '/node_modules/';
 const LICENSE_FILES = ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'license', 'license.md', 'LICENCE', 'LICENCE.md'];
+
+// `license` is a string today, but older packages use `{type, url}` or a `licenses` array.
+function licenseId(pkg) {
+    if (typeof pkg.license === 'string') return pkg.license;
+    if (pkg.license && typeof pkg.license.type === 'string') return pkg.license.type;
+    if (Array.isArray(pkg.licenses)) {
+        return pkg.licenses
+            .map((entry) => (typeof entry === 'string' ? entry : entry.type))
+            .filter(Boolean)
+            .join(', ');
+    }
+    return '';
+}
 
 /**
  * Writes `licenses.txt` next to the bundles: name, version and licence text of every npm package that
@@ -26,10 +40,10 @@ class LicensesPlugin {
                 () => {
                     const packages = new Map();
                     for (const module of compilation.modules) {
-                        const resource = module.resource || '';
+                        const resource = (module.resource || '').replace(/\\/g, '/');
                         const at = resource.lastIndexOf(NODE_MODULES);
                         if (at === -1) continue;
-                        const parts = resource.slice(at + NODE_MODULES.length).split(path.sep);
+                        const parts = resource.slice(at + NODE_MODULES.length).split('/');
                         const name = parts[0].startsWith('@') ? `${parts[0]}/${parts[1]}` : parts[0];
                         const dir = resource.slice(0, at + NODE_MODULES.length) + name;
                         packages.set(name, dir);
@@ -37,9 +51,9 @@ class LicensesPlugin {
                     const sections = [...packages.entries()]
                         .sort(([a], [b]) => a.localeCompare(b))
                         .map(([name, dir]) => {
-                            const { version = '?', license = '' } = JSON.parse(
-                                fs.readFileSync(path.join(dir, 'package.json'), 'utf8'),
-                            );
+                            const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
+                            const version = pkg.version || '?';
+                            const license = licenseId(pkg);
                             const file = LICENSE_FILES.find((candidate) => fs.existsSync(path.join(dir, candidate)));
                             const text = file
                                 ? fs.readFileSync(path.join(dir, file), 'utf8').trim()

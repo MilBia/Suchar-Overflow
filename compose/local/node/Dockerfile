@@ -1,5 +1,5 @@
 # Dev server for the webpack frontend (#466). The tag must match .nvmrc's major
-# (tests/test_node_runtime.py); the registry is named because podman does not
+# (tests/test_webpack_toolchain.py); the registry is named because podman does not
 # assume Docker Hub for a short name (#456).
 FROM docker.io/node:24-trixie-slim
 

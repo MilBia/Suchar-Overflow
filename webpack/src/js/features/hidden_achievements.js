@@ -122,7 +122,9 @@ export function setupZbieraczSucharow(teardownRegistry) {
     // Registered before the early return below, matching the original.
     teardownRegistry[SLUG] = () => document.removeEventListener('click', onVote);
 
-    if (!window.location.pathname.startsWith('/suchary')) return;
+    // Exact-or-slash, like the other eggs: a sibling route like `/suchary-archiwum/` must not count.
+    const path = window.location.pathname;
+    if (path !== '/suchary' && !path.startsWith('/suchary/')) return;
 
     // Don't count this visit if a vote was cast before leaving the page.
     // We track that via the reset above — if voted, counter is already 0.

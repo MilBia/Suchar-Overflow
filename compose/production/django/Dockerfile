@@ -6,7 +6,7 @@
 # keep both FROM lines on one tag (#437, tests/test_python_runtime.py).
 FROM ghcr.io/astral-sh/uv:0.12.21 AS uv
 
-# Frontend bundles (#466). The tag follows .nvmrc's major (tests/test_node_runtime.py).
+# Frontend bundles (#466). The tag follows .nvmrc's major (tests/test_webpack_toolchain.py).
 # NODE_ENV stays unset until after `npm ci`: with `production` it would skip the
 # devDependencies, and webpack and its loaders are all devDependencies.
 FROM docker.io/node:24-trixie-slim AS client-builder

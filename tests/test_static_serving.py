@@ -79,6 +79,8 @@ def test_nginx_caches_hashed_static_forever_and_gzips() -> None:
     # webpack's `[name].[contenthash]` names (hashDigestLength 12) and the manifest storage's.
     assert re.match(pattern, "/static/webpack_bundles/css/project.0123456789ab.css")
     assert re.match(pattern, "/static/js/project.0123456789ab.js")
+    # Source maps (`name.<hash>.js.map`) are as immutable as the bundle they belong to.
+    assert re.match(pattern, "/static/webpack_bundles/js/project.0123456789ab.js.map")
     assert not re.match(pattern, "/static/js/project.js")
 
 

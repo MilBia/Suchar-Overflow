@@ -53,7 +53,12 @@ def _visit(page: Page, url: str, tolerate: tuple[str, ...] = ()) -> tuple[list[s
     page.on("console", on_console)
     page.add_init_script(_VIOLATION_HOOK)
     page.goto(url, wait_until="load")
-    page.wait_for_function("window.__hiddenAchievementsReady !== undefined || document.readyState === 'complete'")
+    # `load` already implies readyState 'complete', so wait for the one thing that is still async: the
+    # hidden-achievements init, on the pages that load that bundle.
+    page.wait_for_function(
+        "() => window.__hiddenAchievementsReady !== undefined"
+        " || !document.querySelector('script[src*=\"hidden_achievements\"]')"
+    )
     violations = page.evaluate("window.__cspViolations")
     return errors, violations
 
@@ -62,7 +67,7 @@ def _visit(page: Page, url: str, tolerate: tuple[str, ...] = ()) -> tuple[list[s
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.parametrize(
     "path",
-    ["/", "/accounts/login/", "/nie-ma-takiej-strony/"],
+    ["/", "/about/", "/accounts/login/", "/nie-ma-takiej-strony/"],
 )
 def test_anonymous_pages_are_clean(page: Page, live_server: LiveServer, path: str) -> None:
     # The browser logs a 404 page's own document load as a console error; that is the page working.
@@ -83,6 +88,8 @@ def test_anonymous_pages_are_clean(page: Page, live_server: LiveServer, path: st
         "/achievements/",
         "/achievements/mine/",
         "/users/e2etestuser/",
+        # The only page besides the profile that renders the `dashboard` entry on its own.
+        "/users/~update/",
     ],
 )
 def test_logged_in_pages_are_clean(

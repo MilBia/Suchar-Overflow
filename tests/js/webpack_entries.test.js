@@ -31,8 +31,16 @@ function build() {
     };
     return new Promise((resolve, reject) => {
         webpack(config, (error, stats) => {
-            if (error) return reject(error);
-            if (stats.hasErrors()) return reject(new Error(stats.toString({ all: false, errors: true })));
+            // The temp dir goes whether the build succeeded, failed or threw while reading the stats.
+            const cleanup = () => fs.rmSync(outDir, { recursive: true, force: true });
+            if (error) {
+                cleanup();
+                return reject(error);
+            }
+            if (stats.hasErrors()) {
+                cleanup();
+                return reject(new Error(stats.toString({ all: false, errors: true })));
+            }
             const json = stats.toJson({
                 all: false,
                 chunks: true,
@@ -44,7 +52,7 @@ function build() {
                 entrypoints: true,
             });
             json.licenses = fs.readFileSync(path.join(outDir, 'licenses.txt'), 'utf8');
-            fs.rmSync(outDir, { recursive: true, force: true });
+            cleanup();
             return resolve(json);
         });
     });
