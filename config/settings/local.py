@@ -1,6 +1,7 @@
 import contextlib
 import faulthandler
 import signal
+import socket
 
 from .base import *  # noqa: F403
 from .base import INSTALLED_APPS
@@ -70,15 +71,30 @@ DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TEMPLATE_CONTEXT": True,
 }
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#internal-ips
-INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
-if env("USE_DOCKER", default="no") == "yes":
-    import socket
 
+
+class _InternalIPs(list):
+    """``INTERNAL_IPS`` that also accepts the ``node`` service's address, looked up per request.
+
+    The ``node`` container starts after ``django`` (it waits for its healthcheck), so its address
+    can't be read when settings are imported; and it changes whenever compose recreates it. The
+    lookup runs only for an address the static entries don't already cover.
+    """
+
+    def __contains__(self, address: object) -> bool:
+        if super().__contains__(address):
+            return True
+        with contextlib.suppress(OSError):
+            return address in socket.gethostbyname_ex("node")[2]
+        return False
+
+
+INTERNAL_IPS = _InternalIPs(["127.0.0.1", "10.0.2.2"])
+if env("USE_DOCKER", default="no") == "yes":
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS += [".".join([*ip.split(".")[:-1], "1"]) for ip in ips]
-    # The `node` service proxies :3000 to django, so the toolbar sees its address, not the host's.
-    with contextlib.suppress(socket.gaierror):
-        INTERNAL_IPS += socket.gethostbyname_ex("node")[2]
+    # The `node` service proxies :3000 to django, so the toolbar sees its address, not the host's
+    # (resolved lazily — see _InternalIPs).
 
 # django-extensions
 # ------------------------------------------------------------------------------

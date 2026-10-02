@@ -1,5 +1,5 @@
 """E2E: the browser's time zone drives input/display via the `user_tz` cookie
-(static/js/timezone.js → suchar_overflow/utils/middleware.py, issue #410)."""
+(webpack/src/js/timezone.js → suchar_overflow/utils/middleware.py, issue #410)."""
 
 import datetime
 from typing import TYPE_CHECKING

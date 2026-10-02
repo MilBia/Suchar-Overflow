@@ -29,6 +29,10 @@ updates:
       # '*' ignore would freeze it for good — the same silent staleness as the
       # astral python3.14-bookworm tag this replaced.
       ignore:
+          # The Node major follows .nvmrc (tests/test_webpack_toolchain.py); bump them together by hand.
+          - dependency-name: 'node'
+            update-types:
+                - 'version-update:semver-major'
           - dependency-name: 'python'
             update-types:
                 - 'version-update:semver-major'
@@ -45,6 +49,10 @@ updates:
           - 'compose/local/node/'
           - 'compose/production/traefik/'
           - 'compose/production/nginx/'
+      ignore:
+          - dependency-name: 'node'
+            update-types:
+                - 'version-update:semver-major'
       # Every weekday
       schedule:
           interval: 'daily'
