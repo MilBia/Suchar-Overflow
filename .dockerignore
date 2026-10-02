@@ -15,11 +15,14 @@ staticfiles/
 .coverage
 celerybeat-schedule*
 
-# Host-only Vitest + jsdom runner (see CLAUDE.md "JS tests (Vitest)"). Never
-# runs in the Django image, and node_modules/ alone is ~64 MB — keep it all out
-# of the build context and the final image. Both Dockerfiles do `COPY . ${APP_HOME}`.
+# Host-only JS tooling. node_modules/ alone is hundreds of MB — keep it out of the build
+# context and the final Django image (both Dockerfiles do `COPY . ${APP_HOME}`).
+# package.json / package-lock.json are NOT excluded (#466): the node dev image and the
+# production `client-builder` stage run `npm ci` from them.
 node_modules/
 tests/js/
 vitest.config.mjs
-package.json
-package-lock.json
+# Build output of a host or dev-server run. The image builds its own in `client-builder`
+# (production) and a stale local one must never end up inside it.
+webpack-stats.json
+suchar_overflow/static/webpack_bundles/

@@ -6,7 +6,7 @@ Django 6.1 web app (joke aggregator). Backend: Python 3.14, PostgreSQL, Redis.
 Frontend: Django templates (DjangoTemplates backend), vanilla JS, CSS custom properties.
 Package manager: `uv`. Local dev and CI both run inside Docker Compose.
 Compose services: `django`, `worker` and `cron` (RQ, same image — see Background jobs), `postgres`, `redis`, `mailpit` (catches outgoing dev email at
-`localhost:8025`).
+`localhost:8025`), `node` (webpack-dev-server on `localhost:3000`, see Frontend pipeline).
 `compose/base/` holds what both stacks share (`django/entrypoint`, `healthcheck`, `worker`, `cron`, the `postgres/` image and
 its `maintenance/` backup scripts); `compose/local/` and `compose/production/` hold only their
 own Django `Dockerfile`/`start` plus Traefik/nginx (#456). Every `FROM` and pulled `image:`
@@ -1423,6 +1423,58 @@ Most view classes are async (`async def get/post`, `AsyncLoginRequiredMixin` fro
 new class-based view, check a neighboring view in the same app first; the async
 pattern (via `sync_to_async`/`request.auser()`/`aupdate()`/`async for`) is the norm,
 not the exception.
+
+### Frontend pipeline — webpack (#465, #466)
+
+A webpack 5 build (Babel, Sass, PostCSS) produces the bundles `django-webpack-loader`
+puts in the templates: `{% load webpack_loader %}` + `{% render_bundle '<entry>' [ 'js' | 'css' ]
+attrs='defer' %}`. This reversed the old "no JS build step" rule (#177); until #469 it **coexists** with
+django-compressor — `base.html` renders the (still trivial) `project` entry next to the `{% compress %}`
+blocks, and each later sub-issue moves one slice over.
+
+- **Layout.** Configs in `webpack/` (`common`, `dev`, `prod`, `postcss`; CommonJS, like the rest of
+  `package.json`, which is `"type": "commonjs"`), `babel.config.js` at the root, sources under
+  `webpack/src/` — deliberately **not** under `suchar_overflow/static/`, which `collectstatic` copies
+  wholesale. Output: `suchar_overflow/static/webpack_bundles/` (`js/[name].[contenthash].js`,
+  `css/[name].[contenthash].css`, 12 hex digits after a dot — the shape nginx marks `immutable`) plus
+  `webpack-stats.json` in the repo root. Both are gitignored **and** in `.dockerignore`, so a stale
+  host build can never reach an image. `package.json`/`package-lock.json` are in the build context
+  (the `node` image and the `client-builder` stage run `npm ci` from them); `node_modules/` is not.
+- **Entries and shared chunks.** `optimization.runtimeChunk: 'single'` + `splitChunks: {chunks: 'all'}`:
+  one runtime for every entry, so a page that renders the global `project` entry **and** a page entry
+  never instantiates a module twice (two `EventSource`s, a split dedupe `Set`…). The loader's
+  `SKIP_COMMON_CHUNKS = True` drops the chunks a second `render_bundle` would repeat; that needs
+  `request` in the template context, hence `base.html`'s first call passes `skip_common_chunks=False`
+  (nothing to skip, and the 500 page renders without a request). `tests/test_webpack_toolchain.py`
+  pins it.
+- **URLs.** webpack-bundle-tracker writes `publicPath` (`/static/webpack_bundles/…`) into the stats, and
+  the loader uses it as-is — it does not go through `staticfiles_storage`. So the unhashed-by-Django
+  names are what pages reference; production's `collectstatic` still hashes copies, harmlessly.
+  `IGNORE` hides `.map`/hot-update files from `render_bundle`.
+- **Settings.** `base.py` has `WEBPACK_LOADER` (`CACHE: True`, absolute `STATS_FILE`); `local.py` turns
+  the cache off; `test.py` swaps in `FakeWebpackLoader` (one placeholder tag, no stats file needed);
+  `e2e.py` restores the real loader, so **E2E needs built bundles**: `just build-js` (host, needs
+  `npm ci` once; CI does both before the pytest steps). `just test-e2e` refuses to start without
+  `webpack-stats.json`. Each layer copies the dict instead of mutating `base`'s (the settings-layer
+  rule above).
+- **Dev.** `just up` starts the `node` service: `http://localhost:3000` proxies everything to
+  `django:8000` (Host/Origin stay `localhost:3000`, so `ALLOWED_HOSTS`/CSRF see the browser's address)
+  with live reload on template and source changes; `:8000` keeps working because the dev build is
+  also **written to disk** (`devMiddleware.writeToDisk`) where Django's static handler finds it. Dev
+  `devtool` is `cheap-module-source-map`, never `eval*` — the CSP has no `'unsafe-eval'`. `compress:
+false` keeps the dev server from buffering the SSE stream. The client's socket URL is
+  `auto://0.0.0.0:0/ws` (the page's own origin), so on `:8000` it fails once and gives up — a console
+  line, not a CSP violation. After a `package.json` change: `just build` and
+  `docker compose up -d --renew-anon-volumes` (the `node_modules` volume is anonymous). Without
+  the `node` service no `webpack-stats.json` exists and every page 500s.
+- **Production.** `compose/production/django/Dockerfile` has a `client-builder` stage
+  (`docker.io/node:<major of .nvmrc>-trixie-slim`; `npm ci` **before** anything sets `NODE_ENV`, or
+  webpack — a devDependency — would be skipped) whose bundles and stats file are copied into the
+  build stage; `collectstatic` then picks the bundles up. Prod devtool is `source-map` with real
+  `.map` files next to the bundles, so no `sourceMappingURL` dangles (#249 — manifest storage fails
+  hard on that). `tests/test_vendored_static_no_sourcemap.py` skips `webpack_bundles/` for that reason.
+- **Guards.** The Node tag in both Dockerfiles and `engines.node` follow `.nvmrc`'s major
+  (`tests/test_webpack_toolchain.py`); `compose/local/node/` is on Dependabot's docker list.
 
 ### Django Compressor
 

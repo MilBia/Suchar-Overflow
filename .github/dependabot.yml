@@ -42,6 +42,7 @@ updates:
       # Look for a `Dockerfile` in the listed directories
       directories:
           - 'compose/base/postgres/'
+          - 'compose/local/node/'
           - 'compose/production/traefik/'
           - 'compose/production/nginx/'
       # Every weekday

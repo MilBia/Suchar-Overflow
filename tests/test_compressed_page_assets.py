@@ -61,7 +61,8 @@ def _render(client: Client, settings: SettingsWrapper, url: str) -> str:
 
 
 def _script_tags(html: str) -> list[str]:
-    return SCRIPT_TAG_RE.findall(html)
+    # The webpack bundles (#466) are not compressor output; this module guards the compressor's.
+    return [tag for tag in SCRIPT_TAG_RE.findall(html) if "webpack_bundles/" not in tag]
 
 
 def _script_srcs(html: str) -> list[str]:

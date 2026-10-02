@@ -1,4 +1,4 @@
-{% load static i18n compress %}
+{% load static i18n compress webpack_loader %}
 
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
@@ -99,6 +99,9 @@
             {% endcompress %}
         {% endblock css %}
         {% block javascript %}
+            {# webpack entry (#466): still empty, the classic scripts below move into it in #468. #}
+            {# First on every page, so nothing to skip; also keeps the 500 page (no request) warning-free. #}
+            {% render_bundle 'project' attrs='defer' skip_common_chunks=False %}
             {% compress js %}
                 <script defer src="{% static 'js/timezone.js' %}"></script>
                 <script defer src="{% static 'js/project.js' %}"></script>

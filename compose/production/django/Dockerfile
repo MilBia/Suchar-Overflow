@@ -6,6 +6,23 @@
 # keep both FROM lines on one tag (#437, tests/test_python_runtime.py).
 FROM ghcr.io/astral-sh/uv:0.12.21 AS uv
 
+# Frontend bundles (#466). The tag follows .nvmrc's major (tests/test_node_runtime.py).
+# NODE_ENV stays unset until after `npm ci`: with `production` it would skip the
+# devDependencies, and webpack and its loaders are all devDependencies.
+FROM docker.io/node:24-trixie-slim AS client-builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Only what the build reads — not the whole tree — so a Python change does not rebuild it.
+COPY babel.config.js ./
+COPY webpack ./webpack
+COPY suchar_overflow/static ./suchar_overflow/static
+# webpack-stats.json lands in /app, the bundles in suchar_overflow/static/webpack_bundles/.
+RUN npm run build
+
 FROM docker.io/python:3.14-slim-trixie AS python-build-stage
 COPY --from=uv /uv /uvx /bin/
 
@@ -29,6 +46,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project --no-dev
 COPY . ${APP_HOME}
+# Built bundles + the stats file django-webpack-loader reads; `collectstatic` then picks
+# the bundles up from STATICFILES_DIRS.
+COPY --from=client-builder /app/webpack-stats.json ${APP_HOME}/webpack-stats.json
+COPY --from=client-builder /app/suchar_overflow/static/webpack_bundles ${APP_HOME}/suchar_overflow/static/webpack_bundles
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \

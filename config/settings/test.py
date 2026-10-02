@@ -4,6 +4,7 @@ With these settings, tests run faster.
 
 from .base import *  # noqa: F403
 from .base import TEMPLATES
+from .base import WEBPACK_LOADER
 from .base import env
 
 # GENERAL
@@ -38,6 +39,12 @@ TEMPLATES[0]["OPTIONS"]["debug"] = True  # type: ignore[index]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "http://media.testserver/"
+
+# WEBPACK (#466)
+# ------------------------------------------------------------------------------
+# No built bundles in unit tests: render_bundle yields one placeholder tag instead of
+# reading webpack-stats.json. e2e.py restores the real loader.
+WEBPACK_LOADER = {"DEFAULT": {**WEBPACK_LOADER["DEFAULT"], "LOADER_CLASS": "webpack_loader.loaders.FakeWebpackLoader"}}
 
 # CACHE
 # ------------------------------------------------------------------------------

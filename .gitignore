@@ -281,5 +281,9 @@ suchar_overflow/media/
 # Already covered by .envs/* above; listed so the intent survives a re-include.
 .envs/.secrets
 
+# webpack build output (#466): `npm run build` / `npm run dev` write both.
+webpack-stats.json
+suchar_overflow/static/webpack_bundles/
+
 # Superpowers subagent-driven-development scratch workspace
 .superpowers/

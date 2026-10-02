@@ -44,9 +44,18 @@ def test_vendored_asset_exists(asset: Path) -> None:
     assert asset.is_file(), asset
 
 
+# webpack's build output (#466, gitignored): it ships real .map files next to the bundles, so
+# a reference there is never dangling.
+BUILT_DIR = STATIC_DIR / "webpack_bundles"
+
+
+def _tracked_static(pattern: str) -> list[Path]:
+    return sorted(p for p in STATIC_DIR.rglob(pattern) if BUILT_DIR not in p.parents)
+
+
 @pytest.mark.parametrize(
     "asset",
-    sorted(p for ext in ("*.js", "*.css") for p in STATIC_DIR.rglob(ext)),
+    sorted(p for ext in ("*.js", "*.css") for p in _tracked_static(ext)),
     ids=lambda p: str(p.relative_to(STATIC_DIR)),
 )
 def test_static_asset_has_no_sourcemap_reference(asset: Path) -> None:
@@ -67,5 +76,5 @@ def test_static_asset_has_no_sourcemap_reference(asset: Path) -> None:
 
 def test_no_vendored_map_files_committed() -> None:
     """The `.map` files stay out of the repo — the strip rule is the contract."""
-    stray = sorted(STATIC_DIR.rglob("*.map"))
+    stray = _tracked_static("*.map")
     assert not stray, stray

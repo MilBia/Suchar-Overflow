@@ -518,6 +518,15 @@ wheels = [
 ]
 
 [[package]]
+name = "django-webpack-loader"
+version = "3.2.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f9/37/fca035c6366f57fb620e2c070943393850a4ab9500da9d3e05025ac78ec6/django_webpack_loader-3.2.4.tar.gz", hash = "sha256:0a253113ea6b150403cd2de802e732872c1d5e3185f0ad4a7fac673c00ae5af2", size = 18098, upload-time = "2026-05-13T13:19:47.777Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/35/88/0614ce4bdfce18697ef438acf2e1c68bcc37b4a5011f5c18b5670bf66c2c/django_webpack_loader-3.2.4-py2.py3-none-any.whl", hash = "sha256:a9d345746ae4d0700b9a86a7f0683ab8282c56a3a32736070f27ad658a9bfcb2", size = 20997, upload-time = "2026-05-13T13:19:46.177Z" },
+]
+
+[[package]]
 name = "djlint"
 version = "1.46.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1597,6 +1606,7 @@ dependencies = [
     { name = "django-ninja" },
     { name = "django-redis" },
     { name = "django-rq" },
+    { name = "django-webpack-loader" },
     { name = "gunicorn" },
     { name = "hiredis" },
     { name = "httpx" },
@@ -1643,6 +1653,7 @@ requires-dist = [
     { name = "django-ninja", specifier = "==1.7.1" },
     { name = "django-redis", specifier = "==7.0.0" },
     { name = "django-rq", specifier = "==4.2.0" },
+    { name = "django-webpack-loader", specifier = "==3.2.4" },
     { name = "gunicorn", specifier = "==26.2.0" },
     { name = "hiredis", specifier = "==3.4.2" },
     { name = "httpx", specifier = ">=0.28.1" },

@@ -170,6 +170,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "compressor",
     "django_rq",
+    "webpack_loader",
 ]
 
 LOCAL_APPS = [
@@ -281,6 +282,24 @@ COMPRESS_JS_FILTERS = [
 ]
 COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
 COMPRESS_OFFLINE = False  # Enabled per-environment in production.py
+
+# WEBPACK (#466)
+# ------------------------------------------------------------------------------
+# django-webpack-loader turns `{% render_bundle 'entry' %}` into the <script>/<link> tags
+# listed in webpack-stats.json (written by webpack-bundle-tracker on every build).
+# CACHE is the safe default (read the stats once per process); local.py turns it off so
+# the dev server's rebuilds show up without a restart. test.py swaps in the fake loader.
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "CACHE": True,
+        "STATS_FILE": str(BASE_DIR / "webpack-stats.json"),
+        "IGNORE": [r".+\.hot-update\.js", r".+\.map"],
+        # A page that renders two entries (the global `project` and a page script) shares the
+        # runtime/vendor chunks; without this the second render_bundle repeats them and every
+        # module in them would run twice.
+        "SKIP_COMMON_CHUNKS": True,
+    },
+}
 
 # MEDIA
 # ------------------------------------------------------------------------------
