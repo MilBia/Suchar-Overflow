@@ -17,6 +17,9 @@ Wchodzisz na własną odpowiedzialność (i z butelką wody).
 - [Wymagania](#wymagania)
 - [Uruchomienie lokalne](#uruchomienie-lokalne)
 - [Uruchomienie na produkcji](#uruchomienie-na-produkcji)
+- [Architektura produkcji](#architektura-produkcji)
+- [Zmienne środowiskowe](#zmienne-środowiskowe)
+- [Operacje](#operacje)
 - [Przydatne komendy](#przydatne-komendy)
 - [Tłumaczenia AI](#tłumaczenia-ai-fill_translations)
 - [Struktura projektu](#struktura-projektu)
@@ -353,6 +356,141 @@ docker compose -f docker-compose.production.yml exec postgres restore <nazwa_bac
 
 ---
 
+## Architektura produkcji
+
+```
+                    ┌──────────────┐   /static/, /media/   ┌─────────┐
+ przeglądarka ──443─▶   Traefik    ├──────────────────────▶│  nginx  │  (wolumeny tylko do odczytu)
+                    │ (TLS, LE)    │                       └─────────┘
+                    │              │   wszystko inne       ┌──────────────────────────────┐
+                    │              ├──────────────────────▶│ django: gunicorn + uvicorn   │
+                    └──────────────┘                       │ workers (ASGI), :5000        │
+                                                           └───────┬───────────────┬──────┘
+                                                                   │               │
+                       ┌───────────┐   kolejka RQ (db /1)   ┌──────▼─────┐   ┌─────▼────┐
+                       │  worker   │◀──────────────────────▶│   redis    │   │ postgres │
+                       │ rqworker  │                        │ cache (/0) │   └─────▲────┘
+                       └───────────┘                        │ kolejka(/1)│         │
+                       ┌───────────┐   zadania cykliczne    └────────────┘         │
+                       │   cron    ├───────────────────────────────────────────────┘
+                       │  rqcron   │   (+ achievements_catch_up przy starcie)
+                       └───────────┘
+```
+
+| Usługa     | Rola                                                                                                                                                      |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `traefik`  | Jedyny element wystawiony na świat (80/443); terminuje TLS (Let's Encrypt). `/static/` i `/media/` kieruje do `nginx`, resztę do `django`.                |
+| `nginx`    | Serwuje `/static/` (wolumen `production_django_static`) i `/media/` (`production_django_media`), oba tylko do odczytu. W łańcuchu ASGI nie ma WhiteNoise. |
+| `django`   | `gunicorn -k uvicorn.workers.UvicornWorker` (ASGI), liczba procesów z `WEB_CONCURRENCY`. Przy starcie: `migrate` i `collectstatic --clear`.               |
+| `worker`   | `rqworker --with-scheduler default`: wysyła maile (z ponowieniami), wykonuje zadania z kolejki.                                                           |
+| `cron`     | `achievements_catch_up`, potem `rqcron`: zadania cykliczne (konkursy miesiąca/roku, sweep publikacji). **Dokładnie jedna instancja.**                     |
+| `postgres` | PostgreSQL 18 + skrypty backupu (`backup`, `backups`, `restore`, `rmbackup`).                                                                             |
+| `redis`    | Cache (baza `/0`) i kolejka RQ (baza `/1`, osobna, żeby wyczyszczenie cache nie usunęło zadań). Snapshot co 60 s do wolumenu `/data`.                     |
+
+Wszystkie usługi mają healthchecki; `traefik` i `nginx` startują dopiero, gdy `django` jest `healthy`.
+Bundle webpacka powstają w obrazie (etap `client-builder`), nie przy starcie kontenera.
+
+---
+
+## Zmienne środowiskowe
+
+Zmienne zależne od środowiska czyta `config/settings/*.py`. Kolejność źródeł (wygrywa pierwsze): zmienne
+środowiska procesu (w produkcji `env_file` z compose) → `.env` (tylko z `DJANGO_READ_DOT_ENV_FILE=True`) →
+`.envs/.secrets` (plik poza gitem i poza obrazem, czytany, gdy istnieje; w produkcji compose podaje go jako
+opcjonalny `env_file` **przed** `.envs/.production/*`, więc te drugie go nadpisują).
+Szablony: `.envs/.production/.django.example` i `.postgres.example`; lokalne wartości: `.envs/.local/`.
+
+**Ogólne i bezpieczeństwo**
+
+| Zmienna                                 | Opis                                                                                         | Domyślnie                                           | Środowisko  |
+| --------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
+| `DJANGO_SETTINGS_MODULE`                | Moduł ustawień (`config.settings.local` / `.production`)                                     | `config.settings.production` (`asgi.py`)            | wszystkie   |
+| `DJANGO_SECRET_KEY`                     | Klucz kryptograficzny; brak wartości domyślnej                                               | — (w `test` stały klucz)                            | local, prod |
+| `DJANGO_DEBUG`                          | Tryb debug (`base.py`; `local.py` ustawia `DEBUG = True` na sztywno)                         | `False`                                             | wszystkie   |
+| `DJANGO_READ_DOT_ENV_FILE`              | Czy czytać `.env` z korzenia repo                                                            | `False`                                             | wszystkie   |
+| `DJANGO_ALLOWED_HOSTS`                  | Dozwolone hosty, po przecinku                                                                | `example.com`                                       | prod        |
+| `DJANGO_ADMIN_URL`                      | Ścieżka panelu admina (z końcowym `/`); pod nią też panel `django-rq/`                       | — (wymagana)                                        | prod        |
+| `DJANGO_ADMINS`                         | Odbiorcy maili o błędach 500 (`ADMINS`/`MANAGERS`), po przecinku; puste = nikt               | puste                                               | wszystkie   |
+| `DJANGO_SECURE_SSL_REDIRECT`            | Przekierowanie HTTP → HTTPS (`/healthz/` jest wyłączony z przekierowania)                    | `True`                                              | prod        |
+| `DJANGO_SECURE_HSTS_SECONDS`            | `max-age` HSTS                                                                               | `518400`                                            | prod        |
+| `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS` | `includeSubDomains` w HSTS                                                                   | `True`                                              | prod        |
+| `DJANGO_SECURE_HSTS_PRELOAD`            | `preload` w HSTS; wymaga `DJANGO_SECURE_HSTS_SECONDS >= 31536000`, inaczej start się nie uda | `False`                                             | prod        |
+| `DJANGO_SECURE_CONTENT_TYPE_NOSNIFF`    | Nagłówek `X-Content-Type-Options: nosniff`                                                   | `True`                                              | prod        |
+| `DJANGO_API_ENABLE_DOCS`                | Publiczna dokumentacja `/api/docs` (zalecane `False` na produkcji)                           | `True`                                              | wszystkie   |
+| `API_ENABLE_DOCS`                       | Stara nazwa `DJANGO_API_ENABLE_DOCS`, czytana jeszcze jako zapasowa (jedno wydanie)          | `True`                                              | wszystkie   |
+| `FEEDBACK_URL`                          | Adres linku „zgłoś błąd" w stopce                                                            | issues repozytorium                                 | wszystkie   |
+| `DJANGO_STATIC_ROOT`                    | Gdzie `collectstatic` zapisuje pliki statyczne                                               | `<repo>/staticfiles` (`/app/staticfiles` w obrazie) | wszystkie   |
+| `USE_DOCKER`                            | `yes` ustawia `INTERNAL_IPS` pod debug toolbar w kontenerze                                  | `no`                                                | local       |
+| `DJANGO_ALLOW_ASYNC_UNSAFE`             | Ustawiana przez `e2e.py` dla Playwrighta; nie ustawiać ręcznie                               | `true` (tylko E2E)                                  | e2e         |
+
+**Baza danych**
+
+| Zmienna                                                              | Opis                                                                                                                           | Domyślnie                       | Środowisko  |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- | ----------- |
+| `DATABASE_URL`                                                       | DSN bazy. Gdy ustawiona (nawet pusta), wygrywa; `/entrypoint` zawsze ustawia ją z `POSTGRES_*` (nadpisując wartość z `run -e`) | składany z `POSTGRES_*`         | wszystkie   |
+| `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`, `POSTGRES_PASSWORD` | Składniki DSN (hasło i nazwa są URL-enkodowane); także konfiguracja kontenera `postgres` i skryptów backupu                    | — (wymagane bez `DATABASE_URL`) | local, prod |
+| `POSTGRES_USER`                                                      | Użytkownik bazy; skrypt `backup` odmawia pracy jako `postgres`                                                                 | `postgres`                      | local, prod |
+| `CONN_MAX_AGE`                                                       | Czas życia połączenia. **Zostaw `0`** — pod ASGI wartość > 0 zostawia po jednym bezczynnym połączeniu na wątek (#430)          | `0`                             | prod        |
+
+**Redis i kolejka**
+
+| Zmienna           | Opis                                                                          | Domyślnie                   | Środowisko  |
+| ----------------- | ----------------------------------------------------------------------------- | --------------------------- | ----------- |
+| `REDIS_URL`       | Redis dla cache (`redis://` lub `rediss://`); brak wartości domyślnej         | — (wymagana)                | local, prod |
+| `REDIS_QUEUE_URL` | Redis dla kolejki RQ — osobna baza, żeby czyszczenie cache nie kasowało zadań | `REDIS_URL` ze ścieżką `/1` | local, prod |
+
+**Poczta** (każda opcja SMTP czytana jest też pod starą nazwą bez prefiksu `DJANGO_`, np. `EMAIL_HOST` — zapasowo,
+przez jedno wydanie; wygrywa nazwa z prefiksem, pusta wartość = nieustawiona)
+
+| Zmienna                       | Opis                                                     | Domyślnie                                     | Środowisko |
+| ----------------------------- | -------------------------------------------------------- | --------------------------------------------- | ---------- |
+| `DJANGO_EMAIL_BACKEND`        | Backend poczty                                           | `django.core.mail.backends.smtp.EmailBackend` | wszystkie  |
+| `DJANGO_EMAIL_HOST`           | Serwer SMTP                                              | `localhost` (lokalnie `mailpit`)              | wszystkie  |
+| `DJANGO_EMAIL_PORT`           | Port SMTP                                                | `25` (lokalnie `1025`)                        | wszystkie  |
+| `DJANGO_EMAIL_HOST_USER`      | Użytkownik SMTP                                          | puste                                         | prod       |
+| `DJANGO_EMAIL_HOST_PASSWORD`  | Hasło SMTP                                               | puste                                         | prod       |
+| `DJANGO_EMAIL_USE_TLS`        | STARTTLS (port 587); wyklucza `DJANGO_EMAIL_USE_SSL`     | `False`                                       | prod       |
+| `DJANGO_EMAIL_USE_SSL`        | Niejawny TLS (port 465); wyklucza `DJANGO_EMAIL_USE_TLS` | `False`                                       | prod       |
+| `DJANGO_EMAIL_TIMEOUT`        | Limit czasu połączenia SMTP (s)                          | `5`                                           | prod       |
+| `DJANGO_DEFAULT_FROM_EMAIL`   | Nadawca maili do użytkowników                            | `Suchar Overflow <noreply@example.com>`       | prod       |
+| `DJANGO_SERVER_EMAIL`         | Nadawca maili o błędach                                  | `DJANGO_DEFAULT_FROM_EMAIL`                   | prod       |
+| `DJANGO_EMAIL_SUBJECT_PREFIX` | Prefiks tematu maili o błędach                           | `[Suchar Overflow] `                          | prod       |
+
+**Serwer**
+
+| Zmienna           | Opis                                                                                                    | Domyślnie | Środowisko |
+| ----------------- | ------------------------------------------------------------------------------------------------------- | --------- | ---------- |
+| `WEB_CONCURRENCY` | Liczba procesów gunicorna (czyta ją sam gunicorn, nie settings). Bezpiecznie rosnąć: cron działa osobno | `1`       | prod       |
+
+---
+
+## Operacje
+
+Poniższe komendy zakładają produkcję (`docker compose -f docker-compose.production.yml …`, skrót `just prod-manage`);
+lokalnie odpowiadają im `just exec python manage.py …` i `just logs`.
+
+| Co                         | Jak                                                                                                                                           |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stan aplikacji             | `GET /healthz/` — `{"database", "cache", "queue"}`, 200 albo 503; `docker compose ps` pokazuje `healthy`                                      |
+| Stan kolejki               | `just prod-manage rqstats` (lokalnie `just exec python manage.py rqstats`)                                                                    |
+| Panel kolejki              | `/<DJANGO_ADMIN_URL>django-rq/` (zadania w toku, nieudane, ponowienia)                                                                        |
+| Healthcheck worker / cron  | `manage.py rq_healthcheck` / `manage.py rq_healthcheck --cron` (to samo wywołują healthchecki compose)                                        |
+| Logi worker / cron         | `just prod-logs worker cron`                                                                                                                  |
+| Ręczny worker              | `docker compose -f docker-compose.production.yml run --rm worker` (ten sam obraz, polecenie `/worker`)                                        |
+| Catch-up zadań cyklicznych | `just prod-manage achievements_catch_up` — wykonuje zaległe konkursy miesiąca/roku i sweep publikacji; `cron` robi to sam przy każdym starcie |
+| Backup / restore           | patrz [Backup bazy danych](#backup-bazy-danych)                                                                                               |
+
+Zasady: uruchamiaj **dokładnie jedną** instancję `cron` (druga podwoiłaby każde zadanie cykliczne);
+`worker` nie przeładowuje się sam po zmianie kodu zadania — zrestartuj go po wdrożeniu; po twardym zabiciu workera
+ponowienia mogą opóźnić się do ok. 10 minut (wygasa blokada schedulera RQ).
+
+**Migracja wolumenu PostgreSQL.** Wolumen `production_postgres_data` jest dziś montowany na
+`/var/lib/postgresql/18/docker`. Przejście na układ `/var/lib/postgresql` (pod `pg_upgrade --link`, #174) ma
+własną procedurę i issue (#464) — samo przepięcie istniejącego wolumenu zainicjowałoby pusty klaster, więc
+nie zmieniaj ścieżki w compose bez niej.
+
+---
+
 ## Przydatne komendy
 
 Projekt udostępnia skróty poprzez [just](https://github.com/casey/just):
@@ -453,7 +591,7 @@ Suchar-Overflow/
 │   ├── suchary/              #   └─ główna apka – żarty, głosowanie, API
 │   ├── stats/                #   └─ statystyki i leaderboard
 │   ├── users/                #   └─ zarządzanie użytkownikami (ActivationToken, mail tasks)
-│   ├── contrib/              #   └─ współdzielone narzędzia i mixiny
+│   ├── utils/                #   └─ kod przekrojowy: handlery błędów, middleware, logowanie, `/healthz/`, schematy API (bez modeli)
 │   ├── static/               #   └─ CSS, JS, obrazy, czcionki (+ `webpack_bundles/` – wynik buildu, poza gitem)
 │   └── templates/            #   └─ szablony Django (HTML)
 ├── webpack/                  # Konfiguracja webpacka (common/dev/prod/postcss) i źródła w `src/`
