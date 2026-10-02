@@ -25,14 +25,14 @@ if TYPE_CHECKING:
 
 
 _OPERATIONS = [
-        ("suchary_list_tags", "/api/suchary/tags"),
-        ("suchary_vote_suchar", "/api/suchary/1/vote"),
-        ("achievements_list_unseen_achievements", "/api/achievements/unseen"),
-        ("achievements_get_pending_toast", "/api/achievements/toast"),
-        ("achievements_mark_achievements_seen", "/api/achievements/mark-seen"),
-        ("achievements_list_frontend_owned", "/api/achievements/frontend-owned"),
-        ("achievements_record_frontend_event", "/api/achievements/frontend-event"),
-    ]
+    ("suchary_list_tags", "/api/suchary/tags"),
+    ("suchary_vote_suchar", "/api/suchary/1/vote"),
+    ("achievements_list_unseen_achievements", "/api/achievements/unseen"),
+    ("achievements_get_pending_toast", "/api/achievements/toast"),
+    ("achievements_mark_achievements_seen", "/api/achievements/mark-seen"),
+    ("achievements_list_frontend_owned", "/api/achievements/frontend-owned"),
+    ("achievements_record_frontend_event", "/api/achievements/frontend-event"),
+]
 
 
 @pytest.mark.parametrize(("name", "path"), _OPERATIONS)
