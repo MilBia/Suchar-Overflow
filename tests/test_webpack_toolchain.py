@@ -15,6 +15,8 @@ Only files are read for the Docker parts; that the stack comes up is checked by 
 import json
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
+from typing import Any
 
 import pytest
 import webpack_loader.config
@@ -26,6 +28,11 @@ from django.test import RequestFactory
 from django.urls import reverse
 from webpack_loader.utils import get_loader
 
+from suchar_overflow.conftest import make_user
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
 _ROOT = Path(__file__).resolve().parent.parent
 _NODE_FROM_RE = re.compile(r"^FROM\s+docker\.io/node:(\S+)", re.MULTILINE)
 
@@ -34,28 +41,33 @@ def _lines(path: str) -> list[str]:
     return (_ROOT / path).read_text(encoding="utf-8").splitlines()
 
 
-@pytest.fixture
-def real_loader(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):  # noqa: ANN201
-    """The real ``WebpackLoader`` reading a stats file with two entries and one shared chunk."""
-    assets = {
-        name: {"name": name, "publicPath": f"/static/webpack_bundles/{name}"}
-        for name in (
-            "js/runtime.aaaaaaaaaaaa.js",
-            "js/project.bbbbbbbbbbbb.js",
-            "js/leaderboard.cccccccccccc.js",
-            "css/project.dddddddddddd.css",
-        )
-    }
-    stats = {
+_RUNTIME = "js/runtime.aaaaaaaaaaaa.js"
+_PROJECT_CSS = "css/project.dddddddddddd.css"
+_PAGE_ENTRIES = ("achievements", "dashboard", "leaderboard", "suchar_form")
+
+
+def _page_css(entry: str) -> str:
+    return f"css/{entry}.eeeeeeeeeeee.css"
+
+
+def _fake_stats() -> dict[str, Any]:
+    """Stats like webpack-bundle-tracker writes: every entry has the shared runtime, its js and css."""
+    chunks = {"project": [_RUNTIME, "js/project.bbbbbbbbbbbb.js", _PROJECT_CSS]}
+    for entry in _PAGE_ENTRIES:
+        chunks[entry] = [_RUNTIME, f"js/{entry}.cccccccccccc.js", _page_css(entry)]
+    names = {name for chunk in chunks.values() for name in chunk}
+    return {
         "status": "done",
-        "assets": assets,
-        "chunks": {
-            "project": ["js/runtime.aaaaaaaaaaaa.js", "js/project.bbbbbbbbbbbb.js", "css/project.dddddddddddd.css"],
-            "leaderboard": ["js/runtime.aaaaaaaaaaaa.js", "js/leaderboard.cccccccccccc.js"],
-        },
+        "assets": {name: {"name": name, "publicPath": f"/static/webpack_bundles/{name}"} for name in names},
+        "chunks": chunks,
     }
+
+
+@pytest.fixture
+def real_loader(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """The real ``WebpackLoader`` reading a stats file with several entries and one shared chunk."""
     stats_file = tmp_path / "webpack-stats.json"
-    stats_file.write_text(json.dumps(stats), encoding="utf-8")
+    stats_file.write_text(json.dumps(_fake_stats()), encoding="utf-8")
     config = webpack_loader.config.user_config["DEFAULT"]
     monkeypatch.setitem(config, "LOADER_CLASS", "webpack_loader.loaders.WebpackLoader")
     monkeypatch.setitem(config, "STATS_FILE", str(stats_file))
@@ -80,7 +92,7 @@ def test_render_bundle_adds_defer_and_the_css_link(real_loader: None) -> None:  
     scripts = _render("{% render_bundle 'project' 'js' attrs='defer' %}")
     assert 'src="/static/webpack_bundles/js/project.bbbbbbbbbbbb.js" defer' in scripts
     styles = _render("{% render_bundle 'project' 'css' %}")
-    assert 'href="/static/webpack_bundles/css/project.dddddddddddd.css" rel="stylesheet"' in styles
+    assert f'href="/static/webpack_bundles/{_PROJECT_CSS}" rel="stylesheet"' in styles
 
 
 def test_second_entry_on_a_page_does_not_repeat_the_shared_runtime(real_loader: None) -> None:  # noqa: ARG001
@@ -146,3 +158,33 @@ def test_production_image_builds_the_bundles_in_a_client_builder_stage() -> None
         "NODE_ENV stays",
         "",
     )
+
+
+# Each page's stylesheet is its own entry's CSS, rendered once and after the global one (#250, #467).
+_PAGES_WITH_CSS: list[tuple[str, dict[str, str], str]] = [
+    ("stats:leaderboard", {}, "leaderboard"),
+    ("suchary:add", {}, "suchar_form"),
+    ("achievements:list", {}, "achievements"),
+    ("achievements:mine", {}, "achievements"),
+    ("users:update", {}, "dashboard"),
+]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(("url_name", "kwargs", "entry"), _PAGES_WITH_CSS)
+def test_page_renders_its_entry_css_once_after_the_global_one(
+    real_loader: None,  # noqa: ARG001
+    client: Client,
+    url_name: str,
+    kwargs: dict[str, str],
+    entry: str,
+) -> None:
+    client.force_login(make_user("css_probe"))
+    html = client.get(reverse(url_name, kwargs=kwargs)).content.decode()
+    hrefs = re.findall(r'<link[^>]*href="([^"]+\.css)"', html)
+    project, page = f"/static/webpack_bundles/{_PROJECT_CSS}", f"/static/webpack_bundles/{_page_css(entry)}"
+    # The JS call in base.html must not repeat the CSS (a late copy of project.css would beat the page sheet).
+    assert hrefs.count(project) == 1, hrefs
+    assert hrefs.count(page) == 1, hrefs
+    assert hrefs.index(page) > hrefs.index(project)
+    assert not re.search(r"<link[^>]*\bdefer\b", html)

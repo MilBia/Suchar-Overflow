@@ -34,7 +34,6 @@ STATIC_DIR = Path(__file__).resolve().parent.parent / "suchar_overflow" / "stati
 VENDORED_ASSETS = (
     STATIC_DIR / "js" / "chart.umd.min.js",
     STATIC_DIR / "js" / "flatpickr.min.js",
-    STATIC_DIR / "css" / "pages" / "flatpickr.min.css",
 )
 
 

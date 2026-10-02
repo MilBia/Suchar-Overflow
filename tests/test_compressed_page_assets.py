@@ -181,61 +181,6 @@ def test_json_script_survives_compression(
         assert f'id="{json_id}"' in html, json_id
 
 
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    ("url_name", "expected_bundles"),
-    [
-        ("achievements:list", 2),
-        ("achievements:mine", 2),
-        ("suchary:add", 2),
-        # pages/leaderboard.css left base.html's global bundle in #250.
-        ("stats:leaderboard", 2),
-    ],
-)
-def test_page_css_is_compressed(
-    logged_in_client: Client,
-    settings: SettingsWrapper,
-    url_name: str,
-    expected_bundles: int,
-) -> None:
-    """Page-specific stylesheets collapse into their own CACHE bundle.
-
-    base.html's block is one bundle, the page's own block is the second — they
-    are deliberately *not* merged, so each template keeps its own output file.
-    """
-    html = _render(logged_in_client, settings, reverse(url_name))
-
-    hrefs = LINK_TAG_RE.findall(html)
-    uncompressed = [href for href in hrefs if not href.startswith("/static/CACHE/css/")]
-    assert not uncompressed, uncompressed
-    assert len(set(hrefs)) == expected_bundles, hrefs
-
-
-@pytest.mark.django_db
-def test_user_detail_css_is_compressed(
-    client: Client,
-    settings: SettingsWrapper,
-) -> None:
-    """Same as above for the profile page, fetched by username.
-
-    pages/profile.css moved to users/base_dashboard.html's own block in #250,
-    so user_detail.html emits base.html's bundle plus that one — two in total,
-    none raw.
-    """
-    user = make_user("compress_profile_css")
-    client.force_login(user)
-    html = _render(
-        client,
-        settings,
-        reverse("users:detail", kwargs={"username": user.username}),
-    )
-
-    hrefs = LINK_TAG_RE.findall(html)
-    uncompressed = [href for href in hrefs if not href.startswith("/static/CACHE/css/")]
-    assert not uncompressed, uncompressed
-    assert len(set(hrefs)) == 2, hrefs
-
-
 # Every page with its own `{% compress %}` block (#205, plus #250 which moved
 # pages/leaderboard.css and pages/profile.css out of the global bundle), plus
 # the home page as a control. #250 routes profile.css through

@@ -1123,7 +1123,7 @@ IIFE, in `base.html`'s global `{% compress js %}` block right after
 - **The combo-meter is a floating `<div id="ee-publika-meter">`** built in JS
   (`createElement` / `textContent`, never `innerHTML`), styled inline
   property-by-property (jsdom's CSSOM drops custom props set via `cssText`)
-  from the project's theme-aware custom properties (`variables.css`) with
+  from the project's theme-aware custom properties (`_variables.scss`) with
   literal fallbacks — **no Bootstrap classes**, unlike the surrounding
   `suchar_list.html` markup. The 10th funny vote runs `resetCombo()` (which
   removes the meter) _before_ `firePublikaRozgrzana()`, so the meter is gone
@@ -1316,7 +1316,7 @@ Django 6.0's `django.middleware.csp.ContentSecurityPolicyMiddleware` is enabled 
 injects. `style-src` allows `unsafe-inline` for CSS custom properties. There is no
 third-party CDN allowlisted anywhere in `SECURE_CSP` — `chart.umd.min.js` and
 `flatpickr` are vendored under `static/js/`, and fonts (Inter, Fira Code) are
-self-hosted via `static/css/fonts.css`; none of them load from `cdn.jsdelivr.net` or
+self-hosted via `webpack/src/scss/_fonts.scss`; none of them load from `cdn.jsdelivr.net` or
 Google Fonts.
 If you add inline `<script>` tags to a template, they must use the nonce or they will
 be blocked in browsers that enforce CSP.
@@ -1368,8 +1368,7 @@ sed -i -E \
   -e 's|//# ?sourceMappingURL=[^[:space:]]*||' \
   -e 's|/\*# ?sourceMappingURL=[^*]*\*/||' \
   suchar_overflow/static/js/chart.umd.min.js \
-  suchar_overflow/static/js/flatpickr.min.js \
-  suchar_overflow/static/css/pages/flatpickr.min.css
+  suchar_overflow/static/js/flatpickr.min.js
 ```
 
 (Covers both the JS `//# sourceMappingURL=` and the CSS `/*# sourceMappingURL=... */`
@@ -1388,10 +1387,9 @@ is the belt-and-braces check (`DJANGO_SETTINGS_MODULE=config.settings.production
 plus dummy `DJANGO_SECRET_KEY`/`DJANGO_ADMIN_URL`/`DJANGO_ALLOWED_HOSTS`/
 `DATABASE_URL`/`REDIS_URL`, then `python manage.py collectstatic --noinput --clear`).
 
-Flatpickr also vendors a stylesheet at `suchar_overflow/static/css/pages/flatpickr.min.css`
-— when bumping `flatpickr.min.js`, refresh the CSS from the same release too
-(`https://cdn.jsdelivr.net/npm/flatpickr@<version>/dist/flatpickr.min.css`), or the JS
-and CSS builds can drift out of sync.
+Flatpickr's stylesheet is no longer vendored (#467): `webpack/src/js/pages/suchar_form.js` imports
+`flatpickr/dist/flatpickr.min.css` from npm (`flatpickr` is a devDependency, pinned to the
+version of the still-vendored script until #468 moves that over too).
 
 `suchar_overflow/static/js/flatpickr.LICENSE.txt` carries flatpickr's MIT notice
 and **must be refreshed in lockstep with `flatpickr.min.js`** (its first line is a
@@ -1473,69 +1471,38 @@ false` keeps the dev server from buffering the SSE stream. The client's socket U
   build stage; `collectstatic` then picks the bundles up. Prod devtool is `source-map` with real
   `.map` files next to the bundles, so no `sourceMappingURL` dangles (#249 — manifest storage fails
   hard on that). `tests/test_vendored_static_no_sourcemap.py` skips `webpack_bundles/` for that reason.
+- **Styles (#467).** The global stylesheet is `webpack/src/scss/project.scss`: an ordered list of `@use`
+  lines (fonts → core → components → `_site.scss`, the old `project.css`) that **is** the cascade order,
+  exactly as the `<link>` order in the old `{% compress css %}` block was — `utilities` and
+  `components/forms` carry comments that depend on it; a new global module goes in at the right position,
+  not at the end. The partials are plain CSS (a valid SCSS subset); `@use`, never the deprecated
+  `@import`. Variables stay CSS custom properties (`_variables.scss`) so the light/dark theme switches at
+  runtime. Page sheets (`scss/pages/*.scss`) are **not** in it: each page has an entry
+  (`webpack/src/js/pages/<name>.js` imports its scss — `achievements`, `dashboard` = the old
+  `profile.css`, `leaderboard`, `suchar_form`, which also imports flatpickr's CSS from npm first) and the
+  template renders `{% render_bundle '<entry>' 'css' %}` after `{{ block.super }}`, so the page's
+  equal-specificity `!important` rules still win on order (#250). Always pass an extension to
+  `render_bundle` for CSS (`'css'`) **and** JS (`'js'`): a call without one renders both, and a second
+  copy of `project.css` landing after the page sheet silently flips the cascade (it did, once —
+  E2E `test_dashboard_chrome` caught it). `fonts` are written `url('/static/fonts/…')` and css-loader is
+  told to leave `/static/` URLs alone (nginx/collectstatic serve them, the manifest storage hashes them).
+  postcss-preset-env (`last 2 versions`) adds `-webkit-` prefixes, logical-property fallbacks and
+  `@supports` wrappers around `color-mix()`; `rgb(from …)` passes through. `tests/test_scss_sources.py`
+  guards the `@use` order, that every partial is used once and the font paths;
+  `tests/test_webpack_toolchain.py` that every page renders its entry's CSS once, after the global one.
 - **Guards.** The Node tag in both Dockerfiles and `engines.node` follow `.nvmrc`'s major
   (`tests/test_webpack_toolchain.py`); `compose/local/node/` is on Dependabot's docker list.
 
 ### Django Compressor
 
-`{% compress css %}` / `{% compress js %}` tags in `base.html` are transparent when
+`{% compress js %}` tags in `base.html` and the page templates are transparent when
 `COMPRESS_ENABLED = False` (dev/test). Only active in production after `manage.py compress --force`
-runs (handled automatically in `compose/production/django/start`).
+runs (handled automatically in `compose/production/django/start`). Stylesheets left the compressor
+in #467 — see _Frontend pipeline_ above — and the whole thing goes in #469; only the JS rules below
+remain until #468 moves it.
 
-**Never use CSS `@import` for a project module** (issue #204). `COMPRESS_CSS_FILTERS`
-(`CssAbsoluteFilter` + `RCSSMinFilter`) neither resolves nor inlines a bare
-`@import 'x.css'` — `CssAbsoluteFilter` only rewrites `url(...)` / `src="..."`, so the
-directive is copied into `/static/CACHE/css/output.<hash>.css` verbatim. Two problems:
-
-- **It defeats the compressor.** Instead of the single minified bundle the
-  `{% compress %}` block exists to produce, the browser gets that bundle _plus_ ~22
-  extra render-blocking requests it can only discover sequentially (it must fetch and
-  parse the bundle before it sees the `@import`s). That is the #204 regression — the
-  compressor stops doing the one thing it was switched on for.
-- **Whether those copied `@import`s even resolve in production is incidental.**
-  `production.py` sets `STORAGES["staticfiles"]` to a
-  `CompressedManifestStaticFilesStorage`, and `compose/production/django/start` runs
-  `collectstatic` _before_ `compress --force`; Django's `HashedFilesMixin` rewrites
-  `@import 'x.css'` → `@import url("x.<hash>.css")`, which `CssAbsoluteFilter` then
-  _does_ absolutise — so today's production bundle's imports happen to point at real
-  files. Switch to any non-manifest `STORAGES`, or set `COMPRESS_ENABLED = True` in any
-  other settings profile, and all ~22 turn into `/static/CACHE/css/<module>.css` → HTTP 404. Invisible in dev/test because compression is off there.
-
-`manage.py compress --force` is **not** a gate for this — it reports success on the
-broken state too (confirmed on `main` during the #237 review). Exactly two unit tests
-run with `COMPRESS_ENABLED = True`, and nothing else in the suite does:
-`tests/test_compressed_css.py` asserts the `base.html` bundle has no `@import`, has
-absolutised `url(...)` refs, and preserves the cascade order (writing into the gitignored
-`staticfiles/CACHE/` via compressor's own storage); `tests/test_compressed_page_assets.py`
-(#205) covers the page-specific blocks — see below. Both run on the default non-manifest
-storage, so they guard "no `@import` in the bundle", not any particular production
-render. Stylesheet composition therefore lives in the templates:
-
-- One `{% compress %}` block = one output file, and **position inside the block is the
-  cascade order**. `base.html`'s css block lists the ~21 global modules in the canonical
-  order fonts → core → components → `project.css`; `utilities.css` and
-  `components/forms.css` carry comments that depend on it. A new global module gets a
-  `<link>` at the right position there. There is no `pages/` stage in the global block
-  anymore — `pages/leaderboard.css` and `pages/profile.css` moved to page-specific
-  blocks in #250 (`stats/leaderboard.html` and `users/base_dashboard.html`
-  respectively; `base_dashboard.html` covers `user_detail`/`user_form`/
-  `password_change_form`, since its sidebar uses `.dashboard-card`/`.sticky-sidebar`).
-  Both load _after_ the global bundle, so their equal-specificity `!important` rules
-  (`.rank-*` vs `utilities.css`, `.sticky-sidebar` vs `layout.css`) still win on order.
-  `.stats-text-sm` was shared by the leaderboard partial and `user_detail.html`, so it
-  moved to `project.css` (still last in the global bundle) rather than either
-  page sheet; `.sticky-preview` moved from `profile.css` to `pages/suchar_form.css`,
-  its only consumer.
-- A page template keeps `{{ block.super }}` **outside** any `{% compress %}` tag — it
-  already expands to base's finished `<link ... CACHE/css/output.<hash>.css>`, and
-  re-feeding a compressed output through the compressor is wrong — then opens its
-  **own** `{% compress css %}` block for its page-specific sheets, a second output file.
-  Don't try to merge page sheets into base's block. `base_dashboard.html` needs its own
-  `{% load compress %}` — `{% load %}` does not inherit from `base.html`.
-- Vendored, already-minified sheets (`pages/flatpickr.min.css`) are fine inside a block.
-
-Page-specific `<script>` blocks (issue #205) follow that same "own block,
-`{{ block.super }}` stays outside" rule, and add two JS-only ones. All three break only
+Page-specific `<script>` blocks (issue #205) follow an "own block, `{{ block.super }}` stays
+outside" rule, with two JS-only ones besides. All three break only
 under `COMPRESS_OFFLINE = True` (production; dev/test never notice):
 
 - **`{{ block.super }}` inside your own `{% compress %}` block → `OfflineGenerationError`
@@ -1687,8 +1654,9 @@ from the template-level `i18n` used elsewhere).
 ## Templates and static files
 
 - Templates: `suchar_overflow/templates/` — Django template engine (`DjangoTemplates`)
-  with `{% load compress %}`, `{% load static %}` and `{% load i18n %}` where needed.
-- CSS: `suchar_overflow/static/css/` — uses CSS custom properties (`variables.css`).
+  with `{% load webpack_loader %}`, `{% load compress %}` (JS only, until #469), `{% load static %}` and
+  `{% load i18n %}` where needed.
+- CSS: SCSS under `webpack/src/scss/` (global partials + `pages/`) — uses CSS custom properties (`_variables.scss`).
 - JS: `suchar_overflow/static/js/project.js` (main) + `js/features/` (split features).
 - djlint enforces template formatting. After editing templates, run `pre-commit` to
   auto-format. djlint max line length for templates is 120 chars, indent 4 spaces.

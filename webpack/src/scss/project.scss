@@ -1,0 +1,30 @@
+// The global stylesheet (#467): the modules `base.html` used to list in one {% compress css %}
+// block, in the same canonical order — fonts → core → components → site. Position IS the
+// cascade order here, as it was there: `utilities` and `components/forms` carry comments that
+// depend on it. A new global module goes in at the right position, not at the end.
+//
+// `@use` (not the deprecated `@import`): the partials are plain CSS, so each one is emitted
+// once, where it is first used. Variables stay CSS custom properties (`_variables.scss`), so
+// the light/dark theme still switches at runtime.
+@use 'fonts';
+@use 'variables';
+@use 'reset';
+@use 'typography';
+@use 'layout';
+@use 'utilities';
+@use 'components/buttons';
+@use 'components/navbar';
+@use 'components/cards';
+@use 'components/forms';
+@use 'components/modals';
+@use 'components/toasts';
+@use 'components/list_group';
+@use 'components/pagination';
+@use 'components/dropdowns';
+@use 'components/voting';
+@use 'components/heatmap';
+@use 'components/achievement-badge';
+@use 'components/suchar-card';
+@use 'components/footer';
+@use 'components/error-page';
+@use 'site';

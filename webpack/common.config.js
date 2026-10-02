@@ -11,6 +11,12 @@ module.exports = {
     target: 'web',
     entry: {
         project: path.resolve(__dirname, 'src/js/project.js'),
+        // One entry per page that has its own stylesheet (and, from #468, its own script).
+        // Rendered after the global `project` entry, so page rules still win on order (#250).
+        achievements: path.resolve(__dirname, 'src/js/pages/achievements.js'),
+        dashboard: path.resolve(__dirname, 'src/js/pages/dashboard.js'),
+        leaderboard: path.resolve(__dirname, 'src/js/pages/leaderboard.js'),
+        suchar_form: path.resolve(__dirname, 'src/js/pages/suchar_form.js'),
     },
     output: {
         path: path.resolve(ROOT, 'suchar_overflow/static/webpack_bundles/'),
@@ -47,13 +53,21 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
+                // package.json says "type": "commonjs" (the configs here are CJS), which webpack
+                // would read as `javascript/dynamic` and reject `import` in the sources.
+                type: 'javascript/auto',
                 use: 'babel-loader',
             },
             {
                 test: /\.(s?css)$/,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    { loader: 'css-loader', options: { importLoaders: 2 } },
+                    {
+                        loader: 'css-loader',
+                        // Fonts are written as absolute /static/fonts/... (nginx / collectstatic serve
+                        // them, the manifest storage hashes them); css-loader must not try to bundle them.
+                        options: { importLoaders: 2, url: { filter: (url) => !url.startsWith('/static/') } },
+                    },
                     {
                         loader: 'postcss-loader',
                         options: { postcssOptions: { config: path.resolve(__dirname, 'postcss.config.js') } },
