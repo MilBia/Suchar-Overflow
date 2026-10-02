@@ -663,8 +663,8 @@ def test_award_best_suchar_raises_on_unknown_period() -> None:
 
 
 # ---------------------------------------------------------------------------
-# award_best_suchar records a SchedulerRun (replaces django-apscheduler's
-# DjangoJobStore visibility now that the scheduler uses an in-memory jobstore)
+# award_best_suchar records a SchedulerRun (the marker catch-up compares against,
+# and the admin's read-only view of each scheduled job's last run)
 # ---------------------------------------------------------------------------
 
 
@@ -741,7 +741,7 @@ def test_award_best_suchar_skips_close_old_connections_inside_atomic_block() -> 
 
 
 # ---------------------------------------------------------------------------
-# due_monthly_run_at — catch-up detection for the in-memory jobstore (#169)
+# due_monthly_run_at — detection of a fire due but never recorded (#169)
 # ---------------------------------------------------------------------------
 
 
@@ -810,7 +810,7 @@ def test_due_monthly_run_at_january_rolls_back_to_december() -> None:
 
 
 # ---------------------------------------------------------------------------
-# due_yearly_run_at — catch-up detection for the in-memory jobstore (#168)
+# due_yearly_run_at — detection of a fire due but never recorded (#168)
 # ---------------------------------------------------------------------------
 
 

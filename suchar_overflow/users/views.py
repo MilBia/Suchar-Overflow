@@ -30,7 +30,8 @@ from .models import ActivationToken
 from .models import EmailChangeRequest
 from .tasks import enqueue_email
 from .tasks import send_activation_email
-from .tasks import send_email_change_emails
+from .tasks import send_email_change_notify_email
+from .tasks import send_email_change_verify_email
 
 if TYPE_CHECKING:
     import uuid
@@ -554,14 +555,8 @@ class EmailChangeInitiateView(AsyncLoginRequiredMixin):
         verify_full = f"{protocol}://{host}{verify_url}"
         revoke_full = f"{protocol}://{host}{revoke_url}"
 
-        await sync_to_async(enqueue_email)(
-            send_email_change_emails,
-            user.pk,
-            old_email,
-            new_email,
-            verify_full,
-            revoke_full,
-        )
+        await sync_to_async(enqueue_email)(send_email_change_verify_email, user.pk, new_email, verify_full)
+        await sync_to_async(enqueue_email)(send_email_change_notify_email, user.pk, old_email, new_email, revoke_full)
         return redirect(reverse_lazy("users:email_change_done"))
 
 

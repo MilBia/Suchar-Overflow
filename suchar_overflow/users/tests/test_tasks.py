@@ -14,38 +14,58 @@ from suchar_overflow.conftest import make_user
 from suchar_overflow.users.tasks import EMAIL_RETRY_INTERVALS
 from suchar_overflow.users.tasks import enqueue_email
 from suchar_overflow.users.tasks import send_activation_email
-from suchar_overflow.users.tasks import send_email_change_emails
+from suchar_overflow.users.tasks import send_email_change_notify_email
+from suchar_overflow.users.tasks import send_email_change_verify_email
+
+
+def _translated(msgid: str, language: str) -> str:
+    with translation.override(language):
+        return gettext(msgid)
+
+
+ACTIVATION_SUBJECT = "Confirm you have a sense of humor (Account Activation)"
+
+
+def test_the_two_languages_really_differ() -> None:
+    """Guards the tests below: with missing catalogs both subjects would be the msgid."""
+    assert _translated(ACTIVATION_SUBJECT, "pl") != _translated(ACTIVATION_SUBJECT, "en")
 
 
 @pytest.mark.django_db
-def test_activation_email_uses_the_language_passed_to_the_job() -> None:
-    user = make_user("mailer", email="mailer@example.com")
-    with translation.override("pl"):
-        expected_pl = gettext("Confirm you have a sense of humor (Account Activation)")
+@pytest.mark.parametrize(("language", "other"), [("pl", "en"), ("en", "pl")])
+def test_activation_email_uses_the_language_passed_to_the_job(language: str, other: str) -> None:
+    user = make_user(f"mailer_{language}", email=f"mailer_{language}@example.com")
     # The worker runs in the default language, whatever the requester spoke.
-    with translation.override("en"):
-        send_activation_email(user.pk, "example.com", str(uuid.uuid4()), "https", language="pl")
-        assert translation.get_language() == "en"
-    assert mail.outbox[0].subject == expected_pl
-    assert mail.outbox[0].to == ["mailer@example.com"]
+    with translation.override(other):
+        send_activation_email(user.pk, "example.com", str(uuid.uuid4()), "https", language=language)
+        assert translation.get_language() == other
+    assert mail.outbox[0].subject == _translated(ACTIVATION_SUBJECT, language)
+    assert mail.outbox[0].subject != _translated(ACTIVATION_SUBJECT, other)
+    assert mail.outbox[0].to == [f"mailer_{language}@example.com"]
 
 
 @pytest.mark.django_db
-def test_activation_email_in_english_when_asked() -> None:
-    user = make_user("mailer_en", email="mailer_en@example.com")
-    send_activation_email(user.pk, "example.com", str(uuid.uuid4()), "https", language="en")
-    assert mail.outbox[0].subject == "Confirm you have a sense of humor (Account Activation)"
-
-
-@pytest.mark.django_db
-def test_email_change_sends_both_mails_in_the_given_language() -> None:
-    user = make_user("changer", email="old@example.com")
-    send_email_change_emails(user.pk, "old@example.com", "new@example.com", "https://v", "https://r", language="en")
+@pytest.mark.parametrize("language", ["pl", "en"])
+def test_email_change_sends_both_mails_in_the_given_language(language: str) -> None:
+    user = make_user(f"changer_{language}", email="old@example.com")
+    send_email_change_verify_email(user.pk, "new@example.com", "https://v", language=language)
+    send_email_change_notify_email(user.pk, "old@example.com", "new@example.com", "https://r", language=language)
     subjects = {msg.to[0]: msg.subject for msg in mail.outbox}
-    assert subjects["new@example.com"] == "Confirm it's you (Email Change)"
-    assert subjects["old@example.com"] == "Someone wants to change your email address (We hope it's you)"
+    assert subjects["new@example.com"] == _translated("Confirm it's you (Email Change)", language)
+    assert subjects["old@example.com"] == _translated(
+        "Someone wants to change your email address (We hope it's you)",
+        language,
+    )
     assert any("https://v" in msg.body for msg in mail.outbox)
     assert any("https://r" in msg.body for msg in mail.outbox)
+
+
+@pytest.mark.django_db
+def test_each_email_change_message_is_its_own_job() -> None:
+    """A retry of the failed second send must not repeat the first (#461)."""
+    user = make_user("onejob", email="old@example.com")
+    send_email_change_verify_email(user.pk, "new@example.com", "https://v", language="en")
+    assert [msg.to for msg in mail.outbox] == [["new@example.com"]]
 
 
 @pytest.mark.django_db

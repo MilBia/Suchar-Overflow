@@ -20,7 +20,8 @@ from suchar_overflow.conftest import run_enqueued_jobs
 from suchar_overflow.users.models import ActivationToken
 from suchar_overflow.users.models import EmailChangeRequest
 from suchar_overflow.users.tasks import send_activation_email
-from suchar_overflow.users.tasks import send_email_change_emails
+from suchar_overflow.users.tasks import send_email_change_notify_email
+from suchar_overflow.users.tasks import send_email_change_verify_email
 
 if TYPE_CHECKING:
     from unittest.mock import MagicMock
@@ -98,6 +99,28 @@ def test_signup_enqueues_activation_email(client: Client, rq_queue: MagicMock) -
     assert rq_queue.enqueue.call_args.kwargs["retry"].intervals == [10, 60, 300]
     run_enqueued_jobs(rq_queue)
     assert "newuser@example.com" in mail.outbox[0].to
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("language", ["en", "pl"])
+def test_signup_passes_the_requesters_language_to_the_job(
+    client: Client,
+    rq_queue: MagicMock,
+    language: str,
+) -> None:
+    """``sync_to_async`` must carry the request's active language into ``enqueue_email``;
+    the worker has no request, so this is the only place it can come from (#461)."""
+    client.post(
+        reverse("users:signup"),
+        {
+            "username": "polyglot",
+            "email": "polyglot@example.com",
+            "password1": "Str0ngP@ssword!",
+            "password2": "Str0ngP@ssword!",
+        },
+        headers={"Accept-Language": language},
+    )
+    assert rq_queue.enqueue.call_args.kwargs["language"] == language
 
 
 @pytest.mark.django_db
@@ -237,6 +260,8 @@ def test_email_change_creates_request_and_enqueues_emails(client: Client, rq_que
     response = client.post(
         reverse("users:email_change_initiate"),
         {"email": "new@example.com"},
+        # English, so the language assertion below cannot pass on the default alone.
+        headers={"Accept-Language": "en"},
     )
 
     assert response.status_code == HTTPStatus.FOUND
@@ -245,8 +270,12 @@ def test_email_change_creates_request_and_enqueues_emails(client: Client, rq_que
         new_email="new@example.com",
     ).exists()
     assert mail.outbox == []
-    rq_queue.enqueue.assert_called_once()
-    assert rq_queue.enqueue.call_args.args[0] is send_email_change_emails
+    # One job per message: a retry of one must not re-send the other.
+    assert [call.args[0] for call in rq_queue.enqueue.call_args_list] == [
+        send_email_change_verify_email,
+        send_email_change_notify_email,
+    ]
+    assert {call.kwargs["language"] for call in rq_queue.enqueue.call_args_list} == {"en"}
     run_enqueued_jobs(rq_queue)
     # Two emails: one to new address (verify), one to old (revoke notification).
     assert len(mail.outbox) == 2

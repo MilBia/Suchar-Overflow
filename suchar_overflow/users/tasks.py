@@ -60,19 +60,17 @@ def send_activation_email(
     send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 
-def send_email_change_emails(  # noqa: PLR0913, PLR0917
+def send_email_change_verify_email(
     user_pk: int,
-    old_email: str,
     new_email: str,
     verify_link: str,
-    revoke_link: str,
     language: str | None = None,
 ) -> None:
+    """Ask the *new* address to confirm the change."""
     user = User.objects.get(pk=user_pk)
-
     with translation.override(language):
-        mail_subject_new = _("Confirm it's you (Email Change)")
-        message_new = render_to_string(
+        subject = _("Confirm it's you (Email Change)")
+        message = render_to_string(
             "users/email_verify_email.txt",
             {
                 "user": user,
@@ -80,10 +78,25 @@ def send_email_change_emails(  # noqa: PLR0913, PLR0917
                 "new_email": new_email,
             },
         )
-        mail_subject_old = _(
-            "Someone wants to change your email address (We hope it's you)",
-        )
-        message_old = render_to_string(
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_email])
+
+
+def send_email_change_notify_email(
+    user_pk: int,
+    old_email: str,
+    new_email: str,
+    revoke_link: str,
+    language: str | None = None,
+) -> None:
+    """Warn the *old* address, with a link to revoke the change.
+
+    A separate job from ``send_email_change_verify_email``: one job per message, so a
+    retry after one send fails never repeats the other.
+    """
+    user = User.objects.get(pk=user_pk)
+    with translation.override(language):
+        subject = _("Someone wants to change your email address (We hope it's you)")
+        message = render_to_string(
             "users/email_notify_old_email.txt",
             {
                 "user": user,
@@ -91,5 +104,4 @@ def send_email_change_emails(  # noqa: PLR0913, PLR0917
                 "new_email": new_email,
             },
         )
-    send_mail(mail_subject_new, message_new, settings.DEFAULT_FROM_EMAIL, [new_email])
-    send_mail(mail_subject_old, message_old, settings.DEFAULT_FROM_EMAIL, [old_email])
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [old_email])

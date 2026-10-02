@@ -255,8 +255,9 @@ until you push a commit to that PR with the matching `rev`
 - The test settings (`config/settings/test.py`) use `locmem` cache (no Redis needed;
   local and production use Redis — see Settings architecture)
   and `COMPRESS_ENABLED = False` (no compressor).
-- **Email sending (#461)**: views queue `send_activation_email` / `send_email_change_emails`
-  through `enqueue_email` (`users/tasks.py`, `sync_to_async` in the async views), so a request
+- **Email sending (#461)**: views queue `send_activation_email` and the two email-change jobs
+  (`send_email_change_verify_email` / `send_email_change_notify_email`, one job per message so a retry
+  never repeats the other send) through `enqueue_email` (`users/tasks.py`, `sync_to_async` in the async views), so a request
   sends nothing. The autouse `rq_queue` fixture (root `conftest.py`) mocks `django_rq.get_queue`:
   assert on `rq_queue.enqueue.call_args` (task, args, `language=`, `retry=`), then call
   `run_enqueued_jobs(rq_queue)` (`suchar_overflow/conftest.py`) to execute the jobs and read
@@ -268,7 +269,7 @@ until you push a commit to that PR with the matching `rev`
   being tested, never assert on all `UserAchievement` for a user. Similarly, a
   `SchedulerRun(job_id="award-best-suchar-year")` row is baseline data seeded by
   migration `0015_seed_yearly_scheduler_run` (see Background jobs below) —
-  tests exercising `_catch_up_missed_yearly_run` must delete or `update_or_create`
+  tests exercising `award_best_suchar_year_if_due` must delete or `update_or_create`
   it first rather than assuming no marker exists.
 - **Streaming responses**: the only streaming endpoint is the SSE stream, whose
   generator never completes. Do **not** use `b"".join(response.streaming_content)`
@@ -1177,12 +1178,12 @@ No profile field — cookie only.
   / bare `localdate()` in computation code — inside a request that is the visitor's.
 - Python-side `.date()` / `.replace(hour=0)` on `timezone.now()` is the **UTC** date
   (wrong between 22:00/23:00 and 24:00 UTC) — use `localdate(..., service_tz)`.
-- The scheduler is `BackgroundScheduler(timezone=settings.TIME_ZONE)`, so the
-  contest crons fire at 00:05 _service-local_; `due_*_run_at` convert `now` to the
-  service zone before reconstructing the fire time. 00:05 never falls in a DST
-  gap/overlap (the switch is at 02:00/03:00). A `SchedulerRun` marker written by the
-  pre-#405 UTC cron (1st, 00:05Z) is _after_ the new local fire time, so no spurious
-  catch-up.
+- The contest jobs fire at 00:05 _service-local_: `rq.cron` itself runs in UTC, so
+  `achievements/cron.py` checks hourly at :05 and `award_best_suchar_*_if_due` /
+  `due_*_run_at` convert `now` to the service zone before reconstructing the fire time
+  (see Background jobs). 00:05 never falls in a DST gap/overlap (the switch is at
+  02:00/03:00). A `SchedulerRun` marker written by the pre-#405 UTC cron (1st, 00:05Z)
+  is _after_ the new local fire time, so no spurious catch-up.
 - Tests: build naive wall-clock strings / "local hours" from `timezone.localtime()`,
   not `timezone.now()`. Boundary tests (`achievements/tests/test_timezone.py`) use
   timestamps in the 22:00–24:00 UTC window — the only one where a UTC-day bug shows —
@@ -1236,20 +1237,23 @@ ran in every gunicorn worker and duplicated its jobs.
   `suchar_overflow/conftest.py` executes what was queued). The dashboard is at
   `/<ADMIN_URL>django-rq/` (linked from the admin index). django-rq closes DB connections
   before RQ forks per job (`reset_db_connections`); verified: no idle `pg_stat_activity` rows
-  after a burst of jobs.
+  after a burst of jobs that touch the DB (`award_publication_achievements`).
 - **Healthchecks**: `manage.py rq_healthcheck` (worker: every queue has a registered worker;
   `--cron`: a `CronScheduler` heartbeat younger than `--max-age`, default 150 s) and `/healthz/`'s
   `queue` check (PING on the queue's connection). Local `just up` after pulling this change needs
   `docker compose up -d --renew-anon-volumes`: the anonymous `/app/.venv` volume of the old
   `django` container still lacks `django_rq`. The worker does not autoreload — restart it after
-  editing a task.
+  editing a task. RQ's scheduler (retry intervals, `enqueue_in`) starts with the worker only if it
+  can take the `rq:scheduler-lock:default` lock; a clean restart releases it, but after a hard kill
+  the stale lock lasts ~70 s and the worker then retries only at its 10-minute maintenance tick, so
+  a retry can lag that long (the per-minute cron jobs are plain queue entries, unaffected).
 - **Failures**: `RQ_EXCEPTION_HANDLERS` → `utils/rq_handlers.py:mail_admins_on_final_failure`
   logs to `django.rq` (a child of `django`, so production's `mail_admins` mails it) only once a
   job has no retries left (`job.should_retry` false). `rq.worker` has its own console handler and
   does not propagate; at INFO it logs ~4 lines per run of the per-minute sweep, `rq.cron` is
   `WARNING`.
 - **Emails (#461)**: `users/tasks.py:enqueue_email(task, *args)` queues `send_activation_email` /
-  `send_email_change_emails` with `Retry(max=3, interval=[10, 60, 300])`, only after the token /
+  the email-change jobs with `Retry(max=3, interval=[10, 60, 300])`, only after the token /
   `EmailChangeRequest` rows are saved; the job gets only a PK and plain values plus `language`
   (the requester's), and renders inside `translation.override(language)` because the worker has
   no request. An SMTP error no longer 500s the request.

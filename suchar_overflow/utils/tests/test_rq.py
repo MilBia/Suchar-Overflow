@@ -2,6 +2,8 @@
 
 import logging
 from datetime import timedelta
+from http import HTTPStatus
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -13,6 +15,9 @@ from django.urls import reverse
 from django.utils import timezone
 
 from suchar_overflow.utils.rq_handlers import mail_admins_on_final_failure
+
+if TYPE_CHECKING:
+    from django.test import Client
 
 SMTP_DOWN = "smtp down"
 _CMD = "suchar_overflow.utils.management.commands.rq_healthcheck"
@@ -28,8 +33,16 @@ def test_queue_settings() -> None:
     assert queue["DEFAULT_TIMEOUT"] <= 15 * 60
 
 
-def test_admin_has_the_rq_dashboard() -> None:
-    assert reverse("django_rq:home").startswith(f"/{settings.ADMIN_URL}django-rq/")
+def test_admin_has_the_rq_dashboard(admin_client: Client) -> None:
+    url = reverse("django_rq:home")
+    assert url.startswith(f"/{settings.ADMIN_URL}django-rq/")
+    # admin.site.urls must not shadow it with its catch-all 404.
+    with patch("django_rq.stats_views.get_statistics", return_value={"queues": [], "schedulers": {}}):
+        assert admin_client.get(url).status_code != HTTPStatus.NOT_FOUND
+
+
+def test_dashboard_requires_staff(client: Client) -> None:
+    assert client.get(reverse("django_rq:home")).status_code == HTTPStatus.FOUND
 
 
 # --- rq_healthcheck ----------------------------------------------------------

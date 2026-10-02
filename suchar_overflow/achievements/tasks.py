@@ -62,10 +62,10 @@ def due_monthly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime 
     before ``now`` if it was never recorded by ``award_best_suchar``, else
     ``None``.
 
-    Used at process startup to detect a run missed while the process was
-    down: apscheduler's default in-memory jobstore only knows about future
-    fire times, so a restart silently skips any fire that should already
-    have happened rather than catching it up on its own (see #169).
+    Used to find a run that is due but unrecorded — a late hourly check or a fire
+    missed while the ``cron`` service was down: ``rq.cron`` only knows future fire
+    times, so a restart would silently skip a fire that should already have
+    happened (see #169, #462).
 
     The fire time is reconstructed on the wall clock of ``TIME_ZONE`` (the
     scheduler's own zone — #405), so ``now`` is converted first; the returned
@@ -94,9 +94,9 @@ def due_yearly_run_at(now: datetime, last_ran_at: datetime | None) -> datetime |
     ``None``.
 
     Used at process startup to detect a run missed while the process was
-    down — see ``due_monthly_run_at`` for why the in-memory jobstore needs
-    this at all (#169; extended to the yearly job in #168), and for the
-    local-time handling (#405).
+    down — see ``due_monthly_run_at`` for why a missed fire needs detecting at
+    all (#169; extended to the yearly job in #168), and for the local-time
+    handling (#405).
     """
     now = timezone.localtime(now, timezone.get_default_timezone())
     due_at = now.replace(month=1, day=1, hour=0, minute=5, second=0, microsecond=0)
