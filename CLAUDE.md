@@ -87,9 +87,10 @@ ending in `.<12 hex>.<ext>` (the manifest storage's and the compressor's hashes)
 `gzip` and `gzip_static` (compressor's `GzipCompressorFileStorage` writes the `.gz` for
 `CACHE/`; the manifest storage writes none, so other files are compressed on the fly).
 The regex location is quoted — nginx reads an unquoted `{12}` as a block. `collectstatic`
-runs without `--clear` on purpose: old hashed files survive a deploy, so a browser
-holding the previous page still finds its CSS/JS (the volume grows; prune it in a
-maintenance window if it matters). Locally `config/asgi.py` wraps the app in
+runs with `--clear` (there is no production yet, so nothing to keep): each start wipes
+the volume and rebuilds it, so it never accumulates files of past builds. The price: a
+browser holding a page from the previous build can 404 on its old hashed CSS/JS until it
+reloads. Drop `--clear` if that starts to matter once the site is live. Locally `config/asgi.py` wraps the app in
 `ASGIStaticFilesHandler` only while `DEBUG` is on (uvicorn serves no static files);
 `live_server` in E2E serves its own statics.
 

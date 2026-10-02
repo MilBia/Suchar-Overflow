@@ -113,3 +113,8 @@ def test_asgi_serves_static_only_in_debug(
         assert isinstance(module.application, ASGIStaticFilesHandler) is wrapped
     finally:
         sys.modules.pop("config.asgi", None)
+
+
+def test_production_start_clears_the_static_volume_before_compress() -> None:
+    start = (_ROOT / "compose/production/django/start").read_text(encoding="utf-8")
+    assert start.index("manage.py collectstatic --noinput --clear") < start.index("manage.py compress --force")
