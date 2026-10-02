@@ -40,7 +40,7 @@ jobs:
             - name: Run pre-commit
               uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
 
-    # Vitest + jsdom unit tests for static/js/ logic. Runs on the host with Node,
+    # Vitest + jsdom unit tests for the ES modules in webpack/src/js/. Runs on the host with Node,
     # not in the Django image — the runner has no Django/DB dependency. Separate
     # job so it runs in parallel with `pytest` and never bloats the backend image.
     js-tests:

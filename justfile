@@ -98,6 +98,7 @@ test-e2e *args:
 # build write the same directory, and the server will not re-emit files it believes it already
 # wrote — `docker compose restart node` afterwards, or stop it first.
 build-js:
+    @if command -v docker >/dev/null && [ -n "$(docker ps -q --filter name=^suchar_overflow_local_node$)" ]; then echo "The node service is running and writes the same directory: 'docker compose stop node' first (restart it afterwards)." >&2; exit 1; fi
     @npm run build
 
 # test-all: Run unit tests then E2E tests sequentially.
@@ -107,7 +108,7 @@ test-all:
     @just test
     @just test-e2e
 
-# test-js: Run the Vitest + jsdom unit tests for static/js/ logic.
+# test-js: Run the Vitest + jsdom unit tests for the ES modules in webpack/src/js/.
 # Runs on the host, NOT in a container — like `pre-commit`, this tool has no
 # Django/DB dependency and lives outside the Docker image. Needs Node + a one-off
 # `npm ci` (`--no-install` errors out loudly instead of pulling vitest from the

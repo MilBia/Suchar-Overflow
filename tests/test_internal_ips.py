@@ -18,7 +18,8 @@ class _Settings:
 
 
 @pytest.fixture
-def local_settings() -> type[_Settings]:
+def local_settings(monkeypatch: pytest.MonkeyPatch) -> type[_Settings]:
+    monkeypatch.setattr(InternalIPs, "ttl", 0.0)  # these tests change the answer between lookups
     return _Settings
 
 
@@ -62,3 +63,17 @@ def test_unresolvable_node_is_just_not_internal(
 
     monkeypatch.setattr(socket, "gethostbyname_ex", unresolvable)
     assert "203.0.113.5" not in local_settings.INTERNAL_IPS
+
+
+def test_lookup_result_is_kept_for_the_ttl(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[str] = []
+
+    def resolve(name: str) -> tuple[str, list[str], list[str]]:
+        calls.append(name)
+        return (name, [], ["172.19.0.7"])
+
+    monkeypatch.setattr(socket, "gethostbyname_ex", resolve)
+    ips = InternalIPs(["127.0.0.1"])
+    assert "172.19.0.7" in ips
+    assert "203.0.113.5" not in ips
+    assert len(calls) == 1

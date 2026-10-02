@@ -1388,7 +1388,7 @@ as ES modules + npm libraries, #469 compressor removed: no `{% compress %}`, `CO
   line, not a CSP violation. After a `package.json` change: `just build` and
   `docker compose up -d --renew-anon-volumes` (the `node_modules` volume is anonymous). Without
   the `node` service no `webpack-stats.json` exists and every page 500s. **Don't run `just build-js` (a
-  production build on the host) and the `node` service at once**: both write the same output directory,
+  production build on the host) and the `node` service at once** (the recipe refuses while the container runs): both write the same output directory,
   and the dev server doesn't re-emit files it believes it already wrote — after `just build-js` run
   `docker compose restart node`.
 - **Production.** `compose/production/django/Dockerfile` has a `client-builder` stage
@@ -1421,6 +1421,10 @@ as ES modules + npm libraries, #469 compressor removed: no `{% compress %}`, `CO
   `@supports` wrappers around `color-mix()`; `rgb(from …)` passes through. `tests/test_scss_sources.py`
   guards the `@use` order, that every partial is used once and the font paths;
   `tests/test_webpack_toolchain.py` that every page renders its entry's CSS once, after the global one.
+- **Deliberate limits.** `publicPath` (`/static/webpack_bundles/`) and the font URLs (`/static/fonts/`) are
+  written as literals, and the tests `removeprefix(STATIC_URL)`: changing `STATIC_URL` (a CDN) means changing
+  `webpack/common.config.js` and `_fonts.scss` with it. Production ships real `.map` files (public
+  `sourcesContent`, `immutable` in nginx) — fine for an open-source repo, but a decision, not an accident.
 - **Guards.** The Node tag in both Dockerfiles and `engines.node` follow `.nvmrc`'s major
   (`tests/test_webpack_toolchain.py`); `compose/local/node/` is on Dependabot's docker list.
   `tests/e2e/test_clean_console.py` loads every page and fails on console errors and CSP violations (its
