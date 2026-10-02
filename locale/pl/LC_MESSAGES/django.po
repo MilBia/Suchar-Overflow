@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Suchar Overflow 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-02 09:39+0200\n"
+"POT-Creation-Date: 2026-10-02 11:24+0200\n"
 "PO-Revision-Date: 2026-01-25 16:10+0100\n"
 "Last-Translator: Assistant <assistant@example.com>\n"
 "Language-Team: Polish <pl@example.com>\n"
@@ -14,219 +14,219 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
-#: config/api.py:39
+#: config/api.py:67
 msgid "Brak uprawnień do wykonania tej operacji."
 msgstr ""
 
-#: config/settings/base.py:45
+#: config/settings/base.py:47
 msgid "Arabic"
 msgstr "Arabski"
 
-#: config/settings/base.py:46
+#: config/settings/base.py:48
 msgid "Bulgarian"
 msgstr "Bułgarski"
 
-#: config/settings/base.py:47
+#: config/settings/base.py:49
 msgid "Bengali"
 msgstr "Bengalski"
 
-#: config/settings/base.py:48
+#: config/settings/base.py:50
 msgid "Catalan"
 msgstr "Kataloński"
 
-#: config/settings/base.py:49
+#: config/settings/base.py:51
 msgid "Czech"
 msgstr "Czeski"
 
-#: config/settings/base.py:50
+#: config/settings/base.py:52
 msgid "Danish"
 msgstr "Duński"
 
-#: config/settings/base.py:51
+#: config/settings/base.py:53
 msgid "German"
 msgstr "Niemiecki"
 
-#: config/settings/base.py:52
+#: config/settings/base.py:54
 msgid "Greek"
 msgstr "Grecki"
 
-#: config/settings/base.py:53
+#: config/settings/base.py:55
 msgid "English"
 msgstr "Angielski"
 
-#: config/settings/base.py:54
+#: config/settings/base.py:56
 msgid "Spanish"
 msgstr "Hiszpański"
 
-#: config/settings/base.py:55
+#: config/settings/base.py:57
 msgid "Estonian"
 msgstr "Estoński"
 
-#: config/settings/base.py:56
+#: config/settings/base.py:58
 msgid "Persian"
 msgstr "Perski"
 
-#: config/settings/base.py:57
+#: config/settings/base.py:59
 msgid "Finnish"
 msgstr "Fiński"
 
-#: config/settings/base.py:58
+#: config/settings/base.py:60
 msgid "French"
 msgstr "Francuski"
 
-#: config/settings/base.py:59
+#: config/settings/base.py:61
 msgid "Hebrew"
 msgstr "Hebrajski"
 
-#: config/settings/base.py:60
+#: config/settings/base.py:62
 msgid "Hindi"
 msgstr "Hindi"
 
-#: config/settings/base.py:61
+#: config/settings/base.py:63
 msgid "Croatian"
 msgstr "Chorwacki"
 
-#: config/settings/base.py:62
+#: config/settings/base.py:64
 msgid "Hungarian"
 msgstr "Węgierski"
 
-#: config/settings/base.py:63
+#: config/settings/base.py:65
 msgid "Indonesian"
 msgstr "Indonezyjski"
 
-#: config/settings/base.py:64
+#: config/settings/base.py:66
 msgid "Icelandic"
 msgstr "Islandzki"
 
-#: config/settings/base.py:65
+#: config/settings/base.py:67
 msgid "Italian"
 msgstr "Włoski"
 
-#: config/settings/base.py:66
+#: config/settings/base.py:68
 msgid "Japanese"
 msgstr "Japoński"
 
-#: config/settings/base.py:67
+#: config/settings/base.py:69
 msgid "Kannada"
 msgstr "Kannada"
 
-#: config/settings/base.py:68
+#: config/settings/base.py:70
 msgid "Korean"
 msgstr "Koreański"
 
-#: config/settings/base.py:69
+#: config/settings/base.py:71
 msgid "Lithuanian"
 msgstr "Litewski"
 
-#: config/settings/base.py:70
+#: config/settings/base.py:72
 msgid "Latvian"
 msgstr "Łotewski"
 
-#: config/settings/base.py:71
+#: config/settings/base.py:73
 msgid "Malayalam"
 msgstr "Malayalam"
 
-#: config/settings/base.py:72
+#: config/settings/base.py:74
 msgid "Marathi"
 msgstr "Marathi"
 
-#: config/settings/base.py:73
+#: config/settings/base.py:75
 msgid "Norwegian"
 msgstr "Norweski"
 
-#: config/settings/base.py:74
+#: config/settings/base.py:76
 msgid "Dutch"
 msgstr "Holenderski"
 
-#: config/settings/base.py:75
+#: config/settings/base.py:77
 msgid "Punjabi"
 msgstr "Pendżabski"
 
-#: config/settings/base.py:76
+#: config/settings/base.py:78
 msgid "Polish"
 msgstr "Polski"
 
-#: config/settings/base.py:77
+#: config/settings/base.py:79
 msgid "Portuguese"
 msgstr "Portugalski"
 
-#: config/settings/base.py:78
+#: config/settings/base.py:80
 msgid "Brazilian Portuguese"
 msgstr "Portugalski (Brazylia)"
 
-#: config/settings/base.py:79
+#: config/settings/base.py:81
 msgid "Romanian"
 msgstr "Rumuński"
 
-#: config/settings/base.py:80
+#: config/settings/base.py:82
 msgid "Russian"
 msgstr "Rosyjski"
 
-#: config/settings/base.py:81
+#: config/settings/base.py:83
 msgid "Slovak"
 msgstr "Słowacki"
 
-#: config/settings/base.py:82
+#: config/settings/base.py:84
 msgid "Slovenian"
 msgstr "Słoweński"
 
-#: config/settings/base.py:83
+#: config/settings/base.py:85
 msgid "Serbian"
 msgstr "Serbski"
 
-#: config/settings/base.py:84
+#: config/settings/base.py:86
 msgid "Swedish"
 msgstr "Szwedzki"
 
-#: config/settings/base.py:85
+#: config/settings/base.py:87
 msgid "Swahili"
 msgstr "Suahili"
 
-#: config/settings/base.py:86
+#: config/settings/base.py:88
 msgid "Tamil"
 msgstr "Tamil"
 
-#: config/settings/base.py:87
+#: config/settings/base.py:89
 msgid "Telugu"
 msgstr "Telugu"
 
-#: config/settings/base.py:88
+#: config/settings/base.py:90
 msgid "Thai"
 msgstr "Tajski"
 
-#: config/settings/base.py:89
+#: config/settings/base.py:91
 msgid "Turkish"
 msgstr "Turecki"
 
-#: config/settings/base.py:90
+#: config/settings/base.py:92
 msgid "Ukrainian"
 msgstr "Ukraiński"
 
-#: config/settings/base.py:91
+#: config/settings/base.py:93
 msgid "Urdu"
 msgstr "Urdu"
 
-#: config/settings/base.py:92
+#: config/settings/base.py:94
 msgid "Vietnamese"
 msgstr "Wietnamski"
 
-#: config/settings/base.py:93
+#: config/settings/base.py:95
 msgid "Chinese (Simplified)"
 msgstr "Chiński (uproszczony)"
 
-#: config/settings/base.py:94
+#: config/settings/base.py:96
 msgid "Chinese (Traditional)"
 msgstr "Chiński (tradycyjny)"
 
-#: suchar_overflow/achievements/api.py:122
+#: suchar_overflow/achievements/api.py:121
 msgid "Ba dum tss 🥁"
 msgstr "Ba dum tss 🥁"
 
-#: suchar_overflow/achievements/api.py:123
+#: suchar_overflow/achievements/api.py:122
 msgid "Your suchar just landed its first funny vote."
 msgstr "Twój suchar właśnie dostał pierwszy głos „śmieszne”."
 
-#: suchar_overflow/achievements/apps.py:26
+#: suchar_overflow/achievements/apps.py:8
 #: suchar_overflow/achievements/models.py:94
 #: suchar_overflow/templates/base.html:218
 #: suchar_overflow/templates/users/user_detail.html:98
@@ -411,19 +411,19 @@ msgstr "Osiągnięcie użytkownika"
 msgid "User Achievements"
 msgstr "Osiągnięcia użytkownika"
 
-#: suchar_overflow/achievements/models.py:142
+#: suchar_overflow/achievements/models.py:143
 msgid "Job ID"
 msgstr "ID zadania"
 
-#: suchar_overflow/achievements/models.py:143
+#: suchar_overflow/achievements/models.py:144
 msgid "Ran At"
 msgstr "Data uruchomienia"
 
-#: suchar_overflow/achievements/models.py:147
+#: suchar_overflow/achievements/models.py:148
 msgid "Scheduler Run"
 msgstr "Uruchomienie harmonogramu"
 
-#: suchar_overflow/achievements/models.py:148
+#: suchar_overflow/achievements/models.py:149
 msgid "Scheduler Runs"
 msgstr "Uruchomienia harmonogramu"
 
@@ -486,7 +486,7 @@ msgstr "Treść"
 #: suchar_overflow/templates/stats/_leaderboard_suchar_card.html:21
 #: suchar_overflow/templates/users/user_detail.html:157
 #: suchar_overflow/templates/users/user_detail.html:265
-#: suchar_overflow/users/tests/test_views_extra.py:533
+#: suchar_overflow/users/tests/test_views_extra.py:536
 msgid "Votes"
 msgstr "Głosy"
 
@@ -626,12 +626,12 @@ msgid "Była tak sucha, że wyparowała. Zostały tylko okruszki i ten komunikat
 msgstr ""
 
 #: suchar_overflow/templates/500.html:10 suchar_overflow/templates/500.html:15
-#: suchar_overflow/utils/views.py:35 tests/test_error_pages.py:73
+#: suchar_overflow/utils/views.py:37 tests/test_error_pages.py:73
 #: tests/test_error_pages.py:104
 msgid "500 — coś chrupnęło"
 msgstr ""
 
-#: suchar_overflow/templates/500.html:17 suchar_overflow/utils/views.py:38
+#: suchar_overflow/templates/500.html:17 suchar_overflow/utils/views.py:40
 #: tests/test_error_pages.py:76 tests/test_error_pages.py:106
 msgid ""
 "Serwer usłyszał suchar i się rozsypał. Już to naprawiamy — odśwież za chwilę."
@@ -709,7 +709,7 @@ msgstr ""
 #: suchar_overflow/templates/suchary/suchar_list.html:12
 #: suchar_overflow/templates/users/user_detail.html:177
 #: suchar_overflow/templates/users/user_detail.html:198
-#: suchar_overflow/users/admin.py:82
+#: suchar_overflow/users/admin.py:123
 msgid "Jokes"
 msgstr "Suchary"
 
@@ -1476,7 +1476,7 @@ msgid "Changed my mind (go back)"
 msgstr "Zmieniłem zdanie (wstecz)"
 
 #: suchar_overflow/templates/users/email_change_revoked.html:6
-#: suchar_overflow/users/models.py:70
+#: suchar_overflow/users/models.py:118
 msgid "Revoked"
 msgstr "Cofnięte"
 
@@ -1582,7 +1582,7 @@ msgstr ""
 "blokowania intruza na Twój stary adres e-mail."
 
 #: suchar_overflow/templates/users/user_detail.html:6
-#: suchar_overflow/users/models.py:47
+#: suchar_overflow/users/models.py:56 suchar_overflow/users/models.py:95
 msgid "User"
 msgstr "Użytkownik"
 
@@ -1691,15 +1691,24 @@ msgstr "Zmiana adresu wymaga potwierdzenia."
 msgid "Save Changes"
 msgstr "Zapisz zmiany"
 
-#: suchar_overflow/users/admin.py:51
+#: suchar_overflow/users/admin.py:72
+msgid "Wygeneruj nowy token dla zaznaczonych użytkowników (unieważnia stary)"
+msgstr ""
+
+#: suchar_overflow/users/admin.py:81
+#, python-format
+msgid "Token użytkownika %(user)s (widoczny tylko raz): %(token)s"
+msgstr ""
+
+#: suchar_overflow/users/admin.py:92
 msgid "Personal info"
 msgstr "Informacje osobiste"
 
-#: suchar_overflow/users/admin.py:53
+#: suchar_overflow/users/admin.py:94
 msgid "Permissions"
 msgstr "Uprawnienia"
 
-#: suchar_overflow/users/admin.py:64
+#: suchar_overflow/users/admin.py:105
 msgid "Important dates"
 msgstr "Ważne daty"
 
@@ -1749,69 +1758,86 @@ msgstr "Nowy adres e-mail"
 msgid "This email is already currently used."
 msgstr "Ten adres e-mail jest już w użyciu."
 
-#: suchar_overflow/users/models.py:20
+#: suchar_overflow/users/models.py:22
 msgid "Name of User"
 msgstr "Imię użytkownika"
 
-#: suchar_overflow/users/models.py:23
+#: suchar_overflow/users/models.py:25
 msgid "email address"
 msgstr "adres e-mail"
 
-#: suchar_overflow/users/models.py:53
+#: suchar_overflow/users/models.py:58
+msgid "Skrót tokenu"
+msgstr ""
+
+#: suchar_overflow/users/models.py:59
+msgid "Utworzony"
+msgstr ""
+
+#: suchar_overflow/users/models.py:62
+msgid "Token API"
+msgstr ""
+
+#: suchar_overflow/users/models.py:63
+msgid "Tokeny API"
+msgstr ""
+
+#: suchar_overflow/users/models.py:101
 msgid "Activation Token"
 msgstr "Token aktywacyjny"
 
-#: suchar_overflow/users/models.py:54
+#: suchar_overflow/users/models.py:102
 msgid "Activation Tokens"
 msgstr "Tokeny aktywacyjne"
 
-#: suchar_overflow/users/models.py:68
+#: suchar_overflow/users/models.py:116
 msgid "Pending"
 msgstr "Oczekujące"
 
-#: suchar_overflow/users/models.py:69
+#: suchar_overflow/users/models.py:117
 msgid "Verified"
 msgstr "Zweryfikowano"
 
-#: suchar_overflow/users/models.py:89
+#: suchar_overflow/users/models.py:137
 msgid "Email Change Request"
 msgstr "Wniosek o zmianę adresu e-mail"
 
-#: suchar_overflow/users/models.py:90
+#: suchar_overflow/users/models.py:138
 msgid "Email Change Requests"
 msgstr "Żądania zmiany adresu e-mail"
 
-#: suchar_overflow/users/tasks.py:16
+#: suchar_overflow/users/tasks.py:50
+#: suchar_overflow/users/tests/test_tasks.py:24
 msgid "Confirm you have a sense of humor (Account Activation)"
 msgstr "Potwierdź, że masz poczucie humoru (Aktywacja konta)"
 
-#: suchar_overflow/users/tasks.py:38
+#: suchar_overflow/users/tasks.py:74
 msgid "Confirm it's you (Email Change)"
 msgstr "Potwierdź, że to Ty (zmiana adresu e-mail)"
 
-#: suchar_overflow/users/tasks.py:50
+#: suchar_overflow/users/tasks.py:84
 msgid "Someone wants to change your email address (We hope it's you)"
 msgstr "Ktoś chce zmienić Twój adres e-mail (Mamy nadzieję, że to Ty)."
 
-#: suchar_overflow/users/tests/test_signup_and_email.py:403
-#: suchar_overflow/users/views.py:619
+#: suchar_overflow/users/tests/test_signup_and_email.py:423
+#: suchar_overflow/users/views.py:622
 msgid "Email already taken."
 msgstr "Ten adres e-mail jest już zajęty."
 
 #: suchar_overflow/users/tests/test_views.py:42
-#: suchar_overflow/users/views.py:427
+#: suchar_overflow/users/views.py:428
 msgid "Profile updated."
 msgstr "Profil zaktualizowany."
 
-#: suchar_overflow/users/views.py:596
+#: suchar_overflow/users/views.py:599
 msgid "The link is invalid."
 msgstr "Ten link jest nieprawidłowy."
 
-#: suchar_overflow/users/views.py:603
+#: suchar_overflow/users/views.py:606
 msgid "The link has already been used or cancelled."
 msgstr "Ten link został już użyty lub anulowany."
 
-#: suchar_overflow/users/views.py:612
+#: suchar_overflow/users/views.py:615
 msgid "The link has expired (24 hours have passed)."
 msgstr "Link wygasł (minęło 24 godziny)."
 
