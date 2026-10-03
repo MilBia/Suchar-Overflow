@@ -1192,7 +1192,7 @@ No profile field — cookie only.
 
 Work outside the request runs in two extra compose services built from the Django image
 (`worker`, `cron`; local and production): **`worker`** (`compose/base/django/worker`:
-`rqworker --with-scheduler default` — `--with-scheduler` is what makes `Retry(interval=…)`
+`rqworker --with-scheduler "${DJANGO_RQ_QUEUE_NAME:-default}"` — `--with-scheduler` is what makes `Retry(interval=…)`
 and `enqueue_in` fire) and **`cron`** (`compose/base/django/cron`: `achievements_catch_up`,
 then `exec manage.py rqcron suchar_overflow.achievements.cron`). **Run exactly one `cron`
 instance** — a second one enqueues every periodic job twice. Web workers start no scheduler
@@ -1200,6 +1200,7 @@ instance** — a second one enqueues every periodic job twice. Web workers start
 reversed the old "Django-RQ removed, APScheduler in-process" decision of #159: APScheduler
 ran in every gunicorn worker and duplicated its jobs.
 
+- **Queue name (#500)**: `settings.RQ_QUEUE_NAME` reads `DJANGO_RQ_QUEUE_NAME` (empty = unset = `default`; only `[A-Za-z0-9_.-]`, else `ImproperlyConfigured`), and the `worker` script reads the same variable, so never hardcode `default` anywhere — use `settings.RQ_QUEUE_NAME`. Jobs left under the old name are not run after a rename (drain first). `tests/test_worker_queue_name.py` runs the script against a fake `python`.
 - **Queue**: `django-rq` (+ `rq`), pinned. `RQ_QUEUES["default"]` points at `REDIS_QUEUE_URL`
   — its **own Redis database** (`/1`; defaults to `REDIS_URL` with path `/1`), so a cache flush
   cannot delete pending jobs; `DEFAULT_TIMEOUT = 300`. Always reach it as

@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 import pytest
 from croniter import croniter
+from django.conf import settings
 from rq import cron as rq_cron
 
 from suchar_overflow.achievements import cron
@@ -37,7 +38,7 @@ def test_every_job_expires_when_the_worker_is_down(registered: dict[str, dict]) 
     assert registered["award-publication-achievements"]["ttl"] <= 5 * 60
     for job in registered.values():
         assert job["ttl"] > 0
-        assert job["queue_name"] == "default"
+        assert job["queue_name"] == settings.RQ_QUEUE_NAME
         assert job["job_timeout"] > 0
 
 

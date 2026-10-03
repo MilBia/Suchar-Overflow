@@ -24,7 +24,7 @@ _CMD = "suchar_overflow.utils.management.commands.rq_healthcheck"
 
 
 def test_queue_settings() -> None:
-    assert settings.RQ_QUEUE_NAME == "default"
+    assert list(settings.RQ_QUEUES) == [settings.RQ_QUEUE_NAME]
     assert "django_rq" in settings.INSTALLED_APPS
     queue = settings.RQ_QUEUES[settings.RQ_QUEUE_NAME]
     assert queue["URL"] == settings.REDIS_QUEUE_URL
@@ -57,7 +57,7 @@ def test_healthcheck_passes_when_every_queue_has_a_worker() -> None:
 def test_healthcheck_fails_when_a_queue_has_no_worker() -> None:
     with patch(f"{_CMD}.Worker") as worker:
         worker.count.return_value = 0
-        with pytest.raises(CommandError, match="default"):
+        with pytest.raises(CommandError, match=settings.RQ_QUEUE_NAME):
             call_command("rq_healthcheck")
 
 

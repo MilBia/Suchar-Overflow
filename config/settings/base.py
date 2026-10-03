@@ -1,5 +1,6 @@
 """Base settings to build other settings files upon."""
 
+import re
 from pathlib import Path
 from urllib.parse import quote
 from urllib.parse import urlsplit
@@ -474,7 +475,14 @@ CACHES = {
 # cache flush cannot wipe pending jobs. Derived from REDIS_URL unless
 # REDIS_QUEUE_URL (env files) says otherwise.
 REDIS_QUEUE_URL = env("REDIS_QUEUE_URL", default=urlunsplit(urlsplit(REDIS_URL)._replace(path="/1")))
-RQ_QUEUE_NAME = "default"
+# The name of the one queue (#500). `compose/base/django/worker` reads the same
+# DJANGO_RQ_QUEUE_NAME, so the worker listens where the code enqueues. An empty value
+# counts as unset, like in the shell's `${VAR:-default}` the worker script uses.
+RQ_QUEUE_NAME = env("DJANGO_RQ_QUEUE_NAME", default="") or "default"
+# Becomes the Redis key `rq:queue:<name>` and an argument of the worker's command line.
+if not re.fullmatch(r"[A-Za-z0-9_.-]+", RQ_QUEUE_NAME):
+    _msg = f"DJANGO_RQ_QUEUE_NAME may contain only letters, digits, '_', '.' and '-', got {RQ_QUEUE_NAME!r}."
+    raise ImproperlyConfigured(_msg)
 RQ_QUEUES = {
     RQ_QUEUE_NAME: {
         "URL": REDIS_QUEUE_URL,
