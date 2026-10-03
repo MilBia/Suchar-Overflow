@@ -303,7 +303,9 @@ API przyjmuje dwa rodzaje uwierzytelnienia: sesję Django (jak frontend, z token
 `Authorization: Bearer <token>` (skrypty, integracje; bez CSRF).
 
 Tokeny wystawia się wyłącznie w panelu admina (**API tokens → Add**; akcja „Generate a new token…” wymienia
-istniejący). Wartość tokenu pojawia się **raz**, w komunikacie po zapisie — w bazie leży tylko jej skrót SHA-256,
+istniejący, po ekranie potwierdzenia z listą użytkowników, którym cofnie dostęp). Nowe tokeny mają prefiks
+`sot_` (Suchar Overflow Token), dzięki czemu skanery sekretów (GitHub Secret Scanning, Trufflehog) wyłapią
+przypadkowo zacommitowany token; tokeny wystawione wcześniej, bez prefiksu, nadal działają. Wartość tokenu pojawia się **raz**, w komunikacie po zapisie — w bazie leży tylko jej skrót SHA-256,
 więc nie da się jej odczytać ponownie. Token nieaktywnego użytkownika jest odrzucany.
 
 ```bash

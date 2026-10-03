@@ -4,6 +4,12 @@ Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 
 ## [Unreleased]
 
+### Token API: prefiks `sot_` i potwierdzenie akcji „regenerate” (#487)
+
+- Nowe tokeny API zaczynają się od `sot_`, więc skanery sekretów rozpoznają zacommitowany token. Wcześniejsze tokeny
+  (bez prefiksu) działają bez zmian — nic nie wymaga migracji.
+- Akcja „Wygeneruj nowy token…” w adminie pokazuje najpierw ekran potwierdzenia z listą użytkowników.
+
 ### Wolumen PostgreSQL na `/var/lib/postgresql` (#464) — wymaga migracji danych
 
 - Wolumen danych ma nową nazwę (`production_postgres_cluster`, lokalnie `suchar_overflow_local_postgres_cluster`)

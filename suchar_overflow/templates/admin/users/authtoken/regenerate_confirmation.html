@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block content %}
+    <p>{% trans "Poniższym użytkownikom zostanie cofnięty dostęp przez dotychczasowy token API. Nowe wartości pojawią się jednorazowo po potwierdzeniu." %}</p>
+    <ul>
+        {% for token in tokens %}<li>{{ token.user.username }}</li>{% endfor %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {% for token in tokens %}
+            <input type="hidden"
+                   name="{{ action_checkbox_name }}"
+                   value="{{ token.pk }}" />
+        {% endfor %}
+        <input type="hidden" name="action" value="regenerate" />
+        <input type="hidden" name="index" value="0" />
+        <input type="hidden" name="confirm" value="yes" />
+        <input type="submit" value="{% trans 'Tak, wygeneruj nowe tokeny' %}" />
+        <a href="{% url 'admin:users_authtoken_changelist' %}">{% trans "Anuluj" %}</a>
+    </form>
+{% endblock content %}

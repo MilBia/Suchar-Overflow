@@ -128,7 +128,58 @@ def test_admin_regenerate_action_invalidates_the_old_token(admin_client: Client,
     stored = AuthToken.objects.get(user=user)
     admin_client.post(
         reverse("admin:users_authtoken_changelist"),
-        {"action": "regenerate", "_selected_action": [stored.pk]},
+        {"action": "regenerate", "_selected_action": [stored.pk], "confirm": "yes"},
         follow=True,
     )
     assert Client(headers={"Authorization": f"Bearer {api_token}"}).get(ME).status_code == HTTPStatus.UNAUTHORIZED
+
+
+@pytest.mark.django_db
+def test_new_secret_has_the_scanner_prefix(user: User) -> None:
+    assert AuthToken.new_secret().startswith("sot_")
+    assert AuthToken.issue(user)[1].startswith("sot_")
+
+
+@pytest.mark.django_db
+def test_a_token_without_the_prefix_still_authenticates(user: User) -> None:
+    legacy = "legacy-token-issued-before-the-prefix"
+    AuthToken.objects.create(user=user, token_hash=AuthToken.hash_token(legacy))
+    assert Client(headers={"Authorization": f"Bearer {legacy}"}).get(ME).status_code == HTTPStatus.OK
+
+
+@pytest.mark.django_db
+def test_admin_regenerate_without_confirmation_changes_nothing(
+    admin_client: Client,
+    user: User,
+    api_token: str,
+) -> None:
+    stored = AuthToken.objects.get(user=user)
+    response = admin_client.post(
+        reverse("admin:users_authtoken_changelist"),
+        {"action": "regenerate", "_selected_action": [stored.pk]},
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert user.username in response.content.decode()
+    assert b'name="confirm"' in response.content
+    stored.refresh_from_db()
+    assert stored.token_hash == AuthToken.hash_token(api_token)
+    assert Client(headers={"Authorization": f"Bearer {api_token}"}).get(ME).status_code == HTTPStatus.OK
+
+
+@pytest.mark.django_db
+def test_admin_regenerate_confirmed_replaces_and_shows_the_new_token_once(
+    admin_client: Client,
+    user: User,
+    api_token: str,
+) -> None:
+    stored = AuthToken.objects.get(user=user)
+    response = admin_client.post(
+        reverse("admin:users_authtoken_changelist"),
+        {"action": "regenerate", "_selected_action": [stored.pk], "confirm": "yes"},
+        follow=True,
+    )
+    message = next(str(m) for m in response.context["messages"] if "tylko raz" in str(m))
+    raw = message.rsplit(" ", 1)[-1]
+    assert raw.startswith("sot_")
+    assert Client(headers={"Authorization": f"Bearer {api_token}"}).get(ME).status_code == HTTPStatus.UNAUTHORIZED
+    assert Client(headers={"Authorization": f"Bearer {raw}"}).get(ME).status_code == HTTPStatus.OK

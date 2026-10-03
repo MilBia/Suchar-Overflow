@@ -2,8 +2,10 @@ from typing import TYPE_CHECKING
 
 from django.contrib import admin
 from django.contrib import messages
+from django.contrib.admin import helpers
 from django.contrib.auth import admin as auth_admin
 from django.db.models import Count
+from django.template.response import TemplateResponse
 from django.utils.translation import gettext_lazy as _
 
 from .forms import UserAdminChangeForm
@@ -16,6 +18,7 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
     from django.forms import ModelForm
     from django.http import HttpRequest
+    from django.http import HttpResponse
 
 
 class EmailChangeRequestInline(admin.TabularInline):
@@ -70,10 +73,23 @@ class AuthTokenAdmin(admin.ModelAdmin):
         self._announce(request, obj.user, raw_token)
 
     @admin.action(description=_("Wygeneruj nowy token dla zaznaczonych użytkowników (unieważnia stary)"))
-    def regenerate(self, request: HttpRequest, queryset: QuerySet[AuthToken]) -> None:
-        for token in queryset.select_related("user"):
+    def regenerate(self, request: HttpRequest, queryset: QuerySet[AuthToken]) -> HttpResponse | None:
+        tokens = queryset.select_related("user")
+        if "confirm" not in request.POST:
+            # Intermediate screen (like "delete selected"): nothing changes until it is confirmed.
+            context = {
+                **self.admin_site.each_context(request),
+                "title": _("Czy na pewno wygenerować nowe tokeny?"),
+                "opts": self.model._meta,  # noqa: SLF001
+                "tokens": tokens,
+                "queryset": tokens,
+                "action_checkbox_name": helpers.ACTION_CHECKBOX_NAME,
+            }
+            return TemplateResponse(request, "admin/users/authtoken/regenerate_confirmation.html", context)
+        for token in tokens:
             _new, raw_token = AuthToken.issue(token.user)
             self._announce(request, token.user, raw_token)
+        return None
 
     def _announce(self, request: HttpRequest, user: User, raw_token: str) -> None:
         self.message_user(

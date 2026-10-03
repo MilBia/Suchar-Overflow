@@ -49,6 +49,8 @@ class AuthToken(models.Model):
     an indexed equality lookup instead of comparing secrets in Python.
     """
 
+    TOKEN_PREFIX = "sot_"  # noqa: S105  (Suchar Overflow Token; a marker, not a secret)
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -72,7 +74,9 @@ class AuthToken(models.Model):
 
     @staticmethod
     def new_secret() -> str:
-        return secrets.token_urlsafe(32)
+        # The prefix lets secret scanners (GitHub Secret Scanning, Trufflehog) recognise a committed
+        # token. It is part of the hashed value, and tokens issued without it still authenticate (#487).
+        return f"{AuthToken.TOKEN_PREFIX}{secrets.token_urlsafe(32)}"
 
     @classmethod
     def issue(cls, user: User) -> tuple[AuthToken, str]:
