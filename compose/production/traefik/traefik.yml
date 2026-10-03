@@ -15,6 +15,14 @@ entryPoints:
         # https
         address: ':443'
 
+    # Only the container's healthcheck (`traefik healthcheck --ping`) uses it: the port is not
+    # published in docker-compose.production.yml and no router is attached to it (#496).
+    ping:
+        address: ':8082'
+
+ping:
+    entryPoint: ping
+
 certificatesResolvers:
     letsencrypt:
         # https://doc.traefik.io/traefik/https/acme/#lets-encrypt

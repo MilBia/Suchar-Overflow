@@ -390,7 +390,7 @@ docker compose -f docker-compose.production.yml exec postgres restore <nazwa_bac
 | `postgres` | PostgreSQL 18 + skrypty backupu (`backup`, `backups`, `restore`, `rmbackup`).                                                                             |
 | `redis`    | Cache (baza `/0`) i kolejka RQ (baza `/1`, osobna, żeby wyczyszczenie cache nie usunęło zadań). Snapshot co 60 s do wolumenu `/data`.                     |
 
-Healthchecki mają `django`, `worker`, `cron`, `postgres` i `redis`; `traefik` i `nginx` startują dopiero, gdy `django` jest `healthy`.
+Wszystkie usługi mają healthchecki (`nginx`: `/nginx-health`, `traefik`: `ping` na wewnętrznym porcie 8082, niepublikowanym); `nginx` startuje po `django`, a `traefik` po `django` i `nginx` (`healthy`).
 Bundle webpacka powstają w obrazie (etap `client-builder`), nie przy starcie kontenera.
 
 ---
