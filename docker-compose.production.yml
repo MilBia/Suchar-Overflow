@@ -1,5 +1,5 @@
 volumes:
-    production_postgres_data: {}
+    production_postgres_cluster: {}
     production_postgres_data_backups: {}
     production_traefik: {}
     production_django_media: {}
@@ -108,7 +108,7 @@ services:
             dockerfile: ./compose/base/postgres/Dockerfile
         image: suchar_overflow_production_postgres
         volumes:
-            - production_postgres_data:/var/lib/postgresql/18/docker
+            - production_postgres_cluster:/var/lib/postgresql
             - production_postgres_data_backups:/backups
         env_file:
             - ./.envs/.production/.postgres

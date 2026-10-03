@@ -1,5 +1,5 @@
 volumes:
-    suchar_overflow_local_postgres_data: {}
+    suchar_overflow_local_postgres_cluster: {}
     suchar_overflow_local_postgres_data_backups: {}
     suchar_overflow_local_redis_data: {}
 
@@ -138,7 +138,7 @@ services:
         image: suchar_overflow_local_postgres
         container_name: suchar_overflow_local_postgres
         volumes:
-            - suchar_overflow_local_postgres_data:/var/lib/postgresql/18/docker
+            - suchar_overflow_local_postgres_cluster:/var/lib/postgresql
             - suchar_overflow_local_postgres_data_backups:/backups
         env_file:
             - ./.envs/.local/.postgres

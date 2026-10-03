@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+### Entrypoint wrapper that refuses to start on a mis-mounted data volume (#464).
+###
+### The volume is mounted on /var/lib/postgresql and the cluster lives in
+### $PGDATA (/var/lib/postgresql/<major>/docker). A volume from the old layout (mounted on
+### $PGDATA itself) holds the cluster files in its root; mounted on /var/lib/postgresql it
+### would leave $PGDATA empty, and the image's entrypoint would silently initialise a NEW, empty
+### cluster next to the real one. Fail loudly instead.
+
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+
+volume_root="${PG_VOLUME_ROOT:-/var/lib/postgresql}"
+pgdata="${PGDATA:-${volume_root}/18/docker}"
+
+if [[ -f "${volume_root}/PG_VERSION" && ! -f "${pgdata}/PG_VERSION" ]]; then
+    echo "ERROR: ${volume_root} holds a PostgreSQL cluster (PG_VERSION) but ${pgdata} has none." >&2
+    echo "This looks like a volume from the old layout (mounted on ${pgdata}) attached to ${volume_root}." >&2
+    echo "Starting would initialise a new, empty cluster. Migrate the data first: README, 'Migracja wolumenu PostgreSQL'." >&2
+    exit 1
+fi
+
+exec docker-entrypoint.sh "$@"

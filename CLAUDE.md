@@ -14,6 +14,11 @@ names its registry (`docker.io/…`, `ghcr.io/…`), because podman doesn't assu
 `tests/test_compose_images.py` guards that. Postgres, Redis and Mailpit have healthchecks and
 `django` waits for `service_healthy`. Django itself has none yet. Redis snapshots to a
 named `/data` volume (`--save 60 1`).
+The Postgres data volume (`*_postgres_cluster`) is mounted on `/var/lib/postgresql`, not on
+`PGDATA` (#464, so a later `pg_upgrade --link` stays in one volume); `compose/base/postgres/volume-guard`
+(the image's entrypoint) refuses to start when `PG_VERSION` sits in the volume root and `PGDATA` is empty —
+an old-layout volume on the new mount. Migration: README, "Migracja wolumenu PostgreSQL"; never rename the
+volume back or edit the mount without it (`tests/test_postgres_volume.py`).
 Local Django apps: `suchar_overflow.users`, `suchar_overflow.suchary`,
 `suchar_overflow.stats`, `suchar_overflow.achievements`, and `suchar_overflow.utils`
 (#455: cross-cutting code — error handlers, middleware, context processors, logging,

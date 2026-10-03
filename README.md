@@ -484,10 +484,50 @@ Zasady: uruchamiaj **dokładnie jedną** instancję `cron` (druga podwoiłaby ka
 `worker` nie przeładowuje się sam po zmianie kodu zadania — zrestartuj go po wdrożeniu; po twardym zabiciu workera
 ponowienia mogą opóźnić się do ok. 10 minut (wygasa blokada schedulera RQ).
 
-**Migracja wolumenu PostgreSQL.** Wolumen `production_postgres_data` jest dziś montowany na
-`/var/lib/postgresql/18/docker`. Przejście na układ `/var/lib/postgresql` (pod `pg_upgrade --link`, #174) ma
-własną procedurę i issue (#464) — samo przepięcie istniejącego wolumenu zainicjowałoby pusty klaster, więc
-nie zmieniaj ścieżki w compose bez niej.
+### Migracja wolumenu PostgreSQL
+
+Od #464 wolumen danych (`production_postgres_cluster`, lokalnie `suchar_overflow_local_postgres_cluster`) jest
+montowany na `/var/lib/postgresql`, a klaster leży w `/var/lib/postgresql/18/docker`. Dzięki temu przyszły
+`pg_upgrade --link` (#174, PostgreSQL 19) działa w obrębie jednego wolumenu. Stary wolumen (`*_postgres_data`) miał klaster
+w korzeniu i **nie wolno go podpinać pod nowy mount**: Postgres zainicjowałby pusty klaster. Obraz ma
+bezpiecznik (`volume-guard`): gdy w korzeniu wolumenu leży `PG_VERSION`, a `PGDATA` jest puste, kontener kończy się
+błędem zamiast tworzyć nowy klaster. Wolumen backupów (`*_postgres_data_backups`) się nie zmienia.
+
+Procedura (produkcja wyłącznie w oknie serwisowym; nazwy wolumenów w Dockerze mają prefiks projektu compose):
+
+```bash
+C="docker compose -f docker-compose.production.yml"
+
+# 1. Backup na starym układzie — na STARYM commicie/obrazie (sprzed #464), przy działającym stosie.
+$C exec postgres backup
+$C exec postgres backups          # zapamiętaj nazwę pliku
+
+# 2. Zatrzymanie stosu (wolumeny zostają). Dopiero teraz wdróż kod z #464.
+$C down
+
+# 3. Start samego Postgresa na nowym, pustym wolumenie.
+$C up -d --build postgres
+
+# 4. Przywrócenie backupu (restore robi dropdb + createdb + psql).
+$C exec postgres restore <nazwa_backupu>
+
+# 5. Weryfikacja: liczniki tabel i migracje, potem pełny start.
+$C exec postgres bash -c 'PGPASSWORD="$POSTGRES_PASSWORD" psql -h 127.0.0.1 -U "$POSTGRES_USER" "$POSTGRES_DB" -c "select count(*) from suchary_suchar"'
+$C up -d
+$C exec django python manage.py showmigrations     # wszystko [X]; porównaj liczniki ze starą bazą
+```
+
+6. Stary wolumen zostaje nietknięty do potwierdzenia, że wszystko działa. Dopiero wtedy usuń go ręcznie:
+   `docker volume ls | grep postgres_data` → `docker volume rm <projekt>_production_postgres_data`.
+
+Cofnięcie przed krokiem 6: `down`, przywróć poprzedni commit (stary mount) i `up -d`, bo stary wolumen jest cały.
+
+Lokalnie: ta sama procedura (`docker-compose.local.yml`, `just`), albo — jeśli dane lokalne nie są potrzebne —
+`just prune` i nowy start.
+
+Procedurę przećwiczono na kopii danych (osobne wolumeny, 500 wierszy + tabela migracji): backup → odmowa startu
+`volume-guard` na starym wolumenie pod nowym mountem → pusty klaster na nowym wolumenie → `restore` → te same liczniki
+→ restart kontenera zachowuje dane.
 
 ---
 
