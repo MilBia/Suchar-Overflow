@@ -71,6 +71,25 @@ def test_guard_starts_on_a_fresh_volume(guard_env: dict[str, str]) -> None:
     assert result.stdout.strip() == "started postgres"
 
 
+def test_guard_passes_arguments_to_the_image_entrypoint(guard_env: dict[str, str]) -> None:
+    result = subprocess.run(  # noqa: S603
+        [str(_GUARD), "postgres", "-c", "fsync=on"],
+        env=guard_env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.stdout.strip() == "started postgres -c fsync=on"
+
+
+def test_guard_without_pgdata_defers_to_the_image_entrypoint(guard_env: dict[str, str]) -> None:
+    del guard_env["PGDATA"]
+    (Path(guard_env["PG_VOLUME_ROOT"]) / "PG_VERSION").write_text("18\n", encoding="utf-8")
+    result = _run(guard_env)
+    assert result.returncode == 0
+    assert result.stdout.strip() == "started postgres"
+
+
 def test_guard_starts_on_an_existing_cluster(guard_env: dict[str, str]) -> None:
     pgdata = Path(guard_env["PGDATA"])
     pgdata.mkdir(parents=True)

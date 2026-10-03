@@ -497,8 +497,13 @@ Procedura (produkcja wyłącznie w oknie serwisowym; nazwy wolumenów w Dockerze
 
 ```bash
 C="docker compose -f docker-compose.production.yml"
+PSQL='PGPASSWORD="$POSTGRES_PASSWORD" psql -h 127.0.0.1 -U "$POSTGRES_USER" "$POSTGRES_DB" -tAc'
+COUNTS="select (select count(*) from suchary_suchar), (select count(*) from suchary_vote), (select count(*) from users_user), (select count(*) from django_migrations)"
 
-# 1. Backup na starym układzie — na STARYM commicie/obrazie (sprzed #464), przy działającym stosie.
+# 1. Na STARYM commicie/obrazie (sprzed #464): zatrzymaj wszystko, co pisze do bazy (zostaje sam postgres),
+#    zapisz liczniki do późniejszego porównania i zrób backup. Zapisy po backupie przepadłyby.
+$C stop traefik nginx django worker cron
+$C exec postgres bash -c "$PSQL \"$COUNTS\"" | tee counts_before.txt
 $C exec postgres backup
 $C exec postgres backups          # zapamiętaj nazwę pliku
 
@@ -511,16 +516,23 @@ $C up -d --build postgres
 # 4. Przywrócenie backupu (restore robi dropdb + createdb + psql).
 $C exec postgres restore <nazwa_backupu>
 
-# 5. Weryfikacja: liczniki tabel i migracje, potem pełny start.
-$C exec postgres bash -c 'PGPASSWORD="$POSTGRES_PASSWORD" psql -h 127.0.0.1 -U "$POSTGRES_USER" "$POSTGRES_DB" -c "select count(*) from suchary_suchar"'
+# 5. Weryfikacja: liczniki muszą być identyczne jak w counts_before.txt, potem pełny start.
+$C exec postgres bash -c "$PSQL \"$COUNTS\"" | diff - counts_before.txt && echo "liczniki zgodne"
 $C up -d
-$C exec django python manage.py showmigrations     # wszystko [X]; porównaj liczniki ze starą bazą
+$C exec django python manage.py showmigrations     # wszystko [X]
 ```
 
 6. Stary wolumen zostaje nietknięty do potwierdzenia, że wszystko działa. Dopiero wtedy usuń go ręcznie:
-   `docker volume ls | grep postgres_data` → `docker volume rm <projekt>_production_postgres_data`.
+   `docker volume ls | grep 'postgres_data$'` → `docker volume rm <projekt>_production_postgres_data`.
+   **Nie usuwaj** `*_postgres_data_backups`: to wolumen z backupami (w tym z dumpem z kroku 1).
 
-Cofnięcie przed krokiem 6: `down`, przywróć poprzedni commit (stary mount) i `up -d`, bo stary wolumen jest cały.
+**Cofnięcie.** Do kroku 5 włącznie (zanim stos przyjął ruch na nowym klastrze): `down`, przywróć poprzedni commit
+(stary mount) i `up -d`; stary wolumen jest cały, więc nic nie ginie. Po `up -d` na nowym klastrze rollback nie jest
+już bezstratny: zapisy z nowego klastra trzeba najpierw wyeksportować (`backup` z nowego stosu) i przywrócić
+(`restore`) na starym układzie.
+
+**Uwaga.** `volume-guard` jest entrypointem, więc blokuje też `docker compose run --rm postgres backup` na starym
+wolumenie pod nowym mountem. Backup ze starego układu robi się przez `exec` na działającym starym kontenerze (krok 1).
 
 Lokalnie: ta sama procedura (`docker-compose.local.yml`, `just`), albo — jeśli dane lokalne nie są potrzebne —
 `just prune` i nowy start.

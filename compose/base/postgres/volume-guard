@@ -15,7 +15,11 @@ set -o nounset
 
 
 volume_root="${PG_VOLUME_ROOT:-/var/lib/postgresql}"
-pgdata="${PGDATA:-${volume_root}/18/docker}"
+# The image always sets PGDATA (<root>/<major>/docker); without it the cluster cannot be located, so do not guess.
+pgdata="${PGDATA:-}"
+if [[ -z "${pgdata}" ]]; then
+    exec docker-entrypoint.sh "$@"
+fi
 
 if [[ -f "${volume_root}/PG_VERSION" && ! -f "${pgdata}/PG_VERSION" ]]; then
     echo "ERROR: ${volume_root} holds a PostgreSQL cluster (PG_VERSION) but ${pgdata} has none." >&2
