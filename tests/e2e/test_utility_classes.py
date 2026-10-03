@@ -28,7 +28,34 @@ pytestmark = [pytest.mark.e2e, pytest.mark.django_db(transaction=True)]
 
 _THEMES = ["light", "dark"]
 
-_SET_THEME_JS = "(theme) => { document.documentElement.dataset.theme = theme; }"
+# Transitions are switched off first, so computed styles read right after the
+# theme change are the final values, not mid-transition ones (#504 review).
+_SET_THEME_JS = """
+(theme) => {
+  const style = document.createElement('style');
+  style.textContent = '*, *::before, *::after { transition: none !important; animation: none !important; }';
+  document.head.append(style);
+  document.documentElement.dataset.theme = theme;
+}
+"""
+
+# WCAG AA for normal-size text; the alert's text sits on its own translucent tint
+# composited over the page background (#504 review: measure, don't compute by hand).
+_MIN_CONTRAST = 4.5
+
+_CONTRAST_JS = """
+() => {
+  const parse = (v) => v.match(/[\\d.]+/g).map(Number);
+  const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  const page = parse(getComputedStyle(document.body).backgroundColor);
+  const [r, g, b, a = 1] = parse(getComputedStyle(document.querySelector('.alert-success')).backgroundColor);
+  const bg = [r, g, b].map((c, i) => c * a + page[i] * (1 - a));
+  const fg = parse(getComputedStyle(document.querySelector('.alert-success')).color);
+  const [hi, lo] = [lum(fg), lum(bg)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+"""
 
 _STYLE_JS = """
 ([selector, props]) => {
@@ -75,10 +102,14 @@ def test_alert_success_is_styled_and_alert_danger_unchanged(page: Page, live_ser
         "padding-top",
         "color",
         "border-top-left-radius",
+        "background-color",
     )
     assert alert["border-top-width"] == "1px"
     assert alert["padding-top"] == "16px"
+    assert alert["border-top-left-radius"] == "12px"  # --radius-md
     assert alert["color"] != _style(page, "body", "color")["color"]
+    assert alert["background-color"] not in {"rgba(0, 0, 0, 0)", "transparent"}
+    assert page.evaluate(_CONTRAST_JS) >= _MIN_CONTRAST
 
     # A bare `.alert` must not disturb `.alert-danger`, which carries its own look.
     page.evaluate(
