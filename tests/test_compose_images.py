@@ -132,11 +132,12 @@ def test_production_traefik_waits_for_nginx_and_django() -> None:
         assert depends_on[dependency].get("condition") == "service_healthy", dependency
 
 
-def test_production_nginx_healthcheck_matches_its_config() -> None:
+def test_production_nginx_healthcheck_targets_an_existing_location() -> None:
     nginx = _load(_ROOT / "docker-compose.production.yml")["services"]["nginx"]
-    assert nginx["healthcheck"]["test"] == ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/nginx-health"]
+    url = nginx["healthcheck"]["test"][-1]
+    path = "/" + url.split("//", 1)[1].partition("/")[2]
     conf = (_ROOT / "compose/production/nginx/default.conf").read_text(encoding="utf-8")
-    assert "location = /nginx-health" in conf
+    assert f"location = {path} " in conf
 
 
 def test_production_traefik_ping_is_internal_only() -> None:
@@ -147,8 +148,11 @@ def test_production_traefik_ping_is_internal_only() -> None:
     ping_entrypoint = static["ping"]["entryPoint"]
     # The ping entrypoint must be a separate one, not web/web-secure, and must not be published.
     assert ping_entrypoint not in {"web", "web-secure"}
-    port = static["entryPoints"][ping_entrypoint]["address"].lstrip(":")
-    assert all(port not in published for published in map(str, traefik["ports"]))
+    port = int(static["entryPoints"][ping_entrypoint]["address"].rpartition(":")[2])
+    # Short syntax `[host:]published:container[/proto]`: neither side may be the ping port.
+    for mapping in traefik["ports"]:
+        numbers = {int(part) for part in str(mapping).partition("/")[0].split(":") if part.isdigit()}
+        assert port not in numbers, mapping
     # No router may be attached to it.
     for router in static["http"]["routers"].values():
         assert ping_entrypoint not in router["entryPoints"]
