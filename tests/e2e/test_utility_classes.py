@@ -87,7 +87,7 @@ def test_alert_success_is_styled_and_alert_danger_unchanged(page: Page, live_ser
           d.id = 'probe-danger';
           d.className = 'alert alert-danger';
           document.body.append(d);
-        }"""
+        }""",
     )
     danger = _style(page, "#probe-danger", "border-top-width", "padding-top", "margin-bottom", "font-weight")
     assert danger == {
