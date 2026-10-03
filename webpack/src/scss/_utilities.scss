@@ -99,16 +99,8 @@
     height: 100%;
 }
 
-.w-auto {
-    width: auto;
-}
-
 .text-muted {
     color: var(--text-muted) !important;
-}
-
-.d-inline-block {
-    display: inline-block;
 }
 
 .flex-nowrap {
@@ -121,10 +113,6 @@
 
 .flex-column {
     flex-direction: column !important;
-}
-
-.flex-row {
-    flex-direction: row !important;
 }
 
 .align-items-start {
@@ -254,10 +242,6 @@
     padding: 3rem !important;
 }
 
-.px-0 {
-    padding-inline: 0;
-}
-
 .px-3 {
     padding-inline: 1rem !important;
 }
@@ -316,18 +300,6 @@
 
 .ms-1 {
     margin-left: 0.25rem !important;
-}
-
-.ms-2 {
-    margin-left: 0.5rem;
-}
-
-.ms-3 {
-    margin-left: 1rem;
-}
-
-.ps-0 {
-    padding-left: 0;
 }
 
 .ps-2 {
@@ -545,10 +517,6 @@
     font-weight: 700;
 }
 
-.fw-medium {
-    font-weight: 500;
-}
-
 .small {
     font-size: 0.875rem;
 }
@@ -557,10 +525,6 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-size: 0.75rem;
-}
-
-.font-monospace {
-    font-family: var(--font-mono);
 }
 
 .overflow-hidden {
@@ -697,18 +661,10 @@
 }
 
 @media (min-width: 768px) {
-    .d-md-block {
-        display: block !important;
-    }
-
     /* #66 follow-up: suchar_form.html's card body — mirrors .px-lg-5 below,
        reusing .p-5's value. */
     .p-md-5 {
         padding: 3rem !important;
-    }
-
-    .flex-lg-grow-0 {
-        flex-grow: 0 !important;
     }
 
     .justify-content-lg-end {

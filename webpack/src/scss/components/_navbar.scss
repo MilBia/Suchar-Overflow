@@ -120,6 +120,7 @@
         display: block;
     }
 
+    /* Base rule is in components/_dropdowns.scss (padding only); this is just its mobile-menu variant. */
     .language-search-wrapper {
         display: none;
     }

@@ -47,13 +47,8 @@ body::before {
         radial-gradient(circle at 85% 85%, hsla(var(--hue-secondary), 80%, 60%, 0.08) 0%, transparent 35%);
 }
 
-/* Main Content Wrapper */
-.main-wrapper {
-    flex: 1;
-    padding-bottom: 3rem;
-}
-
-/* Tag Hover Effects */
+/* Tag Hover Effects. pages/achievement-page.scss redefines .badge on purpose: that sheet loads after
+   this one (#250), so its smaller pill wins on the achievements page only. Don't merge them. */
 .badge {
     transition: all 0.2s ease;
     padding: 0.5em 0.8em;

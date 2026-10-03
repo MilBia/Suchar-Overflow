@@ -2,20 +2,6 @@
    Achievements & Popover
    ========================================= */
 
-/* Achievement Icons */
-.achievement-icon {
-    transition: transform 0.2s ease;
-    cursor: pointer;
-}
-
-.achievement-icon:hover {
-    transform: scale(1.2) rotate(5deg);
-}
-
-.achievement-icon:hover i {
-    filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.5));
-}
-
 /* Achievement Container */
 .achievement-container {
     position: relative;
