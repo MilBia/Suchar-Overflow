@@ -164,6 +164,7 @@ def test_admin_regenerate_without_confirmation_changes_nothing(
     assert response.status_code == HTTPStatus.OK
     assert user.username in response.content.decode()
     assert b'name="confirm"' in response.content
+    assert b"nonce=" in response.content.split(b"cancel.js")[1].split(b"</script>")[0]
     stored.refresh_from_db()
     assert stored.token_hash == AuthToken.hash_token(api_token)
     assert Client(headers={"Authorization": f"Bearer {api_token}"}).get(ME).status_code == HTTPStatus.OK
@@ -213,8 +214,11 @@ def test_admin_regenerate_requires_change_permission(client: Client, user: User,
     viewer.user_permissions.add(Permission.objects.get(codename="view_authtoken"))
     stored = AuthToken.objects.get(user=user)
     client.force_login(viewer)
-    client.post(
+    changelist = client.get(reverse("admin:users_authtoken_changelist"))
+    assert b'value="regenerate"' not in changelist.content
+    response = client.post(
         reverse("admin:users_authtoken_changelist"),
         {"action": "regenerate", "_selected_action": [stored.pk], "confirm": "yes"},
     )
+    assert "tylko raz" not in response.content.decode()
     assert AuthToken.objects.get(pk=stored.pk).token_hash == AuthToken.hash_token(api_token)
