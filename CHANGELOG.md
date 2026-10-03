@@ -4,6 +4,16 @@ Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 
 ## [Unreleased]
 
+### Wolumen PostgreSQL na `/var/lib/postgresql` (#464) — wymaga migracji danych
+
+- Wolumen danych ma nową nazwę (`production_postgres_cluster`, lokalnie `suchar_overflow_local_postgres_cluster`)
+  i jest montowany na `/var/lib/postgresql` (klaster w `18/docker`), co umożliwia `pg_upgrade --link` (#174).
+- **Po `git pull` + `just up` lokalna baza jest pusta** (nowy wolumen). Dane odzyskasz procedurą z README
+  („Migracja wolumenu PostgreSQL”: backup na starym układzie, restore na nowym) albo `just prune` i start od zera.
+  Stary wolumen `*_postgres_data` zostaje nietknięty do ręcznego usunięcia.
+- Produkcja: tylko w oknie serwisowym, wg tej procedury. Obraz Postgresa ma `volume-guard`, który odmawia startu, gdy
+  stary wolumen trafi pod nowy mount.
+
 ### Frontend na webpack (django-compressor usunięty)
 
 - Style (SCSS) i JavaScript (moduły ES) budowane przez webpack 5 + Babel + Sass + PostCSS i podawane przez
