@@ -341,8 +341,7 @@ def test_missing_secrets_file_is_fine(
     [
         ({}, True),
         ({"DJANGO_API_ENABLE_DOCS": "False"}, False),
-        ({"API_ENABLE_DOCS": "False"}, False),  # legacy name, one release
-        ({"DJANGO_API_ENABLE_DOCS": "True", "API_ENABLE_DOCS": "False"}, True),  # prefixed wins
+        ({"API_ENABLE_DOCS": "False"}, True),  # the unprefixed name is no longer read
     ],
 )
 def test_api_enable_docs_env(

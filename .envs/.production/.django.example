@@ -35,7 +35,6 @@ DJANGO_SECURE_SSL_REDIRECT=True
 # Interactive OpenAPI docs at /api/docs (default True). Suggested: False in
 # production — the docs page is public and lists every endpoint.
 # DJANGO_API_ENABLE_DOCS=False
-# The pre-prefix name API_ENABLE_DOCS is still read as a fallback for one release.
 
 # Database
 # ------------------------------------------------------------------------------
@@ -57,10 +56,7 @@ DJANGO_SECURE_SSL_REDIRECT=True
 # DJANGO_EMAIL_USE_TLS=True          # STARTTLS, port 587
 # DJANGO_EMAIL_USE_SSL=True          # implicit TLS / SMTPS, port 465 — mutually exclusive with DJANGO_EMAIL_USE_TLS
 # DJANGO_EMAIL_TIMEOUT=5
-# The pre-#453 names without the DJANGO_ prefix (EMAIL_HOST, EMAIL_PORT,
-# EMAIL_HOST_USER, ...) are still read as a fallback for one release; rename
-# them — the DJANGO_ name wins when both are set, and an empty value counts
-# as unset. See CHANGELOG.md.
+# An empty DJANGO_EMAIL_* value counts as unset.
 
 # Gunicorn
 # ------------------------------------------------------------------------------

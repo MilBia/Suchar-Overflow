@@ -77,7 +77,7 @@ def test_send_mail_still_reaches_the_outbox_without_deprecation_warnings() -> No
     assert mailers_warnings == []
 
 
-# DJANGO_EMAIL_* with the legacy EMAIL_* fallback (#453)
+# DJANGO_EMAIL_* options (#453)
 # ------------------------------------------------------------------------------
 # MAILERS is built once, in base.py; each case imports a throwaway copy of it
 # (tests/settings_loader.py) under a fake environment.
@@ -125,39 +125,23 @@ def test_mailer_reads_django_email_vars(monkeypatch: pytest.MonkeyPatch, tmp_pat
     assert _mailer_options(monkeypatch, tmp_path, **environment) == _FULL_EMAIL_OPTIONS
 
 
-def test_mailer_falls_back_to_legacy_email_vars(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    # Pre-#453 production env files use the unprefixed names; they keep working
-    # for one release (CHANGELOG.md).
+def test_mailer_ignores_unprefixed_email_vars(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    # The pre-#453 names stopped being read (#497).
     environment = {f"EMAIL_{key}": value for key, value in _FULL_EMAIL_ENV.items()}
-    assert _mailer_options(monkeypatch, tmp_path, **environment) == _FULL_EMAIL_OPTIONS
-
-
-def test_django_email_var_wins_over_legacy_name(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    options = _mailer_options(
-        monkeypatch,
-        tmp_path,
-        DJANGO_EMAIL_HOST="new.example.com",
-        EMAIL_HOST="old.example.com",
-        EMAIL_PORT="2525",
-    )
-    assert options["host"] == "new.example.com"
-    # Names are resolved one by one: a legacy PORT still fills in.
-    assert options["port"] == 2525
+    assert _mailer_options(monkeypatch, tmp_path, **environment) == _mailer_options(monkeypatch, tmp_path)
 
 
 def test_empty_email_var_counts_as_unset(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    # A blank line left behind while renaming EMAIL_* to DJANGO_EMAIL_* must
-    # neither crash the settings import (int("")) nor shadow the legacy value.
+    # A blank DJANGO_EMAIL_PORT= must not crash the settings import (int("")).
     options = _mailer_options(
         monkeypatch,
         tmp_path,
         DJANGO_EMAIL_HOST="",
-        EMAIL_HOST="smtp.old.example.com",
         DJANGO_EMAIL_PORT="",
         DJANGO_EMAIL_TIMEOUT="",
-        EMAIL_USE_TLS="",
+        DJANGO_EMAIL_USE_TLS="",
     )
-    assert options["host"] == "smtp.old.example.com"
+    assert options["host"] == "localhost"
     assert options["port"] == 25
     assert options["timeout"] == 5
     assert options["use_tls"] is False

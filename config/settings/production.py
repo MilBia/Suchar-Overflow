@@ -102,8 +102,7 @@ EMAIL_SUBJECT_PREFIX = env(
     "DJANGO_EMAIL_SUBJECT_PREFIX",
     default="[Suchar Overflow] ",
 )
-# MAILERS lives in base.py: every SMTP option is a DJANGO_EMAIL_* variable
-# (legacy EMAIL_* names still read as a fallback for one release — #453), see
+# MAILERS lives in base.py: every SMTP option is a DJANGO_EMAIL_* variable, see
 # .envs/.production/.django.example.
 
 # ADMIN
