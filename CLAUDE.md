@@ -12,7 +12,10 @@ its `maintenance/` backup scripts); `compose/local/` and `compose/production/` h
 own Django `Dockerfile`/`start` plus Traefik/nginx (#456). Every `FROM` and pulled `image:`
 names its registry (`docker.io/…`, `ghcr.io/…`), because podman doesn't assume Docker Hub;
 `tests/test_compose_images.py` guards that. Postgres, Redis and Mailpit have healthchecks and
-`django` waits for `service_healthy`. Django itself has none yet. Redis snapshots to a
+`django` waits for `service_healthy`. Django (`/healthcheck`, #457) and, in production,
+`nginx` (`wget` on `/nginx-health`) and `traefik` (`traefik healthcheck --ping` on an unpublished `ping`
+entrypoint `:8082`) have them too (#496); traefik waits for both `django` and `nginx`.
+`tests/test_compose_images.py` requires a healthcheck on every service. Redis snapshots to a
 named `/data` volume (`--save 60 1`).
 The Postgres data volume (`*_postgres_cluster`) is mounted on `/var/lib/postgresql`, not on
 `PGDATA` (#464, so a later `pg_upgrade --link` stays in one volume); `compose/base/postgres/volume-guard`

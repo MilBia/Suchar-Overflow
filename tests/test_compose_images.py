@@ -4,6 +4,7 @@
   podman does not assume Docker Hub for a short name the way Docker does.
 - The stateful services report their health, and django waits for it
   (`condition: service_healthy`) instead of only for the containers to start.
+- Every service has a healthcheck, traefik and nginx included (#496), and traefik waits for nginx.
 - Redis persists to a volume, since the RQ queue (#460) will live in it.
 - Production passes the optional `.envs/.secrets` before its own env files.
 
@@ -117,3 +118,37 @@ def test_production_django_reads_optional_secrets_first() -> None:
     assert env_files[0] == {"path": "./.envs/.secrets", "required": False}
     assert "./.envs/.production/.django" in env_files[1:]
     assert "./.envs/.production/.postgres" in env_files[1:]
+
+
+@pytest.mark.parametrize("compose_file", _COMPOSE_FILES, ids=lambda p: p.name)
+def test_every_service_has_a_healthcheck(compose_file: Path) -> None:
+    for name, service in _load(compose_file)["services"].items():
+        assert "healthcheck" in service, f"{compose_file.name}: {name} has no healthcheck"
+
+
+def test_production_traefik_waits_for_nginx_and_django() -> None:
+    depends_on = _load(_ROOT / "docker-compose.production.yml")["services"]["traefik"]["depends_on"]
+    for dependency in ("django", "nginx"):
+        assert depends_on[dependency].get("condition") == "service_healthy", dependency
+
+
+def test_production_nginx_healthcheck_matches_its_config() -> None:
+    nginx = _load(_ROOT / "docker-compose.production.yml")["services"]["nginx"]
+    assert nginx["healthcheck"]["test"] == ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/nginx-health"]
+    conf = (_ROOT / "compose/production/nginx/default.conf").read_text(encoding="utf-8")
+    assert "location = /nginx-health" in conf
+
+
+def test_production_traefik_ping_is_internal_only() -> None:
+    config = _load(_ROOT / "docker-compose.production.yml")
+    traefik = config["services"]["traefik"]
+    assert traefik["healthcheck"]["test"] == ["CMD", "traefik", "healthcheck", "--ping"]
+    static = _load(_ROOT / "compose/production/traefik/traefik.yml")
+    ping_entrypoint = static["ping"]["entryPoint"]
+    # The ping entrypoint must be a separate one, not web/web-secure, and must not be published.
+    assert ping_entrypoint not in {"web", "web-secure"}
+    port = static["entryPoints"][ping_entrypoint]["address"].lstrip(":")
+    assert all(port not in published for published in map(str, traefik["ports"]))
+    # No router may be attached to it.
+    for router in static["http"]["routers"].values():
+        assert ping_entrypoint not in router["entryPoints"]

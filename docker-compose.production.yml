@@ -130,12 +130,23 @@ services:
         depends_on:
             django:
                 condition: service_healthy
+            # /static/ and /media/ are routed to nginx.
+            nginx:
+                condition: service_healthy
         volumes:
             - production_traefik:/etc/traefik/acme
+        # The `ping` entrypoint (:8082) is deliberately not published: only the healthcheck uses it.
         ports:
             - '0.0.0.0:80:80'
             - '0.0.0.0:443:443'
         restart: unless-stopped
+        healthcheck:
+            # Reads the static config and probes the `ping` entrypoint (#496).
+            test: ['CMD', 'traefik', 'healthcheck', '--ping']
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
 
     redis:
         image: docker.io/redis:8.10
@@ -163,3 +174,10 @@ services:
             - production_django_media:/usr/share/nginx/media:ro
             - production_django_static:/usr/share/nginx/static:ro
         restart: unless-stopped
+        healthcheck:
+            # busybox wget (the alpine image has no curl); 127.0.0.1, since localhost may resolve to ::1.
+            test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1/nginx-health']
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
