@@ -217,7 +217,7 @@ def test_empty_queue_name_counts_as_unset(
     assert settings.RQ_QUEUE_NAME == "default"
 
 
-@pytest.mark.parametrize("name", ["my queue", "a:b", "queue;rm", "q$(x)", "ąę"])
+@pytest.mark.parametrize("name", ["my queue", "-x", "--burst", "a:b", "queue;rm", "q$(x)", "ąę"])
 def test_invalid_queue_name_is_rejected(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

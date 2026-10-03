@@ -479,9 +479,10 @@ REDIS_QUEUE_URL = env("REDIS_QUEUE_URL", default=urlunsplit(urlsplit(REDIS_URL).
 # DJANGO_RQ_QUEUE_NAME, so the worker listens where the code enqueues. An empty value
 # counts as unset, like in the shell's `${VAR:-default}` the worker script uses.
 RQ_QUEUE_NAME = env("DJANGO_RQ_QUEUE_NAME", default="") or "default"
-# Becomes the Redis key `rq:queue:<name>` and an argument of the worker's command line.
-if not re.fullmatch(r"[A-Za-z0-9_.-]+", RQ_QUEUE_NAME):
-    _msg = f"DJANGO_RQ_QUEUE_NAME may contain only letters, digits, '_', '.' and '-', got {RQ_QUEUE_NAME!r}."
+# Becomes the Redis key `rq:queue:<name>` and an argument of the worker's command line,
+# so a leading `-` (an option such as `--burst`) is refused too.
+if not re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]*", RQ_QUEUE_NAME):
+    _msg = f"DJANGO_RQ_QUEUE_NAME must match [A-Za-z0-9_][A-Za-z0-9_.-]*, got {RQ_QUEUE_NAME!r}."
     raise ImproperlyConfigured(_msg)
 RQ_QUEUES = {
     RQ_QUEUE_NAME: {

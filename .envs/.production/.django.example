@@ -71,9 +71,9 @@ REDIS_URL=redis://redis:6379/0
 # RQ job queue (#460): a separate database from the cache, so a cache flush
 # cannot delete pending jobs. Optional — defaults to REDIS_URL with the path /1.
 REDIS_QUEUE_URL=redis://redis:6379/1
-# Name of the RQ queue (#500). Optional, default `default`; letters, digits, `_`, `.`, `-`.
+# Name of the RQ queue (#500). Optional, default `default`; letters, digits, `_`, `.`, `-` (not first).
 # worker, cron and django read this one file, so they agree. Change it only after the old
-# queue is drained: jobs still waiting under the old name are never run.
+# queue is drained and `cron` stopped: jobs still waiting under the old name are never run.
 # DJANGO_RQ_QUEUE_NAME=default
 
 
