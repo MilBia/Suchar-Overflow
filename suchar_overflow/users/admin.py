@@ -72,7 +72,10 @@ class AuthTokenAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         self._announce(request, obj.user, raw_token)
 
-    @admin.action(description=_("Wygeneruj nowy token dla zaznaczonych użytkowników (unieważnia stary)"))
+    @admin.action(
+        description=_("Wygeneruj nowy token dla zaznaczonych użytkowników (unieważnia stary)"),
+        permissions=["change"],
+    )
     def regenerate(self, request: HttpRequest, queryset: QuerySet[AuthToken]) -> HttpResponse | None:
         tokens = queryset.select_related("user")
         if "confirm" not in request.POST:
@@ -82,7 +85,6 @@ class AuthTokenAdmin(admin.ModelAdmin):
                 "title": _("Czy na pewno wygenerować nowe tokeny?"),
                 "opts": self.model._meta,  # noqa: SLF001
                 "tokens": tokens,
-                "queryset": tokens,
                 "action_checkbox_name": helpers.ACTION_CHECKBOX_NAME,
             }
             return TemplateResponse(request, "admin/users/authtoken/regenerate_confirmation.html", context)

@@ -1,9 +1,24 @@
 {% extends "admin/base_site.html" %}
 
-{% load i18n %}
+{% load i18n l10n admin_urls static %}
 
+{% block extrahead %}
+    {{ block.super }}
+    {{ media }}
+    <script src="{% static 'admin/js/cancel.js' %}" async></script>
+{% endblock extrahead %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% translate "Początek" %}</a>
+        › <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+        › <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+        › {% translate "Potwierdzenie" %}
+    </div>
+{% endblock breadcrumbs %}
 {% block content %}
-    <p>{% trans "Poniższym użytkownikom zostanie cofnięty dostęp przez dotychczasowy token API. Nowe wartości pojawią się jednorazowo po potwierdzeniu." %}</p>
+    <p>
+        {% translate "Poniższym użytkownikom zostanie cofnięty dostęp przez dotychczasowy token API. Nowe wartości pojawią się jednorazowo po potwierdzeniu." %}
+    </p>
     <ul>
         {% for token in tokens %}<li>{{ token.user.username }}</li>{% endfor %}
     </ul>
@@ -12,12 +27,12 @@
         {% for token in tokens %}
             <input type="hidden"
                    name="{{ action_checkbox_name }}"
-                   value="{{ token.pk }}" />
+                   value="{{ token.pk|unlocalize }}" />
         {% endfor %}
         <input type="hidden" name="action" value="regenerate" />
         <input type="hidden" name="index" value="0" />
         <input type="hidden" name="confirm" value="yes" />
-        <input type="submit" value="{% trans 'Tak, wygeneruj nowe tokeny' %}" />
-        <a href="{% url 'admin:users_authtoken_changelist' %}">{% trans "Anuluj" %}</a>
+        <input type="submit" value="{% translate 'Tak, wygeneruj nowe tokeny' %}" />
+        <a href="#" class="button cancel-link">{% translate "Anuluj" %}</a>
     </form>
 {% endblock content %}
