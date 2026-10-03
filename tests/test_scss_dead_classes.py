@@ -5,6 +5,10 @@ the sources only (no build, no Node): classes come from the selectors in ``webpa
 class counts as used when its name appears as a whole token in a template, in ``webpack/src/js/`` or
 in Python outside tests and migrations. Names built at runtime are covered by ``DYNAMIC_PREFIXES``,
 and classes only a third-party library puts on the DOM by ``EXTERNAL_CLASSES``/``EXTERNAL_PREFIXES``.
+
+Known limits: the match is on whole tokens in the concatenated sources, so a short common name (``col``) can
+count as used because of an unrelated word in Python or JS; the test is lenient, not strict. Only the suffixes
+in ``_SOURCE_SUFFIXES`` are scanned, so a template in another format (``.xml``, ``.md``) must be added there.
 """
 
 import re
@@ -46,11 +50,12 @@ def selector_classes(scss: str) -> set[str]:
 
 
 def _usage_files() -> list[Path]:
+    """Templates (any file under a ``templates`` dir), webpack JS and non-test Python."""
     files = [p for p in (_ROOT / "suchar_overflow").rglob("*") if "templates" in p.parts and p.is_file()]
     files += (_ROOT / "webpack/src/js").rglob("*.js")
     for path in (_ROOT / "suchar_overflow").rglob("*.py"):
         parts = set(path.relative_to(_ROOT).parts)
-        if parts & {"tests", "migrations"} or path.name in {"conftest.py"} or path.name.startswith("test_"):
+        if parts & {"tests", "migrations"} or path.name == "conftest.py" or path.name.startswith("test_"):
             continue
         files.append(path)
     for path in (_ROOT / "config").rglob("*.py"):
@@ -59,6 +64,7 @@ def _usage_files() -> list[Path]:
 
 
 def unused_classes(defined: set[str], corpus: str) -> list[str]:
+    """The sorted classes in ``defined`` that neither the corpus, an exempt prefix nor the allowlist covers."""
     unused = []
     for name in sorted(defined):
         if name.startswith(DYNAMIC_PREFIXES + EXTERNAL_PREFIXES) or name in EXTERNAL_CLASSES:
@@ -69,6 +75,7 @@ def unused_classes(defined: set[str], corpus: str) -> list[str]:
 
 
 def _corpus() -> str:
+    """All usage files joined into one string."""
     return "\n".join(p.read_text(encoding="utf-8", errors="ignore") for p in _usage_files())
 
 
