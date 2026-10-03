@@ -50,7 +50,7 @@ def selector_classes(scss: str) -> set[str]:
 
 
 def _usage_files() -> list[Path]:
-    """Templates (any file under a ``templates`` dir), webpack JS and non-test Python."""
+    """Templates (any file under a ``templates`` dir), webpack JS and non-test Python, of the scanned suffixes."""
     files = [p for p in (_ROOT / "suchar_overflow").rglob("*") if "templates" in p.parts and p.is_file()]
     files += (_ROOT / "webpack/src/js").rglob("*.js")
     for path in (_ROOT / "suchar_overflow").rglob("*.py"):
