@@ -338,13 +338,7 @@
    the WCAG relative-luminance formula against --bg-surface (white light /
    hsl(220,25%,12%) dark). */
 .text-danger {
-    color: hsl(var(--hue-danger), 80%, 45%) !important;
-    /* ~5.5:1 vs white */
-}
-
-[data-theme='dark'] .text-danger {
-    color: hsl(var(--hue-danger), 70%, 70%) !important;
-    /* ~6.3:1 vs dark surface */
+    color: var(--text-danger) !important;
 }
 
 .text-info {
@@ -670,10 +664,6 @@
     .p-md-5 {
         padding: 3rem !important;
     }
-
-    .justify-content-lg-end {
-        justify-content: flex-end !important;
-    }
 }
 
 @media (min-width: 992px) {
@@ -683,6 +673,11 @@
 
     .justify-content-lg-start {
         justify-content: flex-start !important;
+    }
+
+    /* #508: was in the 768px block, so the toolbar was right-aligned at 768-991px. */
+    .justify-content-lg-end {
+        justify-content: flex-end !important;
     }
 
     .text-lg-start {

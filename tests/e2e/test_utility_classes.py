@@ -57,6 +57,31 @@ _CONTRAST_JS = """
 }
 """
 
+# Contrast of a probe element's text against whatever it is painted on: every ancestor's
+# background composited bottom-up (#508). `selector` probes are appended inside a surface card.
+_PROBE_CONTRAST_JS = """
+([className]) => {
+  const parse = (v) => v.match(/[\\d.]+/g).map(Number);
+  const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  const surface = document.createElement('div');
+  surface.style.background = 'var(--bg-surface)';
+  const el = document.createElement('div');
+  el.className = className;
+  el.textContent = 'x';
+  surface.append(el);
+  document.body.append(surface);
+  const layers = [];
+  for (let n = el; n; n = n.parentElement) layers.unshift(parse(getComputedStyle(n).backgroundColor));
+  let bg = [255, 255, 255];
+  for (const [r, g, b, a = 1] of layers) bg = [r, g, b].map((c, i) => c * a + bg[i] * (1 - a));
+  const fg = parse(getComputedStyle(el).color);
+  const [hi, lo] = [lum(fg), lum(bg)].sort((x, y) => y - x);
+  surface.remove();
+  return (hi + 0.05) / (lo + 0.05);
+}
+"""
+
 _STYLE_JS = """
 ([selector, props]) => {
   const el = document.querySelector(selector);
@@ -149,3 +174,24 @@ def test_profile_rank_number_is_not_bold(
     page.evaluate(_SET_THEME_JS, theme)
 
     assert _style(page, "span.fw-normal", "font-weight")["font-weight"] == "400"
+
+
+@pytest.mark.parametrize("class_name", ["alert alert-danger", "invalid-feedback", "char-counter is-error"])
+def test_error_red_text_meets_contrast(login: Page, live_server: LiveServer, theme: str, class_name: str) -> None:
+    # The suchar form loads both the global sheet and the page sheet that owns `.char-counter`.
+    page = login
+    page.goto(f"{live_server.url}/suchary/add/")
+    page.evaluate(_SET_THEME_JS, theme)
+    contrast = page.evaluate(_PROBE_CONTRAST_JS, [class_name])
+    assert contrast >= _MIN_CONTRAST, f"{class_name!r} contrast {contrast:.2f}:1 in {theme} theme"
+
+
+@pytest.mark.parametrize(
+    ("width", "expected"),
+    [(600, "normal"), (820, "normal"), (1100, "flex-end")],
+)
+def test_justify_content_lg_end_starts_at_992px(page: Page, live_server: LiveServer, width: int, expected: str) -> None:
+    page.set_viewport_size({"width": width, "height": 900})
+    page.goto(f"{live_server.url}/suchary/")
+    value = _style(page, "form.search-toolbar", "justify-content")["justify-content"]
+    assert value == expected, f"justify-content at {width}px"
