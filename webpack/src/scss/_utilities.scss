@@ -333,8 +333,9 @@
 }
 
 /* #151: .text-danger/.text-info need a per-theme lightness distinct from
-   --bs-danger/--bg-info's own button/badge-background tuned values (see the
-   old comment this replaces — those fail 4.5:1 as plain text). Computed with
+   --bs-danger/--bg-info's own button/badge-background tuned values (those
+   fail 4.5:1 as plain text). The danger value lives in --text-danger (#508,
+   `_variables.scss`, switches with the theme); .text-info keeps its own below. Computed with
    the WCAG relative-luminance formula against --bg-surface (white light /
    hsl(220,25%,12%) dark). */
 .text-danger {

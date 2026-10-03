@@ -3,6 +3,11 @@
 `.justify-content-lg-end` lived in a `min-width: 768px` block, so it applied from `md` while its name
 said `lg`. Same class of bug as `.flex-lg-grow-0` (#503). `col-*` rules in `_layout.scss` have a base
 rule outside `@media` (the mobile layout) and are not covered by this check.
+
+Limits: only plain `@media (min-width: Npx)` blocks are parsed (`rem`, `and`, `max-width` or mixins are
+skipped), and any class ending in `-sm/-md/-lg/-xl/-xxl` inside such a block is treated as a breakpoint
+utility (a non-utility like `.btn-lg` there would need an allowlist). The sanity test below fails if the
+parser stops finding blocks, so a change of SCSS format cannot make the check pass vacuously.
 """
 
 import re
@@ -57,6 +62,11 @@ def _mismatches() -> list[str]:
 
 def test_responsive_class_infix_matches_media_breakpoint() -> None:
     assert _mismatches() == []
+
+
+def test_parser_still_finds_media_blocks() -> None:
+    texts = (_strip_comments(p.read_text(encoding="utf-8")) for p in _SCSS.rglob("*.scss"))
+    assert sum(len(_media_blocks(t)) for t in texts) > 0
 
 
 def test_checker_flags_a_mismatched_block() -> None:
