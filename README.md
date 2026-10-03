@@ -503,7 +503,7 @@ COUNTS="select (select count(*) from suchary_suchar), (select count(*) from such
 # 1. Na STARYM commicie/obrazie (sprzed #464): zatrzymaj wszystko, co pisze do bazy (zostaje sam postgres),
 #    zapisz liczniki do późniejszego porównania i zrób backup. Zapisy po backupie przepadłyby.
 $C stop traefik nginx django worker cron
-$C exec postgres bash -c "$PSQL \"$COUNTS\"" | tee counts_before.txt
+$C exec -T postgres bash -c "$PSQL \"$COUNTS\"" | tee counts_before.txt
 $C exec postgres backup
 $C exec postgres backups          # zapamiętaj nazwę pliku
 
@@ -517,7 +517,7 @@ $C up -d --build postgres
 $C exec postgres restore <nazwa_backupu>
 
 # 5. Weryfikacja: liczniki muszą być identyczne jak w counts_before.txt, potem pełny start.
-$C exec postgres bash -c "$PSQL \"$COUNTS\"" | diff - counts_before.txt && echo "liczniki zgodne"
+$C exec -T postgres bash -c "$PSQL \"$COUNTS\"" | diff - counts_before.txt && echo "liczniki zgodne"
 $C up -d
 $C exec django python manage.py showmigrations     # wszystko [X]
 ```
