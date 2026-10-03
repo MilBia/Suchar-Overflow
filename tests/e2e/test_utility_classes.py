@@ -109,7 +109,8 @@ def test_alert_success_is_styled_and_alert_danger_unchanged(page: Page, live_ser
     assert alert["border-top-left-radius"] == "12px"  # --radius-md
     assert alert["color"] != _style(page, "body", "color")["color"]
     assert alert["background-color"] not in {"rgba(0, 0, 0, 0)", "transparent"}
-    assert page.evaluate(_CONTRAST_JS) >= _MIN_CONTRAST
+    contrast = page.evaluate(_CONTRAST_JS)
+    assert contrast >= _MIN_CONTRAST, f"alert-success contrast {contrast:.2f}:1 in {theme} theme"
 
     # A bare `.alert` must not disturb `.alert-danger`, which carries its own look.
     page.evaluate(
