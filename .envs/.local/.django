@@ -16,5 +16,5 @@ DJANGO_EMAIL_PORT=1025
 REDIS_URL=redis://redis:6379/0
 # RQ job queue (#460): its own database, apart from the cache above.
 REDIS_QUEUE_URL=redis://redis:6379/1
-# Name of the RQ queue (#500); worker, cron and django must all see the same value. Default: default.
+# Name of the RQ queue (#500); worker, cron and django must all see the same value (env_file, not .env). Default: default; no leading `-`.
 # DJANGO_RQ_QUEUE_NAME=default
