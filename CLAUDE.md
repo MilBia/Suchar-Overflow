@@ -1429,6 +1429,12 @@ as ES modules + npm libraries, #469 compressor removed: no `{% compress %}`, `CO
   `@supports` wrappers around `color-mix()`; `rgb(from …)` passes through. `tests/test_scss_sources.py`
   guards the `@use` order, that every partial is used once and the font paths;
   `tests/test_webpack_toolchain.py` that every page renders its entry's CSS once, after the global one.
+  `tests/test_scss_dead_classes.py` (#503) fails when a class named in an SCSS selector appears in no
+  template, `webpack/src/js/` file or non-test Python (dynamic prefixes `tier-`/`rank-`/`toast-` and the
+  flatpickr-generated classes are allowlisted in the test, with the reason). Delete the rule, don't allowlist it,
+  unless a library puts the class on the DOM. A `.svg` under `templates/` counts as a template (`brand-logo`).
+  Two base rules for one class are fine when the later sheet is a deliberate variant (`.badge` on the achievements
+  page, `.language-search-wrapper` in the mobile menu): keep both and say why in a comment.
 - **Deliberate limits.** `publicPath` (`/static/webpack_bundles/`) and the font URLs (`/static/fonts/`) are
   written as literals, and the tests `removeprefix(STATIC_URL)`: changing `STATIC_URL` (a CDN) means changing
   `webpack/common.config.js` and `_fonts.scss` with it. Production ships real `.map` files (public
