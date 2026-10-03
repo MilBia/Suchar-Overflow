@@ -140,8 +140,8 @@ label {
     margin-bottom: 0.125rem;
 }
 
-/* Alerts (#504): `.alert` is the shared base; `.alert-danger` keeps its own
-   padding/radius below, so its computed style is unchanged. */
+/* Alerts (#504): `.alert` is the shared base and supplies padding/radius to
+   every variant, `.alert-danger` included. */
 .alert {
     padding: 1rem;
     border: 1px solid transparent;
@@ -169,9 +169,7 @@ label {
 .alert-danger {
     background-color: hsla(var(--hue-danger), 80%, 90%, 0.1);
     border: 1px solid var(--bs-danger);
-    color: var(--bs-danger);
-    padding: 1rem;
-    border-radius: var(--radius-md);
+    color: var(--text-danger);
     margin-bottom: 1.5rem;
     font-weight: 500;
 }
@@ -227,5 +225,5 @@ label {
     margin-top: 0.25rem;
     font-size: 0.8rem;
     font-weight: 500;
-    color: var(--bs-danger);
+    color: var(--text-danger);
 }
