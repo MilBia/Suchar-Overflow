@@ -209,7 +209,7 @@ def test_admin_regenerate_handles_several_tokens(admin_client: Client) -> None:
 
 @pytest.mark.django_db
 def test_admin_regenerate_requires_change_permission(client: Client, user: User, api_token: str) -> None:
-    viewer = UserFactory(is_staff=True)
+    viewer: User = UserFactory.create(is_staff=True)
     viewer.user_permissions.add(Permission.objects.get(codename="view_authtoken"))
     stored = AuthToken.objects.get(user=user)
     client.force_login(viewer)
