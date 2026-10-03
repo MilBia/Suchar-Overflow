@@ -23,7 +23,7 @@
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                     <h5 class="fw-bold mb-0">{% trans "Activity" %}</h5>
-                    <div class="btn-group chart-timeframe-selector"
+                    <div class="chart-timeframe-selector"
                          role="group"
                          aria-label="Chart timeframe">
                         <button type="button" class="btn btn-outline btn-sm" data-timeframe="7">7d</button>
@@ -44,7 +44,7 @@
         </div>
 
         <!-- Tabs Navigation -->
-        <ul class="nav nav-pills mb-4" id="leaderboardTabs" role="tablist">
+        <ul class="mb-4" id="leaderboardTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active rounded-pill fw-bold"
                         id="overall-tab"
@@ -90,7 +90,7 @@
         <div class="tab-content" id="leaderboardTabsContent">
 
             <!-- 1. Overall Tab -->
-            <div class="tab-pane fade show active"
+            <div class="tab-pane show active"
                  id="overall"
                  role="tabpanel"
                  aria-labelledby="overall-tab">
@@ -101,7 +101,7 @@
             </div>
 
             <!-- 2. Funny Tab -->
-            <div class="tab-pane fade"
+            <div class="tab-pane"
                  id="funny"
                  role="tabpanel"
                  aria-labelledby="funny-tab">
@@ -112,10 +112,7 @@
             </div>
 
             <!-- 3. Dry Tab -->
-            <div class="tab-pane fade"
-                 id="dry"
-                 role="tabpanel"
-                 aria-labelledby="dry-tab">
+            <div class="tab-pane" id="dry" role="tabpanel" aria-labelledby="dry-tab">
                 <div class="row g-5">
                     {% include "stats/_leaderboard_author_card.html" with header_class="card-header-dry" header_text_class="text-white" icon_emoji="🌵" icon_wrapper_class="header-icon-emoji" title=lords_of_drought_title authors=top_authors_dry empty_text=no_dry_data_text badge_mode="dry" %}
                     {% include "stats/_leaderboard_suchar_card.html" with header_class="card-header-dry" header_text_class="text-white" icon_emoji="💧" icon_wrapper_class="header-icon-emoji" title=top_dry_jokes_title suchary=top_suchars_dry badge_mode="dry" %}

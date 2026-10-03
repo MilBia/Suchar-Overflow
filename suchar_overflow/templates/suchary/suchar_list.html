@@ -83,7 +83,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 {% if request.GET.tag or request.GET.q or request.GET.author %}
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-4 p-3 bg-light rounded border">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-4 p-3 bg-light rounded-4 border">
                         <span class="text-muted small">{% trans "Active filters:" %}</span>
 
                         {% if request.GET.tag %}
@@ -111,7 +111,7 @@
                         {% endif %}
 
                         <a href="?"
-                           class="btn btn-link btn-sm text-decoration-none ms-auto py-0 text-muted hover-primary">{% trans "Clear all" %}</a>
+                           class="btn btn-sm text-decoration-none ms-auto py-0 text-muted hover-primary">{% trans "Clear all" %}</a>
                     </div>
                 {% endif %}
                 {% comment %}

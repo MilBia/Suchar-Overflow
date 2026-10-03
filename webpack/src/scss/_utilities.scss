@@ -517,6 +517,10 @@
     font-weight: 700;
 }
 
+.fw-normal {
+    font-weight: 400;
+}
+
 .small {
     font-size: 0.875rem;
 }
@@ -691,6 +695,12 @@
 }
 
 /* Border Utilities */
+/* Bare `.border` (#504): every variant below (`.border-0`, `-top`/`-bottom`,
+   `-<color>`) carries `!important`, so this base rule never overrides them. */
+.border {
+    border: 1px solid var(--border-color);
+}
+
 .border-0 {
     border: none !important;
 }
@@ -703,11 +713,9 @@
     border-top: 1px solid var(--border-color) !important;
 }
 
-/* Note: this project has no bare `.border` utility (border-style/width come
-   from `.card`/`.suchar-card`, etc.), so `.border-warning` sets the full
-   shorthand rather than just border-color — a color-only override would be
-   invisible wherever the initial `border-style: none` still applies (e.g. on
-   `.badge`, which sets no border of its own). 1px solid also matches `.card`'s
+/* `.border-warning` sets the full shorthand rather than just border-color, so
+   it also renders on elements with no border of their own (e.g. `.badge`)
+   regardless of the bare `.border` above. 1px solid also matches `.card`'s
    own border width/style, so the two card usages of `.border-warning` keep
    their existing border thickness. */
 .border-warning {
@@ -720,10 +728,6 @@
 .border-secondary {
     border: 1px solid var(--color-secondary) !important;
 }
-
-/* .border-success intentionally left undefined here — see #151, same
-   reasoning as .bg-success above (stats/_leaderboard_suchar_card.html's
-   "Votes" badge). */
 
 /* #66 follow-up: "Dry" badge in stats/_leaderboard_author_card.html, paired
    with the pre-existing .bg-info/.text-white (not .text-info, left

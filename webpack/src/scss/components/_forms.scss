@@ -140,6 +140,31 @@ label {
     margin-bottom: 0.125rem;
 }
 
+/* Alerts (#504): `.alert` is the shared base; `.alert-danger` keeps its own
+   padding/radius below, so its computed style is unchanged. */
+.alert {
+    padding: 1rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+}
+
+/* 25% lightness in the light theme: 5.3:1 on the page background (28% is 4.51). */
+.alert-success {
+    background-color: hsla(var(--hue-success), 70%, 25%, 0.1);
+    border-color: hsl(var(--hue-success), 70%, 25%);
+    color: hsl(var(--hue-success), 70%, 25%);
+}
+
+[data-theme='dark'] .alert-success {
+    background-color: hsla(var(--hue-success), 70%, 45%, 0.1);
+    border-color: hsl(var(--hue-success), 70%, 45%);
+    color: hsl(var(--hue-success), 70%, 45%);
+}
+
+.alert-heading {
+    color: inherit;
+}
+
 /* Global Errors */
 .alert-danger {
     background-color: hsla(var(--hue-danger), 80%, 90%, 0.1);
