@@ -127,7 +127,7 @@ SHA-256 digest is stored and the clear text shows once in an admin message; an i
 rejected) or the Django session (CSRF-checked). Endpoints inherit that default, so don't add
 `auth=django_auth` per route; a public one needs an explicit `auth=None` (`GET /api/suchary/tags`).
 `GET /api/users/me` returns `{"username"}`. Test with the `api_client` fixture
-(`suchar_overflow/conftest.py`, `enforce_csrf_checks=True`). `/api/docs` follows `API_ENABLE_DOCS` (env `DJANGO_API_ENABLE_DOCS`, bare name as a one-release fallback, default on — switch it off
+(`suchar_overflow/conftest.py`, `enforce_csrf_checks=True`). `/api/docs` follows `API_ENABLE_DOCS` (env `DJANGO_API_ENABLE_DOCS` only — the bare name stopped being read in #497, default on — switch it off
 in production); `PermissionDenied` becomes a 403 `{"message": ...}`.
 
 Worker RSS that climbs under load and never comes back (#431) was CPython 3.14.2's
@@ -435,9 +435,8 @@ as an optional `env_file` (`required: false`) listed **first**, so `.envs/.produ
 has no such entry: the bind mount already exposes the file to `base.py`, and a value compose
 put in the environment would shadow a later edit of it until the container is recreated. `ADMINS` strips whitespace and drops blank
 entries (a `" "` left by a trailing comma made every `mail_admins` send raise, silently).
-`MAILERS` lives in `base.py` only; legacy `EMAIL_*` names are read as a fallback for one
-release (CHANGELOG) — drop that fallback afterwards. An empty `DJANGO_EMAIL_*`/`EMAIL_*`
-counts as unset there, unlike `DATABASE_URL`'s presence rule — keep the two apart.
+`MAILERS` lives in `base.py` only and reads `DJANGO_EMAIL_*` alone (the legacy `EMAIL_*` names
+were dropped in #497). An empty `DJANGO_EMAIL_*` counts as unset there, unlike `DATABASE_URL`'s presence rule — keep the two apart.
 Tests for this load a fresh copy of `base.py` from `tmp_path`
 (`tests/test_env_settings.py`) instead of reloading the live module. Tests of
 `production.py` go through `load_production_settings()` in `tests/settings_loader.py`

@@ -420,7 +420,6 @@ Szablony: `.envs/.production/.django.example` i `.postgres.example`; lokalne war
 | `DJANGO_SECURE_HSTS_PRELOAD`            | `preload` w HSTS; wymaga `DJANGO_SECURE_HSTS_SECONDS >= 31536000`, inaczej start się nie uda                                                                               | `False`                                                                                                | prod        |
 | `DJANGO_SECURE_CONTENT_TYPE_NOSNIFF`    | Nagłówek `X-Content-Type-Options: nosniff`                                                                                                                                 | `True`                                                                                                 | prod        |
 | `DJANGO_API_ENABLE_DOCS`                | Publiczna dokumentacja `/api/docs` (zalecane `False` na produkcji)                                                                                                         | `True`                                                                                                 | wszystkie   |
-| `API_ENABLE_DOCS`                       | Stara nazwa `DJANGO_API_ENABLE_DOCS`, czytana jeszcze jako zapasowa (jedno wydanie)                                                                                        | `True`                                                                                                 | wszystkie   |
 | `FEEDBACK_URL`                          | Adres linku „zgłoś błąd" w stopce                                                                                                                                          | issues repozytorium                                                                                    | wszystkie   |
 | `DJANGO_STATIC_ROOT`                    | Gdzie `collectstatic` zapisuje pliki statyczne                                                                                                                             | `<repo>/staticfiles` (`/app/staticfiles` w obrazie)                                                    | wszystkie   |
 | `USE_DOCKER`                            | `yes` ustawia `INTERNAL_IPS` pod debug toolbar w kontenerze                                                                                                                | `no`                                                                                                   | local       |
@@ -442,8 +441,7 @@ Szablony: `.envs/.production/.django.example` i `.postgres.example`; lokalne war
 | `REDIS_URL`       | Redis dla cache (`redis://` lub `rediss://`); brak wartości domyślnej         | — (wymagana)                | local, prod |
 | `REDIS_QUEUE_URL` | Redis dla kolejki RQ — osobna baza, żeby czyszczenie cache nie kasowało zadań | `REDIS_URL` ze ścieżką `/1` | local, prod |
 
-**Poczta** (każda opcja SMTP czytana jest też pod starą nazwą bez prefiksu `DJANGO_`, np. `EMAIL_HOST` — zapasowo,
-przez jedno wydanie; wygrywa nazwa z prefiksem, pusta wartość = nieustawiona)
+**Poczta** (pusta wartość = nieustawiona)
 
 | Zmienna                       | Opis                                                     | Domyślnie                                     | Środowisko |
 | ----------------------------- | -------------------------------------------------------- | --------------------------------------------- | ---------- |

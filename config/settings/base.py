@@ -250,9 +250,7 @@ MIDDLEWARE = [
 # ------------------------------------------------------------------------------
 # Serves the interactive OpenAPI docs at /api/docs (#458); the schema itself stays
 # at /api/openapi.json. Consider switching it off in production.
-# DJANGO_API_ENABLE_DOCS is the name (#453 prefix); bare API_ENABLE_DOCS is read as a
-# fallback for one release (CHANGELOG) — drop it afterwards.
-API_ENABLE_DOCS = env.bool("DJANGO_API_ENABLE_DOCS", default=env.bool("API_ENABLE_DOCS", default=True))
+API_ENABLE_DOCS = env.bool("DJANGO_API_ENABLE_DOCS", default=True)
 
 # STATIC
 # ------------------------------------------------------------------------------
@@ -346,32 +344,25 @@ X_FRAME_OPTIONS = "DENY"
 # DJANGO_EMAIL_<X> variable; the defaults are the conservative SMTP-to-
 # localhost:25, no-auth behaviour. Local points it at mailpit through
 # .envs/.local/.django, production through .envs/.production/.django.
-# The pre-#453 names (EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, ...) are still read
-# as a fallback for one release — see CHANGELOG.md. The helper is lowercase on
-# purpose: an uppercase EMAIL_* module attribute next to MAILERS makes Django
-# raise ImproperlyConfigured.
+# The helper is lowercase on purpose: an uppercase EMAIL_* module attribute next
+# to MAILERS makes Django raise ImproperlyConfigured.
 
 
 def _email_env(option: str, default: str) -> str:
-    """Value of DJANGO_EMAIL_<option>, else legacy EMAIL_<option>, else default.
+    """Value of DJANGO_EMAIL_<option>, else default.
 
     An empty value counts as unset, unlike DATABASE_URL's "presence, not
     truthiness" rule above (which the production build relies on — don't unify
-    them). A blank `DJANGO_EMAIL_PORT=` left behind while migrating off EMAIL_*
-    would otherwise crash int() at import, and a blank `DJANGO_EMAIL_HOST=` would
-    shadow a still-set legacy EMAIL_HOST with host "". Every option's default is
-    what an empty value would mean anyway ("" user/password, False TLS/SSL).
+    them). A blank `DJANGO_EMAIL_PORT=` would otherwise crash int() at import.
+    Every option's default is what an empty value would mean anyway ("" user/password,
+    False TLS/SSL).
     """
-    for name in (f"DJANGO_EMAIL_{option}", f"EMAIL_{option}"):
-        if value := env.ENVIRON.get(name, ""):
-            return value
-    return default
+    return env.ENVIRON.get(f"DJANGO_EMAIL_{option}", "") or default
 
 
 MAILERS = {
     "default": {
-        # Same "empty = unset" rule as _email_env (no legacy EMAIL_BACKEND name to
-        # fall back to): a blank BACKEND imports fine but makes every send raise
+        # Same "empty = unset" rule as _email_env: a blank BACKEND imports fine but makes every send raise
         # InvalidMailer, which logging swallows for mail_admins.
         "BACKEND": env("DJANGO_EMAIL_BACKEND", default="") or "django.core.mail.backends.smtp.EmailBackend",
         "OPTIONS": {
