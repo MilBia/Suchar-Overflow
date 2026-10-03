@@ -176,8 +176,8 @@ def test_queue_url_defaults_to_database_1_of_redis_url(
     settings = load_base_settings(monkeypatch, tmp_path, env)
     # Same host, port and credentials; only the database differs, so a cache flush spares the queue.
     assert settings.REDIS_QUEUE_URL == "redis://:s3cret@cache.example:6380/1"
-    assert settings.RQ_QUEUES["default"]["URL"] == settings.REDIS_QUEUE_URL
-    assert "SSL_CERT_REQS" not in settings.RQ_QUEUES["default"]
+    assert settings.RQ_QUEUES[settings.RQ_QUEUE_NAME]["URL"] == settings.REDIS_QUEUE_URL
+    assert "SSL_CERT_REQS" not in settings.RQ_QUEUES[settings.RQ_QUEUE_NAME]
 
 
 def test_explicit_queue_url_wins(
@@ -186,7 +186,45 @@ def test_explicit_queue_url_wins(
 ) -> None:
     settings = load_base_settings(monkeypatch, tmp_path, {**MINIMAL_ENV, "REDIS_QUEUE_URL": "redis://queue:6379/5"})
     assert settings.REDIS_QUEUE_URL == "redis://queue:6379/5"
-    assert settings.RQ_QUEUES["default"]["URL"] == "redis://queue:6379/5"
+    assert settings.RQ_QUEUES[settings.RQ_QUEUE_NAME]["URL"] == "redis://queue:6379/5"
+
+
+def test_queue_name_defaults_to_default(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    settings = load_base_settings(monkeypatch, tmp_path, MINIMAL_ENV)
+    assert settings.RQ_QUEUE_NAME == "default"
+    assert list(settings.RQ_QUEUES) == ["default"]
+
+
+def test_queue_name_is_overridable_and_keys_the_queue_config(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    settings = load_base_settings(monkeypatch, tmp_path, {**MINIMAL_ENV, "DJANGO_RQ_QUEUE_NAME": "suchary"})
+    assert settings.RQ_QUEUE_NAME == "suchary"
+    assert list(settings.RQ_QUEUES) == ["suchary"]
+    assert settings.RQ_QUEUES["suchary"]["URL"] == settings.REDIS_QUEUE_URL
+
+
+def test_empty_queue_name_counts_as_unset(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    # The worker script's `${DJANGO_RQ_QUEUE_NAME:-default}` treats empty the same way.
+    settings = load_base_settings(monkeypatch, tmp_path, {**MINIMAL_ENV, "DJANGO_RQ_QUEUE_NAME": ""})
+    assert settings.RQ_QUEUE_NAME == "default"
+
+
+@pytest.mark.parametrize("name", ["my queue", "-x", "--burst", "a:b", "queue;rm", "q$(x)", "ąę"])
+def test_invalid_queue_name_is_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    name: str,
+) -> None:
+    with pytest.raises(ImproperlyConfigured, match="DJANGO_RQ_QUEUE_NAME"):
+        load_base_settings(monkeypatch, tmp_path, {**MINIMAL_ENV, "DJANGO_RQ_QUEUE_NAME": name})
 
 
 def test_tls_queue_url_does_not_verify_certificates_like_the_cache(
@@ -195,7 +233,7 @@ def test_tls_queue_url_does_not_verify_certificates_like_the_cache(
 ) -> None:
     settings = load_base_settings(monkeypatch, tmp_path, {**MINIMAL_ENV, "REDIS_URL": "rediss://cache.example:6380/0"})
     assert settings.REDIS_QUEUE_URL == "rediss://cache.example:6380/1"
-    assert settings.RQ_QUEUES["default"]["SSL_CERT_REQS"] is None
+    assert settings.RQ_QUEUES[settings.RQ_QUEUE_NAME]["SSL_CERT_REQS"] is None
 
 
 # ADMINS / MANAGERS

@@ -1192,7 +1192,7 @@ No profile field — cookie only.
 
 Work outside the request runs in two extra compose services built from the Django image
 (`worker`, `cron`; local and production): **`worker`** (`compose/base/django/worker`:
-`rqworker --with-scheduler default` — `--with-scheduler` is what makes `Retry(interval=…)`
+`rqworker --with-scheduler "${DJANGO_RQ_QUEUE_NAME:-default}"` — `--with-scheduler` is what makes `Retry(interval=…)`
 and `enqueue_in` fire) and **`cron`** (`compose/base/django/cron`: `achievements_catch_up`,
 then `exec manage.py rqcron suchar_overflow.achievements.cron`). **Run exactly one `cron`
 instance** — a second one enqueues every periodic job twice. Web workers start no scheduler
@@ -1200,7 +1200,7 @@ instance** — a second one enqueues every periodic job twice. Web workers start
 reversed the old "Django-RQ removed, APScheduler in-process" decision of #159: APScheduler
 ran in every gunicorn worker and duplicated its jobs.
 
-- **Queue**: `django-rq` (+ `rq`), pinned. `RQ_QUEUES["default"]` points at `REDIS_QUEUE_URL`
+- **Queue**: `django-rq` (+ `rq`), pinned. `RQ_QUEUES[settings.RQ_QUEUE_NAME]` points at `REDIS_QUEUE_URL`
   — its **own Redis database** (`/1`; defaults to `REDIS_URL` with path `/1`), so a cache flush
   cannot delete pending jobs; `DEFAULT_TIMEOUT = 300`. Always reach it as
   `django_rq.get_queue(settings.RQ_QUEUE_NAME)` through the module attribute: the autouse
@@ -1210,13 +1210,14 @@ ran in every gunicorn worker and duplicated its jobs.
   `/<ADMIN_URL>django-rq/` (linked from the admin index). django-rq closes DB connections
   before RQ forks per job (`reset_db_connections`); verified: no idle `pg_stat_activity` rows
   after a burst of jobs that touch the DB (`award_publication_achievements`).
+- **Queue name (#500)**: `settings.RQ_QUEUE_NAME` reads `DJANGO_RQ_QUEUE_NAME` (empty = unset = `default`; `[A-Za-z0-9_][A-Za-z0-9_.-]*` — no leading `-`, it would reach `rqworker` as an option — else `ImproperlyConfigured`), and the `worker` script reads the same variable, so never hardcode `default` anywhere — use `settings.RQ_QUEUE_NAME`. Jobs left under the old name are not run after a rename: drain the queue and stop `cron` (one instance only) first. The script reads the process environment only, so a name set solely in a `.env` file (`DJANGO_READ_DOT_ENV_FILE`) reaches Django but not the worker — set it in the compose `env_file`. `tests/test_worker_queue_name.py` runs the script against a fake `python`.
 - **Healthchecks**: `manage.py rq_healthcheck` (worker: every queue has a registered worker;
   `--cron`: a `CronScheduler` heartbeat younger than `--max-age`, default 150 s) and `/healthz/`'s
   `queue` check (PING on the queue's connection). Local `just up` after pulling this change needs
   `docker compose up -d --renew-anon-volumes`: the anonymous `/app/.venv` volume of the old
   `django` container still lacks `django_rq`. The worker does not autoreload — restart it after
   editing a task. RQ's scheduler (retry intervals, `enqueue_in`) starts with the worker only if it
-  can take the `rq:scheduler-lock:default` lock; a clean restart releases it, but after a hard kill
+  can take the `rq:scheduler-lock:<queue name>` lock; a clean restart releases it, but after a hard kill
   the stale lock lasts ~70 s and the worker then retries only at its 10-minute maintenance tick, so
   a retry can lag that long (the per-minute cron jobs are plain queue entries, unaffected).
 - **Failures**: `RQ_EXCEPTION_HANDLERS` → `utils/rq_handlers.py:mail_admins_on_final_failure`

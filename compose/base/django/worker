@@ -4,7 +4,8 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-# RQ worker for the `default` queue (#460). --with-scheduler runs RQ's own scheduler
-# for enqueue_in/enqueue_at jobs and retry intervals (Retry(interval=...), #461);
+# RQ worker for the queue named by DJANGO_RQ_QUEUE_NAME, `default` when unset or empty (#460, #500;
+# settings' RQ_QUEUE_NAME reads the same variable, so the worker listens where the code enqueues).
+# --with-scheduler runs RQ's own scheduler for enqueue_in/enqueue_at jobs and retry intervals (Retry(interval=...), #461);
 # the periodic jobs themselves come from the separate `cron` service (#462).
-exec python manage.py rqworker --with-scheduler default
+exec python manage.py rqworker --with-scheduler "${DJANGO_RQ_QUEUE_NAME:-default}"

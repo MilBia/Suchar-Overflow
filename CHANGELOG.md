@@ -4,6 +4,13 @@ Wszystkie znaczące zmiany w projekcie są dokumentowane w tym pliku.
 
 ## [Unreleased]
 
+### Konfigurowalna nazwa kolejki RQ (#500)
+
+- Nazwę kolejki ustawia `DJANGO_RQ_QUEUE_NAME` (domyślnie `default`, więc nic nie trzeba robić). Czytają ją `django`,
+  `worker` i `cron` z `env_file`; sam plik `.env` nie dociera do workera.
+- Zmiana nazwy na działającej instalacji: opróżnij starą kolejkę i zatrzymaj `cron` (jedna instancja), potem ustaw
+  zmienną i uruchom usługi — zadania czekające pod starą nazwą nie zostaną wykonane.
+
 ### Token API: prefiks `sot_` i potwierdzenie akcji „regenerate” (#487)
 
 - Nowe tokeny API zaczynają się od `sot_`, więc skanery sekretów rozpoznają zacommitowany token. Wcześniejsze tokeny

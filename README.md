@@ -385,7 +385,7 @@ docker compose -f docker-compose.production.yml exec postgres restore <nazwa_bac
 | `traefik`  | Jedyny element wystawiony na świat (80/443); terminuje TLS (Let's Encrypt). `/static/` i `/media/` kieruje do `nginx`, resztę do `django`.                |
 | `nginx`    | Serwuje `/static/` (wolumen `production_django_static`) i `/media/` (`production_django_media`), oba tylko do odczytu. W łańcuchu ASGI nie ma WhiteNoise. |
 | `django`   | `gunicorn -k uvicorn.workers.UvicornWorker` (ASGI), liczba procesów z `WEB_CONCURRENCY`. Przy starcie: `migrate` i `collectstatic --clear`.               |
-| `worker`   | `rqworker --with-scheduler default`: wysyła maile (z ponowieniami), wykonuje zadania z kolejki.                                                           |
+| `worker`   | `rqworker --with-scheduler "${DJANGO_RQ_QUEUE_NAME:-default}"`: wysyła maile (z ponowieniami), wykonuje zadania z kolejki.                                |
 | `cron`     | `achievements_catch_up`, potem `rqcron`: zadania cykliczne (konkursy miesiąca/roku, sweep publikacji). **Dokładnie jedna instancja.**                     |
 | `postgres` | PostgreSQL 18 + skrypty backupu (`backup`, `backups`, `restore`, `rmbackup`).                                                                             |
 | `redis`    | Cache (baza `/0`) i kolejka RQ (baza `/1`, osobna, żeby wyczyszczenie cache nie usunęło zadań). Snapshot co 60 s do wolumenu `/data`.                     |
@@ -436,10 +436,11 @@ Szablony: `.envs/.production/.django.example` i `.postgres.example`; lokalne war
 
 **Redis i kolejka**
 
-| Zmienna           | Opis                                                                          | Domyślnie                   | Środowisko  |
-| ----------------- | ----------------------------------------------------------------------------- | --------------------------- | ----------- |
-| `REDIS_URL`       | Redis dla cache (`redis://` lub `rediss://`); brak wartości domyślnej         | — (wymagana)                | local, prod |
-| `REDIS_QUEUE_URL` | Redis dla kolejki RQ — osobna baza, żeby czyszczenie cache nie kasowało zadań | `REDIS_URL` ze ścieżką `/1` | local, prod |
+| Zmienna                | Opis                                                                                                                                                                                                                           | Domyślnie                   | Środowisko  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- | ----------- |
+| `REDIS_URL`            | Redis dla cache (`redis://` lub `rediss://`); brak wartości domyślnej                                                                                                                                                          | — (wymagana)                | local, prod |
+| `REDIS_QUEUE_URL`      | Redis dla kolejki RQ — osobna baza, żeby czyszczenie cache nie kasowało zadań                                                                                                                                                  | `REDIS_URL` ze ścieżką `/1` | local, prod |
+| `DJANGO_RQ_QUEUE_NAME` | Nazwa kolejki RQ (litery, cyfry, `_`, `.`, `-`; bez `-` na początku); czytają ją `django`, `worker` i `cron` z `env_file` (sam plik `.env` nie dotrze do workera). Zmieniaj po opróżnieniu starej kolejki i zatrzymaniu `cron` | `default`                   | local, prod |
 
 **Poczta** (pusta wartość = nieustawiona)
 
