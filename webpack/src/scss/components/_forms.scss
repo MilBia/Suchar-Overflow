@@ -182,7 +182,7 @@ label {
 
 .error-bubble {
     position: relative;
-    background-color: var(--bs-danger);
+    background-color: var(--bg-danger-solid);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
@@ -203,7 +203,7 @@ label {
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-bottom: 6px solid var(--bs-danger);
+    border-bottom: 6px solid var(--bg-danger-solid);
 }
 
 @keyframes slideIn {

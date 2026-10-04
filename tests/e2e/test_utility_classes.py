@@ -176,7 +176,10 @@ def test_profile_rank_number_is_not_bold(
     assert _style(page, "span.fw-normal", "font-weight")["font-weight"] == "400"
 
 
-@pytest.mark.parametrize("class_name", ["alert alert-danger", "invalid-feedback", "char-counter is-error"])
+@pytest.mark.parametrize(
+    "class_name",
+    ["alert alert-danger", "invalid-feedback", "char-counter is-error", "error-bubble"],
+)
 def test_error_red_text_meets_contrast(login: Page, live_server: LiveServer, theme: str, class_name: str) -> None:
     # The suchar form loads both the global sheet and the page sheet that owns `.char-counter`.
     page = login
