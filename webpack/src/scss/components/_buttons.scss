@@ -47,7 +47,10 @@
    from) rather than inventing a new color. Doesn't reuse --bs-danger's own
    60% lightness directly — white text on that fails WCAG AA (~3.7:1); 45%
    clears it comfortably (~5.5:1) while staying the same hue/saturation as
-   .alert-danger/.error-bubble/.toast-error. */
+   .alert-danger/.error-bubble/.toast-error. The light-theme value is the
+   same one as --bg-danger-solid / --text-danger (_variables.scss, #510); keep
+   them in step. This rule stays a literal on purpose: it is the same in both
+   themes, whereas --bg-danger-solid follows --bs-danger in the dark one. */
 .btn-danger {
     background-color: hsl(var(--hue-danger), 80%, 45%);
     color: white;
