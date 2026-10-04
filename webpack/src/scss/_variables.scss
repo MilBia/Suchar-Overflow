@@ -52,6 +52,8 @@
     --bs-danger: hsl(var(--hue-danger), 80%, 60%);
     /* #508: --bs-danger as TEXT fails 4.5:1; this is the text-safe red (~5.5:1 vs white). */
     --text-danger: hsl(var(--hue-danger), 80%, 45%);
+    /* #510: solid red SURFACE carrying white text (.error-bubble); --bs-danger gives only 3.74:1 there. */
+    --bg-danger-solid: hsl(var(--hue-danger), 80%, 45%);
     --bs-warning: hsl(var(--hue-warning), 80%, 60%);
     --bs-success: hsl(var(--hue-success), 80%, 45%);
 
@@ -150,6 +152,7 @@
     /* Semantic Colors (Dark Mode) */
     --bs-danger: hsl(var(--hue-danger), 70%, 50%);
     --text-danger: hsl(var(--hue-danger), 70%, 70%); /* ~6.3:1 vs the dark surface */
+    --bg-danger-solid: var(--bs-danger); /* white on it is already 4.87:1 */
     --bs-warning: hsl(var(--hue-warning), 70%, 50%);
     --bs-success: hsl(var(--hue-success), 70%, 45%);
 
