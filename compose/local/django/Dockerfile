@@ -8,7 +8,7 @@
 # tests/test_python_runtime.py fails on a mismatch or a stale cached base.
 # Every FROM names its registry (`docker.io/...`, `ghcr.io/...`): podman does not
 # assume Docker Hub for a short name (#456).
-FROM ghcr.io/astral-sh/uv:0.12.22 AS uv
+FROM ghcr.io/astral-sh/uv:0.12.23 AS uv
 
 # define an alias for the specific python version used in this file.
 FROM docker.io/python:3.14-slim-trixie AS python
