@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import logging
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -26,7 +26,7 @@ User = get_user_model()
 
 @pytest.mark.django_db
 def testaward_best_suchar_month_if_due_calls_award_when_never_run() -> None:
-    frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=dt.UTC)
     with (
         patch("django.utils.timezone.now", return_value=frozen_now),
         patch("suchar_overflow.achievements.tasks.award_best_suchar") as mock_award,
@@ -35,16 +35,16 @@ def testaward_best_suchar_month_if_due_calls_award_when_never_run() -> None:
 
     mock_award.assert_called_once_with(
         "month",
-        reference_date=datetime.date(2024, 5, 31),
+        reference_date=dt.date(2024, 5, 31),
     )
 
 
 @pytest.mark.django_db
 def testaward_best_suchar_month_if_due_calls_award_when_run_is_stale() -> None:
-    frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=dt.UTC)
     SchedulerRun.objects.create(
         job_id="award-best-suchar-month",
-        ran_at=datetime.datetime(2024, 4, 1, 0, 5, tzinfo=datetime.UTC),
+        ran_at=dt.datetime(2024, 4, 1, 0, 5, tzinfo=dt.UTC),
     )
     with (
         patch("django.utils.timezone.now", return_value=frozen_now),
@@ -54,16 +54,16 @@ def testaward_best_suchar_month_if_due_calls_award_when_run_is_stale() -> None:
 
     mock_award.assert_called_once_with(
         "month",
-        reference_date=datetime.date(2024, 5, 31),
+        reference_date=dt.date(2024, 5, 31),
     )
 
 
 @pytest.mark.django_db
 def testaward_best_suchar_month_if_due_skips_award_when_run_is_current() -> None:
-    frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=dt.UTC)
     SchedulerRun.objects.create(
         job_id="award-best-suchar-month",
-        ran_at=datetime.datetime(2024, 6, 1, 0, 5, tzinfo=datetime.UTC),
+        ran_at=dt.datetime(2024, 6, 1, 0, 5, tzinfo=dt.UTC),
     )
     with (
         patch("django.utils.timezone.now", return_value=frozen_now),
@@ -79,7 +79,7 @@ def testaward_best_suchar_month_if_due_skips_award_when_run_is_current() -> None
 def testaward_best_suchar_month_if_due_awards_the_missed_period_not_current() -> None:
     """A restart on June 15 with May's fire missed must award May's best
     suchar, not evaluate the (incomplete) current month (see #169)."""
-    frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=dt.UTC)
     may_winner = User.objects.create_user(
         username="may-winner",
         email="may-winner@example.com",
@@ -96,13 +96,13 @@ def testaward_best_suchar_month_if_due_awards_the_missed_period_not_current() ->
         password="pw",
     )
 
-    may_at = datetime.datetime(2024, 5, 15, 12, 0, tzinfo=datetime.UTC)
+    may_at = dt.datetime(2024, 5, 15, 12, 0, tzinfo=dt.UTC)
     may_suchar = Suchar.objects.create(text="May joke", author=may_winner)
     may_suchar.created_at = may_suchar.published_at = may_at
     may_suchar.save()
     Vote.objects.create(suchar=may_suchar, user=voter, is_funny=True)
 
-    june_at = datetime.datetime(2024, 6, 10, 12, 0, tzinfo=datetime.UTC)
+    june_at = dt.datetime(2024, 6, 10, 12, 0, tzinfo=dt.UTC)
     june_suchar = Suchar.objects.create(text="June joke", author=june_poster)
     june_suchar.created_at = june_suchar.published_at = june_at
     june_suchar.save()
@@ -131,7 +131,7 @@ def testaward_best_suchar_year_if_due_calls_award_when_never_run() -> None:
     at test-db build time so a fresh deploy doesn't retroactively award the
     previous year; delete it here to exercise the true "never run" case."""
     SchedulerRun.objects.filter(job_id="award-best-suchar-year").delete()
-    frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=dt.UTC)
     with (
         patch("django.utils.timezone.now", return_value=frozen_now),
         patch("suchar_overflow.achievements.tasks.award_best_suchar") as mock_award,
@@ -140,16 +140,16 @@ def testaward_best_suchar_year_if_due_calls_award_when_never_run() -> None:
 
     mock_award.assert_called_once_with(
         "year",
-        reference_date=datetime.date(2023, 12, 31),
+        reference_date=dt.date(2023, 12, 31),
     )
 
 
 @pytest.mark.django_db
 def testaward_best_suchar_year_if_due_calls_award_when_run_is_stale() -> None:
-    frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=dt.UTC)
     SchedulerRun.objects.update_or_create(
         job_id="award-best-suchar-year",
-        defaults={"ran_at": datetime.datetime(2022, 1, 1, 0, 5, tzinfo=datetime.UTC)},
+        defaults={"ran_at": dt.datetime(2022, 1, 1, 0, 5, tzinfo=dt.UTC)},
     )
     with (
         patch("django.utils.timezone.now", return_value=frozen_now),
@@ -159,16 +159,16 @@ def testaward_best_suchar_year_if_due_calls_award_when_run_is_stale() -> None:
 
     mock_award.assert_called_once_with(
         "year",
-        reference_date=datetime.date(2023, 12, 31),
+        reference_date=dt.date(2023, 12, 31),
     )
 
 
 @pytest.mark.django_db
 def testaward_best_suchar_year_if_due_skips_award_when_run_is_current() -> None:
-    frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=dt.UTC)
     SchedulerRun.objects.update_or_create(
         job_id="award-best-suchar-year",
-        defaults={"ran_at": datetime.datetime(2024, 1, 1, 0, 5, tzinfo=datetime.UTC)},
+        defaults={"ran_at": dt.datetime(2024, 1, 1, 0, 5, tzinfo=dt.UTC)},
     )
     with (
         patch("django.utils.timezone.now", return_value=frozen_now),
@@ -185,7 +185,7 @@ def testaward_best_suchar_year_if_due_awards_the_missed_period_not_current() -> 
     """A restart in June 2024 with the 2023 fire missed must award 2023's
     best suchar, not evaluate the (incomplete) current year (see #168)."""
     SchedulerRun.objects.filter(job_id="award-best-suchar-year").delete()
-    frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=dt.UTC)
     year_winner = User.objects.create_user(
         username="year-winner",
         email="year-winner@example.com",
@@ -202,13 +202,13 @@ def testaward_best_suchar_year_if_due_awards_the_missed_period_not_current() -> 
         password="pw",
     )
 
-    year_at = datetime.datetime(2023, 5, 15, 12, 0, tzinfo=datetime.UTC)
+    year_at = dt.datetime(2023, 5, 15, 12, 0, tzinfo=dt.UTC)
     year_suchar = Suchar.objects.create(text="2023 joke", author=year_winner)
     year_suchar.created_at = year_suchar.published_at = year_at
     year_suchar.save()
     Vote.objects.create(suchar=year_suchar, user=voter, is_funny=True)
 
-    current_year_at = datetime.datetime(2024, 6, 10, 12, 0, tzinfo=datetime.UTC)
+    current_year_at = dt.datetime(2024, 6, 10, 12, 0, tzinfo=dt.UTC)
     current_year_suchar = Suchar.objects.create(
         text="2024 joke",
         author=current_year_poster,
@@ -243,7 +243,7 @@ def test_catch_up_command_awards_a_suchar_published_while_down() -> None:
     up on the next start — its author gets the COUNT_SUCHAR tier without having
     to post again.
     """
-    now = datetime.datetime.now(tz=datetime.UTC)
+    now = dt.datetime.now(tz=dt.UTC)
     author = User.objects.create_user(
         username="downtime-author",
         email="downtime-author@example.com",
@@ -262,16 +262,16 @@ def test_catch_up_command_awards_a_suchar_published_while_down() -> None:
     # Last run was 3h ago; the service was down since.
     SchedulerRun.objects.create(
         job_id="award-publication-achievements",
-        ran_at=now - datetime.timedelta(hours=3),
+        ran_at=now - dt.timedelta(hours=3),
     )
     suchar = Suchar.objects.create(
         text="scheduled",
         author=author,
-        published_at=now + datetime.timedelta(days=1),
+        published_at=now + dt.timedelta(days=1),
     )
     # It actually went live 1h ago, mid-downtime.
     Suchar.objects.filter(pk=suchar.pk).update(
-        published_at=now - datetime.timedelta(hours=1),
+        published_at=now - dt.timedelta(hours=1),
     )
 
     call_command("achievements_catch_up")

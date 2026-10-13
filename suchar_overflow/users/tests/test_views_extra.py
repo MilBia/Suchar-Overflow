@@ -1,6 +1,6 @@
 """Extra UserDetailView tests: scheduled suchary, rank, heatmap, signup."""
 
-import datetime
+import datetime as dt
 import zoneinfo
 from http import HTTPStatus
 from typing import TYPE_CHECKING
@@ -52,7 +52,7 @@ def detail_url(username: str) -> str:
 @pytest.mark.django_db
 def test_scheduled_suchary_visible_to_owner(client: Client) -> None:
     user = make_user("owner")
-    future = timezone.now() + datetime.timedelta(days=1)
+    future = timezone.now() + dt.timedelta(days=1)
     Suchar.objects.create(text="Scheduled joke", author=user, published_at=future)
 
     client.force_login(user)
@@ -68,7 +68,7 @@ def test_scheduled_suchary_visible_to_owner(client: Client) -> None:
 def test_scheduled_suchary_hidden_from_other_user(client: Client) -> None:
     owner = make_user("owner2")
     visitor = make_user("visitor2")
-    future = timezone.now() + datetime.timedelta(days=1)
+    future = timezone.now() + dt.timedelta(days=1)
     Suchar.objects.create(text="Hidden scheduled", author=owner, published_at=future)
 
     client.force_login(visitor)
@@ -95,7 +95,7 @@ def test_scheduled_suchary_tags_do_not_n_plus_one(client: Client) -> None:
     """
     owner = make_user("prefetch_owner")
     tag = Tag.objects.create(name="Programowanie", slug="programowanie")
-    future = timezone.now() + datetime.timedelta(days=1)
+    future = timezone.now() + dt.timedelta(days=1)
     scheduled_count = 3
     for i in range(scheduled_count):
         suchar = Suchar.objects.create(
@@ -368,7 +368,7 @@ def test_heatmap_starts_aligned_to_monday(client: Client) -> None:
     response = client.get(detail_url("heatmap_u4"))
     first_week = response.context["heatmap_weeks"][0]
     first_day_str = first_week["days"][0]["date"]
-    first_day = datetime.date.fromisoformat(first_day_str)
+    first_day = dt.date.fromisoformat(first_day_str)
     assert first_day.weekday() == 0  # Monday
 
 
@@ -385,7 +385,7 @@ def test_suchar_count_excludes_scheduled_suchar(client: Client) -> None:
     Suchar.objects.create(
         text="Scheduled",
         author=user,
-        published_at=timezone.now() + datetime.timedelta(days=1),
+        published_at=timezone.now() + dt.timedelta(days=1),
     )
 
     client.force_login(user)
@@ -401,7 +401,7 @@ def test_activity_chart_excludes_scheduled_suchar(client: Client) -> None:
     Suchar.objects.create(
         text="Scheduled",
         author=user,
-        published_at=timezone.now() + datetime.timedelta(days=1),
+        published_at=timezone.now() + dt.timedelta(days=1),
     )
 
     client.force_login(user)
@@ -414,7 +414,7 @@ def test_activity_chart_buckets_by_publication_day(client: Client) -> None:
     """A suchar created outside the 30-day window but published inside it must
     still appear — the chart is windowed and bucketed by published_at (#388)."""
     user = make_user("activity388b")
-    old_created = timezone.now() - datetime.timedelta(days=45)
+    old_created = timezone.now() - dt.timedelta(days=45)
     s = Suchar.objects.create(text="Backdated", author=user)
     Suchar.objects.filter(pk=s.pk).update(created_at=old_created)
 
@@ -435,7 +435,7 @@ def test_heatmap_excludes_scheduled_suchar(client: Client) -> None:
     Suchar.objects.create(
         text="Scheduled",
         author=user,
-        published_at=timezone.now() + datetime.timedelta(days=1),
+        published_at=timezone.now() + dt.timedelta(days=1),
     )
 
     client.force_login(user)
@@ -574,12 +574,12 @@ def test_best_joke_skips_scheduled_suchar_on_created_at_tie_break(
     published = Suchar.objects.create(
         text="Published joke",
         author=user,
-        published_at=timezone.now() - datetime.timedelta(days=1),
+        published_at=timezone.now() - dt.timedelta(days=1),
     )
     Suchar.objects.create(
         text="Scheduled secret joke",
         author=user,
-        published_at=timezone.now() + datetime.timedelta(days=1),
+        published_at=timezone.now() + dt.timedelta(days=1),
     )
 
     client.force_login(user)
@@ -611,12 +611,12 @@ def test_best_joke_skips_scheduled_suchar_with_more_funny_votes(
     published = Suchar.objects.create(
         text="Published joke",
         author=user,
-        published_at=timezone.now() - datetime.timedelta(days=1),
+        published_at=timezone.now() - dt.timedelta(days=1),
     )
     scheduled = Suchar.objects.create(
         text="Scheduled secret joke",
         author=user,
-        published_at=timezone.now() + datetime.timedelta(days=1),
+        published_at=timezone.now() + dt.timedelta(days=1),
     )
     v1 = make_user("bjs_v1")
     v2 = make_user("bjs_v2")
@@ -652,12 +652,12 @@ def test_best_joke_skips_scheduled_suchar_for_other_logged_in_user(
     published = Suchar.objects.create(
         text="Published joke",
         author=owner,
-        published_at=timezone.now() - datetime.timedelta(days=1),
+        published_at=timezone.now() - dt.timedelta(days=1),
     )
     Suchar.objects.create(
         text="Scheduled secret joke",
         author=owner,
-        published_at=timezone.now() + datetime.timedelta(days=1),
+        published_at=timezone.now() + dt.timedelta(days=1),
     )
 
     client.force_login(viewer)
@@ -679,7 +679,7 @@ def test_best_joke_is_none_when_only_scheduled_suchary(client: Client) -> None:
     Suchar.objects.create(
         text="Scheduled secret joke",
         author=user,
-        published_at=timezone.now() + datetime.timedelta(days=1),
+        published_at=timezone.now() + dt.timedelta(days=1),
     )
 
     client.force_login(user)
@@ -966,7 +966,7 @@ def test_profile_badge_with_icon_content_does_not_render_fallback(
 # ===========================================================================
 
 
-def heatmap_count_for(weeks: list[dict], day: datetime.date) -> int | None:
+def heatmap_count_for(weeks: list[dict], day: dt.date) -> int | None:
     """Return the heatmap count for `day`, or None if the day is off the grid."""
     day_str = day.strftime("%Y-%m-%d")
     for week in weeks:
@@ -1001,10 +1001,10 @@ def test_heatmap_includes_suchar_at_midnight_of_first_day(client: Client) -> Non
     """A suchar at exactly 00:00 of the grid's first day is inside the range."""
     user = make_user("heatmap_start")
     # Mirror the view's own window: 365 days back, aligned to the Monday before.
-    start_date = timezone.localdate() - datetime.timedelta(days=365)
-    start_date -= datetime.timedelta(days=start_date.weekday())
+    start_date = timezone.localdate() - dt.timedelta(days=365)
+    start_date -= dt.timedelta(days=start_date.weekday())
     midnight = timezone.make_aware(
-        datetime.datetime.combine(start_date, datetime.time.min),
+        dt.datetime.combine(start_date, dt.time.min),
     )
 
     s = Suchar.objects.create(text="boundary", author=user)
@@ -1019,11 +1019,11 @@ def test_heatmap_includes_suchar_at_midnight_of_first_day(client: Client) -> Non
 @pytest.mark.django_db
 def test_heatmap_excludes_suchar_before_the_window(client: Client) -> None:
     user = make_user("heatmap_before")
-    start_date = timezone.localdate() - datetime.timedelta(days=365)
-    start_date -= datetime.timedelta(days=start_date.weekday())
+    start_date = timezone.localdate() - dt.timedelta(days=365)
+    start_date -= dt.timedelta(days=start_date.weekday())
     before = timezone.make_aware(
-        datetime.datetime.combine(start_date, datetime.time.min),
-    ) - datetime.timedelta(seconds=1)
+        dt.datetime.combine(start_date, dt.time.min),
+    ) - dt.timedelta(seconds=1)
 
     s = Suchar.objects.create(text="too old", author=user)
     Suchar.objects.filter(pk=s.pk).update(created_at=before, published_at=before)
@@ -1080,8 +1080,8 @@ def test_heatmap_today_is_local_day_after_utc_evening() -> None:
     grid must end on that local day and bucket a suchar published at 22:15Z
     into it — with a UTC "today" the grid would stop a day early."""
     user = make_user("heatmap405")
-    frozen_now = datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
-    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 7, 10, 22, 30, tzinfo=dt.UTC)
+    published = dt.datetime(2024, 7, 10, 22, 15, tzinfo=dt.UTC)
     s = Suchar.objects.create(text="after local midnight", author=user)
     Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
 
@@ -1098,13 +1098,13 @@ def test_heatmap_today_is_local_day_after_utc_evening() -> None:
 # ===========================================================================
 
 
-def _suchar_after_warsaw_midnight(username: str) -> tuple[UserType, datetime.datetime]:
+def _suchar_after_warsaw_midnight(username: str) -> tuple[UserType, dt.datetime]:
     """A suchar at 22:15Z on July 10 — July 11 in Warsaw, July 10 in New York."""
     user = make_user(username)
-    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    published = dt.datetime(2024, 7, 10, 22, 15, tzinfo=dt.UTC)
     s = Suchar.objects.create(text="after local midnight", author=user)
     Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
-    return user, datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
+    return user, dt.datetime(2024, 7, 10, 22, 30, tzinfo=dt.UTC)
 
 
 @pytest.mark.django_db
@@ -1147,8 +1147,8 @@ _WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
 def _backdate(
     suchar: Suchar,
     *,
-    created_at: datetime.datetime,
-    published_at: datetime.datetime,
+    created_at: dt.datetime,
+    published_at: dt.datetime,
 ) -> None:
     Suchar.objects.filter(pk=suchar.pk).update(
         created_at=created_at,
@@ -1160,8 +1160,8 @@ def _backdate(
 def test_latest_suchary_label_shows_publication_date(client: Client) -> None:
     user = make_user("latest412label")
     s = Suchar.objects.create(text="Written early, published later", author=user)
-    created_at = datetime.datetime(2024, 3, 5, 10, 11, tzinfo=_WARSAW)
-    published_at = datetime.datetime(2024, 6, 20, 14, 47, tzinfo=_WARSAW)
+    created_at = dt.datetime(2024, 3, 5, 10, 11, tzinfo=_WARSAW)
+    published_at = dt.datetime(2024, 6, 20, 14, 47, tzinfo=_WARSAW)
     _backdate(s, created_at=created_at, published_at=published_at)
 
     client.force_login(user)
@@ -1181,15 +1181,15 @@ def test_latest_suchary_ordered_by_publication(client: Client) -> None:
     """The earliest-written suchar published last leads "Najnowsze"; the
     latest-written one published first drops out of the top 5."""
     user = make_user("latest412order")
-    base = datetime.datetime(2024, 5, 1, 12, 0, tzinfo=datetime.UTC)
+    base = dt.datetime(2024, 5, 1, 12, 0, tzinfo=dt.UTC)
     suchary = [Suchar.objects.create(text=f"Suchar {i}", author=user) for i in range(6)]
     # created_at ascends with i; published_at is set so that i=0 is newest
     # and i=5 is oldest, i.e. the reverse of the creation order.
     for i, s in enumerate(suchary):
         _backdate(
             s,
-            created_at=base + datetime.timedelta(days=i),
-            published_at=base + datetime.timedelta(days=30 - i),
+            created_at=base + dt.timedelta(days=i),
+            published_at=base + dt.timedelta(days=30 - i),
         )
 
     client.force_login(user)
@@ -1206,18 +1206,18 @@ def test_best_joke_tie_goes_to_latest_published() -> None:
     it was written first (#412)."""
     user = make_user("best412")
     voter = make_user("best412voter")
-    base = datetime.datetime(2024, 5, 1, 12, 0, tzinfo=datetime.UTC)
+    base = dt.datetime(2024, 5, 1, 12, 0, tzinfo=dt.UTC)
     written_first = Suchar.objects.create(text="Written first", author=user)
     written_last = Suchar.objects.create(text="Written last", author=user)
     _backdate(
         written_first,
         created_at=base,
-        published_at=base + datetime.timedelta(days=10),
+        published_at=base + dt.timedelta(days=10),
     )
     _backdate(
         written_last,
-        created_at=base + datetime.timedelta(days=1),
-        published_at=base + datetime.timedelta(days=1),
+        created_at=base + dt.timedelta(days=1),
+        published_at=base + dt.timedelta(days=1),
     )
     for suchar in (written_first, written_last):
         Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
@@ -1238,14 +1238,14 @@ def test_activity_chart_window_starts_at_midnight(request_hour: int) -> None:
     """The oldest bucket is a full day regardless of the request's hour: both
     its 00:30 and 23:30 suchary count, the evening before does not."""
     user = make_user(f"activity413_{request_hour}")
-    frozen_now = datetime.datetime(2024, 7, 11, request_hour, 0, tzinfo=_WARSAW)
-    oldest_day = datetime.date(2024, 6, 11)  # today - 30
+    frozen_now = dt.datetime(2024, 7, 11, request_hour, 0, tzinfo=_WARSAW)
+    oldest_day = dt.date(2024, 6, 11)  # today - 30
     for hour, minute, day in ((0, 30, oldest_day), (23, 30, oldest_day)):
         s = Suchar.objects.create(text=f"{hour}:{minute}", author=user)
-        at = datetime.datetime.combine(day, datetime.time(hour, minute), _WARSAW)
+        at = dt.datetime.combine(day, dt.time(hour, minute), _WARSAW)
         _backdate(s, created_at=at, published_at=at)
     before = Suchar.objects.create(text="Day before the window", author=user)
-    at = datetime.datetime(2024, 6, 10, 23, 30, tzinfo=_WARSAW)
+    at = dt.datetime(2024, 6, 10, 23, 30, tzinfo=_WARSAW)
     _backdate(before, created_at=at, published_at=at)
 
     with patch("django.utils.timezone.now", return_value=frozen_now):
@@ -1264,12 +1264,12 @@ def test_activity_chart_window_starts_at_midnight(request_hour: int) -> None:
 def test_activity_chart_fills_empty_days_with_zeros() -> None:
     user = make_user("activity413empty")
     # Frozen, so the request and the expected labels can't straddle midnight.
-    frozen_now = datetime.datetime(2024, 7, 11, 12, 0, tzinfo=_WARSAW)
+    frozen_now = dt.datetime(2024, 7, 11, 12, 0, tzinfo=_WARSAW)
 
     with patch("django.utils.timezone.now", return_value=frozen_now):
         context = UserDetailView()._build_context(user, is_owner=False)  # noqa: SLF001
 
     today = frozen_now.date()
-    expected = [(today - datetime.timedelta(days=offset)).isoformat() for offset in range(30, -1, -1)]
+    expected = [(today - dt.timedelta(days=offset)).isoformat() for offset in range(30, -1, -1)]
     assert context["activity_labels"] == expected
     assert context["activity_values"] == [0] * 31

@@ -7,7 +7,7 @@ UTC window (or a DST month), where UTC and local time disagree about the day —
 the only window where a UTC boundary bug is observable.
 """
 
-import datetime
+import datetime as dt
 import zoneinfo
 from unittest.mock import patch
 
@@ -29,13 +29,13 @@ from suchar_overflow.suchary.models import Suchar
 from suchar_overflow.suchary.models import Vote
 
 WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
-UTC = datetime.UTC
+UTC = dt.UTC
 
-CET = datetime.timedelta(hours=1)
-CEST = datetime.timedelta(hours=2)
+CET = dt.timedelta(hours=1)
+CEST = dt.timedelta(hours=2)
 
 
-def _backdate(suchar: Suchar, at: datetime.datetime) -> Suchar:
+def _backdate(suchar: Suchar, at: dt.datetime) -> Suchar:
     Suchar.objects.filter(pk=suchar.pk).update(created_at=at, published_at=at)
     suchar.refresh_from_db()
     return suchar
@@ -56,7 +56,7 @@ def test_night_owl_counts_local_half_past_midnight_in_summer() -> None:
     user = make_user("owl405a")
     suchar = _backdate(
         Suchar.objects.create(text="late", author=user),
-        datetime.datetime(2024, 7, 10, 22, 30, tzinfo=UTC),
+        dt.datetime(2024, 7, 10, 22, 30, tzinfo=UTC),
     )
     assert NightOwlRule.compute_value(user, instance=suchar) == 1
 
@@ -67,7 +67,7 @@ def test_night_owl_ignores_local_early_morning_in_summer() -> None:
     user = make_user("owl405b")
     suchar = _backdate(
         Suchar.objects.create(text="early", author=user),
-        datetime.datetime(2024, 7, 10, 3, 30, tzinfo=UTC),
+        dt.datetime(2024, 7, 10, 3, 30, tzinfo=UTC),
     )
     assert NightOwlRule.compute_value(user, instance=suchar) is None
 
@@ -84,11 +84,11 @@ def test_streak_splits_days_at_local_midnight() -> None:
     user = make_user("streak405")
     _backdate(
         Suchar.objects.create(text="day one", author=user),
-        datetime.datetime(2024, 7, 10, 10, 0, tzinfo=UTC),
+        dt.datetime(2024, 7, 10, 10, 0, tzinfo=UTC),
     )
     _backdate(
         Suchar.objects.create(text="day two", author=user),
-        datetime.datetime(2024, 7, 10, 22, 30, tzinfo=UTC),
+        dt.datetime(2024, 7, 10, 22, 30, tzinfo=UTC),
     )
     assert StreakLoginRule.compute_value(user) == 2
 
@@ -99,16 +99,16 @@ def test_streak_splits_days_at_local_midnight() -> None:
 
 
 def test_compute_period_range_month_bounds_are_local_midnight() -> None:
-    start, end, _ = compute_period_range("month", datetime.date(2024, 7, 15))
-    assert start == datetime.datetime(2024, 7, 1, tzinfo=WARSAW)
-    assert start == datetime.datetime(2024, 6, 30, 22, 0, tzinfo=UTC)
-    assert end == datetime.datetime(2024, 7, 31, 22, 0, tzinfo=UTC)
+    start, end, _ = compute_period_range("month", dt.date(2024, 7, 15))
+    assert start == dt.datetime(2024, 7, 1, tzinfo=WARSAW)
+    assert start == dt.datetime(2024, 6, 30, 22, 0, tzinfo=UTC)
+    assert end == dt.datetime(2024, 7, 31, 22, 0, tzinfo=UTC)
 
 
 def test_compute_period_range_year_bounds_are_local_midnight() -> None:
-    start, end, _ = compute_period_range("year", datetime.date(2024, 7, 15))
-    assert start == datetime.datetime(2023, 12, 31, 23, 0, tzinfo=UTC)
-    assert end == datetime.datetime(2024, 12, 31, 23, 0, tzinfo=UTC)
+    start, end, _ = compute_period_range("year", dt.date(2024, 7, 15))
+    assert start == dt.datetime(2023, 12, 31, 23, 0, tzinfo=UTC)
+    assert end == dt.datetime(2024, 12, 31, 23, 0, tzinfo=UTC)
 
 
 @pytest.mark.django_db
@@ -118,12 +118,12 @@ def test_suchar_just_after_local_month_start_counts_for_new_month() -> None:
     voter = make_user("contest405voter")
     suchar = _backdate(
         Suchar.objects.create(text="first of July", author=author),
-        datetime.datetime(2024, 6, 30, 22, 30, tzinfo=UTC),
+        dt.datetime(2024, 6, 30, 22, 30, tzinfo=UTC),
     )
     Vote.objects.create(suchar=suchar, user=voter, is_funny=True)
 
-    july = compute_period_range("month", datetime.date(2024, 7, 1))
-    june = compute_period_range("month", datetime.date(2024, 6, 1))
+    july = compute_period_range("month", dt.date(2024, 7, 1))
+    june = compute_period_range("month", dt.date(2024, 6, 1))
     assert find_best_suchary(july[0], july[1]) == [suchar]
     assert find_best_suchary(june[0], june[1]) == []
 
@@ -135,17 +135,17 @@ def test_suchar_just_after_local_month_start_counts_for_new_month() -> None:
 
 def test_due_monthly_run_at_converts_utc_now_to_local_first() -> None:
     """June 30 22:10Z is already July 1 00:10 CEST: July's 00:05 fire is due."""
-    now = datetime.datetime(2024, 6, 30, 22, 10, tzinfo=UTC)
-    last_ran_at = datetime.datetime(2024, 6, 1, 0, 5, tzinfo=WARSAW)
+    now = dt.datetime(2024, 6, 30, 22, 10, tzinfo=UTC)
+    last_ran_at = dt.datetime(2024, 6, 1, 0, 5, tzinfo=WARSAW)
     due_at = due_monthly_run_at(now, last_ran_at)
-    assert due_at == datetime.datetime(2024, 7, 1, 0, 5, tzinfo=WARSAW)
-    assert due_at == datetime.datetime(2024, 6, 30, 22, 5, tzinfo=UTC)
+    assert due_at == dt.datetime(2024, 7, 1, 0, 5, tzinfo=WARSAW)
+    assert due_at == dt.datetime(2024, 6, 30, 22, 5, tzinfo=UTC)
 
 
 def test_due_monthly_run_at_just_before_local_fire_is_not_due_yet() -> None:
     """June 30 22:04Z is July 1 00:04 CEST — July's fire hasn't happened."""
-    now = datetime.datetime(2024, 6, 30, 22, 4, tzinfo=UTC)
-    last_ran_at = datetime.datetime(2024, 6, 1, 0, 5, tzinfo=WARSAW)
+    now = dt.datetime(2024, 6, 30, 22, 4, tzinfo=UTC)
+    last_ran_at = dt.datetime(2024, 6, 1, 0, 5, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
@@ -153,22 +153,22 @@ def test_due_monthly_run_at_ignores_marker_from_utc_era() -> None:
     """Deploy-day guard: the pre-#405 cron wrote its marker at 00:05 *UTC* on
     the 1st (02:05 CEST), which is after the new 00:05-local fire time — so the
     first boot after deploy must not see a spurious missed run."""
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=UTC)
-    utc_era_marker = datetime.datetime(2024, 6, 1, 0, 5, tzinfo=UTC)
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=UTC)
+    utc_era_marker = dt.datetime(2024, 6, 1, 0, 5, tzinfo=UTC)
     assert due_monthly_run_at(now, utc_era_marker) is None
 
 
 def test_due_yearly_run_at_ignores_marker_from_utc_era() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=UTC)
-    utc_era_marker = datetime.datetime(2024, 1, 1, 0, 5, tzinfo=UTC)
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=UTC)
+    utc_era_marker = dt.datetime(2024, 1, 1, 0, 5, tzinfo=UTC)
     assert due_yearly_run_at(now, utc_era_marker) is None
 
 
 def test_due_yearly_run_at_converts_utc_now_to_local_first() -> None:
     """Dec 31 23:10Z is Jan 1 00:10 CET: the new year's fire is due."""
-    now = datetime.datetime(2023, 12, 31, 23, 10, tzinfo=UTC)
-    last_ran_at = datetime.datetime(2023, 1, 1, 0, 5, tzinfo=WARSAW)
-    assert due_yearly_run_at(now, last_ran_at) == datetime.datetime(
+    now = dt.datetime(2023, 12, 31, 23, 10, tzinfo=UTC)
+    last_ran_at = dt.datetime(2023, 1, 1, 0, 5, tzinfo=WARSAW)
+    assert due_yearly_run_at(now, last_ran_at) == dt.datetime(
         2024,
         1,
         1,
@@ -183,19 +183,19 @@ def test_due_yearly_run_at_converts_utc_now_to_local_first() -> None:
     [
         # After the March switch (Mar 31 2024, 02:00 CET -> 03:00 CEST) the
         # due fire is still March 1 00:05 *CET*.
-        (datetime.datetime(2024, 3, 31, 12, 0, tzinfo=WARSAW), CET),
+        (dt.datetime(2024, 3, 31, 12, 0, tzinfo=WARSAW), CET),
         # April 1 00:10 CEST -> April 1 00:05 CEST.
-        (datetime.datetime(2024, 4, 1, 0, 10, tzinfo=WARSAW), CEST),
+        (dt.datetime(2024, 4, 1, 0, 10, tzinfo=WARSAW), CEST),
         # After the October switch (Oct 27 2024, 03:00 CEST -> 02:00 CET) the
         # due fire is still October 1 00:05 *CEST*.
-        (datetime.datetime(2024, 10, 27, 12, 0, tzinfo=WARSAW), CEST),
+        (dt.datetime(2024, 10, 27, 12, 0, tzinfo=WARSAW), CEST),
         # November 1 00:10 CET -> November 1 00:05 CET.
-        (datetime.datetime(2024, 11, 1, 0, 10, tzinfo=WARSAW), CET),
+        (dt.datetime(2024, 11, 1, 0, 10, tzinfo=WARSAW), CET),
     ],
 )
 def test_due_monthly_run_at_across_dst(
-    now: datetime.datetime,
-    expected_offset: datetime.timedelta,
+    now: dt.datetime,
+    expected_offset: dt.timedelta,
 ) -> None:
     due_at = due_monthly_run_at(now, None)
     assert due_at is not None
@@ -209,10 +209,10 @@ def test_due_monthly_run_at_across_dst(
 def test_catch_up_monthly_run_references_local_previous_day() -> None:
     """Restart at July 1 00:10 CEST (June 30 22:10Z) with July's fire missed:
     the catch-up must award June (reference June 30), not May."""
-    frozen_now = datetime.datetime(2024, 6, 30, 22, 10, tzinfo=UTC)
+    frozen_now = dt.datetime(2024, 6, 30, 22, 10, tzinfo=UTC)
     SchedulerRun.objects.update_or_create(
         job_id="award-best-suchar-month",
-        defaults={"ran_at": datetime.datetime(2024, 6, 1, 0, 5, tzinfo=WARSAW)},
+        defaults={"ran_at": dt.datetime(2024, 6, 1, 0, 5, tzinfo=WARSAW)},
     )
     with (
         patch("django.utils.timezone.now", return_value=frozen_now),
@@ -222,7 +222,7 @@ def test_catch_up_monthly_run_references_local_previous_day() -> None:
 
     mock_award.assert_called_once_with(
         "month",
-        reference_date=datetime.date(2024, 6, 30),
+        reference_date=dt.date(2024, 6, 30),
     )
 
 
@@ -231,7 +231,7 @@ def test_award_best_suchar_default_reference_date_is_local_yesterday() -> None:
     """The cron fires at 00:05 local on the 1st, when the UTC date is still the
     last day of the previous month — "yesterday" must be the local one, or the
     job would score the month *before* the one that just ended."""
-    frozen_now = datetime.datetime(2024, 6, 30, 22, 5, tzinfo=UTC)
+    frozen_now = dt.datetime(2024, 6, 30, 22, 5, tzinfo=UTC)
     with (
         patch("django.utils.timezone.now", return_value=frozen_now),
         patch(
@@ -241,7 +241,7 @@ def test_award_best_suchar_default_reference_date_is_local_yesterday() -> None:
     ):
         award_best_suchar("month")
 
-    mock_range.assert_called_once_with("month", datetime.date(2024, 6, 30))
+    mock_range.assert_called_once_with("month", dt.date(2024, 6, 30))
 
 
 @pytest.mark.django_db
@@ -250,22 +250,22 @@ def test_award_best_suchar_default_reference_date_is_local_yesterday() -> None:
     [
         # July 1 00:05 CEST == June 30 22:05Z: due, "yesterday" is the local June 30.
         (
-            datetime.datetime(2024, 6, 30, 22, 5, 1, tzinfo=UTC),
-            datetime.datetime(2024, 6, 1, 0, 6, tzinfo=WARSAW),
-            datetime.date(2024, 6, 30),
+            dt.datetime(2024, 6, 30, 22, 5, 1, tzinfo=UTC),
+            dt.datetime(2024, 6, 1, 0, 6, tzinfo=WARSAW),
+            dt.date(2024, 6, 30),
         ),
         # Nov 1 00:05 CET == Oct 31 23:05Z — the October DST switch lies in between.
         (
-            datetime.datetime(2024, 10, 31, 23, 5, 1, tzinfo=UTC),
-            datetime.datetime(2024, 10, 1, 0, 6, tzinfo=WARSAW),
-            datetime.date(2024, 10, 31),
+            dt.datetime(2024, 10, 31, 23, 5, 1, tzinfo=UTC),
+            dt.datetime(2024, 10, 1, 0, 6, tzinfo=WARSAW),
+            dt.date(2024, 10, 31),
         ),
     ],
 )
 def test_monthly_award_fires_on_the_hourly_check_after_local_midnight(
-    fire_utc: datetime.datetime,
-    last_ran_utc: datetime.datetime,
-    expected_reference: datetime.date,
+    fire_utc: dt.datetime,
+    last_ran_utc: dt.datetime,
+    expected_reference: dt.date,
 ) -> None:
     """``rq.cron`` runs in UTC, so the contest jobs fire hourly at :05 and award when due.
 
@@ -273,7 +273,7 @@ def test_monthly_award_fires_on_the_hourly_check_after_local_midnight(
     time; the one an hour earlier is not.
     """
     SchedulerRun.objects.update_or_create(job_id="award-best-suchar-month", defaults={"ran_at": last_ran_utc})
-    one_hour_earlier = fire_utc - datetime.timedelta(hours=1)
+    one_hour_earlier = fire_utc - dt.timedelta(hours=1)
     with patch("suchar_overflow.achievements.tasks.award_best_suchar") as mock_award:
         with patch("django.utils.timezone.now", return_value=one_hour_earlier):
             award_best_suchar_month_if_due()
@@ -301,7 +301,7 @@ def test_night_owl_ignores_active_request_zone() -> None:
     user = make_user("owl410")
     suchar = _backdate(
         Suchar.objects.create(text="late", author=user),
-        datetime.datetime(2024, 7, 10, 22, 30, tzinfo=UTC),
+        dt.datetime(2024, 7, 10, 22, 30, tzinfo=UTC),
     )
     with timezone.override(NEW_YORK):
         assert NightOwlRule.compute_value(user, instance=suchar) == 1
@@ -314,7 +314,7 @@ def test_streak_ignores_active_request_zone() -> None:
     for hour, minute in ((10, 0), (22, 30)):
         _backdate(
             Suchar.objects.create(text=f"at {hour}", author=user),
-            datetime.datetime(2024, 7, 10, hour, minute, tzinfo=UTC),
+            dt.datetime(2024, 7, 10, hour, minute, tzinfo=UTC),
         )
     with timezone.override(NEW_YORK):
         assert StreakLoginRule.compute_value(user) == 2
@@ -322,30 +322,30 @@ def test_streak_ignores_active_request_zone() -> None:
 
 def test_compute_period_range_ignores_active_request_zone() -> None:
     with timezone.override(NEW_YORK):
-        start, end, _ = compute_period_range("month", datetime.date(2024, 7, 15))
-    assert start == datetime.datetime(2024, 6, 30, 22, 0, tzinfo=UTC)
-    assert end == datetime.datetime(2024, 7, 31, 22, 0, tzinfo=UTC)
+        start, end, _ = compute_period_range("month", dt.date(2024, 7, 15))
+    assert start == dt.datetime(2024, 6, 30, 22, 0, tzinfo=UTC)
+    assert end == dt.datetime(2024, 7, 31, 22, 0, tzinfo=UTC)
 
 
 def test_due_monthly_run_at_ignores_active_request_zone() -> None:
     """June 30 22:10Z: July 1 00:10 in Warsaw (July fire due), 18:10 June 30 in
     New York (would still point at June's fire)."""
-    now = datetime.datetime(2024, 6, 30, 22, 10, tzinfo=UTC)
+    now = dt.datetime(2024, 6, 30, 22, 10, tzinfo=UTC)
     with timezone.override(NEW_YORK):
         due_at = due_monthly_run_at(now, None)
-    assert due_at == datetime.datetime(2024, 7, 1, 0, 5, tzinfo=WARSAW)
+    assert due_at == dt.datetime(2024, 7, 1, 0, 5, tzinfo=WARSAW)
 
 
 def test_due_yearly_run_at_ignores_active_request_zone() -> None:
-    now = datetime.datetime(2023, 12, 31, 23, 10, tzinfo=UTC)
+    now = dt.datetime(2023, 12, 31, 23, 10, tzinfo=UTC)
     with timezone.override(NEW_YORK):
         due_at = due_yearly_run_at(now, None)
-    assert due_at == datetime.datetime(2024, 1, 1, 0, 5, tzinfo=WARSAW)
+    assert due_at == dt.datetime(2024, 1, 1, 0, 5, tzinfo=WARSAW)
 
 
 @pytest.mark.django_db
 def test_award_best_suchar_reference_date_ignores_active_request_zone() -> None:
-    frozen_now = datetime.datetime(2024, 6, 30, 22, 5, tzinfo=UTC)
+    frozen_now = dt.datetime(2024, 6, 30, 22, 5, tzinfo=UTC)
     with (
         timezone.override(NEW_YORK),
         patch("django.utils.timezone.now", return_value=frozen_now),
@@ -356,4 +356,4 @@ def test_award_best_suchar_reference_date_ignores_active_request_zone() -> None:
     ):
         award_best_suchar("month")
 
-    mock_range.assert_called_once_with("month", datetime.date(2024, 6, 30))
+    mock_range.assert_called_once_with("month", dt.date(2024, 6, 30))

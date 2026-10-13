@@ -1,7 +1,7 @@
 """Tests for the ActivationToken model and cache flag set by AchievementEngine."""
 
 import contextlib
-import datetime
+import datetime as dt
 
 import pytest
 from django.core.cache import cache
@@ -28,7 +28,7 @@ def test_token_within_expiry_window_is_valid() -> None:
     user = make_user("alice", is_active=False)
     token = ActivationToken.objects.create(user=user)
     ActivationToken.objects.filter(pk=token.pk).update(
-        created_at=timezone.now() - datetime.timedelta(hours=71),
+        created_at=timezone.now() - dt.timedelta(hours=71),
     )
     token.refresh_from_db()
     assert token.is_valid()
@@ -39,7 +39,7 @@ def test_expired_token_is_invalid() -> None:
     user = make_user("alice", is_active=False)
     token = ActivationToken.objects.create(user=user)
     ActivationToken.objects.filter(pk=token.pk).update(
-        created_at=timezone.now() - datetime.timedelta(hours=73),
+        created_at=timezone.now() - dt.timedelta(hours=73),
     )
     token.refresh_from_db()
     assert not token.is_valid()

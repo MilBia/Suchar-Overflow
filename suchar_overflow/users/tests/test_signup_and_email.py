@@ -2,7 +2,7 @@
 Tests for user signup, account activation, and email-change flows.
 """
 
-import datetime
+import datetime as dt
 import uuid
 from http import HTTPStatus
 from typing import TYPE_CHECKING
@@ -247,7 +247,7 @@ def test_activate_expired_token_does_not_activate(client: Client) -> None:
     token = ActivationToken.objects.create(user=user)
     # Backdate beyond the 72-hour expiry window.
     ActivationToken.objects.filter(pk=token.pk).update(
-        created_at=timezone.now() - datetime.timedelta(hours=73),
+        created_at=timezone.now() - dt.timedelta(hours=73),
     )
 
     response = client.get(
@@ -366,7 +366,7 @@ def test_email_change_confirm_expired_token(client: Client) -> None:
         old_email="old@example.com",
     )
     EmailChangeRequest.objects.filter(pk=email_req.pk).update(
-        created_at=timezone.now() - datetime.timedelta(hours=25),
+        created_at=timezone.now() - dt.timedelta(hours=25),
     )
     client.force_login(user)
 

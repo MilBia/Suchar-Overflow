@@ -1,6 +1,6 @@
 """Tests for AchievementEngine rules and registration."""
 
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 
 import pytest
@@ -295,7 +295,7 @@ def test_streak_rule_true_for_consecutive_days() -> None:
     s1 = Suchar.objects.create(text="day1", author=user)
     s2 = Suchar.objects.create(text="day2", author=user)
     Suchar.objects.filter(pk=s1.pk).update(
-        created_at=today - datetime.timedelta(days=1),
+        created_at=today - dt.timedelta(days=1),
     )
     Suchar.objects.filter(pk=s2.pk).update(created_at=today)
     assert StreakLoginRule.evaluate(user, threshold=2)
@@ -308,7 +308,7 @@ def test_streak_rule_false_when_gap_in_days() -> None:
     s1 = Suchar.objects.create(text="day1", author=user)
     s2 = Suchar.objects.create(text="day3", author=user)
     Suchar.objects.filter(pk=s1.pk).update(
-        created_at=today - datetime.timedelta(days=2),
+        created_at=today - dt.timedelta(days=2),
     )
     Suchar.objects.filter(pk=s2.pk).update(created_at=today)
     # gap: 2 days apart → no 2-day streak
@@ -324,7 +324,7 @@ def test_streak_rule_counts_only_longest_leading_streak() -> None:
     for offset in [5, 4, 3, 1, 0]:
         s = Suchar.objects.create(text=f"d{offset}", author=user)
         Suchar.objects.filter(pk=s.pk).update(
-            created_at=today - datetime.timedelta(days=offset),
+            created_at=today - dt.timedelta(days=offset),
         )
     assert not StreakLoginRule.evaluate(user, threshold=3)
     assert StreakLoginRule.evaluate(user, threshold=2)
@@ -343,7 +343,7 @@ def test_streak_rule_engine_awards_achievement() -> None:
     s1 = Suchar.objects.create(text="d1", author=user)
     s2 = Suchar.objects.create(text="d2", author=user)
     Suchar.objects.filter(pk=s1.pk).update(
-        created_at=today - datetime.timedelta(days=1),
+        created_at=today - dt.timedelta(days=1),
     )
     Suchar.objects.filter(pk=s2.pk).update(created_at=today)
     AchievementEngine.check_achievements(user, Achievement.EventType.SUCHAR_POSTED)
@@ -646,7 +646,7 @@ def _make_scheduled_suchar(user: User, **kwargs: object) -> Suchar:
     return Suchar.objects.create(
         text="scheduled",
         author=user,
-        published_at=timezone.now() + datetime.timedelta(days=1),
+        published_at=timezone.now() + dt.timedelta(days=1),
         **kwargs,
     )
 
@@ -675,7 +675,7 @@ def test_streak_rule_excludes_scheduled_suchary() -> None:
     today = timezone.now()
     published = Suchar.objects.create(text="yesterday", author=user)
     Suchar.objects.filter(pk=published.pk).update(
-        created_at=today - datetime.timedelta(days=1),
+        created_at=today - dt.timedelta(days=1),
     )
     scheduled = _make_scheduled_suchar(user)
     Suchar.objects.filter(pk=scheduled.pk).update(created_at=today)

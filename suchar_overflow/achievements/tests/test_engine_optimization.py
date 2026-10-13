@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 
 import pytest
@@ -233,7 +233,7 @@ def _build_multi_metric_scenario() -> tuple[UserType, Suchar]:
     for offset, hour in ((2, 12), (1, 1), (0, 2), (0, 13)):
         suchar = Suchar.objects.create(text=f"joke {offset}-{hour}", author=user)
         Suchar.objects.filter(pk=suchar.pk).update(
-            created_at=(now - datetime.timedelta(days=offset)).replace(
+            created_at=(now - dt.timedelta(days=offset)).replace(
                 hour=hour,
                 minute=0,
                 second=0,

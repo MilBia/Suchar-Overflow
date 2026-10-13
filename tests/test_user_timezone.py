@@ -8,7 +8,7 @@ to each computation (``achievements/tests/test_timezone.py`` and the stats /
 users view tests).
 """
 
-import datetime
+import datetime as dt
 import re
 import zoneinfo
 from http import HTTPStatus
@@ -30,7 +30,7 @@ NEW_YORK = zoneinfo.ZoneInfo("America/New_York")
 WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
 
 #: 12:00Z in July = 14:00 CEST = 08:00 EDT.
-STORED = datetime.datetime(2024, 7, 10, 12, 0, tzinfo=datetime.UTC)
+STORED = dt.datetime(2024, 7, 10, 12, 0, tzinfo=dt.UTC)
 
 
 def _published_suchar() -> Suchar:
@@ -131,20 +131,20 @@ def test_scheduled_time_is_read_in_cookie_zone(client: Client) -> None:
 
     assert response.status_code == HTTPStatus.FOUND
     suchar = Suchar.objects.get(author=author)
-    assert suchar.published_at == datetime.datetime(
+    assert suchar.published_at == dt.datetime(
         2099,
         7,
         15,
         18,
         0,
-        tzinfo=datetime.UTC,
+        tzinfo=dt.UTC,
     )
 
 
 @pytest.mark.django_db
 def test_edit_form_round_trips_in_cookie_zone(client: Client) -> None:
     author = make_user("tz410edit")
-    scheduled_at = datetime.datetime(2099, 7, 15, 14, 0, tzinfo=NEW_YORK)
+    scheduled_at = dt.datetime(2099, 7, 15, 14, 0, tzinfo=NEW_YORK)
     suchar = Suchar.objects.create(
         text="Scheduled",
         author=author,
@@ -168,8 +168,8 @@ def test_edit_form_round_trips_in_cookie_zone(client: Client) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _scheduled(author_name: str) -> tuple[Suchar, datetime.datetime]:
-    scheduled_at = datetime.datetime(2099, 7, 15, 14, 0, tzinfo=WARSAW)
+def _scheduled(author_name: str) -> tuple[Suchar, dt.datetime]:
+    scheduled_at = dt.datetime(2099, 7, 15, 14, 0, tzinfo=WARSAW)
     suchar = Suchar.objects.create(
         text="Scheduled",
         author=make_user(author_name),
@@ -227,13 +227,13 @@ def test_changed_value_is_read_in_active_zone(client: Client) -> None:
 
     assert response.status_code == HTTPStatus.FOUND
     suchar.refresh_from_db()
-    assert suchar.published_at == datetime.datetime(
+    assert suchar.published_at == dt.datetime(
         2099,
         7,
         15,
         20,
         0,
-        tzinfo=datetime.UTC,
+        tzinfo=dt.UTC,
     )
 
 
@@ -259,13 +259,13 @@ def test_unknown_rendered_zone_falls_back_to_active_zone(
     )
 
     suchar.refresh_from_db()
-    assert suchar.published_at == datetime.datetime(
+    assert suchar.published_at == dt.datetime(
         2099,
         7,
         15,
         18,
         0,
-        tzinfo=datetime.UTC,
+        tzinfo=dt.UTC,
     )
 
 

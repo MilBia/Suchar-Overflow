@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import pytest
 from django.utils import timezone
@@ -52,14 +52,14 @@ def periodic_achievements(db: None) -> None:  # noqa: ARG001
     )
 
 
-def last_month_mid() -> datetime.datetime:
+def last_month_mid() -> dt.datetime:
     """Return a timezone-aware datetime in the middle of the previous calendar month."""
     today = timezone.localdate()
     first_of_this_month = today.replace(day=1)
-    last_month = first_of_this_month - datetime.timedelta(days=1)
+    last_month = first_of_this_month - dt.timedelta(days=1)
     mid = last_month.replace(day=min(15, last_month.day))
     return timezone.make_aware(
-        datetime.datetime(mid.year, mid.month, mid.day, 12, 0, 0),  # noqa: DTZ001
+        dt.datetime(mid.year, mid.month, mid.day, 12, 0, 0),  # noqa: DTZ001
     )
 
 
@@ -67,14 +67,14 @@ def last_month_end() -> str:
     """Return a YYYY-MM-DD string for the last day of the previous calendar month."""
     today = timezone.localdate()
     first_of_this_month = today.replace(day=1)
-    last_day = first_of_this_month - datetime.timedelta(days=1)
+    last_day = first_of_this_month - dt.timedelta(days=1)
     return last_day.strftime("%Y-%m-%d")
 
 
-def last_year_mid() -> datetime.datetime:
+def last_year_mid() -> dt.datetime:
     """Return a timezone-aware datetime in the middle of the previous calendar year."""
     last_year = timezone.localdate().year - 1
-    return timezone.make_aware(datetime.datetime(last_year, 6, 15, 12, 0, 0))  # noqa: DTZ001
+    return timezone.make_aware(dt.datetime(last_year, 6, 15, 12, 0, 0))  # noqa: DTZ001
 
 
 def last_year_end() -> str:
@@ -83,7 +83,7 @@ def last_year_end() -> str:
     return f"{last_year}-12-31"
 
 
-def freeze_to_first_of_current_month() -> datetime.datetime:
+def freeze_to_first_of_current_month() -> dt.datetime:
     """Return a datetime pinned to the 1st of the current month (local noon).
 
     When the task uses ``timezone.now() - timedelta(days=1)``, yesterday falls
@@ -92,5 +92,5 @@ def freeze_to_first_of_current_month() -> datetime.datetime:
     today = timezone.localdate()
     first = today.replace(day=1)
     return timezone.make_aware(
-        datetime.datetime(first.year, first.month, first.day, 12, 0, 0),  # noqa: DTZ001
+        dt.datetime(first.year, first.month, first.day, 12, 0, 0),  # noqa: DTZ001
     )

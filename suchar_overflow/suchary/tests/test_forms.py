@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import logging
 import zoneinfo
 from datetime import timedelta
@@ -405,9 +405,9 @@ def test_save_tags_logs_when_a_name_collision_drops_a_tag(
 WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
 
 
-def _last_sunday(year: int, month: int) -> datetime.date:
+def _last_sunday(year: int, month: int) -> dt.date:
     """EU DST switches happen on the last Sunday of March and October."""
-    next_month = datetime.date(year, month + 1, 1)
+    next_month = dt.date(year, month + 1, 1)
     last_day = next_month - timedelta(days=1)
     return last_day - timedelta(days=(last_day.weekday() - 6) % 7)
 
@@ -419,18 +419,18 @@ def _last_sunday(year: int, month: int) -> datetime.date:
         # Summer: CEST (UTC+2).
         (
             "2099-07-15T14:00",
-            datetime.datetime(2099, 7, 15, 12, 0, tzinfo=datetime.UTC),
+            dt.datetime(2099, 7, 15, 12, 0, tzinfo=dt.UTC),
         ),
         # Winter: CET (UTC+1).
         (
             "2099-01-15T14:00",
-            datetime.datetime(2099, 1, 15, 13, 0, tzinfo=datetime.UTC),
+            dt.datetime(2099, 1, 15, 13, 0, tzinfo=dt.UTC),
         ),
     ],
 )
 def test_published_at_naive_input_is_polish_time(
     entered: str,
-    stored_utc: datetime.datetime,
+    stored_utc: dt.datetime,
 ) -> None:
     """A suchar scheduled for 14:00 goes live at 14:00 Polish time, not UTC."""
     user = make_user("author")

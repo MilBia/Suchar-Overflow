@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import logging
 import zoneinfo
 from typing import TYPE_CHECKING
@@ -41,35 +41,35 @@ WARSAW = zoneinfo.ZoneInfo("Europe/Warsaw")
 def test_compute_period_range_month() -> None:
     start_dt, end_dt, suffix = compute_period_range(
         "month",
-        datetime.date(2024, 2, 15),
+        dt.date(2024, 2, 15),
     )
-    assert start_dt == datetime.datetime(2024, 2, 1, 0, 0, tzinfo=start_dt.tzinfo)
-    assert end_dt == datetime.datetime(2024, 3, 1, 0, 0, tzinfo=end_dt.tzinfo)
+    assert start_dt == dt.datetime(2024, 2, 1, 0, 0, tzinfo=start_dt.tzinfo)
+    assert end_dt == dt.datetime(2024, 3, 1, 0, 0, tzinfo=end_dt.tzinfo)
     assert suffix == "month"
 
 
 def test_compute_period_range_month_december_rolls_into_next_year() -> None:
     start_dt, end_dt, _suffix = compute_period_range(
         "month",
-        datetime.date(2024, 12, 10),
+        dt.date(2024, 12, 10),
     )
-    assert start_dt == datetime.datetime(2024, 12, 1, 0, 0, tzinfo=start_dt.tzinfo)
-    assert end_dt == datetime.datetime(2025, 1, 1, 0, 0, tzinfo=end_dt.tzinfo)
+    assert start_dt == dt.datetime(2024, 12, 1, 0, 0, tzinfo=start_dt.tzinfo)
+    assert end_dt == dt.datetime(2025, 1, 1, 0, 0, tzinfo=end_dt.tzinfo)
 
 
 def test_compute_period_range_year() -> None:
     start_dt, end_dt, suffix = compute_period_range(
         "year",
-        datetime.date(2024, 6, 1),
+        dt.date(2024, 6, 1),
     )
-    assert start_dt == datetime.datetime(2024, 1, 1, 0, 0, tzinfo=start_dt.tzinfo)
-    assert end_dt == datetime.datetime(2025, 1, 1, 0, 0, tzinfo=end_dt.tzinfo)
+    assert start_dt == dt.datetime(2024, 1, 1, 0, 0, tzinfo=start_dt.tzinfo)
+    assert end_dt == dt.datetime(2025, 1, 1, 0, 0, tzinfo=end_dt.tzinfo)
     assert suffix == "year"
 
 
 def test_compute_period_range_unknown_period_raises() -> None:
     with pytest.raises(ValueError, match="Unknown period"):
-        compute_period_range("week", datetime.date(2024, 6, 1))
+        compute_period_range("week", dt.date(2024, 6, 1))
 
 
 # ---------------------------------------------------------------------------
@@ -202,18 +202,18 @@ def test_find_best_suchary_window_follows_published_at_not_created_at() -> None:
         password="pw",
     )
     scheduled = Suchar.objects.create(text="Written in January", author=author)
-    scheduled.created_at = datetime.datetime(2024, 1, 30, 12, 0, tzinfo=datetime.UTC)
-    scheduled.published_at = datetime.datetime(2024, 2, 5, 12, 0, tzinfo=datetime.UTC)
+    scheduled.created_at = dt.datetime(2024, 1, 30, 12, 0, tzinfo=dt.UTC)
+    scheduled.published_at = dt.datetime(2024, 2, 5, 12, 0, tzinfo=dt.UTC)
     scheduled.save()
     Vote.objects.create(suchar=scheduled, user=voter, is_funny=True)
 
     jan_start, jan_end, _suffix = compute_period_range(
         "month",
-        datetime.date(2024, 1, 31),
+        dt.date(2024, 1, 31),
     )
     feb_start, feb_end, _suffix = compute_period_range(
         "month",
-        datetime.date(2024, 2, 29),
+        dt.date(2024, 2, 29),
     )
 
     assert find_best_suchary(jan_start, jan_end) == []
@@ -242,18 +242,18 @@ def test_find_best_suchary_window_follows_published_at_not_created_at_year() -> 
         password="pw",
     )
     scheduled = Suchar.objects.create(text="Written in December", author=author)
-    scheduled.created_at = datetime.datetime(2023, 12, 28, 12, 0, tzinfo=datetime.UTC)
-    scheduled.published_at = datetime.datetime(2024, 1, 3, 12, 0, tzinfo=datetime.UTC)
+    scheduled.created_at = dt.datetime(2023, 12, 28, 12, 0, tzinfo=dt.UTC)
+    scheduled.published_at = dt.datetime(2024, 1, 3, 12, 0, tzinfo=dt.UTC)
     scheduled.save()
     Vote.objects.create(suchar=scheduled, user=voter, is_funny=True)
 
     year_2023_start, year_2023_end, _suffix = compute_period_range(
         "year",
-        datetime.date(2023, 6, 1),
+        dt.date(2023, 6, 1),
     )
     year_2024_start, year_2024_end, _suffix = compute_period_range(
         "year",
-        datetime.date(2024, 6, 1),
+        dt.date(2024, 6, 1),
     )
 
     assert find_best_suchary(year_2023_start, year_2023_end) == []
@@ -487,13 +487,13 @@ def test_award_best_suchar_uses_explicit_reference_date_when_given() -> None:
     """An explicit reference_date overrides the yesterday default — used by
     the startup catch-up path (#169) to award a period other than the one
     "yesterday" falls in at restart time."""
-    frozen_now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=dt.UTC)
     winner = User.objects.create_user(
         username="explicit-ref",
         email="explicit-ref@example.com",
         password="pw",
     )
-    may_at = datetime.datetime(2024, 5, 15, 12, 0, tzinfo=datetime.UTC)
+    may_at = dt.datetime(2024, 5, 15, 12, 0, tzinfo=dt.UTC)
     s = Suchar.objects.create(text="May joke", author=winner)
     s.created_at = s.published_at = may_at
     s.save()
@@ -508,7 +508,7 @@ def test_award_best_suchar_uses_explicit_reference_date_when_given() -> None:
         "suchar_overflow.achievements.tasks.timezone.now",
         return_value=frozen_now,
     ):
-        award_best_suchar("month", reference_date=datetime.date(2024, 5, 31))
+        award_best_suchar("month", reference_date=dt.date(2024, 5, 31))
 
     assert UserAchievement.objects.filter(
         user=winner,
@@ -533,16 +533,16 @@ def test_award_best_suchar_awards_a_scheduled_suchar_in_its_publication_month() 
         password="pw",
     )
     scheduled = Suchar.objects.create(text="Scheduled joke", author=author)
-    scheduled.created_at = datetime.datetime(2024, 1, 30, 12, 0, tzinfo=datetime.UTC)
-    scheduled.published_at = datetime.datetime(2024, 2, 5, 12, 0, tzinfo=datetime.UTC)
+    scheduled.created_at = dt.datetime(2024, 1, 30, 12, 0, tzinfo=dt.UTC)
+    scheduled.published_at = dt.datetime(2024, 2, 5, 12, 0, tzinfo=dt.UTC)
     scheduled.save()
     Vote.objects.create(suchar=scheduled, user=voter, is_funny=True)
 
     with patch(
         "suchar_overflow.achievements.tasks.timezone.now",
-        return_value=datetime.datetime(2024, 2, 1, 0, 5, tzinfo=datetime.UTC),
+        return_value=dt.datetime(2024, 2, 1, 0, 5, tzinfo=dt.UTC),
     ):
-        award_best_suchar("month", reference_date=datetime.date(2024, 1, 31))
+        award_best_suchar("month", reference_date=dt.date(2024, 1, 31))
 
     assert not UserAchievement.objects.filter(
         user=author,
@@ -551,9 +551,9 @@ def test_award_best_suchar_awards_a_scheduled_suchar_in_its_publication_month() 
 
     with patch(
         "suchar_overflow.achievements.tasks.timezone.now",
-        return_value=datetime.datetime(2024, 3, 1, 0, 5, tzinfo=datetime.UTC),
+        return_value=dt.datetime(2024, 3, 1, 0, 5, tzinfo=dt.UTC),
     ):
-        award_best_suchar("month", reference_date=datetime.date(2024, 2, 29))
+        award_best_suchar("month", reference_date=dt.date(2024, 2, 29))
 
     assert UserAchievement.objects.filter(
         user=author,
@@ -746,8 +746,8 @@ def test_award_best_suchar_skips_close_old_connections_inside_atomic_block() -> 
 
 
 def test_due_monthly_run_at_returns_due_date_when_never_run() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
-    assert due_monthly_run_at(now, None) == datetime.datetime(
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    assert due_monthly_run_at(now, None) == dt.datetime(
         2024,
         6,
         1,
@@ -758,9 +758,9 @@ def test_due_monthly_run_at_returns_due_date_when_never_run() -> None:
 
 
 def test_due_monthly_run_at_returns_due_date_when_last_run_before_it() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2024, 4, 1, 0, 5, tzinfo=WARSAW)
-    assert due_monthly_run_at(now, last_ran_at) == datetime.datetime(
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2024, 4, 1, 0, 5, tzinfo=WARSAW)
+    assert due_monthly_run_at(now, last_ran_at) == dt.datetime(
         2024,
         6,
         1,
@@ -771,29 +771,29 @@ def test_due_monthly_run_at_returns_due_date_when_last_run_before_it() -> None:
 
 
 def test_due_monthly_run_at_none_when_last_run_on_due_date() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2024, 6, 1, 0, 5, tzinfo=WARSAW)
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2024, 6, 1, 0, 5, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
 def test_due_monthly_run_at_none_when_last_run_after_due_date() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2024, 6, 1, 0, 6, tzinfo=WARSAW)
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2024, 6, 1, 0, 6, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
 def test_due_monthly_run_at_before_first_of_month_fire_uses_previous_month() -> None:
     """On the 1st, before 00:05 local time, this month's cron hasn't fired yet — the
     due date falls back to the previous month's fire time."""
-    now = datetime.datetime(2024, 6, 1, 0, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2024, 5, 1, 0, 5, tzinfo=WARSAW)
+    now = dt.datetime(2024, 6, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2024, 5, 1, 0, 5, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
 def test_due_monthly_run_at_before_first_of_month_fire_still_detects_gap() -> None:
-    now = datetime.datetime(2024, 6, 1, 0, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2024, 4, 1, 0, 5, tzinfo=WARSAW)
-    assert due_monthly_run_at(now, last_ran_at) == datetime.datetime(
+    now = dt.datetime(2024, 6, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2024, 4, 1, 0, 5, tzinfo=WARSAW)
+    assert due_monthly_run_at(now, last_ran_at) == dt.datetime(
         2024,
         5,
         1,
@@ -804,8 +804,8 @@ def test_due_monthly_run_at_before_first_of_month_fire_still_detects_gap() -> No
 
 
 def test_due_monthly_run_at_january_rolls_back_to_december() -> None:
-    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2023, 12, 1, 0, 5, tzinfo=WARSAW)
+    now = dt.datetime(2024, 1, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2023, 12, 1, 0, 5, tzinfo=WARSAW)
     assert due_monthly_run_at(now, last_ran_at) is None
 
 
@@ -815,8 +815,8 @@ def test_due_monthly_run_at_january_rolls_back_to_december() -> None:
 
 
 def test_due_yearly_run_at_returns_due_date_when_never_run() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
-    assert due_yearly_run_at(now, None) == datetime.datetime(
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    assert due_yearly_run_at(now, None) == dt.datetime(
         2024,
         1,
         1,
@@ -827,9 +827,9 @@ def test_due_yearly_run_at_returns_due_date_when_never_run() -> None:
 
 
 def test_due_yearly_run_at_returns_due_date_when_last_run_before_it() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=WARSAW)
-    assert due_yearly_run_at(now, last_ran_at) == datetime.datetime(
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2022, 1, 1, 0, 5, tzinfo=WARSAW)
+    assert due_yearly_run_at(now, last_ran_at) == dt.datetime(
         2024,
         1,
         1,
@@ -840,29 +840,29 @@ def test_due_yearly_run_at_returns_due_date_when_last_run_before_it() -> None:
 
 
 def test_due_yearly_run_at_none_when_last_run_on_due_date() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2024, 1, 1, 0, 5, tzinfo=WARSAW)
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2024, 1, 1, 0, 5, tzinfo=WARSAW)
     assert due_yearly_run_at(now, last_ran_at) is None
 
 
 def test_due_yearly_run_at_none_when_last_run_after_due_date() -> None:
-    now = datetime.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2024, 1, 1, 0, 6, tzinfo=WARSAW)
+    now = dt.datetime(2024, 6, 15, 12, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2024, 1, 1, 0, 6, tzinfo=WARSAW)
     assert due_yearly_run_at(now, last_ran_at) is None
 
 
 def test_due_yearly_run_at_before_first_of_year_fire_uses_previous_year() -> None:
     """On Jan 1, before 00:05 local time, this year's cron hasn't fired yet — the
     due date falls back to the previous year's fire time."""
-    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2023, 1, 1, 0, 5, tzinfo=WARSAW)
+    now = dt.datetime(2024, 1, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2023, 1, 1, 0, 5, tzinfo=WARSAW)
     assert due_yearly_run_at(now, last_ran_at) is None
 
 
 def test_due_yearly_run_at_before_first_of_year_fire_still_detects_gap() -> None:
-    now = datetime.datetime(2024, 1, 1, 0, 0, tzinfo=WARSAW)
-    last_ran_at = datetime.datetime(2022, 1, 1, 0, 5, tzinfo=WARSAW)
-    assert due_yearly_run_at(now, last_ran_at) == datetime.datetime(
+    now = dt.datetime(2024, 1, 1, 0, 0, tzinfo=WARSAW)
+    last_ran_at = dt.datetime(2022, 1, 1, 0, 5, tzinfo=WARSAW)
+    assert due_yearly_run_at(now, last_ran_at) == dt.datetime(
         2023,
         1,
         1,
@@ -943,12 +943,12 @@ def _scheduled_suchar(
     return Suchar.objects.create(
         text=text,
         author=author,
-        published_at=timezone.now() + datetime.timedelta(days=1),
+        published_at=timezone.now() + dt.timedelta(days=1),
         **kwargs,
     )
 
 
-def _retroactively_publish(suchar: Suchar, published_at: datetime.datetime) -> None:
+def _retroactively_publish(suchar: Suchar, published_at: dt.datetime) -> None:
     """Move published_at into the past without firing post_save."""
     Suchar.objects.filter(pk=suchar.pk).update(published_at=published_at)
 
@@ -963,7 +963,7 @@ def test_award_publication_achievements_awards_after_scheduled_suchar_goes_live(
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
-    _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
+    _retroactively_publish(suchar, now - dt.timedelta(minutes=5))
 
     award_publication_achievements(reference_time=now)
 
@@ -980,7 +980,7 @@ def test_award_publication_achievements_writes_scheduler_run_marker() -> None:
 
 @pytest.mark.django_db
 def test_award_publication_achievements_updates_existing_marker() -> None:
-    first = timezone.now() - datetime.timedelta(hours=2)
+    first = timezone.now() - dt.timedelta(hours=2)
     second = timezone.now()
     award_publication_achievements(reference_time=first)
     award_publication_achievements(reference_time=second)
@@ -994,7 +994,7 @@ def test_award_publication_achievements_ignores_suchar_published_before_last_run
     now = timezone.now()
     SchedulerRun.objects.create(
         job_id="award-publication-achievements",
-        ran_at=now - datetime.timedelta(minutes=10),
+        ran_at=now - dt.timedelta(minutes=10),
     )
     author = User.objects.create_user(
         username="pub2",
@@ -1004,7 +1004,7 @@ def test_award_publication_achievements_ignores_suchar_published_before_last_run
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
     # Published 30 min ago — already visible at the last run, not "new".
-    _retroactively_publish(suchar, now - datetime.timedelta(minutes=30))
+    _retroactively_publish(suchar, now - dt.timedelta(minutes=30))
 
     award_publication_achievements(reference_time=now)
 
@@ -1016,7 +1016,7 @@ def test_award_publication_achievements_processes_suchar_published_after_last_ru
     now = timezone.now()
     SchedulerRun.objects.create(
         job_id="award-publication-achievements",
-        ran_at=now - datetime.timedelta(minutes=10),
+        ran_at=now - dt.timedelta(minutes=10),
     )
     author = User.objects.create_user(
         username="pub3",
@@ -1025,7 +1025,7 @@ def test_award_publication_achievements_processes_suchar_published_after_last_ru
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
-    _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
+    _retroactively_publish(suchar, now - dt.timedelta(minutes=5))
 
     award_publication_achievements(reference_time=now)
 
@@ -1046,7 +1046,7 @@ def test_award_publication_achievements_first_run_floor_ignores_old_suchary() ->
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
-    _retroactively_publish(suchar, now - datetime.timedelta(hours=2))
+    _retroactively_publish(suchar, now - dt.timedelta(hours=2))
 
     award_publication_achievements(reference_time=now)
 
@@ -1079,7 +1079,7 @@ def test_award_publication_achievements_is_idempotent() -> None:
     )
     ach = _count_suchar_achievement()
     suchar = _scheduled_suchar(author)
-    _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
+    _retroactively_publish(suchar, now - dt.timedelta(minutes=5))
 
     award_publication_achievements(reference_time=now)
     award_publication_achievements(reference_time=now)
@@ -1117,7 +1117,7 @@ def test_award_publication_achievements_passes_instance_for_night_owl() -> None:
         microsecond=0,
     )
     Suchar.objects.filter(pk=suchar.pk).update(created_at=night_ts)
-    _retroactively_publish(suchar, now - datetime.timedelta(minutes=5))
+    _retroactively_publish(suchar, now - dt.timedelta(minutes=5))
 
     award_publication_achievements(reference_time=now)
 
@@ -1151,7 +1151,7 @@ def test_award_publication_achievements_overlap_recovers_backdated_publish() -> 
     ``published_at__gt=last_ran_at`` would drop it forever.
     """
     now = timezone.now()
-    marker_ran_at = now - datetime.timedelta(minutes=30)
+    marker_ran_at = now - dt.timedelta(minutes=30)
     SchedulerRun.objects.create(
         job_id="award-publication-achievements",
         ran_at=marker_ran_at,
@@ -1166,7 +1166,7 @@ def test_award_publication_achievements_overlap_recovers_backdated_publish() -> 
     # Before the last run, but inside the overlap window.
     _retroactively_publish(
         suchar,
-        marker_ran_at - PUBLICATION_CATCHUP_OVERLAP + datetime.timedelta(minutes=1),
+        marker_ran_at - PUBLICATION_CATCHUP_OVERLAP + dt.timedelta(minutes=1),
     )
 
     award_publication_achievements(reference_time=now)
@@ -1181,7 +1181,7 @@ def test_award_publication_achievements_overlap_still_has_a_lower_bound() -> Non
     reprocessed.
     """
     now = timezone.now()
-    marker_ran_at = now - datetime.timedelta(minutes=30)
+    marker_ran_at = now - dt.timedelta(minutes=30)
     SchedulerRun.objects.create(
         job_id="award-publication-achievements",
         ran_at=marker_ran_at,
@@ -1195,7 +1195,7 @@ def test_award_publication_achievements_overlap_still_has_a_lower_bound() -> Non
     suchar = _scheduled_suchar(author)
     _retroactively_publish(
         suchar,
-        marker_ran_at - PUBLICATION_CATCHUP_OVERLAP - datetime.timedelta(minutes=1),
+        marker_ran_at - PUBLICATION_CATCHUP_OVERLAP - dt.timedelta(minutes=1),
     )
 
     award_publication_achievements(reference_time=now)
@@ -1225,8 +1225,8 @@ def test_award_publication_achievements_one_bad_suchar_does_not_stall_the_job(
     ach = _count_suchar_achievement()
     bad = _scheduled_suchar(author_bad, text="boom")
     ok = _scheduled_suchar(author_ok, text="ok")
-    _retroactively_publish(bad, now - datetime.timedelta(minutes=5))
-    _retroactively_publish(ok, now - datetime.timedelta(minutes=5))
+    _retroactively_publish(bad, now - dt.timedelta(minutes=5))
+    _retroactively_publish(ok, now - dt.timedelta(minutes=5))
 
     real_check = AchievementEngine.check_achievements
 

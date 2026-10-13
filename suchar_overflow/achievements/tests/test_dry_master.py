@@ -10,7 +10,7 @@ Two layers, matching the design:
   funny votes. It never clears the flag (engine awards, never revokes).
 """
 
-import datetime
+import datetime as dt
 
 import pytest
 from django.utils import timezone
@@ -57,7 +57,7 @@ def _cast_dry_votes(suchar: Suchar, count: int, *, prefix: str = "d") -> None:
 
 def _backdate(suchar: Suchar, *, minutes_ago: int) -> None:
     """Move the suchar's publication window into the past and refresh it."""
-    moment = timezone.now() - datetime.timedelta(minutes=minutes_ago)
+    moment = timezone.now() - dt.timedelta(minutes=minutes_ago)
     Suchar.objects.filter(pk=suchar.pk).update(
         created_at=moment,
         published_at=moment,
@@ -151,7 +151,7 @@ def test_votes_before_publication_do_not_latch() -> None:
     is bounded below by ``published_at`` (#294 review 2.1)."""
     author = make_user("author")
     suchar = Suchar.objects.create(text="joke", author=author)
-    future = timezone.now() + datetime.timedelta(hours=2)
+    future = timezone.now() + dt.timedelta(hours=2)
     Suchar.objects.filter(pk=suchar.pk).update(published_at=future)
     suchar.refresh_from_db()
 
