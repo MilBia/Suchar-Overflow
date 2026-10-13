@@ -1,7 +1,7 @@
 """E2E: the browser's time zone drives input/display via the `user_tz` cookie
 (webpack/src/js/timezone.js → suchar_overflow/utils/middleware.py, issue #410)."""
 
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 
 import pytest
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from suchar_overflow.users.models import User as UserModel
 
 #: 12:00Z in July = 14:00 in Warsaw = 08:00 in New York.
-_STORED = datetime.datetime(2024, 7, 10, 12, 0, tzinfo=datetime.UTC)
+_STORED = dt.datetime(2024, 7, 10, 12, 0, tzinfo=dt.UTC)
 
 
 @pytest.mark.e2e

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from typing import TYPE_CHECKING
 
 from asgiref.sync import sync_to_async
@@ -182,9 +182,9 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # series would draw days weeks apart as adjacent bars.
         service_tz = timezone.get_default_timezone()
         today = timezone.localdate(now, service_tz)
-        start_date = today - datetime.timedelta(days=ACTIVITY_CHART_DAYS)
+        start_date = today - dt.timedelta(days=ACTIVITY_CHART_DAYS)
         range_start = timezone.make_aware(
-            datetime.datetime.combine(start_date, datetime.time.min),
+            dt.datetime.combine(start_date, dt.time.min),
             service_tz,
         )
         activity_data = (
@@ -194,7 +194,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
             .annotate(count=Count("id"))
         )
         counts = {entry["date"].date(): entry["count"] for entry in activity_data}
-        chart_days = [start_date + datetime.timedelta(days=offset) for offset in range(ACTIVITY_CHART_DAYS + 1)]
+        chart_days = [start_date + dt.timedelta(days=offset) for offset in range(ACTIVITY_CHART_DAYS + 1)]
         context["activity_labels"] = [day.strftime("%Y-%m-%d") for day in chart_days]
         context["activity_values"] = [counts.get(day, 0) for day in chart_days]
 
@@ -296,11 +296,11 @@ class UserDetailView(AsyncLoginRequiredMixin):
         service_tz = timezone.get_default_timezone()
         today = timezone.localdate(now, service_tz)
         # Go back approx 1 year
-        start_date = today - datetime.timedelta(days=365)
+        start_date = today - dt.timedelta(days=365)
         # Align start_date to the previous Monday to ensure the grid starts correctly
         # (Mon-Sun columns) weekday(): Mon=0 ... Sun=6
         days_to_subtract = start_date.weekday()
-        start_date -= datetime.timedelta(days=days_to_subtract)
+        start_date -= dt.timedelta(days=days_to_subtract)
 
         # Raw datetime bounds (not published_at__date__gte): the __date lookup
         # renders as (published_at AT TIME ZONE tz)::date, and a cast column
@@ -315,7 +315,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
         # — so a suchar published in the same instant the view runs is not lost
         # from today's cell while it counts everywhere else.
         range_start = timezone.make_aware(
-            datetime.datetime.combine(start_date, datetime.time.min),
+            dt.datetime.combine(start_date, dt.time.min),
             service_tz,
         )
 
@@ -381,7 +381,7 @@ class UserDetailView(AsyncLoginRequiredMixin):
                 current_week_days = []
                 current_week_label = None
 
-            current_date += datetime.timedelta(days=1)
+            current_date += dt.timedelta(days=1)
 
         # Add partially filled last week if necessary
         if current_week_days:
@@ -618,7 +618,7 @@ class EmailChangeConfirmView(AsyncLoginRequiredMixin):
                 {"error": _("The link has already been used or cancelled.")},
             )
 
-        if email_request.created_at < timezone.now() - datetime.timedelta(hours=24):
+        if email_request.created_at < timezone.now() - dt.timedelta(hours=24):
             email_request.status = EmailChangeRequest.Status.REVOKED
             await email_request.asave()
             return await sync_to_async(render)(

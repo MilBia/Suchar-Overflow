@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import hashlib
 import secrets
 import uuid
@@ -110,7 +110,7 @@ class ActivationToken(models.Model):
         return f"ActivationToken({user_name})"
 
     def is_valid(self) -> bool:
-        return timezone.now() < self.created_at + datetime.timedelta(
+        return timezone.now() < self.created_at + dt.timedelta(
             hours=self.EXPIRY_HOURS,
         )
 

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import zoneinfo
 from datetime import timedelta
 from http import HTTPStatus
@@ -529,10 +529,10 @@ def test_daily_chart_today_is_local_day_after_utc_evening() -> None:
     """At 22:30Z in July it is already July 11 in Poland: the 7-day chart must
     end on July 11 and count a suchar published at 22:15Z there."""
     author = make_user("chart405")
-    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    published = dt.datetime(2024, 7, 10, 22, 15, tzinfo=dt.UTC)
     s = Suchar.objects.create(text="after local midnight", author=author)
     Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
-    frozen_now = datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 7, 10, 22, 30, tzinfo=dt.UTC)
 
     with patch("django.utils.timezone.now", return_value=frozen_now):
         context = LeaderboardView()._build_context()  # noqa: SLF001
@@ -549,10 +549,10 @@ def test_daily_chart_ignores_active_request_zone() -> None:
     active: the chart must still end on the Warsaw day (July 11), not New
     York's (July 10)."""
     author = make_user("chart410")
-    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    published = dt.datetime(2024, 7, 10, 22, 15, tzinfo=dt.UTC)
     s = Suchar.objects.create(text="after local midnight", author=author)
     Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
-    frozen_now = datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 7, 10, 22, 30, tzinfo=dt.UTC)
 
     with (
         timezone.override(zoneinfo.ZoneInfo("America/New_York")),
@@ -572,10 +572,10 @@ def test_leaderboard_cache_is_not_poisoned_by_visitor_zone(client: Client) -> No
     must leave Warsaw-day buckets in it."""
     cache.delete(LEADERBOARD_CACHE_KEY)
     author = make_user("cache410")
-    published = datetime.datetime(2024, 7, 10, 22, 15, tzinfo=datetime.UTC)
+    published = dt.datetime(2024, 7, 10, 22, 15, tzinfo=dt.UTC)
     s = Suchar.objects.create(text="after local midnight", author=author)
     Suchar.objects.filter(pk=s.pk).update(created_at=published, published_at=published)
-    frozen_now = datetime.datetime(2024, 7, 10, 22, 30, tzinfo=datetime.UTC)
+    frozen_now = dt.datetime(2024, 7, 10, 22, 30, tzinfo=dt.UTC)
     client.cookies[TIMEZONE_COOKIE_NAME] = "America/New_York"
 
     with patch("django.utils.timezone.now", return_value=frozen_now):
@@ -592,8 +592,8 @@ def test_suchar_card_shows_publication_date(client: Client) -> None:
     main list — not when its author wrote it (#412)."""
     author = make_user("card412")
     s = Suchar.objects.create(text="Scheduled long ago", author=author)
-    created_at = datetime.datetime(2024, 3, 5, 12, 0, tzinfo=datetime.UTC)
-    published_at = datetime.datetime(2024, 6, 20, 12, 0, tzinfo=datetime.UTC)
+    created_at = dt.datetime(2024, 3, 5, 12, 0, tzinfo=dt.UTC)
+    published_at = dt.datetime(2024, 6, 20, 12, 0, tzinfo=dt.UTC)
     Suchar.objects.filter(pk=s.pk).update(
         created_at=created_at,
         published_at=published_at,

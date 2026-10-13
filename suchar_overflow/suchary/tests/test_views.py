@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import re
 import zoneinfo
 from datetime import timedelta
@@ -567,7 +567,7 @@ def test_suchar_list_shows_publication_time_in_polish_time(client: Client) -> No
     """Stored 12:00Z in July is displayed as 14:00 (CEST), not the UTC hour."""
     author = make_user("tz405list")
     suchar = Suchar.objects.create(text="Displayed in CEST", author=author)
-    stored = datetime.datetime(2024, 7, 10, 12, 0, tzinfo=datetime.UTC)
+    stored = dt.datetime(2024, 7, 10, 12, 0, tzinfo=dt.UTC)
     Suchar.objects.filter(pk=suchar.pk).update(created_at=stored, published_at=stored)
 
     response = client.get(reverse("suchary:list"))
@@ -582,7 +582,7 @@ def test_edit_form_round_trips_published_at_in_polish_time(client: Client) -> No
     """The edit form renders published_at as local wall time and posting that
     value back leaves the stored instant unchanged (cf. #297's republish trap)."""
     author = make_user("tz405edit")
-    scheduled_at = datetime.datetime(2099, 7, 15, 14, 0, tzinfo=WARSAW)
+    scheduled_at = dt.datetime(2099, 7, 15, 14, 0, tzinfo=WARSAW)
     suchar = Suchar.objects.create(
         text="Scheduled",
         author=author,
