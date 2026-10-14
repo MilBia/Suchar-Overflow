@@ -6,7 +6,7 @@ for a while. Relying on group order to keep them out of the catch-all group stop
 working once, and a Django CVE bump went red with them. The exclusion has to be explicit.
 """
 
-from fnmatch import fnmatchcase
+import re
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +23,11 @@ GROUP_PAIRS = {
 }
 
 
+def _matches(name: str, pattern: str) -> bool:
+    """Dependabot patterns support `*` only (no `?` or `[...]`), so don't use fnmatch."""
+    return re.fullmatch(".*".join(map(re.escape, pattern.split("*"))), name) is not None
+
+
 def _groups(ecosystem: str) -> dict[str, Any]:
     config = yaml.safe_load(_DEPENDABOT.read_text(encoding="utf-8"))
     assert isinstance(config, dict), "dependabot.yml is empty or not a mapping"
@@ -34,11 +39,11 @@ def _groups(ecosystem: str) -> dict[str, Any]:
 @pytest.mark.parametrize(("ecosystem", "pair"), GROUP_PAIRS.items(), ids=list(GROUP_PAIRS))
 def test_tool_group_is_excluded_from_catch_all(ecosystem: str, pair: tuple[str, str, set[str]]) -> None:
     tool_group, catch_all, expected_tools = pair
-    groups = _groups(ecosystem)
+    groups = {name: body or {} for name, body in _groups(ecosystem).items()}
     assert {tool_group, catch_all} <= groups.keys(), f"{ecosystem}: groups {tool_group!r}/{catch_all!r} missing"
-    tools = set(groups[tool_group].get("patterns") or [])
-    assert tools >= expected_tools, f"{ecosystem}: {tool_group!r} must hold {sorted(expected_tools - tools)}"
-    # `exclude-patterns` are globs, so match each package against them instead of comparing strings.
+    tool_patterns = groups[tool_group].get("patterns") or []
+    unheld = sorted(t for t in expected_tools if not any(_matches(t, p) for p in tool_patterns))
+    assert not unheld, f"{ecosystem}: {tool_group!r} must hold {unheld}"
     excludes = groups[catch_all].get("exclude-patterns") or []
-    missing = sorted(t for t in tools if not any(fnmatchcase(t, pattern) for pattern in excludes))
+    missing = sorted(t for t in expected_tools if not any(_matches(t, p) for p in excludes))
     assert not missing, f"{ecosystem}: {catch_all!r} must exclude {missing} (they have their own group)"
