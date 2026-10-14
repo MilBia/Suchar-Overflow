@@ -7,6 +7,7 @@ working once, and a Django CVE bump went red with them. The exclusion has to be 
 """
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -20,17 +21,20 @@ GROUP_PAIRS = {
 }
 
 
-def _groups(ecosystem: str) -> dict:
+def _groups(ecosystem: str) -> dict[str, Any]:
     config = yaml.safe_load(_DEPENDABOT.read_text(encoding="utf-8"))
     updates = [u for u in config["updates"] if u["package-ecosystem"] == ecosystem]
-    assert len(updates) == 1, f"expected exactly one {ecosystem} block in dependabot.yml"
-    return updates[0]["groups"]
+    assert len(updates) == 1, f"expected exactly one {ecosystem} block in dependabot.yml, found {len(updates)}"
+    return updates[0].get("groups", {})
 
 
-@pytest.mark.parametrize(("ecosystem", "pair"), GROUP_PAIRS.items())
+@pytest.mark.parametrize(("ecosystem", "pair"), GROUP_PAIRS.items(), ids=list(GROUP_PAIRS))
 def test_tool_group_is_excluded_from_catch_all(ecosystem: str, pair: tuple[str, str]) -> None:
     tool_group, catch_all = pair
     groups = _groups(ecosystem)
-    tools = set(groups[tool_group]["patterns"])
+    assert {tool_group, catch_all} <= groups.keys(), f"{ecosystem}: groups {tool_group!r}/{catch_all!r} missing"
+    tools = set(groups[tool_group].get("patterns", []))
+    assert tools, f"{ecosystem}: group {tool_group!r} has no patterns, so the check would pass vacuously"
     excluded = set(groups[catch_all].get("exclude-patterns", []))
-    assert tools <= excluded, f"{catch_all} must exclude {sorted(tools - excluded)} (they have their own group)"
+    missing = sorted(tools - excluded)
+    assert not missing, f"{catch_all} must exclude {missing} (they have their own group)"
