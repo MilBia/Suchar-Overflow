@@ -73,11 +73,12 @@ updates:
       schedule:
           interval: 'daily'
       groups:
-          # Listed first: a dependency joins the first group it matches. ruff and
-          # djLint bumps also need the hook rev in .pre-commit-config.yaml, which
-          # Dependabot doesn't touch, so tests/test_precommit_hook_versions.py fails
-          # their PR until that commit is added (#451). Their own group keeps that
-          # red test from holding up the rest of the python bumps.
+          # ruff and djLint bumps also need the hook rev in .pre-commit-config.yaml,
+          # which Dependabot doesn't touch, so tests/test_precommit_hook_versions.py
+          # fails their PR until that commit is added (#451). Their own group keeps
+          # that red test from holding up the rest of the python bumps. Group order
+          # alone did not hold (#526: they landed in `python`, once carrying Django
+          # CVE fixes), so `python` excludes them explicitly.
           lint-tools:
               patterns:
                   - 'ruff'
@@ -86,6 +87,9 @@ updates:
               update-types:
                   - 'minor'
                   - 'patch'
+              exclude-patterns:
+                  - 'ruff'
+                  - 'djlint'
 
     # Dev-only JS test runner (Vitest + jsdom). Not a runtime/vendored dependency —
     # see CLAUDE.md "JS tests (Vitest)". Kept on Dependabot so it doesn't become
@@ -95,13 +99,16 @@ updates:
       schedule:
           interval: 'daily'
       groups:
-          # Listed first, like lint-tools above: a prettier bump also needs the
-          # hook's additional_dependencies pin in .pre-commit-config.yaml, so its
-          # PR stays red (tests/test_precommit_hook_versions.py) until that commit
-          # lands — its own group keeps it from holding up the Vitest bumps.
+          # Like lint-tools above: a prettier bump also needs the hook's
+          # additional_dependencies pin in .pre-commit-config.yaml, so its PR stays
+          # red (tests/test_precommit_hook_versions.py) until that commit lands —
+          # its own group keeps it from holding up the Vitest bumps. `js-dev`
+          # excludes it explicitly rather than relying on group order (#526).
           prettier:
               patterns:
                   - 'prettier'
           js-dev:
               patterns:
                   - '*'
+              exclude-patterns:
+                  - 'prettier'
