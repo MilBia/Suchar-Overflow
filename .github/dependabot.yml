@@ -77,8 +77,8 @@ updates:
           # which Dependabot doesn't touch, so tests/test_precommit_hook_versions.py
           # fails their PR until that commit is added (#451). Their own group keeps
           # that red test from holding up the rest of the python bumps. Group order
-          # alone did not hold (#526: from 2026-10-06 they landed in `python`, once
-          # carrying Django CVE fixes), so `python` excludes them explicitly.
+          # alone did not hold (#526: they landed in `python`, once carrying Django
+          # CVE fixes), so `python` excludes them explicitly.
           lint-tools:
               patterns:
                   - 'ruff'
