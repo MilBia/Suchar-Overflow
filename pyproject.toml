@@ -186,7 +186,7 @@ dev = [
 # (psycopg-c needs `pg_config` — see CLAUDE.md's "Running commands" section).
 local-tools = [
     "ipdb==0.13.13",
-    "pre-commit==4.6.2",
+    "pre-commit==4.7.0",
 ]
 
 [project]
