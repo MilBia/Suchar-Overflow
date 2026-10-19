@@ -167,14 +167,14 @@ dev = [
     "django-debug-toolbar==8.0.0",
     "django-extensions==4.1",
     "django-stubs[compatible-mypy]==6.1.2",
-    "djlint==1.46.4",
+    "djlint==1.46.6",
     "factory-boy==3.3.3",
     "mypy==2.4.0",
     "pytest==9.1.1",
     "pytest-django==4.14.0",
     "pytest-playwright==0.10.0",
     "pytest-sugar==1.1.1",
-    "ruff==0.17.0",
+    "ruff==0.17.1",
 ]
 # Local-only tooling: never used inside the Docker image (pre-commit runs from the
 # host .venv per CLAUDE.md; ipdb needs an interactive terminal `docker compose run
