@@ -162,15 +162,15 @@ force-single-line = true
 
 [dependency-groups]
 dev = [
-    "coverage==7.17.0",
+    "coverage==7.17.2",
     "django-coverage-plugin==3.2.2",
     "django-debug-toolbar==8.0.0",
     "django-extensions==4.1",
     "django-stubs[compatible-mypy]==6.1.2",
     "djlint==1.47.0",
     "factory-boy==3.3.3",
-    "mypy==2.4.0",
-    "pytest==9.1.1",
+    "mypy==2.4.1",
+    "pytest==9.2.0",
     "pytest-django==4.14.0",
     "pytest-playwright==0.10.0",
     "pytest-sugar==1.1.1",
@@ -221,9 +221,9 @@ dependencies = [
     # direct-httpx /completions) round-trip, and TLS to a live HTTPS endpoint is
     # clean (issue #178, 2026-08-23).
     "openai>=3.1.0,<4",
-    "psycopg[c]==3.3.6",
+    "psycopg[c]==3.3.8",
     "python-slugify==9.1.3",
-    "django-ninja==1.7.1",
+    "django-ninja==1.7.3",
     "redis==8.1.0",
     # fill_translations.py imports httpx directly for the translategemma path;
     # declare it explicitly instead of relying on openai's transitive dependency.
