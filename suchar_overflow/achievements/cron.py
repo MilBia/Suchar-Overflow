@@ -1,10 +1,12 @@
 """Periodic jobs for ``rqcron`` (#462) — loaded by ``manage.py rqcron suchar_overflow.achievements.cron``.
 
-Replaces the in-process APScheduler jobs. ``rq.cron`` evaluates cron strings in
-**UTC** (``rq.utils.now()``), while the contests roll over at 00:05 ``Europe/Warsaw``
-(#405), whose UTC offset changes with DST. A fixed cron string cannot hit
-"00:05 Polish time", so the two contest jobs fire **hourly at :05** — every Warsaw
-offset is a whole hour, so :05 UTC is :05 local — and run
+Replaces the in-process APScheduler jobs. ``rq.cron`` evaluates cron strings in the
+**process-local** zone (rq 3, like system cron; rq 2 used UTC). The ``rqcron`` process runs
+Django, which sets ``TZ`` to ``TIME_ZONE`` (``Europe/Warsaw``), so that zone is the one
+used — but the contests roll over at 00:05 Warsaw and that offset changes with DST, so
+nothing here may depend on which zone rq picks. The two contest jobs therefore fire
+**hourly at :05** — every Warsaw offset is a whole hour, so :05 UTC is :05 local and the
+schedule means the same thing in either zone — and run
 ``award_best_suchar_*_if_due``: when the service-local fire time has passed and its
 ``SchedulerRun`` marker was never written, award it; otherwise do nothing. The first
 check after 00:05 local on the 1st therefore is the fire, and the same function
