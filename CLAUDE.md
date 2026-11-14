@@ -1150,7 +1150,8 @@ No profile field — cookie only.
   / bare `localdate()` in computation code — inside a request that is the visitor's.
 - Python-side `.date()` / `.replace(hour=0)` on `timezone.now()` is the **UTC** date
   (wrong between 22:00/23:00 and 24:00 UTC) — use `localdate(..., service_tz)`.
-- The contest jobs fire at 00:05 _service-local_: `rq.cron` itself runs in UTC, so
+- The contest jobs fire at 00:05 _service-local_: `rq.cron` cannot express "00:05 Warsaw"
+  (it evaluates in the process-local zone, see Background jobs), so
   `achievements/cron.py` checks hourly at :05 and `award_best_suchar_*_if_due` /
   `due_*_run_at` convert `now` to the service zone before reconstructing the fire time
   (see Background jobs). 00:05 never falls in a DST gap/overlap (the switch is at
@@ -1230,9 +1231,12 @@ ran in every gunicorn worker and duplicated its jobs.
   `EmailChangeRequest` rows are saved; the job gets only a PK and plain values plus `language`
   (the requester's), and renders inside `translation.override(language)` because the worker has
   no request. An SMTP error no longer 500s the request.
-- **Cron time zone**: `rq.cron` evaluates cron strings in **UTC** (`rq.utils.now()`) and has no
-  zone parameter, while the contests roll over at 00:05 `Europe/Warsaw` (#405), whose UTC offset
-  changes with DST. So `achievements/cron.py` registers `award-best-suchar-month` / `-year` as
+- **Cron time zone**: since rq 3 (#573) `rq.cron` evaluates cron strings in the **process-local**
+  zone (`astimezone()`, like system cron; rq 2 used UTC) and has no zone parameter. The `rqcron`
+  process runs Django, which sets `TZ` to `TIME_ZONE`, so that is `Europe/Warsaw` there (the
+  container itself is UTC — `date` in `docker exec` shows UTC, `manage.py shell` shows Warsaw). The
+  contests roll over at 00:05 `Europe/Warsaw` (#405), whose UTC offset changes with DST, so no
+  schedule may depend on which zone rq picks. So `achievements/cron.py` registers `award-best-suchar-month` / `-year` as
   `"5 * * * *"` (hourly at :05 — every Warsaw offset is a whole hour) calling
   `award_best_suchar_month_if_due` / `_year_if_due`: when the service-local fire time has passed
   and its `SchedulerRun` marker was never written, award it with `reference_date` = the due
@@ -1241,8 +1245,10 @@ ran in every gunicorn worker and duplicated its jobs.
   down (#169). `award-publication-achievements` (#389/#402) is `"* * * * *"`. Every job carries
   a `ttl` (50 min hourly, 2 min per-minute) so a stopped worker never builds a backlog — they
   are idempotent and the sweep overlaps 15 min, so a dropped run is harmless.
-  `achievements/tests/test_cron.py` pins the three registrations and that the hourly check hits minute 5
-  of the Polish clock in both CET and CEST.
+  `achievements/tests/test_cron.py` pins the three registrations, that the hourly check hits minute 5
+  of the Polish clock in both CET and CEST, and that it picks the same instants evaluated in UTC or
+  Warsaw. Keep every cron string zone-independent (whole-hour offsets only): minute fields like `5`
+  or `*` are, an hour field is not.
 - **Catch-up**: `manage.py achievements_catch_up` runs the two `*_if_due` functions and
   `award_publication_achievements` once, each in its own `try/except`, before `rqcron` starts
   (a transient DB error must not stop the others or the scheduler).
